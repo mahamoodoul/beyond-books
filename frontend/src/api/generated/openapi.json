@@ -5167,6 +5167,12 @@
             "title": "Attribution Text",
             "type": "string"
           },
+          "insights": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Insights",
+            "type": "object"
+          },
           "license_name": {
             "title": "License Name",
             "type": "string"
@@ -5182,6 +5188,17 @@
             "title": "Node Names",
             "type": "array"
           },
+          "parts": {
+            "default": [],
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Parts",
+            "type": "array"
+          },
           "source_url": {
             "anyOf": [
               {
@@ -5192,6 +5209,18 @@
               }
             ],
             "title": "Source Url"
+          },
+          "tour": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tour"
           },
           "url": {
             "title": "Url",
@@ -6389,6 +6418,65 @@
           "options"
         ],
         "title": "StudentQuestion",
+        "type": "object"
+      },
+      "StudioSceneOut": {
+        "description": "A published 3D scene a student can open in the Studio (from their enrolled courses).",
+        "properties": {
+          "chapter_title": {
+            "title": "Chapter Title",
+            "type": "string"
+          },
+          "course_id": {
+            "format": "uuid",
+            "title": "Course Id",
+            "type": "string"
+          },
+          "course_title": {
+            "title": "Course Title",
+            "type": "string"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "lesson_title": {
+            "title": "Lesson Title",
+            "type": "string"
+          },
+          "scene_id": {
+            "format": "uuid",
+            "title": "Scene Id",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene_id",
+          "title",
+          "lesson_id",
+          "lesson_title",
+          "chapter_title",
+          "course_id",
+          "course_title",
+          "subject"
+        ],
+        "title": "StudioSceneOut",
         "type": "object"
       },
       "SubmitRequest": {
@@ -12049,6 +12137,32 @@
         "summary": "My Progress",
         "tags": [
           "progress"
+        ]
+      }
+    },
+    "/api/v1/studio/scenes": {
+      "get": {
+        "description": "Student 3D Studio: only the published scenes of the student's enrolled courses.",
+        "operationId": "studio_scenes_api_v1_studio_scenes_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StudioSceneOut"
+                  },
+                  "title": "Response Studio Scenes Api V1 Studio Scenes Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Studio Scenes",
+        "tags": [
+          "3d"
         ]
       }
     },

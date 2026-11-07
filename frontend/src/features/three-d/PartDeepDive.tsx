@@ -36,12 +36,15 @@ export function PartDeepDive({
   cached,
   labelFor,
   onInspect,
+  readOnly = false,
 }: {
   assetId: string;
   part: string;
   cached?: DeepDiveCard;
   labelFor: (meshName: string) => string;
   onInspect: (meshName: string) => void;
+  /** Students: show a cached card only, never ask the AI. */
+  readOnly?: boolean;
 }) {
   const qc = useQueryClient();
   const [jobId, setJobId] = useState<string | null>(null);
@@ -58,6 +61,7 @@ export function PartDeepDive({
   const card = cached ?? fresh;
   const running = start.isPending || (!!jobId && !["completed", "failed"].includes(job.data?.status ?? ""));
 
+  if (!card && readOnly) return null;
   if (!card) {
     return (
       <div className="mt-3 border-t border-slate-100 pt-3">
@@ -120,7 +124,7 @@ export function PartDeepDive({
           )}
         </div>
       )}
-      <p className="text-xs text-slate-400">AI-written study notes — check before teaching.</p>
+      {!readOnly && <p className="text-xs text-slate-400">AI-written study notes — check before teaching.</p>}
     </div>
   );
 }

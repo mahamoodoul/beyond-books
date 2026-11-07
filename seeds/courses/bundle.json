@@ -73,7 +73,7 @@
     "id": "dd4f3f77-f674-4cd0-b9a3-d89194cbd348",
     "updated_at": "2026-11-07T16:14:02.199535+00:00",
     "created_at": "2026-11-07T16:14:01.620799+00:00",
-    "_seed_pdf": null
+    "_seed_pdf": "sample-courses/Biology/Biology - Cells and Energy (Ch 3-4).pdf"
    },
    {
     "course_id": "76318f6b-bceb-4f01-91bb-a10f148cb38a",
@@ -91,7 +91,7 @@
     "id": "0f3dce89-bfc1-4f76-a4e9-23c992ff590a",
     "updated_at": "2026-11-07T16:14:59.393807+00:00",
     "created_at": "2026-11-07T16:14:59.125742+00:00",
-    "_seed_pdf": null
+    "_seed_pdf": "sample-courses/Mathematics/Mathematics - Expressions and Equations (Unit 1).pdf"
    },
    {
     "course_id": "eb785b62-a68e-4b00-be2a-c35bd248cfcb",
@@ -109,7 +109,7 @@
     "id": "d56c340f-ad92-4a32-af1f-c324784b79f8",
     "updated_at": "2026-11-07T16:14:33.906657+00:00",
     "created_at": "2026-11-07T16:14:33.651714+00:00",
-    "_seed_pdf": null
+    "_seed_pdf": "sample-courses/Chemistry/Chemistry - Atoms, Molecules and Ions (Ch 2).pdf"
    },
    {
     "course_id": "fe15d89d-9e20-44ac-afca-5788f0b1ca8b",
@@ -127,7 +127,7 @@
     "id": "12207beb-85a2-47c3-a980-08860e11fc57",
     "updated_at": "2026-11-07T16:15:19.048054+00:00",
     "created_at": "2026-11-07T16:15:18.700558+00:00",
-    "_seed_pdf": null
+    "_seed_pdf": "sample-courses/Physics/Physics - Motion and Forces (Ch 2-4).pdf"
    }
   ],
   "document_pages": [

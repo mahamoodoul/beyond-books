@@ -256,3 +256,25 @@ def test_delete_asset_refused_while_a_scene_uses_it(login: Login) -> None:
     # Once the scene no longer exists, the model can be deleted.
     assert t.delete(f"/api/v1/scenes/{scene['id']}").status_code == 204
     assert t.delete(f"/api/v1/assets/{a['id']}").status_code == 204
+
+
+def test_student_studio_lists_only_their_published_scenes(login: Login, seeded: None) -> None:
+    t = login("t@example.com")
+    s = login("s@example.com", "student")
+    other = login("s2@example.com", "student")
+    cid, _, lid = _lesson(t, publish=True)
+    t.post(f"/api/v1/courses/{cid}/enrollments", json={"student_email": "s@example.com"})
+    scene = t.post(f"/api/v1/lessons/{lid}/scenes", json={"spec": heart_spec()}).json()
+    assert s.get("/api/v1/studio/scenes").json() == []  # draft scene: not listed
+
+    t.post(f"/api/v1/scenes/{scene['id']}/publish")
+    listed = s.get("/api/v1/studio/scenes").json()
+    assert [x["scene_id"] for x in listed] == [scene["id"]]
+    assert listed[0]["lesson_id"] == lid and listed[0]["course_id"] == cid
+    assert other.get("/api/v1/studio/scenes").json() == []  # not enrolled
+
+    # a draft (unpublished) lesson hides its scenes again
+    _, _, draft_lid = _lesson(t, publish=False)
+    t.post(f"/api/v1/lessons/{draft_lid}/scenes", json={"spec": heart_spec()})
+    assert len(s.get("/api/v1/studio/scenes").json()) == 1
+    assert s.get("/api/v1/assets").json() == []  # still no access to the teacher's library

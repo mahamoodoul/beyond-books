@@ -324,10 +324,10 @@ function ViewerBody({
         onTour={order.length > 1 ? toggleTour : undefined}
       />
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           ref={container}
-          className="relative aspect-[4/3] min-h-72 overflow-hidden rounded-lg bg-navy-950 sm:aspect-video lg:aspect-auto lg:h-[34rem]"
+          className="relative aspect-[4/3] min-h-72 overflow-hidden rounded-lg bg-navy-950 sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
         >
           <SceneCanvas
             scene={scene}

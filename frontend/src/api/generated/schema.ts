@@ -837,7 +837,13 @@ export type AttributionText2 = string;
 export type LicenseName2 = string;
 export type Name8 = string;
 export type NodeNames = string[];
+export type Parts2 = {
+  [k: string]: string;
+}[];
 export type SourceUrl2 = string | null;
+export type Tour = {
+  [k: string]: unknown;
+} | null;
 export type Url2 = string;
 export type Version7 = number;
 export type Animations = AnimationSpec[];
@@ -895,6 +901,14 @@ export type Email5 = string;
 export type LastActivityAt1 = string | null;
 export type StudentId3 = string;
 export type TotalLessons4 = number;
+export type ChapterTitle2 = string;
+export type CourseId8 = string;
+export type CourseTitle = string;
+export type LessonId11 = string;
+export type LessonTitle4 = string;
+export type SceneId6 = string;
+export type Subject8 = string | null;
+export type Title33 = string;
 /**
  * @maxItems 50
  */
@@ -910,21 +924,21 @@ export type PublishedVersion5 = number | null;
 export type QuestionCount2 = number;
 export type QuestionsPerAttempt3 = number;
 export type Status18 = string;
-export type Title33 = string;
-export type Version9 = number;
-export type CourseId8 = string;
-export type Text8 = string;
 export type Title34 = string;
+export type Version9 = number;
+export type CourseId9 = string;
+export type Text8 = string;
+export type Title35 = string;
 export type Description16 = string;
 export type IsDefault = boolean;
 export type Name11 = string;
 export type Method1 = string;
 export type Url3 = string;
-export type CourseId9 = string;
+export type CourseId10 = string;
 export type Filename = string;
 export type MimeType1 = "application/pdf" | "text/plain" | "text/markdown";
 export type SizeBytes2 = number;
-export type Title35 = string | null;
+export type Title36 = string | null;
 export type CreatedAt11 = string;
 export type DisplayName5 = string;
 export type Email6 = string;
@@ -1082,6 +1096,7 @@ export interface Api {
   StudentOption?: StudentOption;
   StudentProgressRow?: StudentProgressRow;
   StudentQuestion?: StudentQuestion;
+  StudioSceneOut?: StudioSceneOut;
   SubmitRequest?: SubmitRequest;
   TeacherAssessment?: TeacherAssessment;
   TextDocumentRequest?: TextDocumentRequest;
@@ -2621,12 +2636,18 @@ export interface RegisterRequest {
 export interface ResolvedAsset {
   asset_id: AssetId2;
   attribution_text: AttributionText2;
+  insights?: Insights1;
   license_name: LicenseName2;
   name: Name8;
   node_names: NodeNames;
+  parts?: Parts2;
   source_url: SourceUrl2;
+  tour?: Tour;
   url: Url2;
   version: Version7;
+}
+export interface Insights1 {
+  [k: string]: unknown;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2756,6 +2777,22 @@ export interface StudentProgressRow {
   total_lessons: TotalLessons4;
 }
 /**
+ * A published 3D scene a student can open in the Studio (from their enrolled courses).
+ *
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "StudioSceneOut".
+ */
+export interface StudioSceneOut {
+  chapter_title: ChapterTitle2;
+  course_id: CourseId8;
+  course_title: CourseTitle;
+  lesson_id: LessonId11;
+  lesson_title: LessonTitle4;
+  scene_id: SceneId6;
+  subject: Subject8;
+  title: Title33;
+}
+/**
  * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "SubmitRequest".
  */
@@ -2780,7 +2817,7 @@ export interface TeacherAssessment {
   questions_per_attempt: QuestionsPerAttempt3;
   settings: QuizSettings;
   status: Status18;
-  title: Title33;
+  title: Title34;
   version: Version9;
 }
 /**
@@ -2788,9 +2825,9 @@ export interface TeacherAssessment {
  * via the `definition` "TextDocumentRequest".
  */
 export interface TextDocumentRequest {
-  course_id: CourseId8;
+  course_id: CourseId9;
   text: Text8;
-  title: Title34;
+  title: Title35;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2818,11 +2855,11 @@ export interface Headers1 {
  * via the `definition` "UploadUrlRequest".
  */
 export interface UploadUrlRequest {
-  course_id: CourseId9;
+  course_id: CourseId10;
   filename: Filename;
   mime_type: MimeType1;
   size_bytes: SizeBytes2;
-  title?: Title35;
+  title?: Title36;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema

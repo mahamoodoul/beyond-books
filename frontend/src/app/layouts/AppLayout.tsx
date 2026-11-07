@@ -21,6 +21,7 @@ const teacherNavigation = [
 const studentNavigation = [
   { to: "/student", label: "My learning", icon: "grid" as const, end: true },
   { to: "/student/courses", label: "My courses", icon: "book" as const, end: false },
+  { to: "/studio", label: "3D Studio", icon: "eye" as const, end: false },
   { to: "/student/progress", label: "My progress", icon: "activity" as const, end: false },
 ];
 export function AppLayout() {
