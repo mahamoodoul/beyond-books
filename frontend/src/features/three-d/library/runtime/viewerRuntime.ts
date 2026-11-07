@@ -22,6 +22,10 @@ export interface ViewerRuntime {
   hovered: string | null;
   showLabels: boolean;
   reducedMotion: boolean;
+  /** The scene moves by itself (procedural motion), so shadows must redraw every frame. */
+  animatedScene: boolean;
+  /** Request a frame. The canvas renders on demand, so UI changes must call this. */
+  invalidate: () => void;
 }
 
 export function createViewerRuntime(paths: Record<string, Vec3[]>): ViewerRuntime {
@@ -39,5 +43,7 @@ export function createViewerRuntime(paths: Record<string, Vec3[]>): ViewerRuntim
     hovered: null,
     showLabels: true,
     reducedMotion: false,
+    animatedScene: false,
+    invalidate: () => {},
   };
 }

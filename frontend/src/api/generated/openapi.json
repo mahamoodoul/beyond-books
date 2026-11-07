@@ -1447,6 +1447,11 @@
       },
       "ChapterDetail": {
         "properties": {
+          "ai_instructions": {
+            "default": "",
+            "title": "Ai Instructions",
+            "type": "string"
+          },
           "course_id": {
             "format": "uuid",
             "title": "Course Id",
@@ -1676,6 +1681,38 @@
         "title": "ChapterSceneOut",
         "type": "object"
       },
+      "ChapterSourceOut": {
+        "description": "The textbook text the AI reads for this chapter (shown in the chapter studio).",
+        "properties": {
+          "characters": {
+            "title": "Characters",
+            "type": "integer"
+          },
+          "passages": {
+            "items": {
+              "$ref": "#/components/schemas/SourcePassageOut"
+            },
+            "title": "Passages",
+            "type": "array"
+          },
+          "strategy": {
+            "title": "Strategy",
+            "type": "string"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "strategy",
+          "truncated",
+          "characters",
+          "passages"
+        ],
+        "title": "ChapterSourceOut",
+        "type": "object"
+      },
       "ChapterSourceRef": {
         "properties": {
           "document_id": {
@@ -1704,6 +1741,18 @@
       },
       "ChapterUpdate": {
         "properties": {
+          "ai_instructions": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Instructions"
+          },
           "description": {
             "anyOf": [
               {
@@ -3846,6 +3895,11 @@
             "title": "Published",
             "type": "boolean"
           },
+          "scene_count": {
+            "default": 0,
+            "title": "Scene Count",
+            "type": "integer"
+          },
           "title": {
             "title": "Title",
             "type": "string"
@@ -4056,6 +4110,58 @@
           "status"
         ],
         "title": "ProgressUpdate",
+        "type": "object"
+      },
+      "PublishChapterRequest": {
+        "properties": {
+          "include_course": {
+            "default": false,
+            "title": "Include Course",
+            "type": "boolean"
+          }
+        },
+        "title": "PublishChapterRequest",
+        "type": "object"
+      },
+      "PublishChapterResult": {
+        "properties": {
+          "assessments_published": {
+            "title": "Assessments Published",
+            "type": "integer"
+          },
+          "chapter_status": {
+            "title": "Chapter Status",
+            "type": "string"
+          },
+          "course_status": {
+            "title": "Course Status",
+            "type": "string"
+          },
+          "lessons_published": {
+            "title": "Lessons Published",
+            "type": "integer"
+          },
+          "scenes_published": {
+            "title": "Scenes Published",
+            "type": "integer"
+          },
+          "skipped": {
+            "items": {
+              "$ref": "#/components/schemas/SkippedItem"
+            },
+            "title": "Skipped",
+            "type": "array"
+          }
+        },
+        "required": [
+          "chapter_status",
+          "course_status",
+          "lessons_published",
+          "scenes_published",
+          "assessments_published",
+          "skipped"
+        ],
+        "title": "PublishChapterResult",
         "type": "object"
       },
       "PublishStatus": {
@@ -5170,6 +5276,69 @@
           "visible"
         ],
         "title": "SetVisibilityStep",
+        "type": "object"
+      },
+      "SkippedItem": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "title",
+          "reason"
+        ],
+        "title": "SkippedItem",
+        "type": "object"
+      },
+      "SourcePassageOut": {
+        "properties": {
+          "document_id": {
+            "format": "uuid",
+            "title": "Document Id",
+            "type": "string"
+          },
+          "document_title": {
+            "title": "Document Title",
+            "type": "string"
+          },
+          "page_end": {
+            "title": "Page End",
+            "type": "integer"
+          },
+          "page_start": {
+            "title": "Page Start",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "document_title",
+          "page_start",
+          "page_end",
+          "text"
+        ],
+        "title": "SourcePassageOut",
         "type": "object"
       },
       "SourceRef": {
@@ -7764,6 +7933,60 @@
         ]
       }
     },
+    "/api/v1/chapters/{chapter_id}/publish": {
+      "post": {
+        "description": "Publish the chapter with all its lessons, 3D scenes and quizzes (chapter studio).",
+        "operationId": "publish_chapter_api_v1_chapters__chapter_id__publish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishChapterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishChapterResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish Chapter",
+        "tags": [
+          "chapters"
+        ]
+      }
+    },
     "/api/v1/chapters/{chapter_id}/scenes": {
       "get": {
         "operationId": "chapter_scenes_api_v1_chapters__chapter_id__scenes_get",
@@ -7808,6 +8031,49 @@
         "summary": "Chapter Scenes",
         "tags": [
           "3d"
+        ]
+      }
+    },
+    "/api/v1/chapters/{chapter_id}/source": {
+      "get": {
+        "operationId": "chapter_source_api_v1_chapters__chapter_id__source_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChapterSourceOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chapter Source",
+        "tags": [
+          "ai"
         ]
       }
     },

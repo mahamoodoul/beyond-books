@@ -26,6 +26,8 @@ class Chapter(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # Page ranges in the course's source documents this chapter is grounded in:
     # [{"document_id": "...", "page_start": 3, "page_end": 9}]
     source_refs: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
+    # The teacher's chapter prompt: extra instructions for every AI generation in this chapter.
+    ai_instructions: Mapped[str] = mapped_column(Text, default="", server_default="")
 
 
 class LearningObjective(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):

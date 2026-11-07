@@ -173,6 +173,17 @@ def outline(db: Session, user: User, course_id: uuid.UUID) -> CourseOutline:
     chapters: list[OutlineChapter] = []
     total = completed = 0
     next_lesson: uuid.UUID | None = None
+    # Published 3D scenes per lesson (what students will see), counted in one query.
+    scene_counts: dict[uuid.UUID, int] = {
+        lesson_id: n
+        for lesson_id, n in db.execute(
+            select(ThreeDScene.lesson_id, func.count(ThreeDScene.id))
+            .join(Lesson, Lesson.id == ThreeDScene.lesson_id)
+            .join(Chapter, Chapter.id == Lesson.chapter_id)
+            .where(Chapter.course_id == course.id, ThreeDScene.published_version.is_not(None))
+            .group_by(ThreeDScene.lesson_id)
+        )
+    }
     for ch in db.scalars(q):
         lq = select(Lesson).where(Lesson.chapter_id == ch.id).order_by(Lesson.position)
         if not access.can_manage:
@@ -192,6 +203,7 @@ def outline(db: Session, user: User, course_id: uuid.UUID) -> CourseOutline:
                     position=lesson.position,
                     published=lesson.published_version is not None,
                     progress=state,
+                    scene_count=scene_counts.get(lesson.id, 0),
                 )
             )
         states = {lesson.progress for lesson in lessons}

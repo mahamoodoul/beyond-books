@@ -50,7 +50,8 @@ export function ChapterPage() {
     <>
       <Link to={`/teacher/courses/${c.course_id}`} className="text-sm text-accent hover:underline">← Back to course</Link>
       <PageHeader title={c.title}>
-        <Link to={`/teacher/chapters/${c.id}/studio`} className="rounded-md bg-navy-900 px-3 py-2 text-sm font-medium text-white hover:bg-navy-700">3D Studio</Link>
+        <Link to={`/teacher/chapters/${c.id}/studio`} className="rounded-md bg-navy-900 px-3 py-2 text-sm font-medium text-white hover:bg-navy-700">Open Studio</Link>
+        <Link to={`/teacher/chapters/${c.id}/preview`} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">Preview</Link>
         <Badge tone={published ? "green" : "slate"}>{c.status}</Badge>
         <Button variant={published ? "secondary" : "primary"} onClick={() => m.update.mutate({ id: c.id, status: published ? "draft" : "published" })}>
           {published ? "Unpublish chapter" : "Publish chapter"}

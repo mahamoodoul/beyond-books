@@ -18,7 +18,8 @@ export function ChaptersPanel({ courseId }: { courseId: string }) {
 
   return (
     <Card>
-      <h2 className="mb-3 font-semibold">Chapters</h2>
+      <h2 className="font-semibold">Chapters</h2>
+      <p className="mb-3 text-sm text-slate-600">Open a chapter's Studio to generate its lesson, quiz and 3D content from the chapter text, preview it, and publish it to students.</p>
       <form onSubmit={submit} className="mb-4 flex gap-2">
         <Input required placeholder="New chapter title" value={title} onChange={(e) => setTitle(e.target.value)} aria-label="New chapter title" />
         <Button type="submit" disabled={m.create.isPending}>Add</Button>
@@ -34,6 +35,8 @@ export function ChaptersPanel({ courseId }: { courseId: string }) {
             <span className="w-6 text-right text-sm text-slate-500">{c.position}.</span>
             <Link to={`/teacher/chapters/${c.id}`} className="flex-1 font-medium hover:underline">{c.title}</Link>
             <Badge tone={c.status === "published" ? "green" : "slate"}>{c.status}</Badge>
+            <Link to={`/teacher/chapters/${c.id}/preview`} className="rounded-md px-2 py-1 text-sm text-accent hover:underline">Preview</Link>
+            <Link to={`/teacher/chapters/${c.id}/studio`} className="rounded-md bg-navy-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-navy-700">Open Studio</Link>
             <Button variant="ghost" aria-label={`Move ${c.title} up`} disabled={i === 0} onClick={() => m.update.mutate({ id: c.id, position: c.position - 1 })}>↑</Button>
             <Button variant="ghost" aria-label={`Move ${c.title} down`} disabled={i === list.length - 1} onClick={() => m.update.mutate({ id: c.id, position: c.position + 1 })}>↓</Button>
             <Button

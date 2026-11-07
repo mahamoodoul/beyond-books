@@ -37,6 +37,7 @@ export const appRoutes: RouteObject[] = [
       { path: "/account", element: anyUser(page(() => import("@/features/account/AccountPage"), "AccountPage")) },
       { path: "/teacher", element: teacher(page(() => import("@/features/dashboard/DemoTeacherDashboard"), "DemoTeacherDashboard")) },
       { path: "/teacher/courses/:courseId", element: teacher(page(() => import("@/features/courses/CoursePage"), "CoursePage")) },
+      { path: "/teacher/chapters/:chapterId/preview", element: teacher(page(() => import("@/features/chapters/ChapterPreviewPage"), "ChapterPreviewPage")) },
       { path: "/teacher/chapters/:chapterId", element: teacher(page(() => import("@/features/chapters/ChapterPage"), "ChapterPage")) },
       { path: "/teacher/lessons/:lessonId", element: teacher(page(() => import("@/features/lessons/LessonEditorPage"), "LessonEditorPage")) },
       { path: "/teacher/assets", element: teacher(page(() => import("@/features/three-d/AssetsPage"), "AssetsPage")) },

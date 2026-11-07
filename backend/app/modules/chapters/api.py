@@ -3,8 +3,9 @@ import uuid
 from fastapi import APIRouter, status
 
 from app.core.deps import DB, CurrentUser
-from app.modules.chapters import service
+from app.modules.chapters import publishing, service
 from app.modules.chapters.models import Chapter, LearningObjective
+from app.modules.chapters.publishing import PublishChapterRequest, PublishChapterResult
 from app.modules.chapters.schemas import (
     ChapterCreate,
     ChapterDetail,
@@ -31,8 +32,9 @@ def list_chapters(course_id: uuid.UUID, user: CurrentUser, db: DB) -> list[Chapt
 
 @router.get("/chapters/{chapter_id}", response_model=ChapterDetail)
 def get_chapter(chapter_id: uuid.UUID, user: CurrentUser, db: DB) -> ChapterDetail:
-    chapter = service.get_chapter_for(db, user, chapter_id, manage=False)
+    chapter, access = service.chapter_access(db, user, chapter_id)
     detail = ChapterDetail.model_validate(chapter)
+    detail.ai_instructions = chapter.ai_instructions if access.can_manage else ""
     detail.objectives = [
         ObjectiveOut.model_validate(o) for o in service.list_objectives(db, chapter.id)
     ]
@@ -56,3 +58,11 @@ def replace_objectives(
     chapter_id: uuid.UUID, body: list[ObjectiveIn], user: CurrentUser, db: DB
 ) -> list[LearningObjective]:
     return service.replace_objectives(db, user, chapter_id, body)
+
+
+@router.post("/chapters/{chapter_id}/publish", response_model=PublishChapterResult)
+def publish_chapter(
+    chapter_id: uuid.UUID, body: PublishChapterRequest, user: CurrentUser, db: DB
+) -> PublishChapterResult:
+    """Publish the chapter with all its lessons, 3D scenes and quizzes (chapter studio)."""
+    return publishing.publish_chapter(db, user, chapter_id, body)
