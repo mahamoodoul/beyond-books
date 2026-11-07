@@ -13,7 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, ConflictError, NotFoundError, PermissionDeniedError
-from app.modules.assessments.content import AssessmentContent, QuestionIn
+from app.modules.assessments.content import AssessmentContent, QuestionIn, QuizSettings
 from app.modules.assessments.models import (
     Assessment,
     AssessmentAttempt,
@@ -38,7 +38,10 @@ from app.modules.chapters.service import chapter_access, get_chapter_for
 from app.modules.courses.access import get_course_for
 from app.modules.lessons.models import Lesson
 from app.modules.operations import audit
+from app.modules.three_d.models import ThreeDScene
 from app.modules.users.models import User
+
+STUDENT_READY_TYPES = {"mcq", "short_answer"}
 
 
 class AssessmentNotPublishableError(AppError):
@@ -57,7 +60,15 @@ def _content(a: Assessment) -> AssessmentContent:
     return AssessmentContent.model_validate(a.content)
 
 
-def _summary_fields(a: Assessment, content: AssessmentContent) -> dict[str, Any]:
+def _settings(raw: dict[str, Any] | None) -> QuizSettings:
+    return QuizSettings.model_validate(raw or {})
+
+
+def _summary_fields(
+    a: Assessment, content: AssessmentContent, settings: QuizSettings | None = None
+) -> dict[str, Any]:
+    settings = settings or _settings(a.settings)
+    n = len(content.questions)
     return {
         "id": a.id,
         "chapter_id": a.chapter_id,
@@ -71,6 +82,8 @@ def _summary_fields(a: Assessment, content: AssessmentContent) -> dict[str, Any]
         "passing_score": a.passing_score,
         "max_attempts": a.max_attempts,
         "origin": a.origin,
+        "settings": settings,
+        "questions_per_attempt": min(n, settings.questions_per_attempt or n),
     }
 
 
@@ -108,6 +121,25 @@ def validate_links(db: Session, chapter: Chapter, content: AssessmentContent) ->
         )
         if found != lesson_ids:
             raise NotFoundError("A linked lesson is not part of this course.")
+    for q in content.questions:
+        if q.question_type == "hotspot_3d" and q.scene_id is not None:
+            scene = _course_scene(db, chapter, q.scene_id)
+            parts = {str(c.get("component_id")) for c in scene.scene_spec.get("components", [])}
+            missing = sorted(set(q.target_component_ids) - parts)
+            if missing:
+                raise ConflictError(f"Question {q.key}: the 3D scene has no part(s) {missing}.")
+
+
+def _course_scene(db: Session, chapter: Chapter, scene_id: uuid.UUID) -> ThreeDScene:
+    scene = db.scalar(
+        select(ThreeDScene)
+        .join(Lesson, Lesson.id == ThreeDScene.lesson_id)
+        .join(Chapter, Chapter.id == Lesson.chapter_id)
+        .where(ThreeDScene.id == scene_id, Chapter.course_id == chapter.course_id)
+    )
+    if scene is None:
+        raise NotFoundError("A linked 3D scene is not part of this course.")
+    return scene
 
 
 # ------------------------------------------------------------------ authoring
@@ -129,6 +161,7 @@ def create_assessment(
     max_attempts: int,
     content: AssessmentContent | None = None,
     origin: str = "manual",
+    settings: QuizSettings | None = None,
 ) -> Assessment:
     content = (content or AssessmentContent()).with_keys()
     validate_links(db, chapter, content)
@@ -139,6 +172,7 @@ def create_assessment(
         max_attempts=max_attempts,
         content=content.model_dump(mode="json"),
         origin=origin,
+        settings=(settings or QuizSettings()).model_dump(mode="json"),
     )
     db.add(a)
     db.flush()
@@ -171,6 +205,11 @@ def update_settings(
     db: Session, user: User, assessment_id: uuid.UUID, changes: dict[str, Any]
 ) -> Assessment:
     a, _ = _manage(db, user, assessment_id)
+    if "settings" in changes:
+        new = QuizSettings.model_validate(changes.pop("settings") or {}).model_dump(mode="json")
+        if new != _settings(a.settings).model_dump(mode="json"):
+            a.settings = new
+            a.version += 1  # delivery settings are frozen per version: republish to apply
     for k, v in changes.items():
         setattr(a, k, v)
     db.commit()
@@ -203,6 +242,21 @@ def publish(db: Session, user: User, assessment_id: uuid.UUID) -> Assessment:
     content = _content(a)
     if not content.questions:
         raise AssessmentNotPublishableError()
+    # students can only answer these two types so far; the rest are builder-only drafts
+    unsupported = sorted({q.question_type for q in content.questions} - STUDENT_READY_TYPES)
+    if unsupported:
+        raise ConflictError(
+            f"Students can't answer {', '.join(unsupported)} questions yet. "
+            "Remove them or keep the quiz as a draft."
+        )
+    chapter = db.get(Chapter, a.chapter_id)
+    assert chapter is not None
+    for q in content.questions:
+        if q.question_type == "hotspot_3d" and q.scene_id is not None:
+            if _course_scene(db, chapter, q.scene_id).published_version is None:
+                raise ConflictError(
+                    f"Question {q.key} uses a 3D scene that is not published yet. Publish it first."
+                )
     if _published(db, a) is None or a.published_version != a.version:
         exists = db.scalar(
             select(AssessmentVersion).where(
@@ -220,6 +274,7 @@ def publish(db: Session, user: User, assessment_id: uuid.UUID) -> Assessment:
                         "title": a.title,
                         "passing_score": a.passing_score,
                         "content": content.model_dump(mode="json"),
+                        "settings": _settings(a.settings).model_dump(mode="json"),
                     },
                 )
             )

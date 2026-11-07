@@ -4,19 +4,21 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from app.modules.assessments.content import AssessmentContent
+from app.modules.assessments.content import AssessmentContent, QuizSettings
 
 
 class AssessmentCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     passing_score: float = Field(default=60, ge=0, le=100)
     max_attempts: int = Field(default=3, ge=1, le=20)
+    settings: QuizSettings = Field(default_factory=QuizSettings)
 
 
 class AssessmentUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     passing_score: float | None = Field(default=None, ge=0, le=100)
     max_attempts: int | None = Field(default=None, ge=1, le=20)
+    settings: QuizSettings | None = None
 
 
 class QuestionsUpdate(BaseModel):
@@ -37,6 +39,8 @@ class AssessmentSummary(BaseModel):
     passing_score: float
     max_attempts: int
     origin: str
+    settings: QuizSettings
+    questions_per_attempt: int  # questions a student answers per attempt (pool draw)
 
 
 class TeacherAssessment(AssessmentSummary):
