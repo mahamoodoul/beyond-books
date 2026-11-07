@@ -106,6 +106,26 @@ export class ModelExperience {
     return this.loading;
   }
 
+  dispose(): void {
+    this.scanner?.dispose();
+    this.scanner = null;
+    this.setSelectListener(null);
+    this.root.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        obj.geometry.dispose();
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+        for (const material of materials) {
+          for (const value of Object.values(material)) {
+            if (value instanceof THREE.Texture) value.dispose();
+          }
+          material.dispose();
+        }
+      }
+      if (obj instanceof CSS2DObject) obj.element.remove();
+    });
+    this.root.clear();
+  }
+
   private async loadOnce(url: string, size: number): Promise<void> {
     const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
     const gltf = await loader.loadAsync(url);

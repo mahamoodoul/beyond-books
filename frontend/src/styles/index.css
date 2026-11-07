@@ -1354,11 +1354,12 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .course-library-actions { justify-content: flex-start; }
 }
 
-.heart-ar-launch { display: grid; grid-template-columns: 35px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 13px; border-radius: 14px; }
+.heart-ar-launch { display: grid; grid-template-columns: 35px minmax(0, 1fr); align-items: center; gap: 9px; padding: 13px; border-radius: 14px; }
 .heart-ar-launch-icon { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 10px; background: var(--accent-soft); color: var(--accent); }
 .heart-ar-launch-copy strong { font-size: 10px; font-weight: 650; }
 .heart-ar-launch-copy p { margin: 4px 0 0; color: var(--muted); font-size: 8px; line-height: 1.55; }
-.heart-ar-launch-button { min-height: 35px; gap: 5px; padding: 0 10px; font-size: 9px; }
+.heart-view-actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.heart-ar-launch-button { min-height: 35px; gap: 5px; padding: 0 10px; font-size: 9px; white-space: nowrap; }
 .heart-ar-print-link { grid-column: 2 / -1; width: fit-content; color: var(--accent); font-size: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
 .ar-root { position: fixed; z-index: 1000; inset: 0; overflow: hidden; background: #10111a; color: #f7f6fc; font-family: var(--body); touch-action: none; }
@@ -1411,6 +1412,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 640px) {
   .heart-ar-launch { grid-template-columns: 32px minmax(0, 1fr); gap: 8px; }
   .heart-ar-launch-icon { width: 32px; height: 32px; }
+  .heart-view-actions { grid-template-columns: 1fr; }
   .heart-ar-launch-button { grid-column: 1 / -1; width: 100%; }
   .heart-ar-print-link { grid-column: 1 / -1; justify-self: center; }
   .ar-root .topbar { min-height: 58px; padding-right: 12px; padding-left: 12px; }
@@ -1424,4 +1426,53 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (prefers-reduced-motion: reduce) {
   .ar-root .spinner { animation: none !important; }
   .ar-root *, .heart-ar-launch-button { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+.heart-3d-backdrop { position: fixed; z-index: 1100; inset: 0; display: grid; overflow: auto; place-items: center; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); background: rgb(17 18 28 / 76%); backdrop-filter: blur(7px); }
+.heart-3d-dialog { display: grid; width: min(940px, 100%); max-height: 100%; grid-template-rows: auto minmax(260px, 1fr) auto; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); color: var(--ink); box-shadow: 0 24px 80px rgb(0 0 0 / 32%); }
+.heart-3d-header { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.heart-3d-header h2 { margin: 5px 0 0; font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -.5px; }
+.heart-3d-header .eyebrow { font-size: 8px; }
+.heart-3d-close { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); color: var(--ink); cursor: pointer; font-size: 23px; }
+.heart-3d-stage { position: relative; min-height: min(61vh, 560px); overflow: hidden; background: radial-gradient(ellipse at 50% 43%, color-mix(in srgb, #f8e9eb 58%, var(--surface)) 0%, var(--surface) 74%); touch-action: none; }
+.heart-3d-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.heart-3d-loading-screen { position: fixed; z-index: 1101; inset: 0; display: grid; place-items: center; background: rgb(17 18 28 / 76%); color: #fff; font-size: 14px; }
+.heart-3d-loading, .heart-3d-error { position: absolute; z-index: 1; inset: 0; display: grid; align-content: center; justify-items: center; gap: 10px; padding: 24px; color: var(--ink-soft); text-align: center; }
+.heart-3d-error p { max-width: 560px; margin: 0; font-size: 13px; line-height: 1.7; }
+.heart-3d-description { margin: 0; padding: 12px 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; line-height: 1.6; }
+.heart-3d-description strong { color: var(--ink-soft); }
+.heart-3d-dialog .hud { position: absolute; z-index: 4; right: 12px; bottom: 12px; left: 12px; display: grid; justify-items: center; gap: 9px; pointer-events: none; }
+.heart-3d-dialog .hint, .heart-3d-dialog .info-card, .heart-3d-dialog .color-key, .heart-3d-dialog .toolbar, .heart-3d-dialog .ct-panel { pointer-events: auto; }
+.heart-3d-dialog .hint { margin: 0; padding: 9px 13px; border: 1px solid var(--line); border-radius: 99px; background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink-soft); font-size: 11px; }
+.heart-3d-dialog .info-card, .heart-3d-dialog .color-key, .heart-3d-dialog .ct-panel { width: min(100%, 440px); max-height: 31vh; overflow: auto; padding: 14px; border: 1px solid var(--line); border-radius: 15px; background: color-mix(in srgb, var(--surface) 96%, transparent); color: var(--ink); box-shadow: var(--shadow-card); backdrop-filter: blur(12px); }
+.heart-3d-dialog .info-card__head { display: flex; align-items: center; gap: 9px; }
+.heart-3d-dialog .info-card__head h2 { flex: 1; margin: 0; font-family: var(--display); font-size: 15px; }
+.heart-3d-dialog .swatch, .heart-3d-dialog .color-key__dot { width: 11px; height: 11px; flex: 0 0 auto; border-radius: 50%; }
+.heart-3d-dialog .info-card p, .heart-3d-dialog .color-key__note { margin: 9px 0 0; color: var(--ink-soft); font-size: 11px; line-height: 1.6; }
+.heart-3d-dialog .info-card .fact { padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); }
+.heart-3d-dialog .info-card .icon-btn { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); cursor: pointer; }
+.heart-3d-dialog .color-key ul { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 9px 0 0; list-style: none; }
+.heart-3d-dialog .color-key button { display: inline-flex; min-height: 30px; align-items: center; gap: 6px; padding: 0 9px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface-soft); color: var(--ink-soft); cursor: pointer; font-size: 10px; }
+.heart-3d-dialog .color-key button.is-active { border-color: var(--accent); }
+.heart-3d-dialog .toolbar { display: flex; max-width: 100%; gap: 5px; overflow-x: auto; padding: 6px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--surface) 95%, transparent); box-shadow: var(--shadow-card); }
+.heart-3d-dialog .toolbar button { display: inline-flex; min-height: 38px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 6px; padding: 0 10px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ink-soft); cursor: pointer; font-size: 10px; white-space: nowrap; }
+.heart-3d-dialog .toolbar button:hover, .heart-3d-dialog .toolbar button[aria-pressed="true"] { border-color: var(--line-strong); background: var(--surface-soft); }
+.heart-3d-dialog .toolbar button:disabled { opacity: .48; cursor: not-allowed; }
+.heart-3d-dialog .part-label { position: relative; z-index: 1; pointer-events: auto; padding: 5px 8px; border: 1px solid var(--line-strong); border-radius: 99px; background: color-mix(in srgb, var(--surface) 94%, transparent); color: var(--ink); cursor: pointer; font: 600 10px var(--body); white-space: nowrap; }
+.heart-3d-dialog .part-label.is-active { border-color: var(--accent); background: var(--accent-soft); }
+.heart-3d-dialog .part-label__dot { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; }
+.heart-3d-dialog > .ct-panel { position: absolute; z-index: 5; top: 12px; right: 12px; width: min(390px, calc(100% - 24px)); }
+@media (max-width: 640px) {
+  .heart-3d-backdrop { padding: 0; }
+  .heart-3d-dialog { width: 100%; height: 100%; max-height: none; grid-template-rows: auto minmax(260px, 1fr) auto; border: 0; border-radius: 0; }
+  .heart-3d-header { padding: max(12px, env(safe-area-inset-top)) 14px 12px; }
+  .heart-3d-header h2 { font-size: 18px; }
+  .heart-3d-stage { min-height: 0; }
+  .heart-3d-dialog .hud { right: 7px; bottom: max(8px, env(safe-area-inset-bottom)); left: 7px; }
+  .heart-3d-dialog .toolbar { width: 100%; justify-content: flex-start; }
+  .heart-3d-dialog .toolbar button { min-height: 36px; padding: 0 8px; }
+  .heart-3d-description { padding: 10px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heart-3d-dialog *, .heart-3d-backdrop { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
