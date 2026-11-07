@@ -1,71 +1,99 @@
-# Production stack for Coolify. Public entrypoint: frontend (nginx) on port 3939,
-# which serves the SPA and proxies /api to the backend. Postgres/Redis stay internal.
-# In Coolify: Build Pack = Docker Compose, compose file = docker-compose.coolify.yml,
-# then assign your domain to the "frontend" service with port 3939 (e.g. https://app.example.com:3939).
+# Production stack for Coolify (Build Pack: Docker Compose, file: /docker-compose.coolify.yml).
+#
+# Traffic: browser -> Coolify proxy (80/443, TLS) -> frontend nginx :3939 -> /api -> api :8000
+# Only the frontend is routed publicly; Postgres, Redis, api and worker stay on the internal network.
+#
+# Coolify magic variables (no manual setup needed):
+#   SERVICE_FQDN_FRONTEND_3939  -> Coolify generates/assigns the domain and routes it to port 3939.
+#                                  Override the domain in the UI (frontend -> Domains) if you have your own.
+#   SERVICE_USER_POSTGRES / SERVICE_PASSWORD_POSTGRES -> generated once, URL-safe, persisted by Coolify.
+
+x-backend-build: &backend-build
+  context: .
+  dockerfile: infrastructure/docker/backend.Dockerfile
+  args: { EXTRAS: "" }
+
+x-backend-env: &backend-env
+  EDU3D_ENVIRONMENT: ${EDU3D_ENVIRONMENT:-production}
+  EDU3D_DATABASE_URL: postgresql+psycopg://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/${POSTGRES_DB:-edu3d}
+  EDU3D_REDIS_URL: redis://redis:6379/0
+  EDU3D_CORS_ORIGINS: ${EDU3D_CORS_ORIGINS:-[]}
+
 services:
   postgres:
     image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-edu3d}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # set in Coolify → Environment Variables
+      POSTGRES_USER: ${SERVICE_USER_POSTGRES}
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
       POSTGRES_DB: ${POSTGRES_DB:-edu3d}
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-edu3d}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
+      timeout: 5s
       retries: 10
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    command: redis-server --appendonly yes
     volumes: [redisdata:/data]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
-      retries: 10
-
-  api:
-    build:
-      context: .
-      dockerfile: infrastructure/docker/backend.Dockerfile
-      args: { EXTRAS: "" }
-    restart: unless-stopped
-    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"
-    environment: &backend-env
-      EDU3D_ENVIRONMENT: ${EDU3D_ENVIRONMENT:-production}
-      EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-edu3d}
-      EDU3D_REDIS_URL: redis://redis:6379/0
-      EDU3D_CORS_ORIGINS: ${EDU3D_CORS_ORIGINS:-[]}
-    expose: ["8000"]
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
-      interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+
+  # One-shot: applies Alembic migrations, then exits. api/worker start only after it succeeds.
+  migrate:
+    build: *backend-build
+    restart: "no"
+    command: alembic upgrade head
+    environment: *backend-env
+    exclude_from_hc: true  # Coolify: an exited one-shot container shouldn't mark the app unhealthy
     depends_on:
       postgres: { condition: service_healthy }
+
+  api:
+    build: *backend-build
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips=*
+    environment: *backend-env
+    expose: ["8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      migrate: { condition: service_completed_successfully }
       redis: { condition: service_healthy }
 
   worker:
-    build:
-      context: .
-      dockerfile: infrastructure/docker/backend.Dockerfile
-      args: { EXTRAS: "" }
+    build: *backend-build
     restart: unless-stopped
-    command: celery -A app.workers.celery_app worker --loglevel=INFO
+    command: celery -A app.workers.celery_app worker --loglevel=INFO --concurrency=2
     environment: *backend-env
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.workers.celery_app inspect ping -d celery@$$HOSTNAME --timeout 5"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 30s
     depends_on:
-      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
       redis: { condition: service_healthy }
 
   frontend:
     build: { context: ., dockerfile: infrastructure/docker/frontend.prod.Dockerfile }
     restart: unless-stopped
-    ports: ["3939:3939"]
-    # Not gated on api health: nginx resolves api per request, and a failing api
-    # shouldn't block the deploy (it would hide the api logs in Coolify).
+    environment:
+      SERVICE_FQDN_FRONTEND_3939: ""  # Coolify: route the generated/assigned domain to container port 3939
+    expose: ["3939"]
+    # Not gated on api health: nginx resolves api per request, so a failing api
+    # never blocks the deploy (and its logs stay visible in Coolify).
     depends_on: [api]
 
 volumes:
