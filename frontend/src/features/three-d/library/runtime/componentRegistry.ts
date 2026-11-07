@@ -53,7 +53,7 @@ export interface ViewState {
 const HIGHLIGHT = new THREE.Color("#ffb020");
 const SELECT = new THREE.Color("#2f80ed");
 /** Opacity of the other parts while one part is focused: visible for context, clearly behind. */
-export const GHOST_OPACITY = 0.12;
+export const GHOST_OPACITY = 0.22;
 /** Opacity of parts in X-ray mode (stronger than a ghost: everything stays readable). */
 export const XRAY_OPACITY = 0.3;
 
@@ -203,10 +203,11 @@ export class ComponentRegistry {
       if (view.frame.highlight === id) {
         glow = view.reducedMotion ? 0.6 : 0.4 + 0.25 * Math.sin(view.timeSeconds * 5);
       } else if (view.selected === id) {
-        glow = 0.45;
+        // a light tint keeps the part's own colour readable while marking it as selected
+        glow = 0.22;
         color = SELECT;
       } else if (view.hovered === id) {
-        glow = 0.2;
+        glow = 0.1;
         color = SELECT;
       }
 

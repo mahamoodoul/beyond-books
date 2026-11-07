@@ -37,6 +37,7 @@ from app.modules.ai_engine.schemas import (
     SceneComponentLLM,
     ScenePlanLLM,
     SectionLLM,
+    SelectionExplainLLM,
     SourceRefLLM,
     TourStepLLM,
     VisualizationLLM,
@@ -81,6 +82,7 @@ class FakeLLMProvider:
             ModelTourLLM: self._tour,
             PartDescriptionsLLM: self._descriptions,
             PartInsightLLM: self._part_insight,
+            SelectionExplainLLM: self._selection,
         }
         output = builders[output_schema](references, task)
         chars_in = len(system_prompt) + len(task) + sum(len(r.text) for r in references)
@@ -367,6 +369,17 @@ class FakeLLMProvider:
         return ModelTourLLM(
             intro="This tour shows how every part works together.",
             steps=[*steps, TourStepLLM(part="invented_part", connection="Not real.")],
+        )
+
+    def _selection(self, refs: list[ReferencePassage], task: str) -> SelectionExplainLLM:
+        words = task.split("Selected words:", 1)[-1].splitlines()[0].strip() or "term"
+        return SelectionExplainLLM(
+            title=words.title(),
+            explanation=f"{words.capitalize()} is an important idea in this lesson.",
+            in_this_lesson="It helps explain the sentence you were reading.",
+            key_points=[f"{words.capitalize()} has a clear meaning.", "It links to the topic."],
+            analogy="Like a label on a map that tells you what you are looking at.",
+            image_query=f"{words} diagram",
         )
 
     def _deep_dive(self, refs: list[ReferencePassage], task: str) -> PartDeepDiveLLM:

@@ -163,6 +163,7 @@ BODIES: dict[tuple[str, str], Any] = {
     ("post", "/api/v1/chapters/{chapter_id}/ai/scenes"): {"only_missing": False},
     ("post", "/api/v1/chapters/{chapter_id}/publish"): {"include_course": True},
     ("post", "/api/v1/assets/{asset_id}/ai/part-deep-dive"): {"part": "heart"},
+    ("post", "/api/v1/lessons/{lesson_id}/ai/explain-selection"): {"text": "heart"},
     ("patch", "/api/v1/assets/{asset_id}/parts/{part}"): {"label": "Heart"},
     ("post", "/api/v1/assets/{asset_id}/ai/tour"): None,
     ("post", "/api/v1/assets/generation-jobs/{job_id}/dismiss"): None,

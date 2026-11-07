@@ -24,7 +24,7 @@ export const useTeacherAssessment = (id: string) =>
   useQuery({ queryKey: ["assessment", id], queryFn: () => api.get<TeacherAssessment>(`/assessments/${id}`) });
 
 export const useStudentAssessment = (id: string) =>
-  useQuery({ queryKey: ["assessment", id], queryFn: () => api.get<StudentAssessment>(`/assessments/${id}`) });
+  useQuery({ queryKey: ["assessment", id], queryFn: () => api.get<StudentAssessment>(`/assessments/${id}`), enabled: !!id });
 
 export const useAttempt = (id: string) =>
   useQuery({ queryKey: ["attempt", id], queryFn: () => api.get<AttemptResult>(`/attempts/${id}`) });

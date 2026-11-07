@@ -119,19 +119,29 @@ class LLMThreeDProvider:
     name = "llm"
     _results: dict[str, tuple[bytes, list[dict[str, str]], LLMUsage]] = {}
 
-    def __init__(self, llm: LLMProvider, max_output_tokens: int = 8000) -> None:
+    def __init__(
+        self,
+        llm: LLMProvider,
+        max_output_tokens: int = 8000,
+        *,
+        system_prompt: str | None = None,
+        prompt_ref: str | None = None,
+    ) -> None:
         self.llm = llm
         self.max_output_tokens = max_output_tokens
+        # Built-in design prompt, optionally preceded by the 3D model tuning (model_tuning.py).
+        self.system_prompt = system_prompt or THREE_D_MODEL_DESIGN.system
+        self.prompt_ref = prompt_ref or THREE_D_MODEL_DESIGN.ref
 
     def create_task(self, *, prompt: str, idempotency_key: str) -> ThreeDTask:
         task_id = "llm_" + hashlib.sha256(f"{idempotency_key}:{prompt}".encode()).hexdigest()[:20]
         if task_id not in self._results:
             result = self.llm.generate_structured(
-                system_prompt=THREE_D_MODEL_DESIGN.system,
+                system_prompt=self.system_prompt,
                 task=f"Teacher's request for an educational 3D model:\n{prompt}",
                 references=[],
                 output_schema=Model3DLLM,
-                prompt_version=THREE_D_MODEL_DESIGN.ref,
+                prompt_version=self.prompt_ref,
                 max_output_tokens=self.max_output_tokens,
             )
             data, meta = convert_model(result.output)

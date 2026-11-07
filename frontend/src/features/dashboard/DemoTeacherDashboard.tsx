@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { useMe } from "@/features/auth/auth";
 import { useCourses } from "@/features/courses/api";
+import { NewCourseButton } from "@/features/courses/NewCourseButton";
 import { getClassAnalytics, getCourseProgress } from "@/lib/api";
 import { pct } from "@/features/analytics/charts";
 
@@ -29,7 +30,7 @@ export function DemoTeacherDashboard() {
     { label: "Lesson completion", value: pending ? "…" : total ? pct(completed / total) : "No activity yet", icon: "activity" as const, tone: "amber" },
   ];
   return <div className="dashboard-page">
-    <header className="page-heading"><div><div className="eyebrow"><span className="eyebrow-dot" /> YOUR TEACHER SPACE</div><h1>Welcome back, {firstName(me.data?.display_name)} <span className="heading-wave">✳</span></h1><p>Your courses, learners, and latest classroom activity.</p></div><Link className="button button-primary" to="/teacher/upload"><Icon name="plus" size={18} /> Create a course</Link></header>
+    <header className="page-heading"><div><div className="eyebrow"><span className="eyebrow-dot" /> YOUR TEACHER SPACE</div><h1>Welcome back, {firstName(me.data?.display_name)} <span className="heading-wave">✳</span></h1><p>Your courses, learners, and latest classroom activity.</p></div><NewCourseButton className="button button-primary"><Icon name="plus" size={18} /> Create a course</NewCourseButton></header>
     <ErrorAlert error={progress.find(q => q.error)?.error ?? analytics.find(q => q.error)?.error} />
     <section aria-label="Classroom overview" className="metric-grid">{stats.map(stat => <article className={`metric-card metric-card-${stat.tone}`} key={stat.label}><div className="metric-top"><span>{stat.label}</span><span className={`metric-icon metric-icon-${stat.tone}`}><Icon name={stat.icon} size={18} /></span></div><div className="metric-value">{stat.value}</div><div className="metric-note">Across your managed courses</div></article>)}</section>
     <div className="teacher-content-grid">
@@ -42,7 +43,7 @@ export function DemoTeacherDashboard() {
           <div className="course-row-progress"><span className={`status-pill status-${course.status}`}>{course.status === "published" ? "Published" : "Draft"}</span><div className="progress-label"><span>Class progress</span><strong>{analytics[i]?.data ? pct(analytics[i]!.data!.avg_completion_rate) : "—"}</strong></div></div>
           <Link aria-label={`Open ${course.title}`} className="course-open" to={`/teacher/courses/${course.id}/review`}><Icon name="arrow-up-right" size={18} /></Link>
         </article>)}</div>
-        <Link className="add-course-row" to="/teacher/upload"><span className="add-course-icon"><Icon name="plus" size={18} /></span><span><strong>Build something new</strong><small>Start with your source material</small></span><Icon name="arrow-right" size={17} /></Link>
+        <NewCourseButton className="add-course-row"><span className="add-course-icon"><Icon name="plus" size={18} /></span><span><strong>Build something new</strong><small>Start with your source material</small></span><Icon name="arrow-right" size={17} /></NewCourseButton>
       </section>
       <section className="insight-card"><div className="insight-icon"><Icon name="lightbulb" size={18} /></div><div className="insight-label">TEACHER INSIGHTS</div><h2>Find the next teaching moment.</h2><p>Review real lesson completion, assessment results, and concepts that need more practice.</p><Link className="insight-link" to="/teacher/insights">View class insights <Icon name="arrow-right" size={15} /></Link></section>
       </div>

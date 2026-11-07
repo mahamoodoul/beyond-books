@@ -27,7 +27,7 @@ describe("API-backed dashboard rendering", () => {
     expect(html).not.toContain("Preview not available");
   });
   it("keeps all backend workflows reachable in the connected design", () => {
-    for (const path of ["/login", "/register", "/teacher/courses", "/teacher/upload", "/teacher/courses/uuid/review", "/teacher/chapters/uuid", "/teacher/lessons/uuid", "/teacher/assets", "/teacher/insights", "/teacher/schools", "/teacher/assessments/uuid", "/student", "/student/progress", "/student/courses/uuid", "/student/lessons/uuid", "/student/assessments/uuid", "/student/attempts/uuid", "/account"]) {
+    for (const path of ["/login", "/register", "/teacher/courses", "/teacher/courses/uuid/review", "/teacher/chapters/uuid", "/teacher/lessons/uuid", "/teacher/assets", "/teacher/insights", "/teacher/schools", "/teacher/assessments/uuid", "/student", "/student/progress", "/student/courses/uuid", "/student/lessons/uuid", "/student/assessments/uuid", "/student/attempts/uuid", "/account"]) {
       const matches = matchRoutes(appRoutes, path);
       expect(matches?.at(-1)?.route.path).not.toBe("*");
       expect(matches?.length).toBeGreaterThan(0);

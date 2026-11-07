@@ -42,8 +42,33 @@ Blender. Provider name: `blender` (`app/integrations/blender/provider.py`).
 | `EDU3D_BLENDER_MODEL` | (empty = `EDU3D_ANTHROPIC_MODEL`) | Claude model for the build |
 | `EDU3D_BLENDER_MAX_TURNS` | `40` | Max Claude ↔ Blender round trips |
 | `EDU3D_BLENDER_TIMEOUT_S` | `540` | Whole build; keep under the ~10 min job window |
+| `EDU3D_THREE_D_EFFORT` | (empty = `EDU3D_ANTHROPIC_EFFORT`) | Reasoning effort for 3D builds only |
+| `EDU3D_THREE_D_TUNING_ENABLED` | `true` | Prepend the model tuning prompt (below) |
+| `EDU3D_THREE_D_TUNING_PROMPT_FILE` | (empty = built-in file) | Your own tuning prompt file |
+| `EDU3D_THREE_D_TUNING_PROMPT` | (empty) | Inline tuning prompt; wins over the file |
 
 Builds share `EDU3D_THREE_D_MAX_GENERATIONS_PER_USER_PER_DAY`; prompt drafts allow 4× that.
+
+## Model tuning (the quality prompt)
+
+Every 3D build gets two prompts: the **model tuning** prompt, then the generator's **build
+contract**. The tuning prompt is the quality bar: realistic geometry, PBR materials, one named
+mesh per selectable part, internal structure and cross-sections, functional animations, metadata,
+optimisation and validation. The contract is fixed in code (`blender_build` for Blender,
+`three_d_model_design` for the three.js generator) and defines the tools, the workspace rules,
+sizing and the exact JSON the server expects back; where the two disagree, the contract wins.
+
+- **Default text:** [`backend/app/modules/ai_engine/tuning/three_d_model.md`](../backend/app/modules/ai_engine/tuning/three_d_model.md).
+  Edit it and the next generation uses the new text; no restart is needed.
+- **Your own file:** `EDU3D_THREE_D_TUNING_PROMPT_FILE=/path/to/prompt.md` (for Docker, mount the
+  file into the `api` container and give the container path).
+- **One-off inline text:** `EDU3D_THREE_D_TUNING_PROMPT="..."` (wins over the file).
+- **Off:** `EDU3D_THREE_D_TUNING_ENABLED=false` keeps only the build contract.
+- **Traceability:** the stored prompt version becomes `blender_build@1.0.0+tuning.<hash>` (same
+  for `three_d_model_design`), so you can tell which tuning text produced which model.
+- Both generators use the same tuning text. The three.js generator can only follow the parts of it
+  that fit primitives and flat colours; Blender can follow nearly all of it (no image textures,
+  no file or network access, and the server does the GLB export).
 
 ## Safety and limits
 

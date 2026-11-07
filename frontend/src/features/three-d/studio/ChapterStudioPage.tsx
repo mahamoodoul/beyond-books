@@ -26,7 +26,7 @@ import { AnimationsPanel } from "../AnimationsPanel";
 import { GenerationTray } from "../GenerationTray";
 import { Add3DPanel } from "./Add3DPanel";
 import { LessonsStep, QuizStep, ReviewStep, StepFooter, StepNav, type StepKey } from "./ChapterSteps";
-import { GeneratePanel, PromptPanel, PublishBar, SourcePanel } from "./ChapterWorkflow";
+import { GeneratePanel, type PendingChanges, PromptPanel, PublishStatus, SourcePanel } from "./ChapterWorkflow";
 import { Chip, panel, Ring } from "./StudioPage";
 import { useResolved } from "./useStudio";
 
@@ -191,8 +191,8 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
         <div className="flex flex-wrap gap-2">
           <button className={btnPrimary} disabled={!dirty || save.isPending} onClick={() => save.mutate()}>{save.isPending ? "Saving…" : dirty ? "Save changes" : "Saved"}</button>
           {dirty && <button className={btn} onClick={() => setDraft(scene.spec)}>Discard</button>}
-          <button className={btn} disabled={dirty || publish.isPending} onClick={() => publish.mutate(!(live && !scene.has_unpublished_changes))}>
-            {live && !scene.has_unpublished_changes ? "Unpublish" : `Publish v${scene.version}`}
+          <button className={btn} title="Publishes only this 3D scene. “Review & publish” publishes the whole chapter at once." disabled={dirty || publish.isPending} onClick={() => publish.mutate(!(live && !scene.has_unpublished_changes))}>
+            {live && !scene.has_unpublished_changes ? "Unpublish scene" : "Publish scene only"}
           </button>
           <button className={btn} disabled={dup.isPending} onClick={() => dup.mutate()}>Duplicate</button>
           <Link className={btn} to={`/teacher/lessons/${item.lesson_id}/studio`}>Lesson studio ↗</Link>
@@ -240,8 +240,8 @@ export default function ChapterStudioPage() {
   const totals = items.reduce((a, i) => ({ parts: a.parts + i.parts, explained: a.explained + i.explained }), { parts: 0, explained: 0 });
   const lessonsWith = lessonList.filter((l) => byLesson.has(l.id)).length;
 
-  if (chapter.isPending || board.isPending) return <div className="grid min-h-screen place-items-center bg-slate-50 text-slate-500">Loading chapter studio…</div>;
-  if (chapter.error) return <div className="grid min-h-screen place-items-center bg-slate-50 text-red-600">{errorMessage(chapter.error)}</div>;
+  if (chapter.isPending || board.isPending) return <div className="grid min-h-64 place-items-center text-slate-500">Loading chapter studio…</div>;
+  if (chapter.error) return <div className="grid min-h-64 place-items-center text-red-600">{errorMessage(chapter.error)}</div>;
   const ch = chapter.data;
 
   const done: Record<StepKey, boolean> = {
@@ -253,6 +253,13 @@ export default function ChapterStudioPage() {
   };
   const step = (params.get("step") as StepKey | null) ?? (lessonList.length ? "3d" : "source");
   const goTo = (s: StepKey) => setParams((p) => { p.set("step", s); return p; }, { replace: true });
+  // Anything students don't have yet: never published, or edited since the last publish.
+  const stale = (x: { published_version?: number | null; has_unpublished_changes?: boolean }) => !x.published_version || !!x.has_unpublished_changes;
+  const pending: PendingChanges = {
+    lessons: lessonList.filter(stale).length,
+    scenes: items.filter((i) => stale(i.scene)).length,
+    quizzes: quizList.filter(stale).length,
+  };
   const checks = [
     { label: "Chapter text", ok: done.source, detail: done.source ? `${source.data?.passages.length} passages from the textbook` : "No textbook pages linked to this chapter", step: "source" as StepKey },
     { label: "Lessons", ok: done.lessons, detail: `${lessonList.length} lesson(s), ${lessonList.filter((l) => l.published_version).length} live`, step: "lessons" as StepKey },
@@ -261,22 +268,29 @@ export default function ChapterStudioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-700">
-      <header className="flex flex-wrap items-center gap-3 border-b border-slate-200 px-5 py-3">
-        <Link to={`/teacher/chapters/${chapterId}`} className="text-lg font-semibold text-slate-900">Beyond Books <span className="text-teal-700">Chapter Studio</span></Link>
-        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-          <Link className="hover:text-slate-900" to="/teacher/courses">Courses</Link><span>›</span>
-          {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span>›</span></>}
-          <span className="text-slate-900">{ch.position}. {ch.title}</span>
-        </nav>
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <PublishBar chapter={ch} course={course.data} />
-          <Link to={course.data ? `/teacher/courses/${course.data.id}` : "/teacher/courses"} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:text-slate-900">Exit studio</Link>
+    <div className="space-y-5 text-slate-700">
+      {/* Studio toolbar, under the app navbar */}
+      <header className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center gap-3 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest text-teal-700">Chapter Studio</p>
+            <nav aria-label="Breadcrumb" className="mt-0.5 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
+              <Link className="hover:text-slate-900" to="/teacher/courses">Courses</Link><span aria-hidden>›</span>
+              {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span aria-hidden>›</span></>}
+              <span className="font-semibold text-slate-900">{ch.position}. {ch.title}</span>
+            </nav>
+          </div>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <PublishStatus chapter={ch} pending={pending} reviewing={step === "publish"} onReview={() => goTo("publish")} />
+            <Link to={course.data ? `/teacher/courses/${course.data.id}` : "/teacher/courses"} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:text-slate-900">Exit studio</Link>
+          </div>
+        </div>
+        <div className="border-t border-slate-200 bg-slate-50/60">
+          <StepNav step={step} done={done} onStep={goTo} />
         </div>
       </header>
-      <StepNav step={step} done={done} onStep={goTo} />
 
-      <main className="space-y-6 p-5">
+      <main className="space-y-6">
         {step === "source" && (
           <section>
             <div className="mb-4">
@@ -300,9 +314,12 @@ export default function ChapterStudioPage() {
                 <h2 className="text-lg font-semibold text-slate-900">③ 3D models</h2>
                 <p className="text-sm text-slate-500">Give each lesson a 3D model: let AI choose, pick one from your 3D library, or generate a new one. Then explain its parts.</p>
               </div>
-              <div className="flex items-center gap-3 text-sm">
-                <Ring pct={totals.parts ? Math.round((totals.explained / totals.parts) * 100) : 0} />
-                <span className="text-slate-600">{lessonsWith}/{lessonList.length} lessons with 3D<br /><span className="text-xs text-slate-500">{totals.explained}/{totals.parts} parts explained</span></span>
+              <div className={`${panel} flex items-center gap-3 px-4 py-2.5 text-sm`}>
+                <Ring size="sm" pct={totals.parts ? Math.round((totals.explained / totals.parts) * 100) : 0} />
+                <dl className="grid gap-0.5">
+                  <div className="flex items-baseline gap-1.5"><dt className="sr-only">Lessons with 3D</dt><dd className="text-base font-semibold text-slate-900">{lessonsWith}<span className="text-slate-400">/{lessonList.length}</span></dd><span className="text-slate-600">lessons with 3D</span></div>
+                  <div className="flex items-baseline gap-1.5"><dt className="sr-only">Parts explained</dt><dd className="text-base font-semibold text-slate-900">{totals.explained}<span className="text-slate-400">/{totals.parts}</span></dd><span className="text-slate-600">parts explained</span></div>
+                </dl>
               </div>
             </div>
             <GenerationTray className="mb-4" onOpen={(id) => window.open(`/teacher/assets?open=${id}`, "_blank", "noopener")} />
@@ -397,7 +414,7 @@ export default function ChapterStudioPage() {
         )}
 
         {step === "quiz" && <QuizStep chapterId={chapterId} quizzes={quizList} />}
-        {step === "publish" && <ReviewStep chapter={ch} course={course.data} checks={checks} onStep={goTo} />}
+        {step === "publish" && <ReviewStep chapter={ch} course={course.data} checks={checks} pending={pending} onStep={goTo} />}
 
         <StepFooter step={step} onStep={goTo} />
       </main>

@@ -39,15 +39,17 @@ export function Chip({ children, tone = "slate" }: { children: ReactNode; tone?:
   const t = { slate: "bg-slate-100 text-slate-600", teal: "bg-teal-50 text-teal-700 ring-1 ring-teal-200", amber: "bg-amber-50 text-amber-700 ring-1 ring-amber-200", violet: "bg-violet-50 text-violet-700 ring-1 ring-violet-200" };
   return <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${t[tone]}`}>{children}</span>;
 }
-export function Ring({ pct }: { pct: number }) {
+/** Progress ring for white panels: teal when complete, amber while in progress, dark readable label. */
+export function Ring({ pct, size = "md" }: { pct: number; size?: "sm" | "md" }) {
   const r = 42;
   const c = 2 * Math.PI * r;
+  const done = pct >= 100;
   return (
-    <svg viewBox="0 0 100 100" className="h-28 w-28" role="img" aria-label={`${pct}% of parts explained`}>
-      <circle cx="50" cy="50" r={r} fill="none" stroke="#e2e8f0" strokeWidth="10" />
-      <circle cx="50" cy="50" r={r} fill="none" stroke="#38b2ac" strokeWidth="10" strokeLinecap="round"
+    <svg viewBox="0 0 100 100" className={size === "sm" ? "h-16 w-16" : "h-24 w-24"} role="img" aria-label={`${pct}% of parts explained`}>
+      <circle cx="50" cy="50" r={r} fill="none" stroke="#e2e8f0" strokeWidth="9" />
+      <circle cx="50" cy="50" r={r} fill="none" stroke={done ? "#38b2ac" : "#f59e0b"} strokeWidth="9" strokeLinecap="round"
         strokeDasharray={`${(pct / 100) * c} ${c}`} transform="rotate(-90 50 50)" />
-      <text x="50" y="55" textAnchor="middle" className="fill-white text-[20px] font-semibold">{pct}%</text>
+      <text x="50" y="50" dominantBaseline="central" textAnchor="middle" fill="#0f172a" fontSize={size === "sm" ? 24 : 22} fontWeight="600">{pct}%</text>
     </svg>
   );
 }

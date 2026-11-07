@@ -30,6 +30,7 @@ class JobType(StrEnum):
     MODEL_TOUR = "model_tour"
     PART_DESCRIPTIONS = "part_descriptions"
     CHAPTER_SPLIT = "chapter_split"
+    SELECTION_EXPLAIN = "selection_explain"
 
 
 TERMINAL_STATUSES = frozenset({JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED})

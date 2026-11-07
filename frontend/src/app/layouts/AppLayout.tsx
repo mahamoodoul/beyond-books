@@ -12,7 +12,6 @@ import { usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
 const teacherNavigation = [
   { to: "/teacher", label: "Overview", icon: "grid" as const, end: true },
   { to: "/teacher/courses", label: "My courses", icon: "book" as const, end: false },
-  { to: "/teacher/upload", label: "Upload source", icon: "file" as const, end: false },
   { to: "/teacher/assets", label: "3D library", icon: "layers" as const, end: false },
   { to: "/studio", label: "Studio", icon: "eye" as const, end: false },
   { to: "/teacher/insights", label: "Insights", icon: "activity" as const, end: false },

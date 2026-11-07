@@ -142,8 +142,13 @@ def _fake_3d(s: "Settings") -> Any:
 
 def _llm_3d(s: "Settings") -> Any:
     from app.integrations.three_d.llm_procedural import LLMThreeDProvider
+    from app.modules.ai_engine.model_tuning import three_d_system_prompt
+    from app.modules.ai_engine.prompts import THREE_D_MODEL_DESIGN
 
-    return LLMThreeDProvider(build_llm(s), s.llm_max_output_tokens)
+    system, ref = three_d_system_prompt(THREE_D_MODEL_DESIGN, s)
+    return LLMThreeDProvider(
+        build_llm(s), s.llm_max_output_tokens, system_prompt=system, prompt_ref=ref
+    )
 
 
 def _tripo(s: "Settings") -> Any:
@@ -181,18 +186,20 @@ register(
 
 def _blender(s: "Settings") -> Any:
     from app.integrations.blender.provider import BlenderMCPProvider
+    from app.modules.ai_engine.model_tuning import three_d_system_prompt
     from app.modules.ai_engine.prompts import BLENDER_BUILD
 
+    system, _ref = three_d_system_prompt(BLENDER_BUILD, s)
     return BlenderMCPProvider(
         api_key=s.anthropic_api_key,
         model=s.blender_model or s.anthropic_model,
-        effort=s.anthropic_effort,
+        effort=s.three_d_effort or s.anthropic_effort,
         command=s.blender_mcp_command,
         host=s.blender_host,
         port=s.blender_port,
         max_turns=s.blender_max_turns,
         timeout_s=s.blender_timeout_s,
-        system_prompt=BLENDER_BUILD.system,
+        system_prompt=system,
     )
 
 

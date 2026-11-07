@@ -1,4 +1,4 @@
-import { Html, OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, type ThreeEvent } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, type ReactNode, type RefObject } from "react";
 import type { Group, Object3D } from "three";
@@ -109,7 +109,7 @@ export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, 
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 8, 5]} intensity={1.3} />
       <directionalLight position={[-6, -3, -4]} intensity={0.4} />
-      <Suspense fallback={<Html center><span className="text-sm text-white">Loading model…</span></Html>}>
+      <Suspense fallback={null /* not drei <Html>: its per-element React root crashes on unmount under React 19 */}>
         <group ref={root} onClick={click}>
           {content}
         </group>

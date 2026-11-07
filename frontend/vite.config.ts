@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   assetsInclude: ["**/*.glb"],
+  // Pre-bundle these up front: if Vite discovers one mid-session it re-bundles all deps, and open
+  // pages fail with "Failed to fetch dynamically imported module" (504 outdated dep).
+  optimizeDeps: { include: ["react-dom", "react-dom/client"] },
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },

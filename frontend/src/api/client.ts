@@ -71,6 +71,21 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   return body as T;
 }
 
+/** POST and return the response body as a Blob (audio, files). Same auth refresh and error envelope as apiFetch. */
+export async function apiBlob(path: string, body: unknown): Promise<Blob> {
+  const init: RequestInit = { method: "POST", body: JSON.stringify(body) };
+  let res = await raw(path, init);
+  if (res.status === 401 && (await refreshOnce())) res = await raw(path, init);
+  if (!res.ok) {
+    const parsed: unknown = await res.json().catch(() => undefined);
+    const env = isEnvelope(parsed)
+      ? parsed.error
+      : { code: "HTTP_ERROR", message: res.statusText, request_id: null, details: [] };
+    throw new ApiError(res.status, env);
+  }
+  return res.blob();
+}
+
 export const api = {
   get: <T>(path: string) => apiFetch<T>(path),
   post: <T>(path: string, body?: unknown) =>
