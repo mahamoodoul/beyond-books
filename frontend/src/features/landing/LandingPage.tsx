@@ -4,6 +4,8 @@ import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 
+import { HeartTurntable, HeroSubjects, usePrefersReducedMotion } from "./HeroSubjects";
+
 const steps = ["Upload", "Analyse", "Generate", "Review", "Learn", "Assess", "Improve"];
 const painPoints = [
   {
@@ -31,65 +33,12 @@ const features = [
   { icon: "lightbulb" as const, title: "Helpful AI evaluation", text: "Give students useful feedback and a next step to try." },
   { icon: "activity" as const, title: "Progress that makes sense", text: "Help learners see their progress and choose what to revisit." },
   { icon: "users" as const, title: "Teacher insights", text: "Spot class-wide patterns and concepts worth teaching again." },
+  { icon: "eye" as const, title: "See it in your space", text: "Place 3D models on your desk with augmented reality." },
 ];
-
-function HeartIllustration() {
-  return (
-    <div aria-label="Animated illustration of a human heart and circulating blood" className="landing-heart-scene" role="img">
-      <div className="landing-heart-glow" />
-      <div className="heart-orbit heart-orbit-one" />
-      <div className="heart-orbit heart-orbit-two" />
-      <svg className="landing-heart" viewBox="0 0 360 360" aria-hidden="true">
-        <defs>
-          <linearGradient id="heart-muscle" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stopColor="#f08c96" />
-            <stop offset=".55" stopColor="#cc5269" />
-            <stop offset="1" stopColor="#793b69" />
-          </linearGradient>
-          <linearGradient id="heart-vessel" x1="0" x2="1">
-            <stop offset="0" stopColor="#8bc7df" />
-            <stop offset="1" stopColor="#6986cb" />
-          </linearGradient>
-          <linearGradient id="heart-aorta" x1="0" x2="1">
-            <stop offset="0" stopColor="#f9aa9b" />
-            <stop offset="1" stopColor="#d05c73" />
-          </linearGradient>
-          <filter id="heart-shadow" height="150%" width="150%" x="-25%" y="-20%">
-            <feDropShadow dx="0" dy="14" floodColor="#151424" floodOpacity=".3" stdDeviation="13" />
-          </filter>
-        </defs>
-        <g className="heart-vessels" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="22">
-          <path d="M157 135c-4-48 5-78 3-112" stroke="url(#heart-vessel)" />
-          <path d="M205 133c5-52 15-74 39-96 15-13 34-8 43 2" stroke="url(#heart-aorta)" />
-          <path d="M231 155c35-21 73-25 104-19" stroke="url(#heart-vessel)" />
-          <path d="M133 174c-39-22-70-18-105-3" stroke="url(#heart-aorta)" />
-        </g>
-        <path
-          className="heart-body"
-          d="M180 321c-18-20-102-82-119-138-17-55 10-96 51-98 31-2 53 22 68 45 13-27 39-52 72-48 46 5 64 51 46 98-18 49-93 111-118 141Z"
-          fill="url(#heart-muscle)"
-          filter="url(#heart-shadow)"
-          stroke="#f4a1a1"
-          strokeWidth="3"
-        />
-        <path d="M179 131c-18 29-20 67-10 99 5 17 12 35 12 58m5-151c18 29 20 64 8 96-5 15-12 30-13 55" fill="none" opacity=".8" stroke="#f3bdba" strokeWidth="3" />
-        <path d="M127 162c12-12 26-18 42-19m66 21c-12-11-25-16-40-17" fill="none" opacity=".6" stroke="#f5c5bf" strokeWidth="4" />
-        <g className="heart-flow-dots">
-          <circle className="flow-dot flow-blue flow-one" cx="156" cy="61" r="5" />
-          <circle className="flow-dot flow-red flow-two" cx="269" cy="61" r="5" />
-          <circle className="flow-dot flow-blue flow-three" cx="305" cy="143" r="5" />
-          <circle className="flow-dot flow-red flow-four" cx="66" cy="169" r="5" />
-        </g>
-      </svg>
-      <span className="heart-float heart-label-top"><span className="flow-blue-dot" /> A closer look</span>
-      <span className="heart-float heart-label-bottom"><Icon name="sparkles" size={14} /> Biology, brought to life</span>
-      <p className="heart-caption">THE HUMAN HEART <span>·</span> 3D LEARNING</p>
-    </div>
-  );
-}
 
 export function LandingPage() {
   const { theme } = usePreferences();
+  const reduced = usePrefersReducedMotion();
   return (
     <main className="landing-page">
       <header className="landing-header">
@@ -118,14 +67,14 @@ export function LandingPage() {
           </div>
           <div className="landing-trust-line"><Icon name="check" size={14} /> Teacher-guided <span>·</span> Source-grounded <span>·</span> Made for understanding</div>
         </div>
-        <HeartIllustration />
+        <HeroSubjects />
         <div className="hero-bottom-note"><span>01</span> THE CURIOUS CLASSROOM</div>
       </section>
 
       <section aria-labelledby="problem-title" className="landing-section problem-section">
         <div className="landing-section-heading">
           <span className="eyebrow eyebrow-muted">LEARNING SHOULD FEEL DIFFERENT</span>
-          <h2 id="problem-title">Some ideas are too important<br />to leave on the page.</h2>
+          <h2 id="problem-title">Some ideas are too important <br className="wide-break" />to leave on the page.</h2>
         </div>
         <div className="pain-grid">
           {painPoints.map((point, index) => (
@@ -168,7 +117,6 @@ export function LandingPage() {
               <span className="feature-icon"><Icon name={feature.icon} size={19} /></span>
               <h3>{feature.title}</h3>
               <p>{feature.text}</p>
-              <Icon aria-hidden="true" className="feature-arrow" name="arrow-up-right" size={16} />
             </article>
           ))}
         </div>
@@ -177,7 +125,7 @@ export function LandingPage() {
       <section aria-labelledby="example-title" className="landing-section example-section" id="example">
         <div className="example-visual">
           <div className="example-orbit" />
-          <div className="example-mini-heart"><span /><i /><b /></div>
+          <div className="example-heart"><HeartTurntable running={!reduced} /></div>
           <span className="example-tag"><Icon name="flask" size={14} /> GRADE 8 BIOLOGY</span>
           <span className="example-visual-label">A chapter<br />you can explore.</span>
         </div>

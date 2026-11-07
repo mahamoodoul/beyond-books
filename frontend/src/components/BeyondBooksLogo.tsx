@@ -9,7 +9,7 @@ interface BeyondBooksLogoProps {
   size?: number;
   /** "dark" = for dark backgrounds, "light" = for light backgrounds. */
   variant?: Variant;
-  /** Spin the atom. Automatically disabled for prefers-reduced-motion. */
+  /** Turn the atom on its vertical axis. Automatically disabled for prefers-reduced-motion. */
   animated?: boolean;
   /** Show the "Beyond Books" wordmark next to the mark. */
   showWordmark?: boolean;
@@ -77,14 +77,15 @@ export default function BeyondBooksLogo({
         .bb-atom-${id} {
           transform-box: view-box;
           transform-origin: 60px 36px;
-          animation: bb-spin-${id} 12s linear infinite;
+          animation: bb-spin-${id} 6s linear infinite;
         }
         .bb-nucleus-${id} {
           transform-box: view-box;
           transform-origin: 60px 36px;
           animation: bb-pulse-${id} 2.4s ease-in-out infinite;
         }
-        @keyframes bb-spin-${id} { to { transform: rotate(360deg); } }
+        /* turn on the vertical axis (like a 3D model on a turntable), not a flat spin */
+        @keyframes bb-spin-${id} { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
         @keyframes bb-pulse-${id} { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
       `}</style>
 
