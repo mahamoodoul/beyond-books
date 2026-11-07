@@ -47,8 +47,8 @@ If you cloned before installing Git LFS, run the last two commands now.
 
 ## 3. Run the project
 
-Pick one option. **A** is the easiest. **B** is the fastest for day-to-day development (most of
-the team uses it).
+Pick one option. **A** is the easiest. **C** is the recommended day-to-day setup: the real
+database with fast local reloads. **B** needs nothing but Python and Node.
 
 | | Database | Background jobs | Where the code runs |
 |---|---|---|---|
@@ -121,17 +121,73 @@ make frontend-dev
 
 ### Option C: Hybrid (Postgres and Redis in Docker, code on your machine)
 
+This is the recommended day-to-day setup. It uses the real database (PostgreSQL) with fast
+local reloads.
+
+**1. Start the databases in Docker**
+
 ```bash
-docker compose up -d postgres redis       # only the databases
-cp .env.example backend/.env              # its defaults already point at localhost:5432 / :6379
-make backend-install frontend-install
-make migrate && make seed
-cd backend && .venv/bin/uvicorn app.main:app --port 8000 --reload        # terminal 1
-cd backend && .venv/bin/celery -A app.workers.celery_app worker -l INFO  # terminal 2 (jobs)
-make frontend-dev                                                        # terminal 3
+make db                                   # = docker compose up -d postgres redis
 ```
 
-To skip the worker, set `EDU3D_JOBS_RUN_INLINE=true` in `backend/.env`.
+Postgres listens on `localhost:5432`, with user, password and database from the root `.env`
+(default `edu3d` / `edu3d` / `edu3d`). Redis listens on `localhost:6379`. The data is kept in the
+Docker volume `ed3d_pgdata`.
+
+**2. Backend settings.** Create `backend/.env` (`cp .env.example backend/.env`) and check these
+lines:
+
+```dotenv
+EDU3D_DATABASE_URL=postgresql+psycopg://edu3d:edu3d@localhost:5432/edu3d   # same user/password as the root .env
+EDU3D_REDIS_URL=redis://localhost:6379/0
+EDU3D_JOBS_RUN_INLINE=true                # simplest: jobs run inside the API (no worker)
+```
+
+If the password contains special characters, URL-encode it in `EDU3D_DATABASE_URL`.
+
+**3. Install, create the schema, run**
+
+```bash
+make backend-install frontend-install     # once
+make migrate && make seed                 # schema + demo heart model
+cd backend && .venv/bin/uvicorn app.main:app --port 8000 --reload        # terminal 1
+make frontend-dev                                                        # terminal 2
+```
+
+With `EDU3D_JOBS_RUN_INLINE=false`, also start a worker:
+`cd backend && .venv/bin/celery -A app.workers.celery_app worker -l INFO`.
+
+**Port 5432 already used?** For example by Postgres.app or a Homebrew Postgres. Publish the
+Docker Postgres on another port with a local `docker-compose.override.yml` (keep it out of git:
+`echo docker-compose.override.yml >> .git/info/exclude`):
+
+```yaml
+services:
+  postgres:
+    ports: !override ["5433:5432"]
+```
+
+Then use `localhost:5433` in `EDU3D_DATABASE_URL` and run `make db` again.
+
+**After restarting your computer:** start Docker Desktop, then `make db`. Never run
+`docker compose down -v` unless you want to delete the database: `-v` removes the volumes.
+
+### Move your existing SQLite data to Postgres
+
+If you used Option B before, your data is in `backend/dev.db`. To copy it into Postgres:
+
+```bash
+make db                                   # Postgres running
+# set EDU3D_DATABASE_URL in backend/.env to Postgres (step 2 above)
+make migrate                              # creates the empty schema
+make sqlite-to-postgres                   # copies every table from backend/dev.db
+```
+
+This copies all rows (accounts, courses, lessons, quizzes, 3D models, progress), and the
+uploaded files stay in `backend/.storage`. `dev.db` is left unchanged as a backup. The target
+must be empty: the script refuses to run otherwise. SQLite never enforced links between
+tables, so rows that point at deleted data (for example an old test account) are reported and
+left out. Restart the backend afterwards.
 
 ### Check that it runs
 
@@ -296,6 +352,8 @@ as the generator in the 3D library. Setup: [docs/BLENDER_MCP.md](docs/BLENDER_MC
 | Command | What it does |
 |---|---|
 | `make up` / `make down` | Start / stop the Docker stack |
+| `make db` | Only Postgres + Redis in Docker (Option C) |
+| `make sqlite-to-postgres` | Copy `backend/dev.db` into the Postgres of `backend/.env` |
 | `make backend-install` / `make frontend-install` | Install dependencies |
 | `make migrate` | Apply database migrations |
 | `make seed` | Demo heart model in the 3D library |
@@ -325,7 +383,9 @@ install commands.
 | AI fails with `401` | Wrong or expired `EDU3D_ANTHROPIC_API_KEY`. Fix it and restart the backend |
 | "Daily 3D generation limit" | Raise `EDU3D_THREE_D_MAX_GENERATIONS_PER_USER_PER_DAY` and restart |
 | Claude + Blender: "Blender is not reachable" | Open Blender with its window, enable the *MCP for Blender* add-on (port 9876) |
-| Port 5173 / 8000 / 5432 already in use | Stop the other process, or the other copy of the stack |
+| Port 5173 / 8000 already in use | Stop the other process, or the other copy of the stack |
+| Port 5432 already in use (`bind: address already in use`) | Another Postgres is running (e.g. Postgres.app). Use port 5433 via `docker-compose.override.yml` (Option C) |
+| Postgres: `No space left on device` | Docker's disk is full. Free space with `docker builder prune` (build cache) or remove unused images. Postgres recovers its data on the next start |
 | Student sees no course or 3D model | Publish the course, chapter, lesson and scene, and enrol the student (section 5) |
 
 ## 10. Repository layout and docs
