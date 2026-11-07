@@ -18,12 +18,9 @@ P=packages/demo-assets/previews
 "$PY" scripts/validate_asset.py $M/plant_cell_v2.json \
   --scene $F/scene_plant_cell_02.json --animation $F/animation_plant_cell_tour_01.json \
   --preview $P/plant_cell_v2.png
-# plant_cell_v3 is local-only (not committed, too large); validate it when it has been exported
-if [ -f packages/demo-assets/glb/plant_cell_v3.glb ]; then
-  "$PY" scripts/validate_asset.py $M/plant_cell_v3.json \
-    --scene $F/scene_plant_cell_03.json --animation $F/animation_plant_cell_tour_01.json \
-    --preview $P/plant_cell_v3.png
-fi
+"$PY" scripts/validate_asset.py $M/plant_cell_v3.json \
+  --scene $F/scene_plant_cell_03.json --animation $F/animation_plant_cell_tour_01.json \
+  --preview $P/plant_cell_v3.png
 "$PY" scripts/validate_asset.py $M/water_molecule_v1.json \
   --scene $F/scene_water_molecule_01.json --animation $F/animation_water_shape_01.json \
   --preview $P/water_molecule_v1.png
