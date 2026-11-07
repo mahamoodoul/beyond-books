@@ -1,24 +1,9 @@
 import { createBrowserRouter } from "react-router";
+import { appRoutes } from "./appRoutes";
+import { demoRoutes } from "./demoRoutes";
 
-import { AppLayout } from "@/app/layouts/AppLayout";
-import { RouteError } from "@/app/router/RouteError";
-import { HomePage } from "@/features/dashboard/HomePage";
-import { PlaceholderPage } from "@/features/dashboard/PlaceholderPage";
-
-export const router = createBrowserRouter([
-  {
-    element: <AppLayout />,
-    errorElement: <RouteError />,
-    children: [
-      { path: "/", element: <HomePage /> },
-      {
-        path: "/teacher",
-        element: <PlaceholderPage title="Teacher dashboard" phase="Phase 2 — courses & documents" />,
-      },
-      {
-        path: "/student",
-        element: <PlaceholderPage title="Student dashboard" phase="Phase 7 — student learning" />,
-      },
-    ],
-  },
-]);
+// The demo has its own role and mock data; keep the authenticated app intact.
+const isDemo = /^\/demo(?:\/|$)/.test(window.location.pathname);
+export const router = createBrowserRouter(isDemo ? demoRoutes : appRoutes, {
+  basename: isDemo ? "/demo" : "/",
+});

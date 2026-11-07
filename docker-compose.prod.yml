@@ -1,0 +1,68 @@
+# Production-like stack for staging / a single-host pilot. Secrets come from .env.production
+# (or EDU3D_AWS_SECRET_ID → Secrets Manager); never commit that file.
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+x-backend: &backend
+  build: { context: ., dockerfile: infrastructure/docker/backend.prod.Dockerfile }
+  env_file: .env.production
+  restart: unless-stopped
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-edu3d}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redisdata:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 10
+
+  migrate:
+    <<: *backend
+    restart: "no"
+    command: ["sh", "-c", "alembic upgrade head && python -m app.modules.three_d.seed"]
+
+  api:
+    <<: *backend
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    volumes: ["storage:/data"]
+
+  worker:
+    <<: *backend
+    command: ["celery", "-A", "app.workers.celery_app", "worker", "--loglevel=INFO", "--concurrency=2"]
+    volumes: ["storage:/data"]
+    healthcheck:
+      test: ["CMD", "celery", "-A", "app.workers.celery_app", "inspect", "ping", "-t", "5"]
+      interval: 60s
+      retries: 3
+
+  frontend:
+    build: { context: ., dockerfile: infrastructure/docker/frontend.nginx-template.Dockerfile }
+    environment:
+      API_UPSTREAM: http://api:8000
+      CONNECT_SRC_EXTRA: ${CONNECT_SRC_EXTRA:-}
+    ports: ["8080:8080"]
+    restart: unless-stopped
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  redisdata:
+  storage:

@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_water_molecule_01",
+  "title": "The Shape of a Water Molecule",
+  "learning_objective_ids": [
+    "lo_chem_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "water_molecule_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "front",
+    "min_distance": 1,
+    "max_distance": 8
+  },
+  "components": [
+    {
+      "component_id": "oxygen",
+      "mesh_name": "oxygen",
+      "label": "Oxygen atom",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_oxygen"
+    },
+    {
+      "component_id": "hydrogen_1",
+      "mesh_name": "hydrogen_1",
+      "label": "Hydrogen atom",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_hydrogen_1"
+    },
+    {
+      "component_id": "hydrogen_2",
+      "mesh_name": "hydrogen_2",
+      "label": "Hydrogen atom",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_hydrogen_2"
+    },
+    {
+      "component_id": "bond_1",
+      "mesh_name": "bond_1",
+      "label": "O\u2013H covalent bond",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_bond_1"
+    },
+    {
+      "component_id": "bond_2",
+      "mesh_name": "bond_2",
+      "label": "O\u2013H covalent bond",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_bond_2"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "select_component"
+  ],
+  "animation_refs": [
+    "water_shape_01"
+  ],
+  "explanations": {
+    "explanation_bond_1": "A covalent bond is a shared pair of electrons holding a hydrogen atom to the oxygen atom.",
+    "explanation_bond_2": "A covalent bond is a shared pair of electrons holding a hydrogen atom to the oxygen atom. The two bonds form a bent shape of about 104.5\u00b0.",
+    "explanation_hydrogen_1": "Each hydrogen atom shares a pair of electrons with oxygen and has a slight positive charge.",
+    "explanation_hydrogen_2": "Each hydrogen atom shares a pair of electrons with oxygen and has a slight positive charge.",
+    "explanation_oxygen": "The oxygen atom is at the centre of the water molecule. It has a slight negative charge."
+  }
+}

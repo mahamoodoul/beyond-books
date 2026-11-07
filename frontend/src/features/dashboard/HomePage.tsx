@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import { useHealth } from "@/api/health";
 
 const STEPS = ["Upload", "Generate", "Explore", "Understand", "Assess", "Improve"];
@@ -18,6 +20,17 @@ export function HomePage() {
             </li>
           ))}
         </ol>
+        <div className="mt-6 flex gap-3">
+          <Link to="/login" className="rounded-md bg-navy-900 px-4 py-2 text-sm font-medium text-white">
+            Sign in
+          </Link>
+          <Link to="/register" className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium">
+            Create account
+          </Link>
+          <a href="/demo" className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium">
+            Explore the Beyond Books demo
+          </a>
+        </div>
       </div>
 
       <div className="rounded-lg border border-slate-200 bg-white p-4" aria-live="polite">

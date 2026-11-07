@@ -1,0 +1,80 @@
+{
+  "asset_id": "plant_cell_v1",
+  "version": 1,
+  "name": "Plant cell (schematic)",
+  "description": "Simplified plant cell with wall, membrane, vacuole, nucleus, chloroplasts, mitochondria.",
+  "subject": "biology",
+  "category": "cell_biology",
+  "format": "glb",
+  "object_key": "demo-assets/glb/plant_cell_v1.glb",
+  "preview_key": "demo-assets/previews/plant_cell_v1.png",
+  "size_bytes": 197108,
+  "content_hash": "sha256:3f1b82de8e1f729195ae4d890928a5e347f291bad79aecd4d3a359c00381b41d",
+  "triangle_count": 10200,
+  "units": "arbitrary (not to scale)",
+  "bounds": {
+    "min": [
+      -1.6,
+      -1.1,
+      -0.8
+    ],
+    "max": [
+      1.6,
+      1.1,
+      0.8
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "cell_wall",
+      "label": "Cell wall"
+    },
+    {
+      "mesh_name": "cell_membrane",
+      "label": "Cell membrane"
+    },
+    {
+      "mesh_name": "central_vacuole",
+      "label": "Central vacuole"
+    },
+    {
+      "mesh_name": "nucleus",
+      "label": "Nucleus"
+    },
+    {
+      "mesh_name": "chloroplasts",
+      "label": "Chloroplasts"
+    },
+    {
+      "mesh_name": "mitochondria",
+      "label": "Mitochondria"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "procedural_script",
+    "generator": "edu3d scripts/build_demo_assets.py",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Generated in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Organelles are not to scale; ER, Golgi and ribosomes are omitted."
+}

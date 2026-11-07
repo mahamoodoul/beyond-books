@@ -1,7 +1,7 @@
 [project]
 name = "edu3d-backend"
 version = "0.1.0"
-description = "Edu3D AI backend — FastAPI modular monolith"
+description = "Beyond Books backend — FastAPI modular monolith"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115",
@@ -11,8 +11,16 @@ dependencies = [
   "sqlalchemy>=2.0",
   "alembic>=1.13",
   "psycopg[binary]>=3.2",
-  "celery>=5.4",
+  "celery[redis]>=5.4",
+  "packaging>=24",  # needed by kombu's redis transport; not pulled in transitively
   "redis>=5.0",
+  "pyjwt>=2.9",
+  "argon2-cffi>=23.1",
+  "email-validator>=2.2",
+  "pymupdf>=1.24",
+  "boto3>=1.35",
+  "openai>=1.50",
+  "anthropic>=2.6",
 ]
 
 [project.optional-dependencies]
@@ -46,7 +54,8 @@ exclude = ["migrations/"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = ["ignore:builtin type .* has no __module__ attribute:DeprecationWarning"]
 
 [[tool.mypy.overrides]]
-module = ["celery", "celery.*"]
+module = ["celery", "celery.*", "boto3", "botocore.*", "pymupdf"]
 ignore_missing_imports = true

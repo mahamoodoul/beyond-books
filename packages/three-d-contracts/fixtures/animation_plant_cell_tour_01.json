@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "plant_cell_tour_01",
+  "title": "A tour of the plant cell",
+  "steps": [
+    {
+      "step": 1,
+      "action": "highlight_component",
+      "target_component": "cell_wall",
+      "duration_ms": 2500,
+      "explanation": "The rigid cellulose cell wall supports and protects the cell."
+    },
+    {
+      "step": 2,
+      "action": "set_opacity",
+      "target_component": "cell_wall",
+      "opacity": 0.1,
+      "duration_ms": 800
+    },
+    {
+      "step": 3,
+      "action": "set_opacity",
+      "target_component": "cell_membrane",
+      "opacity": 0.1,
+      "duration_ms": 800,
+      "explanation": "Just inside the wall, the cell membrane controls what enters and leaves."
+    },
+    {
+      "step": 4,
+      "action": "camera_focus",
+      "target_component": "nucleus",
+      "duration_ms": 1200
+    },
+    {
+      "step": 5,
+      "action": "highlight_component",
+      "target_component": "nucleus",
+      "duration_ms": 2500,
+      "explanation": "The nucleus contains the cell's DNA and controls its activities."
+    },
+    {
+      "step": 6,
+      "action": "highlight_component",
+      "target_component": "chloroplasts",
+      "duration_ms": 2500,
+      "explanation": "Chloroplasts carry out photosynthesis, using light energy to make glucose."
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "mitochondria",
+      "duration_ms": 2500,
+      "explanation": "Mitochondria release energy from glucose through respiration."
+    },
+    {
+      "step": 8,
+      "action": "highlight_component",
+      "target_component": "central_vacuole",
+      "duration_ms": 2500,
+      "explanation": "The large central vacuole stores cell sap and keeps the cell firm."
+    }
+  ]
+}
