@@ -91,6 +91,8 @@ class SceneOut(BaseModel):
     has_unpublished_changes: bool
     spec: SceneSpec
     warnings: list[str] = []
+    origin: str = "manual"
+    planning_rationale: str | None = None
     updated_at: datetime
 
 
@@ -125,3 +127,16 @@ class GeneratorOut(BaseModel):
     description: str
     params: list[GeneratorParamOut]
     default_components: list[str]
+
+
+class GenerationRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    prompt: str = Field(min_length=5, max_length=500)
+    subject: str | None = Field(default=None, max_length=80)
+    school_id: uuid.UUID | None = None
+
+
+class GenerationResponse(BaseModel):
+    asset: "AssetOut"
+    job_id: uuid.UUID
+    job_status: str

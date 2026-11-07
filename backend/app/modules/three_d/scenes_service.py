@@ -291,3 +291,46 @@ def resolve_scene(db: Session, user: User, scene_id: uuid.UUID) -> ResolvedScene
         assets=assets,
         warnings=check.warnings,
     )
+
+
+def usable_assets_for_course(
+    db: Session, course: Course
+) -> list[tuple[ThreeDAsset, ThreeDAssetVersion]]:
+    rows = db.execute(
+        select(ThreeDAsset, ThreeDAssetVersion)
+        .join(
+            ThreeDAssetVersion,
+            (ThreeDAssetVersion.asset_id == ThreeDAsset.id)
+            & (ThreeDAssetVersion.version_number == ThreeDAsset.latest_version),
+        )
+        .where(
+            ThreeDAsset.review_status == ReviewStatus.APPROVED, ThreeDAssetVersion.status == "ready"
+        )
+    ).all()
+    return [(a, v) for a, v in rows if _asset_usable_in_course(a, course)]
+
+
+def save_ai_scene(
+    db: Session,
+    lesson: Lesson,
+    course: Course,
+    spec: SceneSpec,
+    rationale: str,
+    user_id: uuid.UUID | None,
+) -> ThreeDScene:
+    """Persist an AI-planned scene as a DRAFT after full validation (never published here)."""
+    check = check_scene(db, course, spec)
+    if check.errors:
+        raise SceneInvalidError(details=[{"msg": e} for e in check.errors])
+    scene = ThreeDScene(
+        lesson_id=lesson.id,
+        title=spec.title,
+        schema_version=spec.schema_version,
+        scene_spec=spec.model_dump(mode="json"),
+        created_by=user_id,
+        origin="ai",
+        planning_rationale=rationale[:2000],
+    )
+    db.add(scene)
+    db.flush()
+    return scene

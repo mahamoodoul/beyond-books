@@ -7,6 +7,7 @@ import { Badge, Button, Card, Field, Textarea } from "@/components/ui";
 
 import { useAsset, useAssets, useGenerators, useSceneMutations, useScenes } from "./api";
 import { LazySceneViewer } from "./LazySceneViewer";
+import { PlanSceneButton } from "./PlanSceneButton";
 import { specFromAsset, specFromGenerator } from "./specBuilders";
 
 function errorDetails(err: unknown): string[] {
@@ -81,6 +82,7 @@ function SceneRow({ scene, lessonId }: { scene: SceneOut; lessonId: string }) {
         <div className="flex items-center gap-2">
           <span className="font-medium">{scene.title}</span>
           <Badge>v{scene.version}</Badge>
+          {scene.origin === "ai" && <Badge tone="blue">AI-planned</Badge>}
           <Badge tone={live ? (scene.has_unpublished_changes ? "amber" : "green") : "slate"}>
             {live ? (scene.has_unpublished_changes ? `live: v${scene.published_version}` : "published") : "draft"}
           </Badge>
@@ -93,6 +95,7 @@ function SceneRow({ scene, lessonId }: { scene: SceneOut; lessonId: string }) {
           <Button variant="ghost" aria-label="Delete scene" onClick={() => confirm("Delete this scene?") && m.remove.mutate(scene.id)}>✕</Button>
         </div>
       </div>
+      {scene.planning_rationale && <p className="text-xs text-slate-500">AI rationale: {scene.planning_rationale}</p>}
       {(scene.warnings ?? []).map((w) => <Badge key={w} tone="amber">{w}</Badge>)}
       <ErrorAlert error={m.publish.error ?? m.update.error} />
       {[...errorDetails(m.update.error), ...errorDetails(m.publish.error)].map((d) => <p key={d} className="text-sm text-red-700">• {d}</p>)}
@@ -119,6 +122,7 @@ export function ScenesCard({ lessonId }: { lessonId: string }) {
         <h2 className="font-semibold">3D scenes</h2>
         <Button variant="secondary" onClick={() => setAdding((v) => !v)}>{adding ? "Cancel" : "Add 3D scene"}</Button>
       </div>
+      <div className="mb-3"><PlanSceneButton lessonId={lessonId} /></div>
       {adding && <NewScene lessonId={lessonId} onCreated={() => setAdding(false)} />}
       {scenes.isPending && <Loading />}
       <ErrorAlert error={scenes.error} />

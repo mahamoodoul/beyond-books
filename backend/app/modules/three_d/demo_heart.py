@@ -39,11 +39,22 @@ def _ellipsoid(
     return pos, nrm, idx
 
 
-def build_heart_glb() -> bytes:
+def build_glb(
+    parts: list[
+        tuple[
+            str,
+            tuple[float, float, float],
+            tuple[float, float, float],
+            tuple[float, float, float, float],
+        ]
+    ],
+    scene_name: str = "model",
+) -> bytes:
+    """Build a GLB of named ellipsoids (one node + mesh per part)."""
     gltf: dict[str, object] = {
         "asset": {"version": "2.0", "generator": "edu3d demo_heart (schematic, CC0)"},
         "scene": 0,
-        "scenes": [{"name": "heart_schematic", "nodes": list(range(len(PARTS)))}],
+        "scenes": [{"name": scene_name, "nodes": list(range(len(parts)))}],
         "nodes": [],
         "meshes": [],
         "materials": [],
@@ -67,7 +78,7 @@ def build_heart_glb() -> bytes:
         blob.extend(data)
         return len(views) - 1
 
-    for i, (name, c, r, rgba) in enumerate(PARTS):
+    for i, (name, c, r, rgba) in enumerate(parts):
         pos, nrm, idx = _ellipsoid(c, r)
         xs, ys, zs = pos[0::3], pos[1::3], pos[2::3]
         pv = view(struct.pack(f"<{len(pos)}f", *pos), 34962)
@@ -124,3 +135,7 @@ def build_heart_glb() -> bytes:
         + struct.pack("<II", len(blob), 0x004E4942)
         + bytes(blob)
     )
+
+
+def build_heart_glb() -> bytes:
+    return build_glb(PARTS, "heart_schematic")

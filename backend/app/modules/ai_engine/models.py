@@ -52,6 +52,7 @@ class AIUsageRecord(UUIDPrimaryKeyMixin, Base):
     provider_request_id: Mapped[str | None] = mapped_column(String(200))
     input_tokens: Mapped[int] = mapped_column(Integer)
     output_tokens: Mapped[int] = mapped_column(Integer)
+    credits_used: Mapped[float | None] = mapped_column(Float)  # 3D provider credits
     estimated_cost: Mapped[float | None] = mapped_column(Float)
     currency: Mapped[str | None] = mapped_column(String(3))
     recorded_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)

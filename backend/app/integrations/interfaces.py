@@ -90,11 +90,17 @@ class ThreeDTask:
 
 
 class ThreeDGenerationProvider(Protocol):
+    """Raise ProviderTransientError / ProviderPermanentError on failures."""
+
     name: str
 
     def create_task(self, *, prompt: str, idempotency_key: str) -> ThreeDTask: ...
 
     def get_task(self, provider_task_id: str) -> ThreeDTask: ...
+
+    def fetch_output(self, task: ThreeDTask, max_bytes: int) -> bytes:
+        """Download the finished GLB (must enforce max_bytes)."""
+        ...
 
 
 # ------------------------------------------------------------------------ storage

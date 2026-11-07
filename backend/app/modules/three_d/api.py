@@ -16,6 +16,8 @@ from app.modules.three_d.schemas import (
     AssetVersionOut,
     AssetVersionUploadRequest,
     DownloadUrl,
+    GenerationRequest,
+    GenerationResponse,
     GeneratorOut,
     GeneratorParamOut,
     ResolvedScene,
@@ -40,6 +42,47 @@ def _asset_out(db: DB, user: User, asset: ThreeDAsset, *, with_versions: bool) -
 @router.get("/assets", response_model=list[AssetOut])
 def list_assets(user: CurrentUser, db: DB) -> list[AssetOut]:
     return [_asset_out(db, user, a, with_versions=False) for a in assets.list_assets(db, user)]
+
+
+@router.get("/assets/search", response_model=list[AssetOut])
+def search_assets(q: str, user: CurrentUser, db: DB) -> list[AssetOut]:
+    return [
+        _asset_out(db, user, a, with_versions=False)
+        for a in assets.search_assets(db, user, q[:200])
+    ]
+
+
+@router.post(
+    "/assets/generation-jobs",
+    response_model=GenerationResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def generate_asset(body: GenerationRequest, user: Teacher, db: DB) -> GenerationResponse:
+    """Search the library first (GET /assets/search); generation costs provider credits."""
+    from app.integrations.three_d import get_three_d_provider
+    from app.modules.ai_engine.scene_planning import check_generation_budget, start_generation
+
+    check_generation_budget(db, user)
+    provider = get_three_d_provider().name
+    asset = assets.create_asset(
+        db,
+        user,
+        AssetCreate(
+            name=body.name,
+            subject=body.subject,
+            school_id=body.school_id,
+            description=f"AI-generated from prompt: {body.prompt}",
+            license_name=f"AI-generated ({provider}); check provider terms",
+            attribution_text=f"Generated with {provider}",
+        ),
+    )
+    asset.provider = provider
+    db.commit()
+    job = start_generation(db, user, asset, body.prompt)
+    asset = assets.get_asset_for(db, user, asset.id, manage=True)
+    return GenerationResponse(
+        asset=_asset_out(db, user, asset, with_versions=True), job_id=job.id, job_status=job.status
+    )
 
 
 @router.post("/assets", response_model=AssetOut, status_code=status.HTTP_201_CREATED)

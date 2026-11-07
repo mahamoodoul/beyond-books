@@ -195,13 +195,19 @@ export type AlreadyEnrolled = number;
 export type Enrolled = number;
 export type ClassroomId1 = string | null;
 export type EnrolledAt = string;
+export type Name4 = string;
+export type Prompt = string;
+export type SchoolId5 = string | null;
+export type Subject5 = string | null;
+export type JobId = string;
+export type JobStatus = string;
 export type DefaultComponents = string[];
 export type Description10 = string;
-export type Name4 = string;
+export type Name5 = string;
 export type Kind = string;
 export type Max = number | null;
 export type Min = number | null;
-export type Name5 = string;
+export type Name6 = string;
 export type Params = GeneratorParamOut[];
 export type Location = (string | number)[];
 export type Message = string;
@@ -295,7 +301,7 @@ export type Password1 = string;
 export type AssetId1 = string;
 export type AttributionText2 = string;
 export type LicenseName2 = string;
-export type Name6 = string;
+export type Name7 = string;
 export type NodeNames = string[];
 export type SourceUrl2 = string | null;
 export type Url2 = string;
@@ -344,6 +350,8 @@ export type Warnings = string[];
 export type HasUnpublishedChanges2 = boolean;
 export type Id12 = string;
 export type LessonId = string;
+export type Origin2 = string;
+export type PlanningRationale = string | null;
 export type PublishedVersion2 = number | null;
 export type Status6 = string;
 export type Title16 = string;
@@ -351,7 +359,7 @@ export type UpdatedAt4 = string;
 export type Version5 = number;
 export type Warnings1 = string[];
 export type ExpectedVersion1 = number;
-export type Name7 = string;
+export type Name8 = string;
 export type Slug1 = string;
 export type Email4 = string;
 /**
@@ -362,7 +370,7 @@ export type SchoolRole = "school_admin" | "teacher" | "student";
 export type JoinedAt = string;
 export type CreatedAt8 = string;
 export type Id13 = string;
-export type Name8 = string;
+export type Name9 = string;
 export type Slug2 = string;
 export type ExpectedVersion2 = number;
 export type Instruction = string | null;
@@ -417,6 +425,8 @@ export interface Api {
   EnrollRequest?: EnrollRequest;
   EnrollResult?: EnrollResult;
   EnrollmentOut?: EnrollmentOut;
+  GenerationRequest?: GenerationRequest;
+  GenerationResponse?: GenerationResponse;
   GeneratorOut?: GeneratorOut;
   GeneratorParamOut?: GeneratorParamOut;
   HTTPValidationError?: HTTPValidationError;
@@ -818,12 +828,31 @@ export interface EnrollmentOut {
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "GenerationRequest".
+ */
+export interface GenerationRequest {
+  name: Name4;
+  prompt: Prompt;
+  school_id?: SchoolId5;
+  subject?: Subject5;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "GenerationResponse".
+ */
+export interface GenerationResponse {
+  asset: AssetOut;
+  job_id: JobId;
+  job_status: JobStatus;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "GeneratorOut".
  */
 export interface GeneratorOut {
   default_components: DefaultComponents;
   description: Description10;
-  name: Name4;
+  name: Name5;
   params: Params;
 }
 /**
@@ -834,7 +863,7 @@ export interface GeneratorParamOut {
   kind: Kind;
   max: Max;
   min: Min;
-  name: Name5;
+  name: Name6;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1052,7 +1081,7 @@ export interface ResolvedAsset {
   asset_id: AssetId1;
   attribution_text: AttributionText2;
   license_name: LicenseName2;
-  name: Name6;
+  name: Name7;
   node_names: NodeNames;
   source_url: SourceUrl2;
   url: Url2;
@@ -1119,6 +1148,8 @@ export interface SceneOut {
   has_unpublished_changes: HasUnpublishedChanges2;
   id: Id12;
   lesson_id: LessonId;
+  origin?: Origin2;
+  planning_rationale?: PlanningRationale;
   published_version: PublishedVersion2;
   spec: SceneSpec;
   status: Status6;
@@ -1140,7 +1171,7 @@ export interface SceneUpdate {
  * via the `definition` "SchoolCreate".
  */
 export interface SchoolCreate {
-  name: Name7;
+  name: Name8;
   slug: Slug1;
 }
 /**
@@ -1168,7 +1199,7 @@ export interface SchoolOut {
   created_at: CreatedAt8;
   id: Id13;
   my_role?: SchoolRole | null;
-  name: Name8;
+  name: Name9;
   slug: Slug2;
 }
 /**

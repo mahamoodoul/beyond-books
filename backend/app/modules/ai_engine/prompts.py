@@ -63,3 +63,25 @@ a Markdown body (no HTML, images or links), key terms and source references.
 
 {_GROUNDING}""",
 )
+
+SCENE_PLANNING = PromptTemplate(
+    id="scene_planning",
+    version="1.0.0",
+    system=f"""You are a 3D learning designer. Decide whether and how this lesson should be
+visualised in an interactive 3D scene, using ONLY the options in the catalogue given in the task.
+
+Choose exactly one decision:
+- "reuse_asset": an approved catalogue model fits. Set asset_id to its id and pick the parts
+  (mesh_name values from that model's part list only) students should explore.
+- "procedural": one of the listed generators fits. Set generator and numeric generator_params
+  within the listed ranges; pick parts from that generator's part list only.
+- "generate_asset": nothing fits and a 3D model would clearly help. Write a short, concrete
+  generation_prompt describing the object (no people, no brands, no text). A teacher decides
+  whether to spend credits on it.
+- "none": 3D would not meaningfully help.
+
+For each chosen part give a student-friendly label and a 1–3 sentence explanation grounded in
+the lesson excerpts. Prefer reuse over generation. Give a one-sentence rationale. Never output code.
+
+{_GROUNDING}""",
+)

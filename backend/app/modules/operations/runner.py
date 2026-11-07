@@ -32,6 +32,13 @@ class TransientJobError(Exception):
     """Retry-able failure (timeouts, rate limits, provider 5xx)."""
 
 
+class PendingJobError(TransientJobError):
+    """External work is still running (e.g. 3D provider). Re-poll later; larger attempt budget."""
+
+
+MAX_POLL_ATTEMPTS = 40
+
+
 class PermanentJobError(Exception):
     """Non-retryable failure. `code` is safe to show to users."""
 
@@ -82,7 +89,10 @@ def create_job(
 def dispatch(job_id: uuid.UUID) -> None:
     """Call AFTER the transaction that created the job has committed."""
     if get_settings().jobs_run_inline:
-        run_job(job_id)
+        # In-process (tests/local dev): re-poll pending external work immediately.
+        status = run_job(job_id)
+        while status == JobStatus.RETRYING:
+            status = run_job(job_id, final_attempt=False)
         return
     from app.workers.celery_app import run_job_task
 
@@ -119,12 +129,16 @@ def run_job(job_id: uuid.UUID, *, final_attempt: bool = True) -> JobStatus:
             db.rollback()
             job = db.get(Job, job_id)
             assert job is not None
-            if final_attempt or job.attempt_count >= MAX_ATTEMPTS:
+            limit = MAX_POLL_ATTEMPTS if isinstance(exc, PendingJobError) else MAX_ATTEMPTS
+            if (
+                final_attempt and not isinstance(exc, PendingJobError)
+            ) or job.attempt_count >= limit:
                 _set(job, JobStatus.FAILED)
                 job.error_code, job.error_message = "RETRIES_EXHAUSTED", str(exc)[:500]
             else:
                 _set(job, JobStatus.RETRYING)
-                job.error_code, job.error_message = "TRANSIENT", str(exc)[:500]
+                job.error_code = "PENDING" if isinstance(exc, PendingJobError) else "TRANSIENT"
+                job.error_message = str(exc)[:500]
         except PermanentJobError as exc:
             db.rollback()
             job = db.get(Job, job_id)

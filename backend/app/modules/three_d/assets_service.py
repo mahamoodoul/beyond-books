@@ -260,3 +260,21 @@ def download_url(db: Session, user: User, asset_id: uuid.UUID, n: int) -> str:
     return get_storage().presigned_download(
         key=v.storage_key, content_type=GLB_MIME, expires_in_s=get_settings().download_url_ttl_s
     )
+
+
+_TOKEN = re.compile(r"[^\W\d_]{3,}", re.UNICODE)
+
+
+def relevance(text: str, asset: ThreeDAsset) -> int:
+    q = {w.lower() for w in _TOKEN.findall(text)}
+    hay = " ".join(filter(None, [asset.name, asset.description, asset.subject, asset.category]))
+    return len(q & {w.lower() for w in _TOKEN.findall(hay)})
+
+
+def search_assets(db: Session, user: User, q: str, limit: int = 20) -> list[ThreeDAsset]:
+    """Search-before-generate (design §7.1, §13): lexical match over visible approved assets."""
+    visible = [a for a in list_assets(db, user) if a.review_status == ReviewStatus.APPROVED]
+    if not q.strip():
+        return visible[:limit]
+    scored = sorted(((relevance(q, a), a) for a in visible), key=lambda x: (-x[0], x[1].name))
+    return [a for score, a in scored if score > 0][:limit]

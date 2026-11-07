@@ -90,6 +90,8 @@ class ThreeDScene(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     version: Mapped[int] = mapped_column(Integer, default=1)
     published_version: Mapped[int | None] = mapped_column(Integer)
     published_spec: Mapped[dict[str, Any] | None] = mapped_column(JSONType)
+    origin: Mapped[str] = mapped_column(String(20), default="manual")  # manual | ai
+    planning_rationale: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL")
     )

@@ -26,6 +26,9 @@ AI_JOB_TYPES = (
     JobType.OUTLINE_GENERATION,
     JobType.LESSON_GENERATION,
     JobType.SECTION_REGENERATION,
+    JobType.SCENE_PLANNING,
+    JobType.ASSESSMENT_GENERATION,
+    JobType.ANIMATION_PLANNING,
 )
 
 
@@ -234,3 +237,35 @@ def usage_summary(db: Session, user: User, course_id: uuid.UUID) -> dict[str, An
         "output_tokens": row[2],
         "estimated_cost_usd": row[3],
     }
+
+
+def start_scene_plan(db: Session, user: User, lesson_id: uuid.UUID) -> Job:
+    lesson = db.get(Lesson, lesson_id)
+    if lesson is None:
+        raise NotFoundError()
+    chapter = get_chapter_for(db, user, lesson.chapter_id, manage=True)
+    course = get_course_for(db, user, chapter.course_id, manage=True)
+    if not LessonContent.model_validate(lesson.content_json).sections:
+        raise NoSourcesError("Write or generate the lesson content before planning a 3D scene.")
+    _check_budget(db, course.id)
+    job = create_job(
+        db,
+        job_type=JobType.SCENE_PLANNING,
+        target_type="lesson",
+        target_id=lesson.id,
+        requested_by=user.id,
+        course_id=course.id,
+        school_id=course.school_id,
+    )
+    audit.record(
+        db,
+        action="ai.scene_planning.requested",
+        resource_type="lesson",
+        resource_id=lesson.id,
+        actor_user_id=user.id,
+        school_id=course.school_id,
+    )
+    db.commit()
+    dispatch(job.id)
+    db.refresh(job)
+    return job

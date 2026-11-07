@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense, useState, type FormEvent } from "react";
 
 import { api } from "@/api/client";
@@ -7,6 +7,7 @@ import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, PageHeader } from "@/components/ui";
 
 import { uploadAssetFile, useAsset, useAssets } from "./api";
+import { GenerateSuggested } from "./PlanSceneButton";
 
 const AssetPreview = lazy(() => import("./components/AssetPreview"));
 const reviewTone = { approved: "green", pending: "amber", rejected: "red" } as const;
@@ -49,6 +50,28 @@ function UploadForm({ onDone }: { onDone: () => void }) {
         <ErrorAlert error={upload.error} />
       </div>
     </form>
+  );
+}
+
+function GenerateForm() {
+  const [q, setQ] = useState("");
+  const [submitted, setSubmitted] = useState("");
+  const results = useQuery({
+    queryKey: ["asset-search", submitted],
+    queryFn: () => api.get<AssetOut[]>(`/assets/search?q=${encodeURIComponent(submitted)}`),
+    enabled: submitted.length > 2,
+  });
+  return (
+    <div className="mb-4 space-y-3 rounded-md bg-slate-50 p-3">
+      <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); setSubmitted(q); }}>
+        <Input aria-label="Describe the model you need" placeholder="Describe the model you need, e.g. plant cell" value={q} onChange={(e) => setQ(e.target.value)} />
+        <Button type="submit" variant="secondary">Search library first</Button>
+      </form>
+      {results.data && results.data.length > 0 && (
+        <p className="text-sm">Already in the library: {results.data.map((a) => a.name).join(", ")} — consider reusing these.</p>
+      )}
+      {results.data && <GenerateSuggested key={submitted} prompt={`A clear, simple educational 3D model of ${submitted}`} name={submitted} />}
+    </div>
   );
 }
 
@@ -96,13 +119,16 @@ function AssetDetail({ id }: { id: string }) {
 export function AssetsPage() {
   const assets = useAssets();
   const [adding, setAdding] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   return (
     <>
       <PageHeader title="3D model library">
+        <Button variant="secondary" onClick={() => setGenerating((v) => !v)}>{generating ? "Cancel" : "✦ Generate with AI"}</Button>
         <Button onClick={() => setAdding((v) => !v)}>{adding ? "Cancel" : "Upload model"}</Button>
       </PageHeader>
       <Card>
+        {generating && <GenerateForm />}
         {adding && <UploadForm onDone={() => setAdding(false)} />}
         {assets.isPending && <Loading />}
         <ErrorAlert error={assets.error} />

@@ -5,7 +5,7 @@ Turn textbooks into interactive 3D learning experiences.
 **Full system design:** [README_Edu3D_AI_System_Design.md](README_Edu3D_AI_System_Design.md) — the
 high-level source of truth.
 
-**Status:** Phases 0–4 implemented on branch `shakil`, with interim decisions in ADRs 0004–0008
+**Status:** Phases 0–5 implemented on branch `shakil`, with interim decisions in ADRs 0004–0009
 that the team still needs to confirm:
 
 | Phase | What works |
@@ -13,6 +13,7 @@ that the team still needs to confirm:
 | 1 Identity | Register/login (local provider), rotating refresh sessions, CSRF, rate limits, schools, classrooms, audit log |
 | 2 Content | Courses, enrolment, PDF/text upload → extraction with page refs, chapters, objectives, versioned lessons with approve & publish |
 | 3 AI | Outline proposals → teacher review/apply, grounded lesson generation, section regeneration, usage tracking, daily AI cap |
+| 5 AI 3D | Scene planning agent (reuse model / procedural / suggest generation), library search, credit-capped generation jobs with polling (fake provider; Tripo/Meshy stubs pending verification) |
 | 4 3D | GLB upload with validation + license metadata + review, 3D library, lesson scenes validated against model parts, procedural generators, R3F viewer with selectable parts and explanations |
 
 ## Repository layout

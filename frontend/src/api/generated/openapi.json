@@ -1232,6 +1232,75 @@
         "title": "EnrollmentOut",
         "type": "object"
       },
+      "GenerationRequest": {
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "prompt": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "school_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Id"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          }
+        },
+        "required": [
+          "name",
+          "prompt"
+        ],
+        "title": "GenerationRequest",
+        "type": "object"
+      },
+      "GenerationResponse": {
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/AssetOut"
+          },
+          "job_id": {
+            "format": "uuid",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "job_status": {
+            "title": "Job Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset",
+          "job_id",
+          "job_status"
+        ],
+        "title": "GenerationResponse",
+        "type": "object"
+      },
       "GeneratorOut": {
         "properties": {
           "default_components": {
@@ -2208,6 +2277,22 @@
             "title": "Lesson Id",
             "type": "string"
           },
+          "origin": {
+            "default": "manual",
+            "title": "Origin",
+            "type": "string"
+          },
+          "planning_rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planning Rationale"
+          },
           "published_version": {
             "anyOf": [
               {
@@ -2956,6 +3041,94 @@
           }
         },
         "summary": "Create Asset",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/generation-jobs": {
+      "post": {
+        "description": "Search the library first (GET /assets/search); generation costs provider credits.",
+        "operationId": "generate_asset_api_v1_assets_generation_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Asset",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/search": {
+      "get": {
+        "operationId": "search_assets_api_v1_assets_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssetOut"
+                  },
+                  "title": "Response Search Assets Api V1 Assets Search Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Assets",
         "tags": [
           "3d"
         ]
@@ -4848,6 +5021,49 @@
         "summary": "Update Lesson",
         "tags": [
           "lessons"
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/ai/scene": {
+      "post": {
+        "operationId": "plan_scene_api_v1_lessons__lesson_id__ai_scene_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Plan Scene",
+        "tags": [
+          "ai"
         ]
       }
     },

@@ -103,6 +103,13 @@ def regenerate_section(
     )
 
 
+@router.post(
+    "/lessons/{lesson_id}/ai/scene", response_model=JobOut, status_code=status.HTTP_202_ACCEPTED
+)
+def plan_scene(lesson_id: uuid.UUID, user: CurrentUser, db: DB) -> Job:
+    return service.start_scene_plan(db, user, lesson_id)
+
+
 @router.get("/courses/{course_id}/ai/usage", response_model=AIUsageOut)
 def usage(course_id: uuid.UUID, user: CurrentUser, db: DB) -> AIUsageOut:
     return AIUsageOut(**service.usage_summary(db, user, course_id))

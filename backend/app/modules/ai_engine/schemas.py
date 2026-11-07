@@ -55,3 +55,25 @@ class LessonLLM(BaseModel):
     sections: list[SectionLLM]
     summary: list[str]
     visualization_candidates: list[VisualizationLLM]
+
+
+class SceneComponentLLM(BaseModel):
+    mesh_name: str
+    label: str
+    explanation: str
+
+
+class GeneratorParamLLM(BaseModel):
+    name: str
+    value: float
+
+
+class ScenePlanLLM(BaseModel):
+    decision: Literal["reuse_asset", "procedural", "generate_asset", "none"]
+    asset_id: str
+    generator: str
+    generator_params: list[GeneratorParamLLM]
+    title: str
+    components: list[SceneComponentLLM]
+    generation_prompt: str
+    rationale: str

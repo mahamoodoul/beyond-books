@@ -11,10 +11,13 @@ from pydantic import BaseModel
 
 from app.integrations.interfaces import LLMUsage, ReferencePassage, StructuredResult
 from app.modules.ai_engine.schemas import (
+    GeneratorParamLLM,
     LessonLLM,
     OutlineChapterLLM,
     OutlineLLM,
     OutlineObjectiveLLM,
+    SceneComponentLLM,
+    ScenePlanLLM,
     SectionLLM,
     SourceRefLLM,
     VisualizationLLM,
@@ -48,6 +51,7 @@ class FakeLLMProvider:
             OutlineLLM: self._outline,
             LessonLLM: self._lesson,
             SectionLLM: self._section,
+            ScenePlanLLM: self._scene_plan,
         }
         output = builders[output_schema](references, task)
         chars_in = len(system_prompt) + len(task) + sum(len(r.text) for r in references)
@@ -100,4 +104,95 @@ class FakeLLMProvider:
                     learning_reason="Seeing the parts in space helps students relate them.",
                 )
             ],
+        )
+
+    def _scene_plan(self, refs: list[ReferencePassage], task: str) -> ScenePlanLLM:
+        import json
+
+        catalogue = (
+            json.loads(task.split("CATALOGUE_JSON:", 1)[1]) if "CATALOGUE_JSON:" in task else {}
+        )
+        text = (
+            " ".join(r.text for r in refs).lower() + " " + task.split("CATALOGUE_JSON:")[0].lower()
+        )
+        words = set(re.findall(r"[a-z]{3,}", text))
+        sents = _sentences(" ".join(r.text for r in refs))
+
+        def explain(part: str) -> str:
+            key = part.replace("_", " ")
+            hit = next((x for x in sents if key in x.lower()), "")
+            return hit[:300]
+
+        best, best_score = None, 0
+        for a in catalogue.get("assets", []):
+            hay = set(
+                re.findall(
+                    r"[a-z]{3,}", f"{a['name']} {a['description']} {a.get('subject') or ''}".lower()
+                )
+            )
+            score = len(words & hay)
+            if score > best_score:
+                best, best_score = a, score
+        empty: dict[str, Any] = {
+            "asset_id": "",
+            "generator": "",
+            "generator_params": [],
+            "generation_prompt": "",
+        }
+        if best:
+            return ScenePlanLLM(
+                **{
+                    **empty,
+                    "decision": "reuse_asset",
+                    "asset_id": best["id"],
+                    "title": f"Explore: {best['name']}",
+                    "rationale": "A matching approved model exists.",
+                    "components": [
+                        SceneComponentLLM(
+                            mesh_name=p,
+                            label=p.replace("_", " ").capitalize(),
+                            explanation=explain(p),
+                        )
+                        for p in best["parts"]
+                    ],
+                }
+            )
+        for gen, keys in (
+            ("solar_system", {"planet", "planets", "sun", "orbit", "solar"}),
+            ("atom", {"atom", "electron", "electrons", "nucleus", "proton"}),
+        ):
+            if words & keys:
+                g = next(x for x in catalogue.get("generators", []) if x["name"] == gen)
+                return ScenePlanLLM(
+                    **{
+                        **empty,
+                        "decision": "procedural",
+                        "generator": gen,
+                        "generator_params": [
+                            GeneratorParamLLM(name=k, value=4)
+                            for k in g["params"]
+                            if g["params"][k]["type"] == "int"
+                        ],
+                        "title": f"Explore: {gen.replace('_', ' ')}",
+                        "rationale": "A procedural generator matches the topic.",
+                        "components": [
+                            SceneComponentLLM(
+                                mesh_name=p,
+                                label=p.replace("_", " ").capitalize(),
+                                explanation=explain(p),
+                            )
+                            for p in g["parts"][:5]
+                        ],
+                    }
+                )
+        title = refs[0].text.split("\n", 1)[0][:80] if refs else "Lesson object"
+        return ScenePlanLLM(
+            **{
+                **empty,
+                "decision": "generate_asset",
+                "title": title,
+                "generation_prompt": f"A clear, simple educational 3D model of: {title}",
+                "rationale": "No catalogue model or generator fits.",
+                "components": [],
+            }
         )
