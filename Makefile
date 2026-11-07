@@ -1,9 +1,12 @@
-.PHONY: up down migrate seed seed-courses export-courses smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down db migrate seed seed-courses export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
 down:
 	docker compose down
+
+db:            ## Only Postgres + Redis in Docker (backend/frontend run on your machine)
+	docker compose up -d postgres redis
 
 backend-install:
 	cd backend && python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
@@ -42,6 +45,9 @@ seed-courses:   ## One step: files, DB, teacher account (if new), shared courses
 export-courses: ## Re-export a teacher's courses into seeds/courses: make export-courses EMAIL=you@example.com
 	@test -n "$(EMAIL)" || (echo "usage: make export-courses EMAIL=you@example.com" && exit 1)
 	cd backend && .venv/bin/python ../scripts/course_seed.py export $(EMAIL)
+
+sqlite-to-postgres: ## Copy backend/dev.db into the (migrated, empty) Postgres of backend/.env
+	cd backend && .venv/bin/python ../scripts/sqlite_to_postgres.py $(DB)
 
 frontend-install:
 	cd frontend && npm install
