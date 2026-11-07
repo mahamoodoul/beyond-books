@@ -4,6 +4,23 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* App colour tokens used by the authenticated app (bg-navy-*, text-accent, bg-surface).
+   Mapped onto the design-system variables below so both apps share one palette and the
+   authenticated app follows light/dark mode. (Restored after the rizve merge dropped them.) */
+@theme inline {
+  --color-navy-950: var(--app-navy-950);
+  --color-navy-900: var(--app-navy-900);
+  --color-navy-700: var(--app-navy-700);
+  --color-surface: var(--bg);
+  --color-accent: var(--accent);
+}
+
+:root {
+  --app-navy-950: #1d1b33;
+  --app-navy-900: #3d3486;
+  --app-navy-700: #5144b2;
+}
+
 :root {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   font-synthesis: none;
