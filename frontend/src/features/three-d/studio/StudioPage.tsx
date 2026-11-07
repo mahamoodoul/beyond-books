@@ -21,8 +21,8 @@ import {
 const StudioViewport = lazy(() => import("./StudioViewport"));
 
 /* ---------- small dark-theme primitives (studio only) ---------- */
-const panel = "rounded-2xl border border-white/10 bg-[#141726]/90 backdrop-blur";
-function ToolButton({ label, active, onClick, children }: { label: string; active?: boolean; onClick: () => void; children: ReactNode }) {
+export const panel = "rounded-2xl border border-white/10 bg-[#141726]/90 backdrop-blur";
+export function ToolButton({ label, active, onClick, children }: { label: string; active?: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
       aria-label={label}
@@ -35,11 +35,11 @@ function ToolButton({ label, active, onClick, children }: { label: string; activ
     </button>
   );
 }
-function Chip({ children, tone = "slate" }: { children: ReactNode; tone?: "slate" | "teal" | "amber" | "violet" }) {
+export function Chip({ children, tone = "slate" }: { children: ReactNode; tone?: "slate" | "teal" | "amber" | "violet" }) {
   const t = { slate: "bg-white/10 text-slate-300", teal: "bg-[#38b2ac]/20 text-[#7fe0d8]", amber: "bg-amber-400/15 text-amber-300", violet: "bg-violet-400/15 text-violet-300" };
   return <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${t[tone]}`}>{children}</span>;
 }
-function Ring({ pct }: { pct: number }) {
+export function Ring({ pct }: { pct: number }) {
   const r = 42;
   const c = 2 * Math.PI * r;
   return (

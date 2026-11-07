@@ -15,6 +15,10 @@ from app.modules.three_d.schemas import (
     AssetUploadResponse,
     AssetVersionOut,
     AssetVersionUploadRequest,
+    AvailablePart,
+    ChapterGenerateRequest,
+    ChapterGenerateResult,
+    ChapterSceneOut,
     DownloadUrl,
     GenerationRequest,
     GenerationResponse,
@@ -208,3 +212,37 @@ def delete_scene(scene_id: uuid.UUID, user: CurrentUser, db: DB) -> None:
 @router.get("/scenes/{scene_id}/resolved", response_model=ResolvedScene)
 def resolve(scene_id: uuid.UUID, user: CurrentUser, db: DB) -> ResolvedScene:
     return scenes.resolve_scene(db, user, scene_id)
+
+
+# ------------------------------------------------------------ chapter 3D Studio
+
+
+@router.get("/chapters/{chapter_id}/scenes", response_model=list[ChapterSceneOut])
+def chapter_scenes(chapter_id: uuid.UUID, user: CurrentUser, db: DB) -> list[ChapterSceneOut]:
+    return scenes.chapter_scenes(db, user, chapter_id)
+
+
+@router.post(
+    "/chapters/{chapter_id}/ai/scenes",
+    response_model=ChapterGenerateResult,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def generate_chapter_scenes(
+    chapter_id: uuid.UUID, body: ChapterGenerateRequest, user: CurrentUser, db: DB
+) -> ChapterGenerateResult:
+    """AI-plan a 3D scene for every lesson in the chapter (one job per lesson; drafts only)."""
+    return ChapterGenerateResult(
+        items=scenes.generate_chapter_scenes(db, user, chapter_id, body.only_missing)
+    )
+
+
+@router.get("/scenes/{scene_id}/available-parts", response_model=list[AvailablePart])
+def available_parts(scene_id: uuid.UUID, user: CurrentUser, db: DB) -> list[AvailablePart]:
+    return scenes.available_parts(db, user, scene_id)
+
+
+@router.post(
+    "/scenes/{scene_id}/duplicate", response_model=SceneOut, status_code=status.HTTP_201_CREATED
+)
+def duplicate_scene(scene_id: uuid.UUID, user: CurrentUser, db: DB) -> SceneOut:
+    return scenes.duplicate_scene(db, user, scene_id)
