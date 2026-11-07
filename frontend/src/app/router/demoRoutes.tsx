@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Navigate } from "react-router";
 
 import { DemoAppLayout } from "@/app/layouts/DemoAppLayout";
@@ -14,6 +15,10 @@ import { CourseReviewPage } from "@/features/courses/CourseReviewPage";
 import { TeacherUploadPage } from "@/features/courses/TeacherUploadPage";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { HeartLessonPage } from "@/features/lessons/HeartLessonPage";
+
+const HeartARPage = lazy(() =>
+  import("@/features/ar/HeartARPage").then((module) => ({ default: module.HeartARPage })),
+);
 
 function RolePage({ role, children }: { role: "teacher" | "student"; children: React.ReactNode }) {
   const { role: currentRole } = useDemo();
@@ -68,6 +73,10 @@ export const demoRoutes = [
           {
             path: "/student/courses/:courseId/assessment",
             element: <RolePage role="student"><AssessmentPage /></RolePage>,
+          },
+          {
+            path: "/student/courses/:courseId/lessons/:lessonId/ar",
+            element: <SignedInPage><Suspense fallback={<p className="page-loading" role="status">Preparing augmented reality…</p>}><HeartARPage /></Suspense></SignedInPage>,
           },
           {
             path: "/student/courses/:courseId/lessons/:lessonId",

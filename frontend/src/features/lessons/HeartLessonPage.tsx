@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
@@ -8,6 +8,9 @@ import type { Chapter } from "@/lib/types";
 
 const CardiacViewer = lazy(() =>
   import("@/features/lessons/CardiacViewer").then((module) => ({ default: module.CardiacViewer })),
+);
+const Heart3DView = lazy(() =>
+  import("@/features/lessons/Heart3DView").then((module) => ({ default: module.Heart3DView })),
 );
 
 function ViewerSkeleton() {
@@ -22,6 +25,8 @@ function ViewerSkeleton() {
 export function HeartLessonPage() {
   const { courseId = "circulatory-system", lessonId = "heart-structure" } = useParams();
   const [completed, setCompleted] = useState(() => localStorage.getItem(`completed-${lessonId}`) === "true");
+  const [show3D, setShow3D] = useState(false);
+  const view3DButtonRef = useRef<HTMLButtonElement>(null);
   const courseQuery = useQuery({ queryKey: ["course", courseId], queryFn: () => getCourse(courseId) });
   if (courseQuery.isError) throw courseQuery.error;
   if (courseQuery.isPending) return <p className="page-loading" role="status">Loading your biology lesson…</p>;
@@ -37,6 +42,11 @@ export function HeartLessonPage() {
   function markComplete() {
     localStorage.setItem(`completed-${activeChapterId}`, "true");
     setCompleted(true);
+  }
+
+  function close3DView() {
+    setShow3D(false);
+    window.requestAnimationFrame(() => view3DButtonRef.current?.focus());
   }
 
   function renderChapter(chapterItem: Chapter) {
@@ -103,6 +113,33 @@ export function HeartLessonPage() {
           <Suspense fallback={<ViewerSkeleton />}>
             <CardiacViewer model={chapter.model} />
           </Suspense>
+          <section aria-label="Explore the heart in 3D or augmented reality" className="heart-ar-launch panel">
+            <span className="heart-ar-launch-icon"><Icon name="eye" size={18} /></span>
+            <div className="heart-ar-launch-copy">
+              <strong>Explore the heart in 3D</strong>
+              <p>Open the interactive model here, or bring it into your space with AR.</p>
+            </div>
+            <div className="heart-view-actions">
+              <button className="button button-secondary heart-ar-launch-button" onClick={() => setShow3D(true)} ref={view3DButtonRef} type="button">
+                View 3D on the web <Icon name="layers" size={15} />
+              </button>
+              <Link
+                className="button button-primary heart-ar-launch-button"
+                to={`/student/courses/${course.id}/lessons/${activeChapterId}/ar`}
+              >
+                Start AR <Icon name="arrow-up-right" size={15} />
+              </Link>
+            </div>
+            <a
+              aria-label="Open or print the heart tracking page in a new tab"
+              className="heart-ar-print-link"
+              href={`${import.meta.env.BASE_URL}targets/heart-page.png`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Print or open the heart tracking page
+            </a>
+          </section>
           <nav aria-label="Course chapters" className="heart-chapter-panel panel">
             <div className="heart-chapter-panel-heading"><span className="eyebrow eyebrow-muted">YOUR COURSE</span><span>{course.chapters.length} CHAPTERS</span></div>
             <h2>{course.title}</h2>
@@ -126,6 +163,14 @@ export function HeartLessonPage() {
           <Link className="button button-primary" to={`/student/courses/${course.id}/assessment`}>Take the assessment <Icon name="arrow-right" size={16} /></Link>
         )}
       </nav>
+      {show3D && (
+        <Suspense fallback={<div className="heart-3d-loading-screen" role="status">Preparing the 3D heart viewer…</div>}>
+          <Heart3DView
+            description={`${chapter.model.alt} ${chapter.model.description}`}
+            onClose={close3DView}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
