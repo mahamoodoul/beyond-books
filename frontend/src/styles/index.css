@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Calm academic palette (design §11.1): deep navy, neutral surfaces, restrained accent. */
+@theme {
+  --color-navy-950: #0b1630;
+  --color-navy-900: #12224a;
+  --color-navy-700: #26407a;
+  --color-surface: #f7f8fa;
+  --color-accent: #2f80ed;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

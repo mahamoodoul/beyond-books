@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "blood_flow_01",
+  "title": "Blood flow through the heart",
+  "steps": [
+    {"step": 1, "action": "camera_focus", "target_component": "right_atrium", "duration_ms": 1000},
+    {"step": 2, "action": "highlight_component", "target_component": "right_atrium",
+     "duration_ms": 2500, "explanation": "Blood enters the right atrium."},
+    {"step": 3, "action": "highlight_component", "target_component": "right_ventricle",
+     "duration_ms": 2500, "explanation": "Blood moves into the right ventricle."},
+    {"step": 4, "action": "show_annotation", "duration_ms": 3000,
+     "explanation": "From the right ventricle, blood is pumped to the lungs to collect oxygen."},
+    {"step": 5, "action": "highlight_component", "target_component": "left_atrium",
+     "duration_ms": 2500, "explanation": "Oxygen-rich blood returns to the left atrium."},
+    {"step": 6, "action": "highlight_component", "target_component": "left_ventricle",
+     "duration_ms": 2500, "explanation": "The left ventricle pumps blood to the rest of the body."}
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "$defs": {
+    "AssetRef": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "asset_id",
+        "version"
+      ],
+      "title": "AssetRef",
+      "type": "object"
+    },
+    "Camera": {
+      "additionalProperties": false,
+      "properties": {
+        "max_distance": {
+          "default": 20,
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Max Distance",
+          "type": "number"
+        },
+        "min_distance": {
+          "default": 1,
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Min Distance",
+          "type": "number"
+        },
+        "preset": {
+          "$ref": "#/$defs/CameraPreset",
+          "default": "three_quarter"
+        }
+      },
+      "title": "Camera",
+      "type": "object"
+    },
+    "CameraPreset": {
+      "enum": [
+        "front",
+        "side",
+        "top",
+        "three_quarter"
+      ],
+      "title": "CameraPreset",
+      "type": "string"
+    },
+    "ComponentAction": {
+      "enum": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "title": "ComponentAction",
+      "type": "string"
+    },
+    "ProceduralSource": {
+      "additionalProperties": false,
+      "description": "A trusted, prebuilt procedural generator in the renderer (design \u00a77.1-A).\n\n`generator` must exist in the renderer's allowlisted registry; params are flat scalars only.",
+      "properties": {
+        "generator": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Generator",
+          "type": "string"
+        },
+        "params": {
+          "maxProperties": 32,
+          "patternProperties": {
+            "^[a-z][a-z0-9_]{0,63}$": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "title": "Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "generator"
+      ],
+      "title": "ProceduralSource",
+      "type": "object"
+    },
+    "SceneComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "items": {
+            "$ref": "#/$defs/ComponentAction"
+          },
+          "maxItems": 4,
+          "title": "Actions",
+          "type": "array"
+        },
+        "component_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Component Id",
+          "type": "string"
+        },
+        "explanation_ref": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation Ref"
+        },
+        "label": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "mesh_name": {
+          "pattern": "^[A-Za-z0-9_.\\-]{1,128}$",
+          "title": "Mesh Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component_id",
+        "mesh_name",
+        "label"
+      ],
+      "title": "SceneComponent",
+      "type": "object"
+    },
+    "SceneControl": {
+      "enum": [
+        "rotate",
+        "zoom",
+        "pan",
+        "select_component"
+      ],
+      "title": "SceneControl",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "animation_refs": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]{0,63}$",
+        "type": "string"
+      },
+      "maxItems": 50,
+      "title": "Animation Refs",
+      "type": "array"
+    },
+    "asset_refs": {
+      "items": {
+        "$ref": "#/$defs/AssetRef"
+      },
+      "maxItems": 20,
+      "title": "Asset Refs",
+      "type": "array"
+    },
+    "camera": {
+      "$ref": "#/$defs/Camera"
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/SceneComponent"
+      },
+      "maxItems": 200,
+      "title": "Components",
+      "type": "array"
+    },
+    "controls": {
+      "items": {
+        "$ref": "#/$defs/SceneControl"
+      },
+      "title": "Controls",
+      "type": "array"
+    },
+    "learning_objective_ids": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]{0,63}$",
+        "type": "string"
+      },
+      "maxItems": 50,
+      "title": "Learning Objective Ids",
+      "type": "array"
+    },
+    "procedural": {
+      "items": {
+        "$ref": "#/$defs/ProceduralSource"
+      },
+      "maxItems": 20,
+      "title": "Procedural",
+      "type": "array"
+    },
+    "scene_id": {
+      "pattern": "^[a-z][a-z0-9_]{0,63}$",
+      "title": "Scene Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scene_id",
+    "title"
+  ],
+  "title": "SceneSpec",
+  "type": "object"
+}

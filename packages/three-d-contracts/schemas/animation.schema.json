@@ -1,0 +1,550 @@
+{
+  "$defs": {
+    "AnnotationStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "show_annotation",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Explanation",
+          "type": "string"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Component"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "explanation",
+        "action"
+      ],
+      "title": "AnnotationStep",
+      "type": "object"
+    },
+    "CameraFocusStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "camera_focus",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component"
+      ],
+      "title": "CameraFocusStep",
+      "type": "object"
+    },
+    "FlowParticlesStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "show_flow_particles",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "path_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Path Id",
+          "type": "string"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component",
+        "path_id"
+      ],
+      "title": "FlowParticlesStep",
+      "type": "object"
+    },
+    "HighlightStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "highlight_component",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component"
+      ],
+      "title": "HighlightStep",
+      "type": "object"
+    },
+    "MoveAlongPathStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "move_along_path",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "path_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Path Id",
+          "type": "string"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component",
+        "path_id"
+      ],
+      "title": "MoveAlongPathStep",
+      "type": "object"
+    },
+    "RotateComponentStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "rotate_component",
+          "title": "Action",
+          "type": "string"
+        },
+        "axis": {
+          "enum": [
+            "x",
+            "y",
+            "z"
+          ],
+          "title": "Axis",
+          "type": "string"
+        },
+        "degrees": {
+          "maximum": 720,
+          "minimum": -720,
+          "title": "Degrees",
+          "type": "number"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component",
+        "axis",
+        "degrees"
+      ],
+      "title": "RotateComponentStep",
+      "type": "object"
+    },
+    "SetOpacityStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "set_opacity",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "opacity": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component",
+        "opacity"
+      ],
+      "title": "SetOpacityStep",
+      "type": "object"
+    },
+    "SetVisibilityStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "set_visibility",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        },
+        "target_component": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Target Component",
+          "type": "string"
+        },
+        "visible": {
+          "title": "Visible",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "target_component",
+        "visible"
+      ],
+      "title": "SetVisibilityStep",
+      "type": "object"
+    },
+    "WaitStep": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "wait",
+          "title": "Action",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action"
+      ],
+      "title": "WaitStep",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "animation_id": {
+      "pattern": "^[a-z][a-z0-9_]{0,63}$",
+      "title": "Animation Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "steps": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "camera_focus": "#/$defs/CameraFocusStep",
+            "highlight_component": "#/$defs/HighlightStep",
+            "move_along_path": "#/$defs/MoveAlongPathStep",
+            "rotate_component": "#/$defs/RotateComponentStep",
+            "set_opacity": "#/$defs/SetOpacityStep",
+            "set_visibility": "#/$defs/SetVisibilityStep",
+            "show_annotation": "#/$defs/AnnotationStep",
+            "show_flow_particles": "#/$defs/FlowParticlesStep",
+            "wait": "#/$defs/WaitStep"
+          },
+          "propertyName": "action"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/HighlightStep"
+          },
+          {
+            "$ref": "#/$defs/SetVisibilityStep"
+          },
+          {
+            "$ref": "#/$defs/SetOpacityStep"
+          },
+          {
+            "$ref": "#/$defs/MoveAlongPathStep"
+          },
+          {
+            "$ref": "#/$defs/RotateComponentStep"
+          },
+          {
+            "$ref": "#/$defs/FlowParticlesStep"
+          },
+          {
+            "$ref": "#/$defs/CameraFocusStep"
+          },
+          {
+            "$ref": "#/$defs/AnnotationStep"
+          },
+          {
+            "$ref": "#/$defs/WaitStep"
+          }
+        ]
+      },
+      "maxItems": 200,
+      "minItems": 1,
+      "title": "Steps",
+      "type": "array"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "animation_id",
+    "title",
+    "steps"
+  ],
+  "title": "AnimationSpec",
+  "type": "object"
+}

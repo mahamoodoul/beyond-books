@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_solar_system_01",
+  "title": "The Inner Solar System",
+  "procedural": [{"generator": "solar_system", "params": {"planet_count": 4, "show_orbits": true}}],
+  "camera": {"preset": "top", "min_distance": 5, "max_distance": 200},
+  "components": [
+    {"component_id": "sun", "mesh_name": "sun", "label": "Sun", "actions": ["highlight", "focus_camera"]},
+    {"component_id": "earth", "mesh_name": "earth", "label": "Earth", "actions": ["highlight", "focus_camera"]}
+  ],
+  "controls": ["rotate", "zoom", "pan", "select_component"]
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_heart_01",
+  "title": "Explore the Human Heart",
+  "learning_objective_ids": ["lo_01"],
+  "asset_refs": [{"asset_id": "human_heart_v1", "version": 1}],
+  "camera": {"preset": "three_quarter", "min_distance": 2, "max_distance": 12},
+  "components": [
+    {"component_id": "right_atrium", "mesh_name": "right_atrium", "label": "Right atrium",
+     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_right_atrium"},
+    {"component_id": "right_ventricle", "mesh_name": "right_ventricle", "label": "Right ventricle",
+     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_right_ventricle"},
+    {"component_id": "left_atrium", "mesh_name": "left_atrium", "label": "Left atrium",
+     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_left_atrium"},
+    {"component_id": "left_ventricle", "mesh_name": "left_ventricle", "label": "Left ventricle",
+     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_left_ventricle"}
+  ],
+  "controls": ["rotate", "zoom", "select_component"],
+  "animation_refs": ["blood_flow_01"]
+}
