@@ -46,7 +46,6 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.localClippingEnabled = true; // CT cutaway: lets the scanner's slice plane cut the model open
       renderer.domElement.setAttribute("aria-label", description);
       container.appendChild(renderer.domElement);
       labelRenderer = new CSS2DRenderer();

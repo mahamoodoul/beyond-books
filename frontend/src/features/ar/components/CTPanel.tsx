@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import type { CTAxis } from '../three/CTScanner';
 import { drawCT, type CTHit } from '../three/ctImage';
 import type { ModelExperience } from '../three/ModelExperience';
@@ -9,19 +9,59 @@ const AXES: { id: CTAxis; label: string }[] = [
   { id: 'sagittal', label: 'Sagittal' },
 ];
 
+interface PanelGeometry {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+interface PanelInteraction {
+  mode: 'move' | 'resize';
+  pointerId: number;
+  startX: number;
+  startY: number;
+  geometry: PanelGeometry;
+}
+
 /** Live CT image of the current slice + scan controls. */
 export function CTPanel({ model }: { model: ModelExperience }) {
+  const panelRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hitsRef = useRef<CTHit[]>([]);
   const [axis, setAxis] = useState<CTAxis>(() => model.ct!.currentAxis);
   const [pos, setPos] = useState(() => model.ct!.position);
   const [playing, setPlaying] = useState(false);
+  const [geometry, setGeometry] = useState<PanelGeometry | null>(null);
+  const interactionRef = useRef<PanelInteraction | null>(null);
 
   // Keep the latest `playing` visible to the rAF loop without restarting it.
   const playingRef = useRef(playing);
   useEffect(() => {
     playingRef.current = playing;
   }, [playing]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const observer = new ResizeObserver(() => {
+      const bounds = stage.getBoundingClientRect();
+      setGeometry((current) => {
+        if (!current) return current;
+        const width = Math.min(current.width, bounds.width);
+        const height = Math.min(current.height, bounds.height);
+        return {
+          width,
+          height,
+          left: Math.max(0, Math.min(bounds.width - width, current.left)),
+          top: Math.max(0, Math.min(bounds.height - height, current.top)),
+        };
+      });
+    });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
 
   // Draw loop: redraw whenever a new slice is computed (or selection changes).
   useEffect(() => {
@@ -73,6 +113,99 @@ export function CTPanel({ model }: { model: ModelExperience }) {
     setPos(v);
   };
 
+  const beginInteraction = (mode: PanelInteraction['mode'], event: PointerEvent<HTMLElement>) => {
+    const panel = panelRef.current;
+    const stage = stageRef.current;
+    if (!panel || !stage) return;
+    event.preventDefault();
+    const panelRect = panel.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const initialGeometry = {
+      left: panelRect.left - stageRect.left,
+      top: panelRect.top - stageRect.top,
+      width: panelRect.width,
+      height: panelRect.height,
+    };
+    interactionRef.current = {
+      mode,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      geometry: initialGeometry,
+    };
+    setGeometry(initialGeometry);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const updateInteraction = (event: PointerEvent<HTMLElement>) => {
+    const interaction = interactionRef.current;
+    const stage = stageRef.current;
+    if (!interaction || interaction.pointerId !== event.pointerId || !stage) return;
+    const stageRect = stage.getBoundingClientRect();
+    const dx = event.clientX - interaction.startX;
+    const dy = event.clientY - interaction.startY;
+    const { geometry: start } = interaction;
+    if (interaction.mode === 'move') {
+      setGeometry({
+        ...start,
+        left: Math.max(0, Math.min(stageRect.width - start.width, start.left + dx)),
+        top: Math.max(0, Math.min(stageRect.height - start.height, start.top + dy)),
+      });
+      return;
+    }
+
+    const minWidth = Math.min(260, stageRect.width);
+    const minHeight = Math.min(250, stageRect.height);
+    setGeometry({
+      ...start,
+      width: Math.max(minWidth, Math.min(stageRect.width - start.left, start.width + dx)),
+      height: Math.max(minHeight, Math.min(stageRect.height - start.top, start.height + dy)),
+    });
+  };
+
+  const endInteraction = (event: PointerEvent<HTMLElement>) => {
+    if (interactionRef.current?.pointerId === event.pointerId) interactionRef.current = null;
+  };
+
+  const handlePanelKeyDown = (event: KeyboardEvent<HTMLElement>, mode: PanelInteraction['mode']) => {
+    const directions: Record<string, [number, number]> = {
+      ArrowLeft: [-1, 0],
+      ArrowRight: [1, 0],
+      ArrowUp: [0, -1],
+      ArrowDown: [0, 1],
+    };
+    const direction = directions[event.key];
+    if (!direction) return;
+    event.preventDefault();
+    const panel = panelRef.current;
+    const stage = stageRef.current;
+    if (!panel || !stage) return;
+    const panelRect = panel.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const current = geometry ?? {
+      left: panelRect.left - stageRect.left,
+      top: panelRect.top - stageRect.top,
+      width: panelRect.width,
+      height: panelRect.height,
+    };
+    const amount = event.shiftKey ? 24 : 8;
+    if (mode === 'move') {
+      setGeometry({
+        ...current,
+        left: Math.max(0, Math.min(stageRect.width - current.width, current.left + direction[0] * amount)),
+        top: Math.max(0, Math.min(stageRect.height - current.height, current.top + direction[1] * amount)),
+      });
+    } else {
+      const minWidth = Math.min(260, stageRect.width - current.left);
+      const minHeight = Math.min(250, stageRect.height - current.top);
+      setGeometry({
+        ...current,
+        width: Math.max(minWidth, Math.min(stageRect.width - current.left, current.width + direction[0] * amount)),
+        height: Math.max(minHeight, Math.min(stageRect.height - current.top, current.height + direction[1] * amount)),
+      });
+    }
+  };
+
   /** Tap the CT image to identify the structure under your finger. */
   const onTap = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current!;
@@ -86,7 +219,34 @@ export function CTPanel({ model }: { model: ModelExperience }) {
   };
 
   return (
-    <section className="ct-panel" aria-label="CT scan view">
+    <section
+      aria-label="CT scan view"
+      className="ct-panel"
+      ref={(element) => {
+        panelRef.current = element;
+        stageRef.current = element?.closest<HTMLElement>('.heart-3d-stage') ?? null;
+      }}
+      style={geometry ? {
+        height: `${geometry.height}px`,
+        left: `${geometry.left}px`,
+        right: 'auto',
+        top: `${geometry.top}px`,
+        width: `${geometry.width}px`,
+      } : undefined}
+    >
+      <div
+        aria-label="Move CT scan panel; use arrow keys to move"
+        className="ct-panel-header"
+        onKeyDown={(event) => handlePanelKeyDown(event, 'move')}
+        onPointerDown={(event) => beginInteraction('move', event)}
+        onPointerMove={updateInteraction}
+        onPointerUp={endInteraction}
+        role="button"
+        tabIndex={0}
+      >
+        <span>CT scan</span>
+        <span aria-hidden="true" className="ct-panel-move-icon">↕</span>
+      </div>
       <canvas
         ref={canvasRef}
         className="ct-image"
@@ -124,6 +284,17 @@ export function CTPanel({ model }: { model: ModelExperience }) {
           aria-label="Slice position"
         />
       </div>
+      <button
+        aria-label="Resize CT scan panel; use arrow keys to resize"
+        className="ct-panel-resize"
+        onKeyDown={(event) => handlePanelKeyDown(event, 'resize')}
+        onPointerDown={(event) => beginInteraction('resize', event)}
+        onPointerMove={updateInteraction}
+        onPointerUp={endInteraction}
+        type="button"
+      >
+        <span aria-hidden="true">↘</span>
+      </button>
     </section>
   );
 }
