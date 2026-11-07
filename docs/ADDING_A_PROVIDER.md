@@ -11,7 +11,7 @@ Edit `backend/.env` (local) or your secret store (deployed), then restart the AP
 ```env
 EDU3D_LLM_PROVIDER=anthropic            # fake | anthropic | openai
 EDU3D_ANTHROPIC_MODEL=claude-opus-5-5   # any model id the vendor offers
-EDU3D_THREE_D_PROVIDER=fake             # fake | tripo | meshy
+EDU3D_THREE_D_PROVIDER=llm              # llm | fake | tripo | meshy
 ```
 
 Startup fails fast with a clear message if the name is unknown or a required key is missing
@@ -46,6 +46,17 @@ estimates. Any OpenAI-compatible endpoint works with `EDU3D_LLM_PROVIDER=openai`
    `backend/.env` in the "AI PROVIDERS" block (and to `docker-compose.yml` passthrough).
 5. **Tests** — copy `backend/tests/test_anthropic_provider.py`: stub the client, assert the
    request shape, error mapping, refusal/truncation handling. No real API calls in CI.
+
+## The built-in "llm" 3D provider
+
+`llm` asks the configured LLM (e.g. Claude) to design the model as named primitives (box, sphere,
+ellipsoid, cylinder, cone, torus, capsule) with positions, rotations, colours and a student-facing
+description per part. The output is clamped and validated, converted to GLB by
+`backend/app/modules/three_d/mesh.py`, and stored like any vendor model (GLB checks, teacher
+review). Part descriptions become scene explanations automatically. Teachers can choose the
+generator per request in the UI; only configured providers are offered
+(`GET /api/v1/three-d/providers`). Prompt: `THREE_D_MODEL_DESIGN` in
+`backend/app/modules/ai_engine/prompts.py` (bump its version when you change it).
 
 ## Add a 3D generation vendor
 

@@ -22,3 +22,11 @@
 New vendors are additive (adapter + settings + one `register` call). Per-task model routing
 (e.g. a cheaper model for answer evaluation) can be added later as a registry concern without
 changing workflows.
+
+## Update: LLM-designed 3D models (three.js)
+
+Added 3D provider `llm` (`app/integrations/three_d/llm_procedural.py`): the LLM returns a
+validated parts description (no code), converted to GLB and handled by the same pipeline as
+third-party vendors. Generation requests may name a provider (`provider` field); the UI lists
+only configured providers. `llm` is the default 3D provider in local and production examples;
+`tripo`/`meshy` remain selectable once their adapters are verified and keys are set.

@@ -102,7 +102,7 @@ SQLite is for quick local runs and tests only; PostgreSQL is the real database.
 ## AI providers
 
 LLM and 3D providers are pluggable: set `EDU3D_LLM_PROVIDER` (`fake` | `anthropic` | `openai`) and
-`EDU3D_THREE_D_PROVIDER` (`fake` | `tripo` | `meshy`) plus that provider's key/model in
+`EDU3D_THREE_D_PROVIDER` (`llm` = AI-designed three.js models | `fake` | `tripo` | `meshy`) plus that provider's key/model in
 `backend/.env`. Default real LLM: Claude (`claude-opus-5-5`). To add a vendor see
 [docs/ADDING_A_PROVIDER.md](docs/ADDING_A_PROVIDER.md).
 
