@@ -10,7 +10,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from app.integrations.interfaces import (
     LLMUsage,
@@ -69,6 +69,14 @@ class AnthropicProvider:
                 raise ProviderTransientError("overloaded") from exc
             raise ProviderPermanentError(
                 f"Claude API rejected the request ({exc.status_code})"
+            ) from exc
+        except (ValidationError, ValueError) as exc:
+            # The SDK parses the JSON inside the call: a cut-off or malformed answer fails here,
+            # before stop_reason can be checked. Report it instead of crashing the job.
+            raise ProviderPermanentError(
+                "The AI's answer was cut off or incomplete before it finished (usually the "
+                "output was too long). Try a simpler request, or raise "
+                "EDU3D_LLM_MAX_OUTPUT_TOKENS."
             ) from exc
 
         if resp.stop_reason == "refusal":

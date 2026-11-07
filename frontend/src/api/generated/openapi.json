@@ -504,6 +504,30 @@
         "title": "ApplyOutlineRequest",
         "type": "object"
       },
+      "ApplySplitRequest": {
+        "properties": {
+          "chapters": {
+            "items": {
+              "$ref": "#/components/schemas/OutlineChapterIn"
+            },
+            "maxItems": 10,
+            "minItems": 2,
+            "title": "Chapters",
+            "type": "array"
+          },
+          "remove_original": {
+            "default": false,
+            "description": "Delete the original chapter (only if it has no content)",
+            "title": "Remove Original",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "chapters"
+        ],
+        "title": "ApplySplitRequest",
+        "type": "object"
+      },
       "AssessmentContent": {
         "additionalProperties": false,
         "properties": {
@@ -1664,6 +1688,86 @@
         "title": "ChapterOut",
         "type": "object"
       },
+      "ChapterOverview": {
+        "description": "A chapter card on the course page: status plus what is inside it.",
+        "properties": {
+          "course_id": {
+            "format": "uuid",
+            "title": "Course Id",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lessons": {
+            "default": 0,
+            "title": "Lessons",
+            "type": "integer"
+          },
+          "objectives": {
+            "default": 0,
+            "title": "Objectives",
+            "type": "integer"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "published_lessons": {
+            "default": 0,
+            "title": "Published Lessons",
+            "type": "integer"
+          },
+          "quizzes": {
+            "default": 0,
+            "title": "Quizzes",
+            "type": "integer"
+          },
+          "scenes": {
+            "default": 0,
+            "title": "Scenes",
+            "type": "integer"
+          },
+          "source_refs": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PublishStatus"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "course_id",
+          "title",
+          "description",
+          "position",
+          "status",
+          "source_refs",
+          "updated_at"
+        ],
+        "title": "ChapterOverview",
+        "type": "object"
+      },
       "ChapterSceneOut": {
         "description": "A scene in the chapter 3D Studio board, with its lesson and readiness.",
         "properties": {
@@ -2803,8 +2907,133 @@
         "title": "FlowParticlesStep",
         "type": "object"
       },
+      "GenerationJobOut": {
+        "description": "A 3D generation in the library's \"In progress\" list (running or recently finished).",
+        "properties": {
+          "asset_id": {
+            "format": "uuid",
+            "title": "Asset Id",
+            "type": "string"
+          },
+          "asset_name": {
+            "title": "Asset Name",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "has_model": {
+            "title": "Has Model",
+            "type": "boolean"
+          },
+          "job_id": {
+            "format": "uuid",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id"
+          },
+          "lesson_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Title"
+          },
+          "prompt_preview": {
+            "title": "Prompt Preview",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "scene_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scene Id"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "asset_id",
+          "asset_name",
+          "provider",
+          "status",
+          "error_message",
+          "created_at",
+          "finished_at",
+          "prompt_preview",
+          "has_model"
+        ],
+        "title": "GenerationJobOut",
+        "type": "object"
+      },
       "GenerationRequest": {
         "properties": {
+          "lesson_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Save the finished model into this lesson as a draft scene",
+            "title": "Lesson Id"
+          },
           "name": {
             "maxLength": 200,
             "minLength": 1,
@@ -2812,7 +3041,7 @@
             "type": "string"
           },
           "prompt": {
-            "maxLength": 2000,
+            "maxLength": 8000,
             "minLength": 5,
             "title": "Prompt",
             "type": "string"
@@ -4101,6 +4330,22 @@
         "title": "PairIn",
         "type": "object"
       },
+      "PartDeepDiveRequest": {
+        "properties": {
+          "part": {
+            "description": "Node name of the part",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Part",
+            "type": "string"
+          }
+        },
+        "required": [
+          "part"
+        ],
+        "title": "PartDeepDiveRequest",
+        "type": "object"
+      },
       "PartInsightRequest": {
         "properties": {
           "action": {
@@ -4137,6 +4382,36 @@
           "action"
         ],
         "title": "PartInsightRequest",
+        "type": "object"
+      },
+      "PartUpdate": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          }
+        },
+        "title": "PartUpdate",
         "type": "object"
       },
       "ProceduralSource": {
@@ -4195,6 +4470,205 @@
           "status"
         ],
         "title": "ProgressUpdate",
+        "type": "object"
+      },
+      "PromptDraftOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited": {
+            "title": "Edited",
+            "type": "boolean"
+          },
+          "focus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Focus"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "parts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Parts",
+            "type": "array"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "topic": {
+            "title": "Topic",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "subject",
+          "level",
+          "focus",
+          "title",
+          "prompt",
+          "parts",
+          "edited",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PromptDraftOut",
+        "type": "object"
+      },
+      "PromptDraftRequest": {
+        "description": "Topic for an AI-written, in-depth 3D build brief (3D library).",
+        "properties": {
+          "focus": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What to emphasise",
+            "title": "Focus"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. Year 9, university",
+            "title": "Level"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "topic": {
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic"
+        ],
+        "title": "PromptDraftRequest",
+        "type": "object"
+      },
+      "PromptDraftUpdate": {
+        "properties": {
+          "prompt": {
+            "anyOf": [
+              {
+                "maxLength": 8000,
+                "minLength": 5,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "PromptDraftUpdate",
+        "type": "object"
+      },
+      "ProviderHealthOut": {
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "ok",
+          "message"
+        ],
+        "title": "ProviderHealthOut",
         "type": "object"
       },
       "PublishChapterRequest": {
@@ -7074,6 +7548,30 @@
       }
     },
     "/api/v1/assets/generation-jobs": {
+      "get": {
+        "description": "Your running 3D generations, failures from the last 24 h and models finished in the last\n10 minutes (3D library \"In progress\"). Registered before /assets/{asset_id}.",
+        "operationId": "generation_jobs_api_v1_assets_generation_jobs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GenerationJobOut"
+                  },
+                  "title": "Response Generation Jobs Api V1 Assets Generation Jobs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Generation Jobs",
+        "tags": [
+          "3d"
+        ]
+      },
       "post": {
         "description": "Search the library first (GET /assets/search); generation costs provider credits.",
         "operationId": "generate_asset_api_v1_assets_generation_jobs_post",
@@ -7110,6 +7608,43 @@
           }
         },
         "summary": "Generate Asset",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/generation-jobs/{job_id}/dismiss": {
+      "post": {
+        "description": "Remove a finished or failed generation from the \"In progress\" list.",
+        "operationId": "dismiss_generation_api_v1_assets_generation_jobs__job_id__dismiss_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dismiss Generation",
         "tags": [
           "3d"
         ]
@@ -7162,6 +7697,41 @@
       }
     },
     "/api/v1/assets/{asset_id}": {
+      "delete": {
+        "description": "Delete a model you manage. 409 ASSET_IN_USE while a lesson scene still uses it.",
+        "operationId": "delete_asset_api_v1_assets__asset_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Asset",
+        "tags": [
+          "3d"
+        ]
+      },
       "get": {
         "operationId": "get_asset_api_v1_assets__asset_id__get",
         "parameters": [
@@ -7199,6 +7769,255 @@
           }
         },
         "summary": "Get Asset",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/ai/part-deep-dive": {
+      "post": {
+        "description": "In-depth AI study card for one part (3D viewer). Result in the job's `result.card`;\ncached per model version, so repeat requests are instant and free.",
+        "operationId": "part_deep_dive_api_v1_assets__asset_id__ai_part_deep_dive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartDeepDiveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Part Deep Dive",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/ai/part-descriptions": {
+      "post": {
+        "description": "AI writes descriptions for parts that have none (drafts for teacher review).",
+        "operationId": "write_part_descriptions_api_v1_assets__asset_id__ai_part_descriptions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Write Part Descriptions",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/ai/tour": {
+      "post": {
+        "description": "Guided-tour narration (intro + each part's link to the main topic) for the Studio.\nResult in the job's `result.tour`; cached per model version.",
+        "operationId": "model_tour_api_v1_assets__asset_id__ai_tour_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Model Tour",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/generation-jobs/retry": {
+      "post": {
+        "description": "Run this model's last generation again (same prompt and generator).",
+        "operationId": "retry_generation_api_v1_assets__asset_id__generation_jobs_retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Generation",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/parts/{part}": {
+      "patch": {
+        "description": "Edit one part's label/explanation in the latest version (Studio; owners only).",
+        "operationId": "update_asset_part_api_v1_assets__asset_id__parts__part__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "part",
+            "required": true,
+            "schema": {
+              "title": "Part",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Asset Part",
         "tags": [
           "3d"
         ]
@@ -7938,6 +8757,50 @@
         ]
       }
     },
+    "/api/v1/chapters/{chapter_id}/ai/split": {
+      "post": {
+        "description": "AI proposes 2-5 smaller chapters for a complex chapter. Result: `result.chapters`.",
+        "operationId": "propose_split_api_v1_chapters__chapter_id__ai_split_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Propose Split",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
     "/api/v1/chapters/{chapter_id}/assessments": {
       "get": {
         "operationId": "list_assessments_api_v1_chapters__chapter_id__assessments_get",
@@ -8334,6 +9197,64 @@
           }
         },
         "summary": "Chapter Source",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/chapters/{chapter_id}/split": {
+      "post": {
+        "description": "Insert the (teacher-edited) chapters right after the original, as drafts.",
+        "operationId": "apply_split_api_v1_chapters__chapter_id__split_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplySplitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChapterOut"
+                  },
+                  "title": "Response Apply Split Api V1 Chapters  Chapter Id  Split Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Apply Split",
         "tags": [
           "ai"
         ]
@@ -8852,6 +9773,54 @@
         "summary": "Course Analytics",
         "tags": [
           "analytics"
+        ]
+      }
+    },
+    "/api/v1/courses/{course_id}/chapter-overview": {
+      "get": {
+        "description": "Chapters with counts of lessons, 3D scenes, quizzes and objectives (course page).",
+        "operationId": "chapter_overview_api_v1_courses__course_id__chapter_overview_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChapterOverview"
+                  },
+                  "title": "Response Chapter Overview Api V1 Courses  Course Id  Chapter Overview Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chapter Overview",
+        "tags": [
+          "chapters"
         ]
       }
     },
@@ -11103,6 +12072,230 @@
           }
         },
         "summary": "Generators",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/three-d/prompt-drafts": {
+      "get": {
+        "description": "Your saved AI-written 3D prompts, newest first (optionally matching a topic).",
+        "operationId": "list_prompt_drafts_api_v1_three_d_prompt_drafts_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "topic",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Topic"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PromptDraftOut"
+                  },
+                  "title": "Response List Prompt Drafts Api V1 Three D Prompt Drafts Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Prompt Drafts",
+        "tags": [
+          "3d"
+        ]
+      },
+      "post": {
+        "description": "The LLM writes an in-depth build brief for a topic. Result: the job's `result`\n({title, prompt, parts}); the teacher edits it, then starts a generation job with it.",
+        "operationId": "draft_three_d_prompt_api_v1_three_d_prompt_drafts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Draft Three D Prompt",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/three-d/prompt-drafts/{draft_id}": {
+      "delete": {
+        "operationId": "delete_prompt_draft_api_v1_three_d_prompt_drafts__draft_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "draft_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Draft Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Prompt Draft",
+        "tags": [
+          "3d"
+        ]
+      },
+      "patch": {
+        "operationId": "update_prompt_draft_api_v1_three_d_prompt_drafts__draft_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "draft_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Draft Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptDraftUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptDraftOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Prompt Draft",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/three-d/provider-health": {
+      "get": {
+        "description": "Live check for providers that need a local tool (e.g. Blender running with its add-on).",
+        "operationId": "three_d_provider_health_api_v1_three_d_provider_health_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderHealthOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Three D Provider Health",
         "tags": [
           "3d"
         ]

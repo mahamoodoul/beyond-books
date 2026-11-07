@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_model: str = ""
     openai_base_url: str = ""  # optional: any OpenAI-compatible endpoint
-    llm_max_output_tokens: int = 8000
+    llm_max_output_tokens: int = 16000  # detailed 3D designs (20-30 parts) need more than 8k
     llm_timeout_s: float = 120
     llm_max_input_chars: int = 120_000
     ai_max_jobs_per_course_per_day: int = 40
@@ -66,6 +66,14 @@ class Settings(BaseSettings):
     tripo_api_key: str = ""
     meshy_api_key: str = ""
     three_d_max_generations_per_user_per_day: int = 5
+    # 3D provider "blender": Claude builds the model in a running Blender via Blender MCP
+    # (mcp-for-blender). Local/dev only: the MCP tools run Python inside that Blender.
+    blender_mcp_command: str = "uvx mcp-for-blender"
+    blender_host: str = "localhost"
+    blender_port: int = 9876
+    blender_model: str = ""  # empty = use EDU3D_ANTHROPIC_MODEL
+    blender_max_turns: int = 40  # Claude ↔ Blender tool round trips per model
+    blender_timeout_s: float = 540  # whole build, must stay below the job poll window (~10 min)
     # Optional pricing for cost estimates, per 1M tokens. Leave 0 = unknown; never guess.
     llm_input_price_per_mtok: float = 0
     llm_output_price_per_mtok: float = 0

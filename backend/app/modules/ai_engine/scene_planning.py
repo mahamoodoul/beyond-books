@@ -6,6 +6,7 @@ Model generation is never started automatically — it costs credits, so a teach
 """
 
 import json
+import logging
 import re
 import secrets
 import uuid
@@ -16,7 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.errors import AppError, NotFoundError
+from app.core.errors import AppError, ConflictError, NotFoundError
 from app.integrations.interfaces import (
     ProviderPermanentError,
     ProviderTaskStatus,
@@ -51,7 +52,7 @@ from app.modules.three_d.assets_service import (
     relevance,
 )
 from app.modules.three_d.contracts import SceneSpec
-from app.modules.three_d.models import ThreeDAsset, ThreeDAssetVersion
+from app.modules.three_d.models import ReviewStatus, ThreeDAsset, ThreeDAssetVersion
 from app.modules.three_d.procedural import GENERATORS
 from app.modules.three_d.scenes_service import (
     SceneInvalidError,
@@ -59,6 +60,8 @@ from app.modules.three_d.scenes_service import (
     usable_assets_for_course,
 )
 from app.modules.users.models import User
+
+log = logging.getLogger(__name__)
 
 CATALOGUE_MARKER = "CATALOGUE_JSON:"
 _ID = re.compile(r"[^a-z0-9_]+")
@@ -284,8 +287,15 @@ def check_generation_budget(db: Session, user: User) -> None:
 
 
 def start_generation(
-    db: Session, user: User, asset: ThreeDAsset, prompt: str, provider: str | None = None
+    db: Session,
+    user: User,
+    asset: ThreeDAsset,
+    prompt: str,
+    provider: str | None = None,
+    lesson_id: uuid.UUID | None = None,
 ) -> Job:
+    """Start a 3D generation. With `lesson_id` the finished model is saved straight into that
+    lesson as a draft scene (Chapter Studio "Generate new")."""
     check_generation_budget(db, user)
     job = create_job(
         db,
@@ -294,7 +304,11 @@ def start_generation(
         target_id=asset.id,
         requested_by=user.id,
         school_id=asset.owner_school_id,
-        input_snapshot={"prompt": prompt, "provider": provider},
+        input_snapshot={
+            "prompt": prompt,
+            "provider": provider,
+            "lesson_id": str(lesson_id) if lesson_id else None,
+        },
     )
     audit.record(
         db,
@@ -336,9 +350,100 @@ def generate_asset(db: Session, job: Job) -> dict[str, Any]:
         raise PendingJobError("Model generation is still running.")
     if task.status == ProviderTaskStatus.FAILED:
         raise PermanentJobError("GENERATION_FAILED", task.error_code or "Generation failed.")
-    return _store_output(
+    result = _store_output(
         db, job, asset, provider_name=provider.name, task=task, data=_fetch(provider, task)
     )
+    lesson_id = job.input_snapshot.get("lesson_id")
+    if lesson_id:
+        result["scene_id"] = _save_into_lesson(db, job, asset, uuid.UUID(str(lesson_id)))
+        result["lesson_id"] = str(lesson_id)
+    return result
+
+
+def asset_scene_spec(asset: ThreeDAsset, version: ThreeDAssetVersion) -> SceneSpec:
+    """A scene showing every named part of a library model, with its descriptions
+    (server-side twin of the frontend's specFromAsset)."""
+    meta = version.metadata_json
+    info = {p.get("name"): p for p in meta.get("parts", []) if isinstance(p, dict)}
+    components, explanations, seen = [], {}, set()
+    for mesh in meta.get("node_names", [])[:120]:
+        cid = _ident(mesh, "part")
+        while cid in seen:
+            cid = f"{cid}_x"[:64]
+        seen.add(cid)
+        p = info.get(mesh, {})
+        comp: dict[str, Any] = {
+            "component_id": cid,
+            "mesh_name": mesh,
+            "label": (str(p.get("label") or "") or mesh.replace("_", " ")).strip()[:200],
+            "actions": ["highlight", "show_explanation"],
+        }
+        text = str(p.get("description") or "").strip()
+        if text:
+            ref = f"exp_{cid}"[:64]
+            explanations[ref] = text[:2000]
+            comp["explanation_ref"] = ref
+        components.append(comp)
+    return SceneSpec.model_validate(
+        {
+            "schema_version": "1.0",
+            "scene_id": f"lesson_{asset.slug}"[:64],
+            "title": asset.name[:200],
+            "asset_refs": [{"asset_id": asset.slug, "version": version.version_number}],
+            "camera": {"preset": "three_quarter", "min_distance": 2, "max_distance": 12},
+            "components": components,
+            "controls": ["rotate", "zoom", "select_component"],
+            "explanations": explanations,
+        }
+    )
+
+
+def _save_into_lesson(
+    db: Session, job: Job, asset: ThreeDAsset, lesson_id: uuid.UUID
+) -> str | None:
+    """Save the finished model into the lesson it was generated for, as a DRAFT scene.
+
+    The teacher generated it for their own lesson, so the model is approved on their behalf;
+    the part descriptions stay marked as AI drafts to review, and nothing is published."""
+    lesson = db.get(Lesson, lesson_id)
+    chapter = db.get(Chapter, lesson.chapter_id) if lesson else None
+    course = db.get(Course, chapter.course_id) if chapter else None
+    version = db.scalar(
+        select(ThreeDAssetVersion).where(
+            ThreeDAssetVersion.asset_id == asset.id,
+            ThreeDAssetVersion.version_number == asset.latest_version,
+        )
+    )
+    if lesson is None or course is None or version is None:
+        return None
+    try:
+        asset.review_status = ReviewStatus.APPROVED
+        asset.reviewed_by = job.requested_by
+        asset.reviewed_at = datetime.now(UTC)
+        scene = save_ai_scene(
+            db,
+            lesson,
+            course,
+            asset_scene_spec(asset, version),
+            "Generated for this lesson in the Chapter Studio.",
+            job.requested_by,
+        )
+        audit.record(
+            db,
+            action="asset.saved_into_lesson",
+            resource_type="three_d_asset",
+            resource_id=asset.id,
+            actor_user_id=job.requested_by,
+            metadata={"lesson_id": str(lesson.id), "scene_id": str(scene.id)},
+        )
+        db.commit()
+        return str(scene.id)
+    except Exception:  # the model is saved in the library either way
+        db.rollback()
+        log.warning(
+            "could not add generated asset %s to lesson %s", asset.id, lesson_id, exc_info=True
+        )
+        return None
 
 
 def _fetch(provider: Any, task: ThreeDTask) -> bytes:
@@ -376,8 +481,17 @@ def _store_output(
     except InvalidAssetError as exc:
         raise PermanentJobError("INVALID_MODEL", f"Provider output rejected: {exc}") from exc
     if task.part_metadata:  # labels/descriptions → explanations when a scene is created
-        v.metadata_json = {**v.metadata_json, "parts": task.part_metadata}
+        parts = [
+            {**p, "source": "ai", "reviewed": False} if p.get("description") else dict(p)
+            for p in task.part_metadata
+        ]
+        v.metadata_json = {**v.metadata_json, "parts": parts}
     get_storage().put_bytes(v.storage_key, data, GLB_MIME)
+    # Every part should have a description for students: AI writes the missing ones as drafts
+    # for the teacher to review in the 3D library (best effort; never fails the generation).
+    from app.modules.ai_engine.part_descriptions import fill_missing_quietly
+
+    fill_missing_quietly(db, asset, v, job)
     u = task.llm_usage  # LLM-backed providers report tokens; vendors report credits
     db.add(
         AIUsageRecord(
@@ -413,3 +527,117 @@ def get_generation_asset(db: Session, user: User, asset_id: uuid.UUID) -> ThreeD
     if asset is None:
         raise NotFoundError()
     return asset
+
+
+# ------------------------------------------------- 3D library "In progress" list
+ACTIVE_STATUSES = ("queued", "processing", "retrying", "validating")
+
+
+def list_generation_jobs(db: Session, user: User) -> list[dict[str, Any]]:
+    """The teacher's 3D generations that are running, plus recent results: failures from the
+    last 24 h (to retry) and models finished in the last 10 minutes (shown as "ready")."""
+    now = datetime.now(UTC)
+    jobs = db.scalars(
+        select(Job)
+        .where(
+            Job.requested_by == user.id,
+            Job.job_type == JobType.THREE_D_ASSET_GENERATION,
+            Job.created_at >= now - timedelta(days=1),
+        )
+        .order_by(Job.created_at.desc())
+        .limit(30)
+    )
+    out: list[dict[str, Any]] = []
+    seen: set[uuid.UUID] = set()
+    for j in jobs:  # newest first: only a model's latest attempt counts (a retry replaces it)
+        if j.target_id in seen:
+            continue
+        seen.add(j.target_id)
+        if (j.result or {}).get("dismissed"):
+            continue
+        recent_done = (
+            j.status == "completed"
+            and j.finished_at is not None
+            and j.finished_at >= now - timedelta(minutes=10)
+        )
+        if j.status not in ACTIVE_STATUSES and j.status != "failed" and not recent_done:
+            continue
+        asset = db.get(ThreeDAsset, j.target_id)
+        if asset is None:  # deleted from the library meanwhile
+            continue
+        snap = j.input_snapshot or {}
+        out.append(
+            {
+                "job_id": j.id,
+                "asset_id": asset.id,
+                "asset_name": asset.name,
+                "provider": snap.get("provider") or j.provider or get_settings().three_d_provider,
+                "status": j.status,
+                "error_message": j.error_message if j.status == "failed" else None,
+                "created_at": j.created_at,
+                "finished_at": j.finished_at,
+                "prompt_preview": str(snap.get("prompt", ""))[:200],
+                "has_model": asset.latest_version > 0,
+                "lesson_id": snap.get("lesson_id"),
+                "lesson_title": _lesson_title(db, snap.get("lesson_id")),
+                "scene_id": (j.result or {}).get("scene_id"),
+            }
+        )
+    return out
+
+
+def dismiss_generation(db: Session, user: User, job_id: uuid.UUID) -> None:
+    """Hide a finished/failed generation from "In progress". A failed build's empty library
+    entry (no model file) is removed with it."""
+    job = db.get(Job, job_id)
+    if (
+        job is None
+        or job.requested_by != user.id
+        or job.job_type != JobType.THREE_D_ASSET_GENERATION
+    ):
+        raise NotFoundError()
+    if job.status in ACTIVE_STATUSES:
+        raise ConflictError("This model is still being generated.")
+    job.result = {**(job.result or {}), "dismissed": True}
+    asset = db.get(ThreeDAsset, job.target_id)
+    if asset is not None and asset.latest_version == 0 and asset.created_by == user.id:
+        db.delete(asset)
+    db.commit()
+
+
+def _lesson_title(db: Session, lesson_id: Any) -> str | None:
+    if not lesson_id:
+        return None
+    lesson = db.get(Lesson, uuid.UUID(str(lesson_id)))
+    return lesson.title if lesson else None
+
+
+def retry_generation(db: Session, user: User, asset_id: uuid.UUID) -> Job:
+    """Run the last generation of this library entry again (same prompt and generator)."""
+    asset = get_asset_for(db, user, asset_id, manage=True)
+    if asset is None:
+        raise NotFoundError()
+    last = db.scalar(
+        select(Job)
+        .where(
+            Job.job_type == JobType.THREE_D_ASSET_GENERATION,
+            Job.target_id == asset.id,
+            Job.requested_by == user.id,
+        )
+        .order_by(Job.created_at.desc())
+        .limit(1)
+    )
+    if last is None:
+        raise NotFoundError("This model was not generated, so there is nothing to retry.")
+    if last.status in ACTIVE_STATUSES:
+        raise ConflictError("This model is still being generated.")
+    snap = last.input_snapshot or {}
+    lesson = snap.get("lesson_id")
+    return start_generation(
+        db,
+        user,
+        asset,
+        str(snap["prompt"]),
+        snap.get("provider"),
+        uuid.UUID(str(lesson)) if lesson else None,
+    )

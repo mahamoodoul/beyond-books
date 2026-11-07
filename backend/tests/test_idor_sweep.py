@@ -91,6 +91,10 @@ def world(login: Login, db: Session) -> dict[str, str]:
     t.put(u["url"], content=data, headers=u["headers"])
     t.post(f"/api/v1/assets/{a['id']}/versions/1/complete")
     ids["asset_id"] = a["id"]
+    ids["part"] = "heart"
+    ids["draft_id"] = t.post("/api/v1/three-d/prompt-drafts", json={"topic": "heart"}).json()[
+        "result"
+    ]["draft_id"]
     asm = t.post(f"/api/v1/chapters/{ch}/assessments", json={"title": "Q"}).json()
     t.put(
         f"/api/v1/assessments/{asm['id']}/questions",
@@ -158,6 +162,19 @@ BODIES: dict[tuple[str, str], Any] = {
     ("post", "/api/v1/evaluations/{evaluation_id}/review"): {"final_score": 0},
     ("post", "/api/v1/chapters/{chapter_id}/ai/scenes"): {"only_missing": False},
     ("post", "/api/v1/chapters/{chapter_id}/publish"): {"include_course": True},
+    ("post", "/api/v1/assets/{asset_id}/ai/part-deep-dive"): {"part": "heart"},
+    ("patch", "/api/v1/assets/{asset_id}/parts/{part}"): {"label": "Heart"},
+    ("post", "/api/v1/assets/{asset_id}/ai/tour"): None,
+    ("post", "/api/v1/assets/generation-jobs/{job_id}/dismiss"): None,
+    ("patch", "/api/v1/three-d/prompt-drafts/{draft_id}"): {"title": "x"},
+    ("post", "/api/v1/assets/{asset_id}/generation-jobs/retry"): None,
+    ("post", "/api/v1/assets/{asset_id}/ai/part-descriptions"): None,
+    ("post", "/api/v1/chapters/{chapter_id}/split"): {
+        "chapters": [
+            {"title": "A", "description": "", "source_refs": [], "objectives": []},
+            {"title": "B", "description": "", "source_refs": [], "objectives": []},
+        ]
+    },
     ("post", "/api/v1/scenes/{scene_id}/ai/part-insight"): {
         "component_id": "right_atrium",
         "action": "simplify",

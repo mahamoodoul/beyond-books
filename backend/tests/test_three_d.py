@@ -215,3 +215,44 @@ def test_other_teacher_cannot_touch_scene(login: Login, seeded: None) -> None:
     assert other.get(f"/api/v1/scenes/{sid}/resolved").status_code == 404
     assert other.post(f"/api/v1/scenes/{sid}/publish").status_code == 404
     assert other.get(f"/api/v1/lessons/{lid}/scenes").status_code == 404
+
+
+def test_delete_asset(login: Login) -> None:
+    from app.core.config import get_settings
+
+    t = login("t@example.com")
+    a = _upload_asset(t, build_heart_glb())["complete"].json()
+    blob = Path(get_settings().local_storage_dir) / f"assets/{a['id']}/v1/model.glb"
+    assert blob.exists()
+
+    # Others can't delete it: another teacher can't see it, a student isn't a teacher.
+    assert login("other@example.com").delete(f"/api/v1/assets/{a['id']}").status_code == 404
+    assert login("s@example.com", "student").delete(f"/api/v1/assets/{a['id']}").status_code == 403
+
+    r = t.delete(f"/api/v1/assets/{a['id']}")
+    assert r.status_code == 204, r.text
+    assert t.get(f"/api/v1/assets/{a['id']}").status_code == 404
+    assert all(x["id"] != a["id"] for x in t.get("/api/v1/assets").json())
+    assert not blob.exists()  # the stored model file is removed too
+
+
+def test_delete_asset_refused_while_a_scene_uses_it(login: Login) -> None:
+    t = login("t@example.com")
+    a = _upload_asset(t, build_heart_glb())["complete"].json()
+    t.post(f"/api/v1/assets/{a['id']}/review", json={"decision": "approved"})
+    _, _, lid = _lesson(t, publish=True)
+    scene = t.post(
+        f"/api/v1/lessons/{lid}/scenes",
+        json={"spec": {**heart_spec(a["slug"]), "title": "Heart 3D"}},
+    ).json()
+    t.post(f"/api/v1/scenes/{scene['id']}/publish")
+
+    r = t.delete(f"/api/v1/assets/{a['id']}")
+    assert r.status_code == 409, r.text
+    err = r.json()["error"]
+    assert err["code"] == "ASSET_IN_USE" and "Heart 3D" in err["message"]
+    assert err["details"] == [{"scene_id": scene["id"], "title": "Heart 3D"}]
+
+    # Once the scene no longer exists, the model can be deleted.
+    assert t.delete(f"/api/v1/scenes/{scene['id']}").status_code == 204
+    assert t.delete(f"/api/v1/assets/{a['id']}").status_code == 204

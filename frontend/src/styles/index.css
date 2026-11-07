@@ -1998,3 +1998,14 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 380px) {
   .mobile-nav-link { flex-direction: row; min-height: 37px; }
 }
+/* Login: student/teacher choice + demo sign-in */
+.login-role-options { grid-template-columns: 1fr 1fr; margin-bottom: 4px; }
+.login-role-options legend { grid-column: 1 / -1; }
+.login-role-options .role-card { min-height: 64px; text-align: left; cursor: pointer; }
+.login-demo { display: grid; gap: 4px; margin-top: 12px; }
+.login-demo-button { display: flex; width: 100%; min-height: 42px; justify-content: center; }
+.login-demo .login-dev-hint { margin-top: 4px; }
+@media (max-width: 520px) { .login-role-options { grid-template-columns: 1fr; } }
+/* Leave room for the 72px logo bar above the sign-in card (it is absolutely positioned). */
+.login-card { padding-top: 128px; padding-bottom: 48px; }
+@media (max-width: 640px) { .login-page { padding-top: 104px; padding-bottom: calc(max(176px, 26vh) + 20px); } .login-card { padding-top: 12px; } }
