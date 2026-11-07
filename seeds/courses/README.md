@@ -8,14 +8,19 @@ models they use (`files/`, Git LFS) and the saved AI prompts. Importing makes **
 
 ```bash
 git pull
-make seed-courses EMAIL=you@example.com PASSWORD=choose-a-password
+make seed-courses EMAIL=you@example.com PASSWORD=choose-a-password \
+                  STUDENT=student@example.com STUDENT_PASSWORD=choose-another-one   # student part optional
 ```
 
 That's it. It downloads the course PDFs and 3D models (Git LFS), updates the database, creates
 the teacher account if it doesn't exist yet (password: 12+ characters), and loads the courses.
 Then log in with that email and password and open **My courses**.
 
-- Already have an account? Leave out `PASSWORD`.
+With `STUDENT=...`, it also creates that **student** account (if new) and enrols it in all four
+courses; log in as the student to see the student side (published courses only).
+
+- Already have an account? Leave out its password (`PASSWORD` / `STUDENT_PASSWORD`).
+- Teacher and student must be different accounts of the right type.
 - Running it again is safe: what is already there is skipped.
 - Needs Git LFS once per computer: `brew install git-lfs && git lfs install`.
 

@@ -203,8 +203,15 @@ Physics**. They contain chapters, the extracted textbook text, lessons, quizzes,
 With the app set up (Option A running, or Option B/C installed), run:
 
 ```bash
-make seed-courses EMAIL=you@example.com PASSWORD=choose-a-password
+make seed-courses EMAIL=you@example.com PASSWORD=choose-a-password \
+                  STUDENT=student@example.com STUDENT_PASSWORD=choose-another-one
 ```
+
+`EMAIL`/`PASSWORD` is the **teacher** who owns the courses. `STUDENT`/`STUDENT_PASSWORD` is
+optional: a **student** account enrolled in all four courses, so you can try the student side
+straight away. Each account is created if it doesn't exist (password 12+ characters); for an
+account you already have, leave its password out. A student email can't be used as the teacher,
+and the other way round.
 
 This one command:
 
@@ -240,9 +247,9 @@ There are no built-in demo logins. Create accounts in the app:
 | Who | How |
 |---|---|
 | Teacher | `make seed-courses EMAIL=... PASSWORD=...` (above), or **Register** → *Teacher* |
-| Student | **Register** → *Student* (e.g. `student@example.com`) |
+| Student | `make seed-courses EMAIL=... STUDENT=... STUDENT_PASSWORD=...` (created and enrolled in all seeded courses), or **Register** → *Student* |
 
-To give a student a course:
+To give any other student a course:
 
 1. As the teacher, open the course and **publish** it, with its chapters, lessons and 3D scenes.
 2. Open the **Students** tab, enter the student's email and click **Enroll**.
