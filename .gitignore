@@ -23,6 +23,12 @@ dist/
 .idea/
 .vscode/
 
+# Blender auto-backups
+*.blend1
+
+# High-detail GLBs are too large for git; regenerate from the .blend (export_web.py)
+packages/demo-assets/glb/plant_cell_v3.glb
+
 # Local object storage (dev)
 .storage/
 

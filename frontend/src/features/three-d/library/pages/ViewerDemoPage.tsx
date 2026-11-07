@@ -7,10 +7,19 @@ import {
   fixtureScenes,
 } from "@/features/three-d/library/runtime/fixtureRegistry";
 
+// prefer the high-detail cell; its GLB is local-only, so fall back to the detailed one
+const DEFAULT_SCENES = ["scene_plant_cell_03", "scene_plant_cell_02"];
+// hide scenes whose GLB isn't present in this checkout (e.g. the uncommitted high-detail cell)
+const scenes = fixtureScenes.filter((s) =>
+  (s.asset_refs ?? []).every((ref) => fixtureRegistry.resolve(ref) !== null),
+);
+
 /** Development page: every scene fixture rendered by the viewer (design Phase 4). */
 export function ViewerDemoPage() {
   const { sceneId } = useParams();
-  const scene = fixtureScenes.find((s) => s.scene_id === sceneId) ?? fixtureScenes[0];
+  const wanted = sceneId ? [sceneId] : DEFAULT_SCENES;
+  const scene =
+    wanted.map((id) => scenes.find((s) => s.scene_id === id)).find(Boolean) ?? scenes[0];
 
   return (
     <section className="space-y-4">
@@ -22,19 +31,22 @@ export function ViewerDemoPage() {
           </p>
         </div>
         <nav aria-label="Demo scenes" className="flex flex-wrap gap-1.5">
-          {fixtureScenes.map((s) => (
+          {scenes.map((s) => (
             <NavLink
               key={s.scene_id}
               to={`/viewer/${s.scene_id}`}
               className={() =>
                 `rounded-full px-3 py-1 text-sm ${
                   s.scene_id === scene?.scene_id
-                    ? "bg-navy-700 text-white"
-                    : "bg-white text-slate-700 shadow-sm hover:bg-slate-50"
+                    ? "bg-navy-700"
+                    : "bg-white shadow-sm hover:bg-slate-50"
                 }`
               }
             >
-              {s.title}
+              {/* colour on a span: the app's unlayered `a { color: inherit }` beats utilities */}
+              <span className={s.scene_id === scene?.scene_id ? "text-white" : "text-slate-700"}>
+                {s.title}
+              </span>
             </NavLink>
           ))}
         </nav>

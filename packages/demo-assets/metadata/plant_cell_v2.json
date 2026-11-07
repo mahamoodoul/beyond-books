@@ -1,0 +1,224 @@
+{
+  "asset_id": "plant_cell_v2",
+  "version": 1,
+  "name": "Plant cell (detailed, cutaway)",
+  "description": "Cutaway plant cell with cell wall and plasmodesmata, membrane, central vacuole, nucleus (pores, nucleolus, chromatin), chloroplasts (grana, starch), mitochondria (cristae), rough and smooth ER, Golgi apparatus, ribosomes, peroxisomes and cortical microtubules.",
+  "subject": "biology",
+  "category": "cell_biology",
+  "format": "glb",
+  "object_key": "demo-assets/glb/plant_cell_v2.glb",
+  "preview_key": "demo-assets/previews/plant_cell_v2.png",
+  "size_bytes": 9614160,
+  "content_hash": "sha256:d5086a4b164071adfe43b1053894781df6ae8da9e13e6dc9277e03e9260b8c99",
+  "triangle_count": 494988,
+  "units": "arbitrary (not to scale)",
+  "bounds": {
+    "min": [
+      -3.083,
+      -2.083,
+      -2.083
+    ],
+    "max": [
+      3.083,
+      2.083,
+      2.083
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "cell_wall",
+      "label": "Cell wall",
+      "explode_offset": [
+        0.0,
+        1.8,
+        -7.0
+      ],
+      "label_anchor": [
+        -2.0,
+        2.02,
+        -1.0
+      ]
+    },
+    {
+      "mesh_name": "cell_membrane",
+      "label": "Cell membrane",
+      "explode_offset": [
+        0.0,
+        0.9,
+        -3.5
+      ],
+      "label_anchor": [
+        -2.0,
+        -0.9,
+        1.82
+      ]
+    },
+    {
+      "mesh_name": "central_vacuole",
+      "label": "Central vacuole",
+      "explode_offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "label_anchor": [
+        1.051,
+        -0.546,
+        1.105
+      ]
+    },
+    {
+      "mesh_name": "nucleus",
+      "label": "Nucleus",
+      "explode_offset": [
+        -4.2,
+        0.2,
+        1.2
+      ],
+      "label_anchor": [
+        -0.006,
+        0.63,
+        0.006
+      ]
+    },
+    {
+      "mesh_name": "chloroplasts",
+      "label": "Chloroplasts",
+      "explode_offset": [
+        6.2,
+        0.3,
+        0.8
+      ],
+      "label_anchor": [
+        0.026,
+        1.64,
+        0.614
+      ]
+    },
+    {
+      "mesh_name": "mitochondria",
+      "label": "Mitochondria",
+      "explode_offset": [
+        5.6,
+        -4.3,
+        0.8
+      ],
+      "label_anchor": [
+        1.163,
+        1.658,
+        0.255
+      ]
+    },
+    {
+      "mesh_name": "rough_er",
+      "label": "Rough ER",
+      "explode_offset": [
+        -4.0,
+        -4.0,
+        0.8
+      ],
+      "label_anchor": [
+        -0.701,
+        -0.775,
+        0.051
+      ]
+    },
+    {
+      "mesh_name": "smooth_er",
+      "label": "Smooth ER",
+      "explode_offset": [
+        -1.2,
+        3.1,
+        1.0
+      ],
+      "label_anchor": [
+        0.0,
+        0.35,
+        0.0
+      ]
+    },
+    {
+      "mesh_name": "golgi_apparatus",
+      "label": "Golgi apparatus",
+      "explode_offset": [
+        -1.6,
+        -2.7,
+        1.6
+      ],
+      "label_anchor": [
+        0.15,
+        -0.55,
+        0.0
+      ]
+    },
+    {
+      "mesh_name": "ribosomes",
+      "label": "Ribosomes",
+      "explode_offset": [
+        0.6,
+        -4.6,
+        1.0
+      ],
+      "label_anchor": [
+        0.386,
+        1.654,
+        1.618
+      ]
+    },
+    {
+      "mesh_name": "peroxisomes",
+      "label": "Peroxisomes",
+      "explode_offset": [
+        -6.3,
+        4.5,
+        0.8
+      ],
+      "label_anchor": [
+        -1.1,
+        0.33,
+        1.325
+      ]
+    },
+    {
+      "mesh_name": "cytoskeleton",
+      "label": "Cytoskeleton",
+      "explode_offset": [
+        5.8,
+        4.8,
+        -0.8
+      ],
+      "label_anchor": [
+        2.317,
+        1.604,
+        -0.228
+      ]
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "packages/demo-assets/source/plant_cell_v2.blend (Blender 5.2, glTF exporter)",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Schematic and not to scale; organelle counts and sizes are illustrative. Needs botanist review before student use."
+}

@@ -8,8 +8,17 @@ import { loadGlb } from "@/features/three-d/library/runtime/assetLoader";
 import { computeExplodeOffsets, explodedBounds } from "@/features/three-d/library/runtime/explode";
 import { buildProcedural, type ProceduralInstance } from "@/features/three-d/library/runtime/procedural";
 import { disposeObject3D } from "@/features/three-d/library/runtime/resourceDisposer";
+import { QUALITY, type QualityTier } from "@/features/three-d/library/runtime/quality";
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
+
+import {
+  PostEffects,
+  QualityMonitor,
+  RendererToneMapping,
+  StudioEnvironment,
+  StudioLights,
+} from "./RenderSettings";
 
 export type CameraCommand =
   | { kind: "fit"; key: number }
@@ -25,22 +34,37 @@ export interface SceneCanvasProps {
   onError: (message: string) => void;
   /** Called on every animation step / status change detected by the render loop. */
   onAnimationTick?: () => void;
+  quality: QualityTier;
+  /** Set when quality is "auto": called when the frame rate drops. */
+  onQualityDecline?: () => void;
 }
 
 export function SceneCanvas(props: SceneCanvasProps) {
+  const q = QUALITY[props.quality];
+  const [ready, setReady] = useState(false);
   return (
     <Canvas
       className="touch-none"
-      dpr={[1, 2]}
+      dpr={q.dpr}
+      shadows={q.shadows ? "soft" : false}
       camera={{ fov: 40, near: 0.05, far: 2000, position: [6, 4, 6] }}
-      gl={{ antialias: true, preserveDrawingBuffer: false }}
+      // the composer does its own anti-aliasing; native MSAA only matters on the low tier
+      gl={{ antialias: !q.postprocessing, preserveDrawingBuffer: false }}
       onPointerMissed={() => props.onSelect(null)}
     >
       <color attach="background" args={["#0b1630"]} />
-      <hemisphereLight args={["#e8f0ff", "#1c2540", 1.1]} />
-      <directionalLight position={[6, 10, 8]} intensity={2.2} />
-      <directionalLight position={[-8, 3, -6]} intensity={0.7} color="#bcd0ff" />
-      <SceneContent {...props} />
+      <StudioEnvironment />
+      <RendererToneMapping enabled={!q.postprocessing} />
+      <StudioLights runtime={props.runtime} tier={props.quality} ready={ready} />
+      <SceneContent
+        {...props}
+        onReady={(info) => {
+          setReady(true);
+          props.onReady(info);
+        }}
+      />
+      {ready && <PostEffects runtime={props.runtime} tier={props.quality} />}
+      <QualityMonitor enabled={!!props.onQualityDecline} onDecline={() => props.onQualityDecline?.()} />
     </Canvas>
   );
 }
@@ -88,6 +112,16 @@ function SceneContent({
         const authored: Record<string, Vec3 | undefined> = {};
         for (const c of scene.components) authored[c.componentId] = c.meta?.explode_offset;
         rt.offsets = computeExplodeOffsets(rt.bounds, authored);
+        // opaque parts cast shadows; see-through shells would darken everything inside them
+        for (const r of built) {
+          r.traverse((o) => {
+            const mesh = o as THREE.Mesh;
+            if (!mesh.isMesh) return;
+            const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            mesh.castShadow = mats.every((m) => !m.transparent && m.opacity >= 0.999);
+            mesh.receiveShadow = true;
+          });
+        }
         setRoots(built);
         onReady({ missing });
       } catch (err) {
@@ -153,15 +187,8 @@ function SceneContent({
     gl.domElement.style.cursor = "";
   };
 
-  if (!roots) {
-    return (
-      <Html center>
-        <p className="whitespace-nowrap rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
-          Loading 3D model…
-        </p>
-      </Html>
-    );
-  }
+  // the loading message is a DOM overlay in SceneViewer, not an <Html> root inside the canvas
+  if (!roots) return null;
   return (
     <>
       {roots.map((r) => (
@@ -188,6 +215,7 @@ const PRESET_DIRECTIONS: Record<string, Vec3> = {
   top: [0, 1, 0.02],
   three_quarter: [1, 0.7, 1],
 };
+const EXPLODED_DIRECTION: Vec3 = [0.22, 0.4, 1];
 
 interface Tween {
   fromPos: THREE.Vector3;
@@ -238,25 +266,32 @@ function CameraRig({
     return (radius / Math.sin(Math.min(half, Math.atan(Math.tan(half) * aspect)))) * 1.05;
   };
 
-  const fit = (usePreset: boolean) => {
+  /**
+   * Frame the whole scene. Assembled: the scene's camera preset. Exploded: a near-frontal view,
+   * because exploded layouts are spread out like a diagram facing the viewer (+Z).
+   */
+  const fit = () => {
     const rt = runtime.current;
     const b = explodedBounds(rt.bounds, rt.offsets, rt.explodeTarget);
-    const dir = usePreset
-      ? new THREE.Vector3(...(PRESET_DIRECTIONS[spec.preset ?? "three_quarter"] ?? [1, 0.7, 1]))
-          .normalize()
-      : undefined;
-    moveTo(new THREE.Vector3(...b.center), fitDistance(b.radius), dir);
+    const exploded = rt.explodeTarget >= 0.5;
+    const dir = new THREE.Vector3(
+      ...(exploded
+        ? EXPLODED_DIRECTION
+        : (PRESET_DIRECTIONS[spec.preset ?? "three_quarter"] ?? [1, 0.7, 1])),
+    ).normalize();
+    // the bounding sphere over-estimates deep exploded layouts; frame a little tighter
+    moveTo(new THREE.Vector3(...b.center), fitDistance(b.radius) * (exploded ? 0.8 : 1), dir);
   };
 
   // first fit uses the scene's camera preset and jumps there
   useEffect(() => {
-    fit(true);
+    fit();
     if (tween.current) tween.current.duration = 0;
   }, []);
 
   useEffect(() => {
     if (command.key === 0) return;
-    if (command.kind === "fit") fit(false);
+    if (command.kind === "fit") fit();
     else focusOn(command.componentId);
   }, [command]);
 
@@ -364,9 +399,10 @@ function Labels({
                 type="button"
                 tabIndex={canSelect(c.componentId) ? 0 : -1}
                 onClick={() => canSelect(c.componentId) && onSelect(c.componentId)}
-                className="pointer-events-auto whitespace-nowrap rounded-md border border-white/15 bg-navy-950/80 px-2 py-0.5 text-xs font-medium text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-navy-700 focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-300 group-data-[state=on]:bg-amber-400 group-data-[state=on]:text-navy-950"
+                className="pointer-events-auto whitespace-nowrap rounded-md border border-white/15 bg-navy-950/80 px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm transition-colors hover:bg-navy-700 focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-300 group-data-[state=on]:bg-amber-400"
               >
-                {c.label}
+                {/* colour on a span: the app's unlayered `button { color: inherit }` beats utilities */}
+                <span className="text-white group-data-[state=on]:text-navy-950">{c.label}</span>
               </button>
               <span className="h-3 w-px bg-white/60" aria-hidden />
               <span className="size-1.5 rounded-full bg-white" aria-hidden />

@@ -14,7 +14,7 @@ const glbs = import.meta.glob<string>("../../../../../../packages/demo-assets/gl
   import: "default",
 });
 const fixtures = import.meta.glob<SceneSpec | AnimationSpec>(
-  "../../../../../packages/three-d-contracts/fixtures/*.json",
+  "../../../../../../packages/three-d-contracts/fixtures/*.json",
   { eager: true, import: "default" },
 );
 
