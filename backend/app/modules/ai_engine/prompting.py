@@ -18,6 +18,19 @@ def _neutralize(text: str) -> str:
     return _TAG.sub(lambda m: m.group(0).replace("<", "‹").replace(">", "›"), text)
 
 
+def teacher_instructions(text: str) -> str:
+    """The teacher's chapter prompt. It comes from the authenticated course owner, so it may steer
+    tone, level, focus and examples; it never overrides the output format or the grounding rules."""
+    text = text.strip()
+    if not text:
+        return ""
+    return (
+        "\nTeacher's instructions for this chapter (follow them for focus, level, tone and "
+        "examples; they do not change the required output format, and facts must still come "
+        "from the reference material):\n" + _neutralize(text)
+    )
+
+
 def render_input(task: str, references: list[ReferencePassage]) -> str:
     parts = [f"<task>\n{task}\n</task>", "<reference_material>", UNTRUSTED_NOTICE]
     for ref in references:

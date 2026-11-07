@@ -17,6 +17,9 @@ REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "packages" / "three-d-contracts" / "fixtures"
 ASSETS = REPO / "packages" / "demo-assets"
 
+# GLBs are stored in Git LFS. A checkout without `git lfs pull` holds small pointer files.
+LFS_POINTER = b"version https://git-lfs.github.com/spec/"
+
 # asset_id -> (scene fixtures, animation fixtures)
 CASES = {
     "human_heart_v1": (
@@ -24,6 +27,8 @@ CASES = {
         ["animation_blood_flow_01.json", "animation_double_circulation_01.json"],
     ),
     "plant_cell_v1": (["scene_plant_cell_01.json"], ["animation_plant_cell_tour_01.json"]),
+    "plant_cell_v2": (["scene_plant_cell_02.json"], ["animation_plant_cell_tour_01.json"]),
+    "plant_cell_v3": (["scene_plant_cell_03.json"], ["animation_plant_cell_tour_01.json"]),
     "water_molecule_v1": (
         ["scene_water_molecule_01.json"],
         ["animation_water_shape_01.json"],
@@ -45,6 +50,8 @@ def test_demo_asset_matches_metadata_and_fixtures(asset_id: str) -> None:
     meta = json.loads((ASSETS / "metadata" / f"{asset_id}.json").read_text())
     glb = ASSETS / "glb" / f"{asset_id}.glb"
     raw = glb.read_bytes()
+    if raw.startswith(LFS_POINTER):
+        pytest.fail(f"{glb.name} is a Git LFS pointer; run `git lfs pull` (CI: checkout lfs: true)")
     assert meta["content_hash"] == "sha256:" + hashlib.sha256(raw).hexdigest()
     assert meta["size_bytes"] == len(raw)
 

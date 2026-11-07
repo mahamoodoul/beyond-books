@@ -2,14 +2,24 @@ import { Html, Line, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState, type ComponentRef, type RefObject } from "react";
 import * as THREE from "three";
+import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { deriveFrame } from "@/features/three-d/library/runtime/animation";
 import { loadGlb } from "@/features/three-d/library/runtime/assetLoader";
 import { computeExplodeOffsets, explodedBounds } from "@/features/three-d/library/runtime/explode";
 import { buildProcedural, type ProceduralInstance } from "@/features/three-d/library/runtime/procedural";
 import { disposeObject3D } from "@/features/three-d/library/runtime/resourceDisposer";
+import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/library/runtime/quality";
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
+
+import {
+  PostEffects,
+  QualityMonitor,
+  RendererToneMapping,
+  StudioEnvironment,
+  StudioLights,
+} from "./RenderSettings";
 
 export type CameraCommand =
   | { kind: "fit"; key: number }
@@ -25,22 +35,53 @@ export interface SceneCanvasProps {
   onError: (message: string) => void;
   /** Called on every animation step / status change detected by the render loop. */
   onAnimationTick?: () => void;
+  quality: QualityTier;
+  /** Set when quality is "auto": called when the frame rate drops. */
+  onQualityDecline?: () => void;
 }
 
 export function SceneCanvas(props: SceneCanvasProps) {
+  const q = QUALITY[props.quality];
+  const [ready, setReady] = useState(false);
+  // judge performance only once loading, BVH builds and shader compiles are behind us
+  const [monitoring, setMonitoring] = useState(false);
+  useEffect(() => {
+    if (!ready) return;
+    const t = setTimeout(() => setMonitoring(true), AUTO_QUALITY.startDelayMs);
+    return () => clearTimeout(t);
+  }, [ready]);
   return (
     <Canvas
       className="touch-none"
-      dpr={[1, 2]}
+      // render only when something changes: an idle view costs nothing (GPU, battery, fans)
+      frameloop="demand"
+      dpr={q.dpr}
+      shadows={q.shadows ? "soft" : false}
       camera={{ fov: 40, near: 0.05, far: 2000, position: [6, 4, 6] }}
-      gl={{ antialias: true, preserveDrawingBuffer: false }}
+      // gl options apply once at creation; keep them fixed across tiers
+      gl={{ antialias: true, preserveDrawingBuffer: false, powerPreference: "high-performance" }}
+      onCreated={({ raycaster }) => {
+        // with a BVH per mesh, stop at the first hit instead of collecting every triangle
+        raycaster.firstHitOnly = true;
+      }}
       onPointerMissed={() => props.onSelect(null)}
     >
       <color attach="background" args={["#0b1630"]} />
-      <hemisphereLight args={["#e8f0ff", "#1c2540", 1.1]} />
-      <directionalLight position={[6, 10, 8]} intensity={2.2} />
-      <directionalLight position={[-8, 3, -6]} intensity={0.7} color="#bcd0ff" />
-      <SceneContent {...props} />
+      <StudioEnvironment />
+      <RendererToneMapping enabled={!q.postprocessing} />
+      <StudioLights runtime={props.runtime} tier={props.quality} ready={ready} />
+      <SceneContent
+        {...props}
+        onReady={(info) => {
+          setReady(true);
+          props.onReady(info);
+        }}
+      />
+      {ready && <PostEffects runtime={props.runtime} tier={props.quality} />}
+      <QualityMonitor
+        enabled={monitoring && !!props.onQualityDecline}
+        onDecline={() => props.onQualityDecline?.()}
+      />
     </Canvas>
   );
 }
@@ -58,6 +99,15 @@ function SceneContent({
   const [roots, setRoots] = useState<THREE.Object3D[] | null>(null);
   const procedural = useRef<ProceduralInstance[]>([]);
   const gl = useThree((s) => s.gl);
+  const invalidate = useThree((s) => s.invalidate);
+  const threeScene = useThree((s) => s.scene);
+  const threeCamera = useThree((s) => s.camera);
+  const pendingReady = useRef<{ missing: string[] } | null>(null);
+  const meshes = useRef<THREE.Mesh[]>([]);
+  const nested = useRef(true);
+  // latest onReady without re-running effects when the parent re-renders
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
 
   // ---- load assets + build procedural sources; dispose everything on unmount
   useEffect(() => {
@@ -88,8 +138,11 @@ function SceneContent({
         const authored: Record<string, Vec3 | undefined> = {};
         for (const c of scene.components) authored[c.componentId] = c.meta?.explode_offset;
         rt.offsets = computeExplodeOffsets(rt.bounds, authored);
+        rt.animatedScene = procedural.current.some((p) => !!p.update);
+        meshes.current = prepareMeshes(built, rt);
+        nested.current = true;
+        pendingReady.current = { missing };
         setRoots(built);
-        onReady({ missing });
       } catch (err) {
         if (!ctrl.signal.aborted) {
           onError(err instanceof Error ? err.message : "Could not load the 3D model.");
@@ -104,11 +157,39 @@ function SceneContent({
     };
   }, [scene]);
 
+  // let UI code (selection, explode slider, labels) request frames
+  useEffect(() => {
+    runtime.current.invalidate = invalidate;
+    invalidate();
+    return () => {
+      runtime.current.invalidate = () => {};
+    };
+  }, [runtime, invalidate]);
+
+  // ---- compile every shader before the model is shown, so the first orbit doesn't hitch
+  useEffect(() => {
+    if (!roots || !pendingReady.current) return;
+    const info = pendingReady.current;
+    let cancelled = false;
+    // cleared only once delivered, so StrictMode's mount/unmount/mount still reports ready
+    gl.compileAsync(threeScene, threeCamera)
+      .catch(() => undefined)
+      .then(() => {
+        if (cancelled || pendingReady.current !== info) return;
+        pendingReady.current = null;
+        onReadyRef.current(info);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [roots, gl, threeScene, threeCamera]);
+
   // ---- per-frame: timeline, explode easing, visual state
   const time = useRef(0);
   useFrame((_, delta) => {
     const rt = runtime.current;
-    const dt = Math.min(delta, 0.1);
+    // on-demand rendering: the first frame after idle has a huge delta; cap it
+    const dt = Math.min(delta, 1 / 30);
     time.current += dt;
     if (rt.runner && rt.runner.tick(dt * 1000)) onAnimationTick?.();
     const goal = rt.explodeTarget;
@@ -116,6 +197,11 @@ function SceneContent({
       ? goal
       : THREE.MathUtils.damp(rt.explode, goal, 5, dt);
     if (Math.abs(rt.explode - goal) < 1e-4) rt.explode = goal;
+    const isNested = rt.explode < NESTED_UNTIL;
+    if (isNested !== nested.current) {
+      nested.current = isNested;
+      applyNestedOrder(meshes.current, isNested);
+    }
     rt.frame = rt.runner
       ? deriveFrame(rt.runner.steps, rt.runner.position, rt.paths, rt.reducedMotion)
       : rt.frame;
@@ -130,6 +216,14 @@ function SceneContent({
       reducedMotion: rt.reducedMotion,
     });
     if (!rt.reducedMotion) for (const p of procedural.current) p.update?.(dt);
+    // keep rendering while anything is still changing; otherwise go idle
+    const busy =
+      rt.explode !== goal ||
+      rt.runner?.position.status === "playing" ||
+      (rt.animatedScene && !rt.reducedMotion) ||
+      (rt.frame.highlight !== null && !rt.reducedMotion) ||
+      rt.frame.flow !== null;
+    if (busy) invalidate();
   });
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
@@ -145,23 +239,18 @@ function SceneContent({
     if (runtime.current.hovered !== selectable) {
       runtime.current.hovered = selectable;
       gl.domElement.style.cursor = selectable ? "pointer" : "";
+      invalidate();
     }
     if (selectable) e.stopPropagation();
   };
   const handleOut = () => {
+    if (runtime.current.hovered !== null) invalidate();
     runtime.current.hovered = null;
     gl.domElement.style.cursor = "";
   };
 
-  if (!roots) {
-    return (
-      <Html center>
-        <p className="whitespace-nowrap rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
-          Loading 3D model…
-        </p>
-      </Html>
-    );
-  }
+  // the loading message is a DOM overlay in SceneViewer, not an <Html> root inside the canvas
+  if (!roots) return null;
   return (
     <>
       {roots.map((r) => (
@@ -180,6 +269,55 @@ function SceneContent({
   );
 }
 
+/**
+ * One-time mesh setup after loading:
+ *  - BVH per geometry, so hover/click raycasts don't test millions of triangles per mouse move;
+ *  - opaque parts cast shadows (see-through shells would darken everything inside them);
+ *  - each mesh records a nesting rank, inner (smaller) components before outer ones. While the
+ *    cell is assembled, see-through parts draw in that fixed order: three.js otherwise sorts
+ *    transparent objects by their centre's depth, and nested shells with nearby centres swap
+ *    order as the camera orbits, which reads as flashing. Once exploded the parts no longer
+ *    nest, so normal depth sorting is right again (see applyNestedOrder).
+ */
+function prepareMeshes(roots: THREE.Object3D[], rt: ViewerRuntime): THREE.Mesh[] {
+  const meshes: THREE.Mesh[] = [];
+  const volume = (s: THREE.Vector3) => s.x * s.y * s.z;
+  const byVolume = rt.registry.all().sort((a, b) => volume(a.size) - volume(b.size));
+  const order = new Map<THREE.Object3D, number>();
+  byVolume.forEach((r, i) => order.set(r.object, i + 1));
+  for (const root of roots) {
+    root.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const geo = mesh.geometry as THREE.BufferGeometry & { boundsTree?: MeshBVH };
+      if (!geo.boundsTree && geo.index) {
+        geo.boundsTree = new MeshBVH(geo);
+        mesh.raycast = acceleratedRaycast;
+      }
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      mesh.castShadow = mats.every((m) => !m.transparent && m.opacity >= 0.999);
+      mesh.receiveShadow = true;
+      for (let p: THREE.Object3D | null = mesh; p; p = p.parent) {
+        const rank = order.get(p);
+        if (rank !== undefined) {
+          mesh.userData.nestedOrder = rank;
+          break;
+        }
+      }
+      meshes.push(mesh);
+    });
+  }
+  applyNestedOrder(meshes, true);
+  return meshes;
+}
+
+function applyNestedOrder(meshes: THREE.Mesh[], nested: boolean) {
+  for (const m of meshes) m.renderOrder = nested ? ((m.userData.nestedOrder as number) ?? 0) : 0;
+}
+
+/** Parts count as nested (fixed draw order) until they are a third of the way apart. */
+const NESTED_UNTIL = 0.33;
+
 // ------------------------------------------------------------------------ camera
 
 const PRESET_DIRECTIONS: Record<string, Vec3> = {
@@ -188,6 +326,7 @@ const PRESET_DIRECTIONS: Record<string, Vec3> = {
   top: [0, 1, 0.02],
   three_quarter: [1, 0.7, 1],
 };
+const EXPLODED_DIRECTION: Vec3 = [0.22, 0.4, 1];
 
 interface Tween {
   fromPos: THREE.Vector3;
@@ -209,6 +348,7 @@ function CameraRig({
 }) {
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const cam = useThree((s) => s.camera) as THREE.PerspectiveCamera;
+  const invalidate = useThree((s) => s.invalidate);
   const tween = useRef<Tween | null>(null);
   const lastFocusKey = useRef<number | null>(null);
   const spec = scene.spec.camera ?? {};
@@ -230,6 +370,7 @@ function CameraRig({
       t: 0,
       duration: runtime.current.reducedMotion ? 0 : 0.9,
     };
+    invalidate();
   };
 
   const fitDistance = (radius: number) => {
@@ -238,25 +379,32 @@ function CameraRig({
     return (radius / Math.sin(Math.min(half, Math.atan(Math.tan(half) * aspect)))) * 1.05;
   };
 
-  const fit = (usePreset: boolean) => {
+  /**
+   * Frame the whole scene. Assembled: the scene's camera preset. Exploded: a near-frontal view,
+   * because exploded layouts are spread out like a diagram facing the viewer (+Z).
+   */
+  const fit = () => {
     const rt = runtime.current;
     const b = explodedBounds(rt.bounds, rt.offsets, rt.explodeTarget);
-    const dir = usePreset
-      ? new THREE.Vector3(...(PRESET_DIRECTIONS[spec.preset ?? "three_quarter"] ?? [1, 0.7, 1]))
-          .normalize()
-      : undefined;
-    moveTo(new THREE.Vector3(...b.center), fitDistance(b.radius), dir);
+    const exploded = rt.explodeTarget >= 0.5;
+    const dir = new THREE.Vector3(
+      ...(exploded
+        ? EXPLODED_DIRECTION
+        : (PRESET_DIRECTIONS[spec.preset ?? "three_quarter"] ?? [1, 0.7, 1])),
+    ).normalize();
+    // the bounding sphere over-estimates deep exploded layouts; frame a little tighter
+    moveTo(new THREE.Vector3(...b.center), fitDistance(b.radius) * (exploded ? 0.8 : 1), dir);
   };
 
   // first fit uses the scene's camera preset and jumps there
   useEffect(() => {
-    fit(true);
+    fit();
     if (tween.current) tween.current.duration = 0;
   }, []);
 
   useEffect(() => {
     if (command.key === 0) return;
-    if (command.kind === "fit") fit(false);
+    if (command.kind === "fit") fit();
     else focusOn(command.componentId);
   }, [command]);
 
@@ -279,12 +427,15 @@ function CameraRig({
     const tw = tween.current;
     const c = controls.current;
     if (!tw || !c) return;
-    tw.t = tw.duration === 0 ? 1 : Math.min(tw.t + delta / tw.duration, 1);
+    // after an idle gap (on-demand rendering) the first delta is huge; don't skip the tween
+    const dt = Math.min(delta, 1 / 30);
+    tw.t = tw.duration === 0 ? 1 : Math.min(tw.t + dt / tw.duration, 1);
     const k = 1 - (1 - tw.t) ** 3;
     cam.position.lerpVectors(tw.fromPos, tw.toPos, k);
     c.target.lerpVectors(tw.fromTarget, tw.toTarget, k);
     c.update();
     if (tw.t >= 1) tween.current = null;
+    else invalidate();
   });
 
   return (
@@ -321,6 +472,21 @@ function Labels({
   const groups = useRef<Record<string, THREE.Group | null>>({});
   const doms = useRef<Record<string, HTMLDivElement | null>>({});
   const tmp = useMemo(() => new THREE.Vector3(), []);
+  const invalidate = useThree((s) => s.invalidate);
+
+  // drei <Html> mounts its DOM asynchronously and positions it in a frame callback. With
+  // on-demand rendering the scene may already be idle by then, leaving labels unplaced, so
+  // render a short burst of frames after the labels mount.
+  useEffect(() => {
+    let frames = 0;
+    let raf = 0;
+    const tick = () => {
+      invalidate();
+      if (++frames < 30) raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [invalidate, registered.length]);
 
   useFrame(() => {
     const rt = runtime.current;
@@ -364,9 +530,10 @@ function Labels({
                 type="button"
                 tabIndex={canSelect(c.componentId) ? 0 : -1}
                 onClick={() => canSelect(c.componentId) && onSelect(c.componentId)}
-                className="pointer-events-auto whitespace-nowrap rounded-md border border-white/15 bg-navy-950/80 px-2 py-0.5 text-xs font-medium text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-navy-700 focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-300 group-data-[state=on]:bg-amber-400 group-data-[state=on]:text-navy-950"
+                className="pointer-events-auto whitespace-nowrap rounded-md border border-white/15 bg-navy-950/80 px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm transition-colors hover:bg-navy-700 focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-300 group-data-[state=on]:bg-amber-400"
               >
-                {c.label}
+                {/* colour on a span: the app's unlayered `button { color: inherit }` beats utilities */}
+                <span className="text-white group-data-[state=on]:text-navy-950">{c.label}</span>
               </button>
               <span className="h-3 w-px bg-white/60" aria-hidden />
               <span className="size-1.5 rounded-full bg-white" aria-hidden />
