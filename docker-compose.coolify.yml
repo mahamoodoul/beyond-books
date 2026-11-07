@@ -103,7 +103,15 @@ services:
       redis: { condition: service_healthy }
 
   frontend:
-    build: { context: ., dockerfile: infrastructure/docker/frontend.prod.Dockerfile }
+    build:
+      context: .
+      dockerfile: infrastructure/docker/frontend.prod.Dockerfile
+      args:
+        # Demo sign-in is on by default (set VITE_DEMO_LOGIN=false in Coolify to turn it off).
+        # Accounts default to the ones scripts/seed_demo_course.py creates ("email:password" to override).
+        VITE_DEMO_LOGIN: ${VITE_DEMO_LOGIN:-true}
+        VITE_DEMO_TEACHER: ${VITE_DEMO_TEACHER:-}
+        VITE_DEMO_STUDENT: ${VITE_DEMO_STUDENT:-}
     restart: unless-stopped
     environment:
       SERVICE_FQDN_FRONTEND_3939: ""  # Coolify: route the generated/assigned domain to container port 3939

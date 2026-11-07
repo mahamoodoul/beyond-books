@@ -26,7 +26,16 @@ export function useMe() {
 export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: { email: string; password: string }) => api.post<UserOut>("/auth/login", body),
+    /** With `role`, an account of the other type is signed straight back out with a clear message. */
+    mutationFn: async ({ role, ...body }: { email: string; password: string; role?: "teacher" | "student" }) => {
+      const user = await api.post<UserOut>("/auth/login", body);
+      if (role && user.account_type !== role) {
+        await api.post<void>("/auth/logout").catch(() => undefined);
+        const other = user.account_type === "teacher" ? "teacher" : "student";
+        throw new Error(`This is a ${other} account. Choose “I’m a ${other}” above to sign in.`);
+      }
+      return user;
+    },
     onSuccess: (user) => { qc.clear(); qc.setQueryData(ME_KEY, user); },
   });
 }
