@@ -22,6 +22,7 @@ x-backend-env: &backend-env
   EDU3D_PUBLIC_BASE_URL: ${EDU3D_PUBLIC_BASE_URL:-https://dev.beyondbooks.no}
   EDU3D_CORS_ORIGINS: '${EDU3D_CORS_ORIGINS:-["https://dev.beyondbooks.no"]}'
   EDU3D_JWT_SECRET: ${SERVICE_PASSWORD_64_JWT}  # Coolify-generated, persisted
+  ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}  # set in Coolify; read by app/integrations/elevenlabs
   EDU3D_COOKIE_SECURE: ${EDU3D_COOKIE_SECURE:-true}  # served over HTTPS by the Coolify proxy
   EDU3D_OPEN_REGISTRATION: ${EDU3D_OPEN_REGISTRATION:-true}
   EDU3D_JOBS_RUN_INLINE: "false"

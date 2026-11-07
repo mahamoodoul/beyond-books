@@ -21,6 +21,7 @@ dependencies = [
   "boto3>=1.35",
   "openai>=1.50",
   "anthropic>=2.6",
+  "elevenlabs>=2.77",
 ]
 
 [project.optional-dependencies]
