@@ -52,6 +52,7 @@ exclude = ["migrations/"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = ["ignore:builtin type .* has no __module__ attribute:DeprecationWarning"]
 
 [[tool.mypy.overrides]]
 module = ["celery", "celery.*", "boto3", "botocore.*", "pymupdf"]

@@ -1,6 +1,8 @@
 """Celery application. Expensive work (PDF, AI, 3D generation) runs here, never in a request."""
 
-from celery import Celery
+import uuid
+
+from celery import Celery, Task
 
 from app.core.config import get_settings
 
@@ -16,4 +18,16 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
 )
-celery_app.autodiscover_tasks(["app.modules"], related_name="tasks")
+
+
+@celery_app.task(name="edu3d.run_job", bind=True, max_retries=3)  # type: ignore[untyped-decorator]
+def run_job_task(self: Task, job_id: str) -> str:
+    from app.modules.operations.jobs import JobStatus
+    from app.modules.operations.runner import MAX_ATTEMPTS, run_job
+
+    final = self.request.retries + 1 >= MAX_ATTEMPTS
+    status = run_job(uuid.UUID(job_id), final_attempt=final)
+    if status == JobStatus.RETRYING:
+        # Exponential backoff with jitter.
+        raise self.retry(countdown=min(300, 10 * 2**self.request.retries), max_retries=3)
+    return str(status)

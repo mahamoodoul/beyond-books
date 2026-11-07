@@ -89,14 +89,32 @@ class ThreeDGenerationProvider(Protocol):
 # ------------------------------------------------------------------------ storage
 
 
+@dataclass(frozen=True)
+class PresignedUpload:
+    url: str
+    method: str
+    headers: dict[str, str]
+
+
+@dataclass(frozen=True)
+class StoredObject:
+    size_bytes: int
+
+
 class ObjectStorageProvider(Protocol):
-    def presigned_upload_url(
+    """Private object storage. Keys are server-generated; never derived from user filenames."""
+
+    def presigned_upload(
         self, *, key: str, content_type: str, max_bytes: int, expires_in_s: int
-    ) -> str: ...
+    ) -> PresignedUpload: ...
 
-    def presigned_download_url(self, *, key: str, expires_in_s: int) -> str: ...
+    def head(self, key: str) -> StoredObject | None: ...
 
-    def head(self, key: str) -> dict[str, str | int] | None: ...
+    def read_bytes(self, key: str, max_bytes: int) -> bytes: ...
+
+    def put_bytes(self, key: str, data: bytes, content_type: str) -> None: ...
+
+    def delete(self, key: str) -> None: ...
 
 
 # ---------------------------------------------------------------------- documents

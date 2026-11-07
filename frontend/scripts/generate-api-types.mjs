@@ -35,6 +35,7 @@ const ts = await compile(root, "Api", {
   bannerComment:
     "/* AUTO-GENERATED from backend OpenAPI — do not edit. Run `npm run api:types`. */",
   additionalProperties: false,
+  maxItems: -1,
   unreachableDefinitions: true,
   style: { singleQuote: false, semi: true, printWidth: 100 },
 });
