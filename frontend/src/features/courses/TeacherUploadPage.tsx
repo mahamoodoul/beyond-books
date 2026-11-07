@@ -2,21 +2,14 @@ import { useRef, useState, type ChangeEvent, type DragEvent, type FormEvent } fr
 import { Link, useNavigate } from "react-router";
 
 import { Icon } from "@/components/ui/Icon";
-import { uploadSource } from "@/lib/api";
-import type { UploadedSource } from "@/lib/types";
+import { createCourse, sourceMime, updateCourse, uploadSource, waitForJob } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 
-const pipeline = [
-  "Extracting text",
-  "Detecting chapters",
-  "Identifying key concepts",
-  "Generating lessons",
-  "Building 3D visuals",
-  "Creating assessments",
-];
+const pipeline = ["Creating your course", "Uploading source material", "Extracting text", "Ready for teacher review"];
 
 export function TeacherUploadPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [courseTitle, setCourseTitle] = useState("The Circulatory System");
+  const [courseTitle, setCourseTitle] = useState("");
   const [subject, setSubject] = useState("Biology");
   const [grade, setGrade] = useState("Grade 8");
   const [dragging, setDragging] = useState(false);
@@ -26,18 +19,20 @@ export function TeacherUploadPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [createdCourseId, setCreatedCourseId] = useState<string | null>(null);
 
   function acceptFile(nextFile: File | undefined) {
     if (!nextFile) return;
     setErrorMessage("");
-    if (!nextFile.name.toLowerCase().endsWith(".pdf")) {
+    if (!/\.(pdf|txt|md)$/i.test(nextFile.name)) {
       setFile(null);
-      setErrorMessage("This demo accepts PDF files. Choose a PDF and try again.");
+      setErrorMessage("Choose a PDF, text, or Markdown file.");
       return;
     }
-    if (nextFile.size > 25 * 1024 * 1024) {
+    if (!nextFile.size || nextFile.size > 25 * 1024 * 1024) {
       setFile(null);
-      setErrorMessage("This file is larger than 25 MB. Choose a smaller PDF.");
+      setErrorMessage("Choose a non-empty source file smaller than 25 MB.");
       return;
     }
     setFile(nextFile);
@@ -61,37 +56,39 @@ export function TeacherUploadPage() {
     setErrorMessage("");
 
     try {
-      for (let index = 0; index < pipeline.length; index += 1) {
-        setStep(index);
-        setStepProgress(0);
-        await new Promise<void>((resolve) => {
-          let progress = 0;
-          const timer = window.setInterval(() => {
-            progress = Math.min(100, progress + 10);
-            setStepProgress(progress);
-            if (progress === 100) {
-              window.clearInterval(timer);
-              resolve();
-            }
-          }, 115);
-        });
-      }
-
-      const source: UploadedSource = {
-        name: file.name,
-        size: file.size,
-        type: file.type || "application/pdf",
-        courseTitle,
-        subject,
-        grade,
-      };
-      const result = await uploadSource(source);
-      navigate(`/teacher/courses/${result.courseId}/review`);
+      sourceMime(file);
+      setStep(0); setStepProgress(0);
+      const details = { title: courseTitle.trim(), subject, grade_level: grade };
+      const course = createdCourseId ? await updateCourse(createdCourseId, details) : await createCourse(details);
+      setCreatedCourseId(course.id);
+      await qc.invalidateQueries({ queryKey: ["courses"] });
+      setStep(1); setStepProgress(0);
+      const result = await uploadSource(course.id, file);
+      setStep(2); setStepProgress(0);
+      await waitForJob(result.job);
+      setStep(3); setStepProgress(100);
+      await qc.invalidateQueries({ queryKey: ["documents", course.id] });
+      navigate(`/teacher/courses/${course.id}/review`);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "The source could not be processed. Please try again.");
       setIsAnalyzing(false);
       setStep(-1);
       setStepProgress(0);
+    }
+  }
+
+  async function createBlankCourse() {
+    if (!courseTitle.trim() || isAnalyzing) return;
+    setIsAnalyzing(true);
+    setErrorMessage("");
+    try {
+      const details = { title: courseTitle.trim(), subject, grade_level: grade };
+      const course = createdCourseId ? await updateCourse(createdCourseId, details) : await createCourse(details);
+      await qc.invalidateQueries({ queryKey: ["courses"] });
+      navigate(`/teacher/courses/${course.id}/review`);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Could not create your course.");
+      setIsAnalyzing(false);
     }
   }
 
@@ -115,22 +112,23 @@ export function TeacherUploadPage() {
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={onDrop}
               >
-                <input accept="application/pdf,.pdf" aria-label="Upload a PDF" className="visually-hidden" onChange={onFileChange} ref={fileInputRef} type="file" />
+                <input accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown" aria-label="Upload a source file" className="visually-hidden" onChange={onFileChange} ref={fileInputRef} type="file" />
                 <span className="upload-cloud-icon"><Icon name="download" size={22} /></span>
-                <strong>Drop your PDF here, or <button className="inline-upload-trigger" onClick={() => fileInputRef.current?.click()} type="button">browse files</button></strong>
-                <span>PDF files up to 25 MB</span>
+                <strong>Drop your source here, or <button className="inline-upload-trigger" onClick={() => fileInputRef.current?.click()} type="button">browse files</button></strong>
+                <span>PDF, text, or Markdown up to 25 MB</span>
                 <span className="upload-trust"><Icon name="check" size={12} /> Source material stays in your classroom workspace</span>
               </div>
             ) : (
               <div className="source-file-card">
                 <span className="source-file-icon"><Icon name="file" size={20} /></span>
-                <span className="source-file-details"><strong>{file.name}</strong><small>{(file.size / (1024 * 1024)).toFixed(2)} MB <span>·</span> PDF document</small></span>
+                <span className="source-file-details"><strong>{file.name}</strong><small>{(file.size / (1024 * 1024)).toFixed(2)} MB <span>·</span> Source document</small></span>
                 <button aria-label={`Remove ${file.name}`} className="icon-button subtle-button" onClick={() => setFile(null)} type="button"><Icon name="close" size={17} /></button>
                 <span className="source-ready"><Icon name="check" size={13} /> Ready</span>
               </div>
             )}
             {errorMessage && <p className="upload-error" role="alert"><Icon name="circle-help" size={15} />{errorMessage}</p>}
 
+            {createdCourseId && <p className="upload-note"><Link className="text-link" to={`/teacher/courses/${createdCourseId}/review`}>Open your saved course to review or retry processing</Link></p>}
             <div className="upload-fields">
               <label>Course title<input onChange={(event) => setCourseTitle(event.target.value)} required value={courseTitle} /></label>
               <div className="upload-fields-row">
@@ -147,7 +145,7 @@ export function TeacherUploadPage() {
         </section>
 
         <aside aria-labelledby="pipeline-title" className="panel pipeline-panel">
-          <div className="pipeline-heading"><span className="eyebrow eyebrow-muted">STEP 2</span><h2 id="pipeline-title">A little help from AI</h2><p>We’ll turn your source into a first course draft.</p></div>
+          <div className="pipeline-heading"><span className="eyebrow eyebrow-muted">STEP 2</span><h2 id="pipeline-title">A little help from AI</h2><p>Upload your source, then review its extracted text and generate an outline in your course.</p></div>
           <ol className="pipeline-list">
             {pipeline.map((item, index) => {
               const isComplete = step > index || (step === index && stepProgress === 100);
@@ -163,9 +161,10 @@ export function TeacherUploadPage() {
           </ol>
           <div className="pipeline-privacy"><Icon name="eye" size={15} /><span>Your review always comes before publishing.</span></div>
           <button className="button button-primary upload-submit" disabled={!file || isAnalyzing || !courseTitle.trim()} type="submit">
-            {isAnalyzing ? <>Building your draft <span className="button-spinner" /></> : <>Analyse & create draft <Icon name="arrow-right" size={16} /></>}
+            {isAnalyzing ? <>Preparing your source <span className="button-spinner" /></> : <>Upload & prepare course <Icon name="arrow-right" size={16} /></>}
           </button>
-          <p aria-live="polite" className="pipeline-status" role="status">{isAnalyzing ? pipeline[step] : file ? "Your draft takes a few moments to prepare." : "Add a PDF to get started."}</p>
+          <button className="button button-secondary upload-submit" disabled={isAnalyzing || !courseTitle.trim()} onClick={() => void createBlankCourse()} type="button">Create a blank course</button>
+          <p aria-live="polite" className="pipeline-status" role="status">{isAnalyzing ? pipeline[step] : file ? "Text extraction may take a few moments." : "Add a source to get started."}</p>
         </aside>
       </form>
     </div>

@@ -31,4 +31,4 @@ frontend-dev:
 check: backend-lint backend-test   ## What CI runs (minus migrations)
 	backend/.venv/bin/python scripts/export_contracts.py --check
 	backend/.venv/bin/python scripts/export_openapi.py --check
-	cd frontend && npm run contracts:check && npm run api:check && npm run build
+	cd frontend && npm run contracts:check && npm run api:check && npm test && npm run build

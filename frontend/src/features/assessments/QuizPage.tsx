@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 
@@ -14,6 +14,7 @@ export function QuizPage() {
   const a = useStudentAssessment(assessmentId);
   const history = useMyAttempts(assessmentId);
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [attempt, setAttempt] = useState<AttemptStart | null>(null);
   const [answers, setAnswers] = useState<Record<string, { selected_option_key?: string; answer_text?: string }>>({});
   const start = useMutation({ mutationFn: () => startAttempt(assessmentId), onSuccess: setAttempt });
@@ -22,7 +23,12 @@ export function QuizPage() {
       api.post<AttemptResult>(`/attempts/${attempt?.attempt_id}/submit`, {
         answers: Object.entries(answers).map(([question_key, v]) => ({ question_key, ...v })),
       }),
-    onSuccess: (r) => navigate(`/student/attempts/${r.attempt_id}`),
+    onSuccess: (r) => {
+      void qc.invalidateQueries({ queryKey: ["my-attempts", assessmentId] });
+      void qc.invalidateQueries({ queryKey: ["assessment", assessmentId] });
+      void qc.invalidateQueries({ queryKey: ["my-insights"] });
+      navigate(`/student/attempts/${r.attempt_id}`);
+    },
   });
 
   if (a.isPending) return <Loading />;

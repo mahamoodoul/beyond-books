@@ -89,7 +89,8 @@ export function GenerateSuggested({ prompt: initialPrompt, name: initialName }: 
       {providers.data?.find((p) => p.name === chosen)?.description && (
         <p className="text-xs text-slate-500">{providers.data.find((p) => p.name === chosen)?.description}</p>
       )}
-      <Button variant="secondary" disabled={gen.isPending || !!jobId} onClick={() => gen.mutate()}>Generate model</Button>
+      <ErrorAlert error={providers.error} />
+      <Button variant="secondary" disabled={gen.isPending || (!!jobId && !["failed", "cancelled"].includes(job.data?.status ?? "")) || providers.isPending || !!providers.error || !chosen || !name.trim() || prompt.trim().length < 5} onClick={() => gen.mutate()}>Generate model</Button>
       <ErrorAlert error={gen.error} />
       <JobStatusLine job={job.data} label="Generation:" />
       {job.data?.status === "completed" && (
