@@ -24,6 +24,11 @@ until alembic upgrade head; do
   sleep 3
 done
 
-echo "[start] migrations applied; starting uvicorn" >&2
+echo "[start] migrations applied" >&2
+
+# Idempotent: seeds the platform 3D library demo asset. Non-fatal so it never blocks the API.
+python -m app.modules.three_d.seed || echo "[start] warning: 3D demo seed failed (continuing)" >&2
+
+echo "[start] starting uvicorn" >&2
 exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers "${UVICORN_WORKERS:-2}" \
   --proxy-headers --forwarded-allow-ips='*'

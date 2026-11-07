@@ -14,10 +14,27 @@ x-backend-build: &backend-build
   args: { EXTRAS: "" }
 
 x-backend-env: &backend-env
-  EDU3D_ENVIRONMENT: ${EDU3D_ENVIRONMENT:-production}
+  # "development" allows the offline fake AI providers. Switch to "production" in Coolify once
+  # EDU3D_LLM_PROVIDER/EDU3D_THREE_D_PROVIDER and their API keys are set (enforced at startup).
+  EDU3D_ENVIRONMENT: ${EDU3D_ENVIRONMENT:-development}
   EDU3D_DATABASE_URL: postgresql+psycopg://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/${POSTGRES_DB:-edu3d}
   EDU3D_REDIS_URL: redis://redis:6379/0
-  EDU3D_CORS_ORIGINS: ${EDU3D_CORS_ORIGINS:-[]}
+  EDU3D_PUBLIC_BASE_URL: ${EDU3D_PUBLIC_BASE_URL:-https://dev.beyondbooks.no}
+  EDU3D_CORS_ORIGINS: '${EDU3D_CORS_ORIGINS:-["https://dev.beyondbooks.no"]}'
+  EDU3D_JWT_SECRET: ${SERVICE_PASSWORD_64_JWT}  # Coolify-generated, persisted
+  EDU3D_COOKIE_SECURE: ${EDU3D_COOKIE_SECURE:-true}  # served over HTTPS by the Coolify proxy
+  EDU3D_OPEN_REGISTRATION: ${EDU3D_OPEN_REGISTRATION:-true}
+  EDU3D_JOBS_RUN_INLINE: "false"
+  EDU3D_LOG_FORMAT: ${EDU3D_LOG_FORMAT:-json}
+  EDU3D_STORAGE_BACKEND: local
+  EDU3D_LOCAL_STORAGE_DIR: /data/storage  # on the shared "storage" volume (api + worker)
+  # AI providers: fake | anthropic | openai (LLM); fake | llm | tripo | meshy (3D)
+  EDU3D_LLM_PROVIDER: ${EDU3D_LLM_PROVIDER:-fake}
+  EDU3D_THREE_D_PROVIDER: ${EDU3D_THREE_D_PROVIDER:-fake}
+  EDU3D_ANTHROPIC_API_KEY: ${EDU3D_ANTHROPIC_API_KEY:-}
+  EDU3D_ANTHROPIC_MODEL: ${EDU3D_ANTHROPIC_MODEL:-claude-opus-5-5}
+  EDU3D_OPENAI_API_KEY: ${EDU3D_OPENAI_API_KEY:-}
+  EDU3D_OPENAI_MODEL: ${EDU3D_OPENAI_MODEL:-}
 
 services:
   postgres:
@@ -56,6 +73,7 @@ services:
     # Runs migrations (with retries, errors visible in this service's logs), then uvicorn.
     command: api-start
     environment: *backend-env
+    volumes: [storage:/data]
     expose: ["8000"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=3)"]
@@ -72,6 +90,7 @@ services:
     restart: unless-stopped
     command: celery -A app.workers.celery_app worker --loglevel=INFO --concurrency=2
     environment: *backend-env
+    volumes: [storage:/data]
     healthcheck:
       test: ["CMD-SHELL", "celery -A app.workers.celery_app inspect ping -d celery@$$HOSTNAME --timeout 5"]
       interval: 30s
@@ -95,3 +114,4 @@ services:
 volumes:
   postgres-data:
   redisdata:
+  storage:
