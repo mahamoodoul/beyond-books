@@ -1353,3 +1353,75 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .course-library-progress { margin: 2px 0; }
   .course-library-actions { justify-content: flex-start; }
 }
+
+.heart-ar-launch { display: grid; grid-template-columns: 35px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 13px; border-radius: 14px; }
+.heart-ar-launch-icon { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 10px; background: var(--accent-soft); color: var(--accent); }
+.heart-ar-launch-copy strong { font-size: 10px; font-weight: 650; }
+.heart-ar-launch-copy p { margin: 4px 0 0; color: var(--muted); font-size: 8px; line-height: 1.55; }
+.heart-ar-launch-button { min-height: 35px; gap: 5px; padding: 0 10px; font-size: 9px; }
+.heart-ar-print-link { grid-column: 2 / -1; width: fit-content; color: var(--accent); font-size: 8px; text-decoration: underline; text-underline-offset: 3px; }
+
+.ar-root { position: fixed; z-index: 1000; inset: 0; overflow: hidden; background: #10111a; color: #f7f6fc; font-family: var(--body); touch-action: none; }
+.ar-root .ar-container { position: absolute; inset: 0; overflow: hidden; }
+.ar-root .ar-container video { position: absolute; z-index: 0; max-width: none; }
+.ar-root .ar-container canvas { z-index: 1; }
+.ar-root .topbar { position: absolute; z-index: 10; inset: 0 0 auto; display: flex; height: auto; min-height: 64px; align-items: center; gap: 13px; padding: max(10px, env(safe-area-inset-top)) 18px 10px; border: 0; background: linear-gradient(180deg, rgb(13 14 22 / 86%), rgb(13 14 22 / 45%)); color: #f7f6fc; }
+.ar-root .icon-btn { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; border: 1px solid rgb(255 255 255 / 22%); border-radius: 12px; background: rgb(26 27 38 / 78%); color: #fff; cursor: pointer; font-size: 19px; }
+.ar-root .brand { display: flex; min-width: 0; flex: 1; flex-direction: column; align-items: flex-start; gap: 2px; color: #fff; font-family: var(--display); font-size: 16px; }
+.ar-root .chapter { color: rgb(255 255 255 / 72%); font-family: var(--body); font-size: 10px; font-weight: 500; letter-spacing: 0; }
+.ar-root .status { padding: 7px 10px; border: 1px solid rgb(255 255 255 / 18%); border-radius: 99px; background: rgb(26 27 38 / 78%); color: #e7e5f1; font-size: 10px; }
+.ar-root .status--tracking { color: #a7f3c1; }
+.ar-root .status--error { color: #ffb9c3; }
+.ar-root .overlay { position: absolute; z-index: 5; inset: 64px 0 0; display: grid; align-content: center; justify-items: center; gap: 14px; padding: 28px; background: rgb(14 15 23 / 84%); text-align: center; }
+.ar-root .overlay p { max-width: 360px; margin: 0; color: #f2f0f8; font-size: 14px; line-height: 1.65; }
+.ar-root .overlay .error { color: #ffd2d9; }
+.ar-root .overlay button { min-height: 42px; padding: 0 17px; border: 1px solid rgb(255 255 255 / 24%); border-radius: 10px; background: #6558cb; color: #fff; cursor: pointer; font-weight: 650; }
+.ar-root .spinner { width: 38px; height: 38px; border: 3px solid rgb(255 255 255 / 22%); border-top-color: #b7adff; border-radius: 50%; animation: ar-spin .85s linear infinite; }
+.ar-root .scan-frame { width: min(72vw, 330px); aspect-ratio: 1.42; border: 2px solid #b7adff; border-radius: 18px; box-shadow: 0 0 0 100vmax rgb(12 13 20 / 30%), 0 0 26px rgb(183 173 255 / 34%); }
+.ar-root .overlay--scan { background: transparent; }
+.ar-root .overlay--scan p { position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); padding: 11px 15px; border-radius: 12px; background: rgb(18 19 29 / 84%); }
+.ar-root .banner { position: absolute; z-index: 4; top: 78px; left: 50%; width: max-content; max-width: calc(100% - 32px); padding: 10px 14px; border: 1px solid rgb(255 255 255 / 15%); border-radius: 12px; background: rgb(20 21 32 / 82%); color: #f5f2ff; font-size: 11px; line-height: 1.5; text-align: center; transform: translateX(-50%); }
+.ar-root .hud { position: absolute; z-index: 8; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; display: grid; justify-items: center; gap: 10px; pointer-events: none; }
+.ar-root .hint, .ar-root .info-card, .ar-root .color-key, .ar-root .toolbar, .ar-root .ct-panel { pointer-events: auto; }
+.ar-root .hint { margin: 0; padding: 9px 13px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 99px; background: rgb(19 20 30 / 82%); color: #f2effa; font-size: 11px; text-align: center; }
+.ar-root .info-card, .ar-root .color-key, .ar-root .ct-panel { width: min(100%, 440px); max-height: 34vh; overflow: auto; padding: 14px; border: 1px solid rgb(255 255 255 / 18%); border-radius: 16px; background: rgb(20 21 31 / 94%); box-shadow: 0 14px 40px rgb(0 0 0 / 24%); backdrop-filter: blur(14px); }
+.ar-root .info-card__head { display: flex; align-items: center; gap: 9px; }
+.ar-root .info-card__head h2 { flex: 1; margin: 0; font-family: var(--display); font-size: 15px; }
+.ar-root .swatch, .ar-root .color-key__dot { width: 11px; height: 11px; flex: 0 0 auto; border-radius: 50%; }
+.ar-root .info-card p { margin: 9px 0 0; color: #dedbe9; font-size: 11px; line-height: 1.6; }
+.ar-root .info-card .fact { padding-top: 9px; border-top: 1px solid rgb(255 255 255 / 13%); color: #c5c1d2; }
+.ar-root .info-card .fact strong { color: #fff; }
+.ar-root .info-card .icon-btn { width: 30px; height: 30px; }
+.ar-root .color-key { width: min(100%, 440px); }
+.ar-root .color-key__note { margin: 0 0 8px; color: #dad7e5; font-size: 10px; line-height: 1.5; }
+.ar-root .color-key ul { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.ar-root .color-key button { display: inline-flex; min-height: 30px; align-items: center; gap: 6px; padding: 0 9px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 99px; background: rgb(255 255 255 / 7%); color: #f4f2fb; cursor: pointer; font-size: 10px; }
+.ar-root .color-key button.is-active { border-color: #b7adff; background: rgb(183 173 255 / 15%); }
+.ar-root .toolbar { display: flex; max-width: 100%; gap: 5px; overflow-x: auto; padding: 6px; border: 1px solid rgb(255 255 255 / 17%); border-radius: 14px; background: rgb(19 20 30 / 92%); box-shadow: 0 8px 26px rgb(0 0 0 / 25%); }
+.ar-root .toolbar button { display: inline-flex; min-height: 39px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 6px; padding: 0 11px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #f5f3fc; cursor: pointer; font-size: 10px; white-space: nowrap; }
+.ar-root .toolbar button:hover, .ar-root .toolbar button[aria-pressed="true"] { border-color: rgb(183 173 255 / 40%); background: rgb(183 173 255 / 13%); }
+.ar-root .toolbar button:disabled { opacity: .48; cursor: not-allowed; }
+.ar-root .part-label { pointer-events: auto; padding: 5px 8px; border: 1px solid rgb(255 255 255 / 30%); border-radius: 99px; background: rgb(18 19 29 / 88%); color: #fff; cursor: pointer; font: 600 10px var(--body); white-space: nowrap; }
+.ar-root .part-label.is-active { border-color: #e9c2ff; background: #51409d; }
+.ar-root .part-label__dot { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; }
+.ar-root .ct-panel { max-height: 30vh; }
+.ar-root > .ct-panel { position: absolute; z-index: 8; top: 72px; right: 12px; width: min(390px, calc(100% - 24px)); }
+
+@keyframes ar-spin { to { transform: rotate(360deg); } }
+@media (max-width: 640px) {
+  .heart-ar-launch { grid-template-columns: 32px minmax(0, 1fr); gap: 8px; }
+  .heart-ar-launch-icon { width: 32px; height: 32px; }
+  .heart-ar-launch-button { grid-column: 1 / -1; width: 100%; }
+  .heart-ar-print-link { grid-column: 1 / -1; justify-self: center; }
+  .ar-root .topbar { min-height: 58px; padding-right: 12px; padding-left: 12px; }
+  .ar-root .brand { font-size: 14px; }
+  .ar-root .status { padding: 6px 8px; font-size: 9px; }
+  .ar-root .hud { right: 8px; left: 8px; gap: 7px; }
+  .ar-root .toolbar { width: 100%; justify-content: flex-start; }
+  .ar-root .toolbar button { min-height: 37px; padding: 0 9px; }
+  .ar-root .info-card, .ar-root .color-key { max-height: 30vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ar-root .spinner { animation: none !important; }
+  .ar-root *, .heart-ar-launch-button { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

@@ -61,6 +61,17 @@ update the API tests to cover the real response and error behavior.
 The upload pipeline is a local demo: it simulates analysis and creates an editable draft in
 in-memory storage. Uploaded PDFs are not sent to a server or retained across page reloads.
 
+## Heart augmented reality
+
+The Grade 8 Circulatory System lesson includes an image-tracked heart experience. Open a lesson
+and choose **Start AR**, then point the camera at the linked heart tracking page. The page can be
+opened on a second device or printed; the marker image and tracking data live in
+`frontend/public/targets/`. The 3D heart model is in `frontend/public/models/heart.glb`.
+
+Camera access requires a secure browser context (HTTPS in deployment; `localhost` is allowed for
+local development) and camera permission. If the camera or WebGL is unavailable, the AR view
+shows an actionable error and the lesson's regular interactive 3D model remains available.
+
 API docs: http://localhost:8000/docs · Health: `GET /api/v1/health`
 
 ## Contracts

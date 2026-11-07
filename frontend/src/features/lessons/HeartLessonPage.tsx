@@ -103,6 +103,28 @@ export function HeartLessonPage() {
           <Suspense fallback={<ViewerSkeleton />}>
             <CardiacViewer model={chapter.model} />
           </Suspense>
+          <section aria-label="Augmented reality heart model" className="heart-ar-launch panel">
+            <span className="heart-ar-launch-icon"><Icon name="eye" size={18} /></span>
+            <div className="heart-ar-launch-copy">
+              <strong>Bring the heart into your space</strong>
+              <p>Use your camera to place the interactive 3D heart on the printable page.</p>
+            </div>
+            <Link
+              className="button button-primary heart-ar-launch-button"
+              to={`/student/courses/${course.id}/lessons/${activeChapterId}/ar`}
+            >
+              Start AR <Icon name="arrow-up-right" size={15} />
+            </Link>
+            <a
+              aria-label="Open or print the heart tracking page in a new tab"
+              className="heart-ar-print-link"
+              href={`${import.meta.env.BASE_URL}targets/heart-page.png`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Print or open the heart tracking page
+            </a>
+          </section>
           <nav aria-label="Course chapters" className="heart-chapter-panel panel">
             <div className="heart-chapter-panel-heading"><span className="eyebrow eyebrow-muted">YOUR COURSE</span><span>{course.chapters.length} CHAPTERS</span></div>
             <h2>{course.title}</h2>
