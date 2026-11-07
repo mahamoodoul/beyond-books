@@ -59,3 +59,13 @@ class ChapterDetail(ChapterOut):
     # The teacher's chapter prompt; only returned to people who can manage the chapter.
     ai_instructions: str = ""
     objectives: list[ObjectiveOut] = []
+
+
+class ChapterOverview(ChapterOut):
+    """A chapter card on the course page: status plus what is inside it."""
+
+    lessons: int = 0
+    published_lessons: int = 0
+    scenes: int = 0
+    quizzes: int = 0
+    objectives: int = 0

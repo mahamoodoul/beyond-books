@@ -35,3 +35,10 @@ dist/
 
 # Production env files
 .env.production
+
+# Sample textbooks: the course excerpts are in Git LFS; the full books (55-208 MB, some over
+# GitHub's 100 MB limit) stay local - re-download them via sample-courses/README.md
+sample-courses/**/*full book*.pdf
+
+# Local database backups
+backend/dev.db.backup-*

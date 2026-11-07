@@ -20,9 +20,9 @@ import type {
 
 import { Chip, panel } from "./StudioPage";
 
-const btn = "inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-200 hover:border-[#38b2ac]/60 hover:text-white disabled:opacity-40";
+const btn = "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:border-[#38b2ac]/60 hover:text-slate-900 disabled:opacity-40";
 const btnPrimary = "inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#38b2ac] px-3 py-1.5 text-sm font-semibold text-[#0b0d16] hover:bg-[#4fc7c0] disabled:opacity-40";
-const input = "w-full rounded-lg border border-white/10 bg-[#0f1220] px-2.5 py-1.5 text-sm text-slate-100 focus:border-[#38b2ac] focus:outline-none";
+const input = "w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 focus:border-[#38b2ac] focus:outline-none";
 
 const TERMINAL = new Set(["completed", "failed", "cancelled"]);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -59,26 +59,26 @@ export function SourcePanel({ chapterId }: { chapterId: string }) {
   return (
     <section className={`${panel} p-4`}>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-white">📖 Chapter text</p>
+        <p className="text-sm font-semibold text-slate-900">📖 Chapter text</p>
         {d && d.passages.length > 0 && <button className={btn} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Read"}</button>}
       </div>
       {src.isPending && <p className="mt-2 text-sm text-slate-500">Loading text…</p>}
-      {src.error && <p className="mt-2 text-sm text-red-300">{errorMessage(src.error)}</p>}
+      {src.error && <p className="mt-2 text-sm text-red-600">{errorMessage(src.error)}</p>}
       {d && d.passages.length === 0 && (
-        <p className="mt-2 text-sm text-amber-200">No textbook text found for this chapter. Upload the book under the course's <b>Sources &amp; outline</b> tab first — the AI only writes from your source.</p>
+        <p className="mt-2 text-sm text-amber-700">No textbook text found for this chapter. Upload the book under the course's <b>Sources &amp; outline</b> tab first — the AI only writes from your source.</p>
       )}
       {d && d.passages.length > 0 && (
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-slate-500">
           {d.passages.length} passage{d.passages.length === 1 ? "" : "s"} · {d.characters.toLocaleString()} characters ·{" "}
           {d.strategy === "chapter_page_ranges" ? "from the chapter's pages" : "matched by topic"}
           {d.truncated && " · trimmed to fit the AI limit"}
         </p>
       )}
       {open && d && (
-        <div className="mt-3 max-h-72 space-y-3 overflow-auto rounded-lg bg-black/20 p-3 text-sm leading-relaxed text-slate-300">
+        <div className="mt-3 max-h-72 space-y-3 overflow-auto rounded-lg bg-slate-100 p-3 text-sm leading-relaxed text-slate-600">
           {d.passages.map((p, i) => (
             <div key={i}>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#38b2ac]">{p.document_title} · p. {p.page_start === p.page_end ? p.page_start : `${p.page_start}–${p.page_end}`}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-teal-700">{p.document_title} · p. {p.page_start === p.page_end ? p.page_start : `${p.page_start}–${p.page_end}`}</p>
               <p className="whitespace-pre-line">{p.text}</p>
             </div>
           ))}
@@ -106,19 +106,19 @@ export function PromptPanel({ chapter }: { chapter: ChapterDetail }) {
   const dirty = text.trim() !== (chapter.ai_instructions ?? "");
   return (
     <section className={`${panel} p-4`}>
-      <label htmlFor="chapter-prompt" className="text-sm font-semibold text-white">✎ Chapter prompt</label>
-      <p className="mb-2 mt-1 text-xs text-slate-400">Tell the AI how to teach this chapter. Used for the lesson, quiz and 3D. Facts still come only from the chapter text.</p>
+      <label htmlFor="chapter-prompt" className="text-sm font-semibold text-slate-900">✎ Chapter prompt</label>
+      <p className="mb-2 mt-1 text-xs text-slate-500">Tell the AI how to teach this chapter. Used for the lesson, quiz and 3D. Facts still come only from the chapter text.</p>
       <textarea id="chapter-prompt" rows={5} maxLength={2000} className={input} value={text} placeholder="e.g. Grade 8 students. Explain with everyday analogies. End each section with one check-your-understanding question." onChange={(e) => setText(e.target.value)} />
       <div className="mt-2 flex flex-wrap gap-1">
         {EXAMPLES.map((x) => (
-          <button key={x} type="button" className="rounded-md border border-white/10 px-2 py-0.5 text-xs text-slate-400 hover:text-white" onClick={() => setText((t) => (t.trim() ? `${t.trim()} ${x}` : x))}>+ {x}</button>
+          <button key={x} type="button" className="rounded-md border border-slate-200 px-2 py-0.5 text-xs text-slate-500 hover:text-slate-900" onClick={() => setText((t) => (t.trim() ? `${t.trim()} ${x}` : x))}>+ {x}</button>
         ))}
       </div>
       <div className="mt-3 flex items-center gap-2">
         <button className={btn} disabled={!dirty || save.isPending} onClick={() => save.mutate()}>{save.isPending ? "Saving…" : dirty ? "Save prompt" : "Saved"}</button>
         <span className="text-xs text-slate-500">{text.length}/2000</span>
       </div>
-      {save.error && <p className="mt-2 text-sm text-red-300">{errorMessage(save.error)}</p>}
+      {save.error && <p className="mt-2 text-sm text-red-600">{errorMessage(save.error)}</p>}
     </section>
   );
 }
@@ -203,22 +203,22 @@ export function GeneratePanel({ chapter }: { chapter: ChapterDetail }) {
   const nothing = !chosen.lesson && !chosen.quiz && !chosen.scenes;
   return (
     <section className={`${panel} p-4`}>
-      <p className="text-sm font-semibold text-white">✦ Generate chapter content</p>
-      <p className="mb-3 mt-1 text-xs text-slate-400">Everything is created as a draft. Review it, then publish the chapter.</p>
+      <p className="text-sm font-semibold text-slate-900">✦ Generate chapter content</p>
+      <p className="mb-3 mt-1 text-xs text-slate-500">Everything is created as a draft. Review it, then publish the chapter.</p>
       <ul className="space-y-2">
         {STEPS.map((s, i) => {
           const st = steps?.[s.key];
           return (
-            <li key={s.key} className="rounded-lg border border-white/10 p-2">
+            <li key={s.key} className="rounded-lg border border-slate-200 p-2">
               <label className="flex items-start gap-2 text-sm">
                 <input type="checkbox" className="mt-1" disabled={running} checked={chosen[s.key]} onChange={(e) => setPick({ ...chosen, [s.key]: e.target.checked })} />
                 <span className="flex-1">
-                  <span className="text-white">{i + 1}. {s.label}</span>
+                  <span className="text-slate-900">{i + 1}. {s.label}</span>
                   <span className="block text-xs text-slate-500">{s.hint}{s.key === "lesson" && hasLessons ? " (adds another lesson)" : ""}{s.key === "quiz" && hasQuiz ? " (adds another quiz)" : ""}</span>
                 </span>
                 {st && <Chip tone={stateChip[st.state].tone}>{stateChip[st.state].text}</Chip>}
               </label>
-              {st?.note && <p className={`mt-1 pl-6 text-xs ${st.state === "failed" ? "text-red-300" : "text-slate-400"}`} role={st.state === "failed" ? "alert" : undefined}>{st.note}</p>}
+              {st?.note && <p className={`mt-1 pl-6 text-xs ${st.state === "failed" ? "text-red-600" : "text-slate-500"}`} role={st.state === "failed" ? "alert" : undefined}>{st.note}</p>}
             </li>
           );
         })}
@@ -226,47 +226,6 @@ export function GeneratePanel({ chapter }: { chapter: ChapterDetail }) {
       <button className={`${btnPrimary} mt-3 w-full`} disabled={running || nothing} onClick={() => void run()}>
         {running ? "Generating…" : "Generate selected content"}
       </button>
-    </section>
-  );
-}
-
-/* ---------------------------------------------------------- content board */
-export function ContentBoard({ chapterId }: { chapterId: string }) {
-  const { lessons, quizzes } = useChapterContent(chapterId);
-  const state = (published: unknown, changed: boolean) =>
-    published ? (changed ? <Chip tone="amber">changed</Chip> : <Chip tone="teal">live</Chip>) : <Chip>draft</Chip>;
-  return (
-    <section className={`${panel} p-3`} aria-label="Chapter lessons and quizzes">
-      <div className="grid gap-3 md:grid-cols-2">
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Lessons ({lessons.data?.length ?? 0})</p>
-          {lessons.data?.length === 0 && <p className="text-sm text-slate-500">No lessons yet — generate one.</p>}
-          <ul className="space-y-1.5">
-            {lessons.data?.map((l) => (
-              <li key={l.id} className="flex items-center gap-2 rounded-lg border border-white/10 px-2 py-1.5 text-sm">
-                <span className="min-w-0 flex-1 truncate text-white">{l.position}. {l.title}</span>
-                {l.origin === "ai" && <Chip tone="violet">AI</Chip>}
-                {state(l.published_version, l.has_unpublished_changes)}
-                <Link className="text-xs text-[#38b2ac] hover:underline" to={`/teacher/lessons/${l.id}`}>Edit</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Quizzes ({quizzes.data?.length ?? 0})</p>
-          {quizzes.data?.length === 0 && <p className="text-sm text-slate-500">No quiz yet — generate one.</p>}
-          <ul className="space-y-1.5">
-            {quizzes.data?.map((a) => (
-              <li key={a.id} className="flex items-center gap-2 rounded-lg border border-white/10 px-2 py-1.5 text-sm">
-                <span className="min-w-0 flex-1 truncate text-white">{a.title} <span className="text-slate-500">· {a.question_count} q</span></span>
-                {a.origin === "ai" && <Chip tone="violet">AI</Chip>}
-                {state(a.published_version, a.has_unpublished_changes)}
-                <Link className="text-xs text-[#38b2ac] hover:underline" to={`/teacher/assessments/${a.id}`}>Edit</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
     </section>
   );
 }
@@ -298,10 +257,10 @@ export function PublishBar({ chapter, course }: { chapter: ChapterDetail; course
 
       {open && (
         <div role="dialog" aria-label="Publish chapter" className={`${panel} absolute right-0 top-11 z-20 w-80 space-y-3 p-4 text-sm shadow-xl`}>
-          <p className="font-semibold text-white">Publish “{chapter.title}”</p>
-          <p className="text-slate-400">Students enrolled in <b className="text-slate-200">{course?.title}</b> will see this chapter with all its lessons, 3D scenes and quizzes. Items that are not ready (for example an empty lesson) are skipped and listed.</p>
+          <p className="font-semibold text-slate-900">Publish “{chapter.title}”</p>
+          <p className="text-slate-500">Students enrolled in <b className="text-slate-700">{course?.title}</b> will see this chapter with all its lessons, 3D scenes and quizzes. Items that are not ready (for example an empty lesson) are skipped and listed.</p>
           {courseDraft && (
-            <label className="flex items-start gap-2 text-slate-300">
+            <label className="flex items-start gap-2 text-slate-600">
               <input type="checkbox" className="mt-1" checked={withCourse} onChange={(e) => setWithCourse(e.target.checked)} />
               The course is still a draft — publish the course too, so students can open it.
             </label>
@@ -310,21 +269,21 @@ export function PublishBar({ chapter, course }: { chapter: ChapterDetail; course
             <button className={btnPrimary} disabled={publish.isPending} onClick={() => publish.mutate()}>{publish.isPending ? "Publishing…" : "Publish now"}</button>
             <button className={btn} onClick={() => setOpen(false)}>Cancel</button>
           </div>
-          {publish.error && <p className="text-red-300" role="alert">{errorMessage(publish.error)}</p>}
+          {publish.error && <p className="text-red-600" role="alert">{errorMessage(publish.error)}</p>}
         </div>
       )}
 
       {result && (
         <div role="status" className={`${panel} absolute right-0 top-11 z-10 w-80 p-4 text-sm`}>
-          <div className="mb-1 flex items-center justify-between"><p className="font-semibold text-[#38b2ac]">✓ Chapter published</p><button className="text-slate-500 hover:text-white" aria-label="Close" onClick={() => setResult(null)}>✕</button></div>
-          <p className="text-slate-300">{result.lessons_published} lesson(s) · {result.scenes_published} 3D scene(s) · {result.assessments_published} quiz(zes)</p>
-          {result.course_status !== "published" && <p className="mt-1 text-amber-200">The course is still a draft, so students can't open it yet.</p>}
+          <div className="mb-1 flex items-center justify-between"><p className="font-semibold text-teal-700">✓ Chapter published</p><button className="text-slate-500 hover:text-slate-900" aria-label="Close" onClick={() => setResult(null)}>✕</button></div>
+          <p className="text-slate-600">{result.lessons_published} lesson(s) · {result.scenes_published} 3D scene(s) · {result.assessments_published} quiz(zes)</p>
+          {result.course_status !== "published" && <p className="mt-1 text-amber-700">The course is still a draft, so students can't open it yet.</p>}
           {result.skipped.length > 0 && (
-            <ul className="mt-2 space-y-1 text-xs text-amber-200">
+            <ul className="mt-2 space-y-1 text-xs text-amber-700">
               {result.skipped.map((s) => <li key={s.id}>Skipped {s.kind} “{s.title}”: {s.reason}</li>)}
             </ul>
           )}
-          <Link to={`/teacher/chapters/${chapter.id}/preview`} className="mt-2 inline-block text-[#38b2ac] hover:underline">See how students see it →</Link>
+          <Link to={`/teacher/chapters/${chapter.id}/preview`} className="mt-2 inline-block text-teal-700 hover:underline">See how students see it →</Link>
         </div>
       )}
     </div>

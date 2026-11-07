@@ -10,6 +10,7 @@ from app.modules.chapters.schemas import (
     ChapterCreate,
     ChapterDetail,
     ChapterOut,
+    ChapterOverview,
     ChapterUpdate,
     ObjectiveIn,
     ObjectiveOut,
@@ -66,3 +67,9 @@ def publish_chapter(
 ) -> PublishChapterResult:
     """Publish the chapter with all its lessons, 3D scenes and quizzes (chapter studio)."""
     return publishing.publish_chapter(db, user, chapter_id, body)
+
+
+@router.get("/courses/{course_id}/chapter-overview", response_model=list[ChapterOverview])
+def chapter_overview(course_id: uuid.UUID, user: CurrentUser, db: DB) -> list[ChapterOverview]:
+    """Chapters with counts of lessons, 3D scenes, quizzes and objectives (course page)."""
+    return service.chapter_overview(db, user, course_id)

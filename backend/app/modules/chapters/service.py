@@ -1,4 +1,5 @@
 import uuid
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
@@ -10,6 +11,9 @@ from app.modules.courses.access import CourseAccess, get_course_for, resolve_cou
 from app.modules.documents.models import SourceDocument
 from app.modules.operations import audit
 from app.modules.users.models import User
+
+if TYPE_CHECKING:
+    from app.modules.chapters.schemas import ChapterOverview
 
 
 def chapter_access(db: Session, user: User, chapter_id: uuid.UUID) -> tuple[Chapter, CourseAccess]:
@@ -159,3 +163,58 @@ def replace_objectives(
         )
     db.commit()
     return list_objectives(db, chapter.id)
+
+
+def chapter_overview(db: Session, user: User, course_id: uuid.UUID) -> list["ChapterOverview"]:
+    from app.modules.assessments.models import Assessment
+    from app.modules.chapters.schemas import ChapterOverview
+    from app.modules.lessons.models import Lesson
+    from app.modules.three_d.models import ThreeDScene
+
+    get_course_for(db, user, course_id, manage=True)
+    chapters = list(
+        db.scalars(select(Chapter).where(Chapter.course_id == course_id).order_by(Chapter.position))
+    )
+    ids = [c.id for c in chapters]
+
+    def counts(stmt: Any) -> dict[uuid.UUID, int]:
+        return {k: int(v) for k, v in db.execute(stmt)} if ids else {}
+
+    lessons = counts(
+        select(Lesson.chapter_id, func.count(Lesson.id))
+        .where(Lesson.chapter_id.in_(ids))
+        .group_by(Lesson.chapter_id)
+    )
+    published = counts(
+        select(Lesson.chapter_id, func.count(Lesson.id))
+        .where(Lesson.chapter_id.in_(ids), Lesson.published_version.is_not(None))
+        .group_by(Lesson.chapter_id)
+    )
+    scenes = counts(
+        select(Lesson.chapter_id, func.count(ThreeDScene.id))
+        .join(ThreeDScene, ThreeDScene.lesson_id == Lesson.id)
+        .where(Lesson.chapter_id.in_(ids))
+        .group_by(Lesson.chapter_id)
+    )
+    quizzes = counts(
+        select(Assessment.chapter_id, func.count(Assessment.id))
+        .where(Assessment.chapter_id.in_(ids))
+        .group_by(Assessment.chapter_id)
+    )
+    objectives = counts(
+        select(LearningObjective.chapter_id, func.count(LearningObjective.id))
+        .where(LearningObjective.chapter_id.in_(ids))
+        .group_by(LearningObjective.chapter_id)
+    )
+    return [
+        ChapterOverview.model_validate(c).model_copy(
+            update={
+                "lessons": lessons.get(c.id, 0),
+                "published_lessons": published.get(c.id, 0),
+                "scenes": scenes.get(c.id, 0),
+                "quizzes": quizzes.get(c.id, 0),
+                "objectives": objectives.get(c.id, 0),
+            }
+        )
+        for c in chapters
+    ]

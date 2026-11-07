@@ -11,6 +11,11 @@ export interface SceneToolbarProps {
   onExplodeCommit: () => void;
   onResetView: () => void;
   onFullscreen?: () => void;
+  /** Studio tools (optional): X-ray and a guided tour through the parts. */
+  xray?: boolean;
+  onXray?: (v: boolean) => void;
+  touring?: boolean;
+  onTour?: () => void;
 }
 
 const btn =
@@ -27,6 +32,10 @@ export function SceneToolbar({
   quality,
   effectiveTier,
   onQuality,
+  xray,
+  onXray,
+  touring,
+  onTour,
 }: SceneToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2" role="toolbar" aria-label="3D view">
@@ -66,6 +75,30 @@ export function SceneToolbar({
             onKeyUp={onExplodeCommit}
           />
         </div>
+      )}
+
+      {onXray && (
+        <button
+          type="button"
+          className={`${btn} ${xray ? "border-navy-900 bg-navy-900 text-white hover:bg-navy-700" : ""}`}
+          aria-pressed={!!xray}
+          title="See through the model to its inner parts"
+          onClick={() => onXray(!xray)}
+        >
+          X-ray
+        </button>
+      )}
+
+      {onTour && (
+        <button
+          type="button"
+          className={`${btn} ${touring ? "border-navy-900 bg-navy-900 text-white hover:bg-navy-700" : ""}`}
+          aria-pressed={!!touring}
+          title="Fly through every part with its explanation"
+          onClick={onTour}
+        >
+          {touring ? "❚❚ Pause tour" : "▶ Guided tour"}
+        </button>
       )}
 
       <label className="flex items-center gap-2 text-sm text-slate-700">

@@ -153,7 +153,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .course-meta { display: flex; flex-wrap: wrap; gap: 11px; color: var(--muted-light); font-size: var(--fs-xs); }
 .course-meta span { display: inline-flex; align-items: center; gap: 4px; }
 .course-meta svg { color: var(--muted-light); }
-.course-progress { min-width: 0; }
+.course-row-progress { min-width: 0; }
 .status-pill { display: inline-flex; min-height: 20px; align-items: center; padding: 0 7px; border-radius: 6px; font-size: var(--fs-xs); font-weight: 650; }
 .status-published { background: var(--mint-soft); color: var(--mint); }
 .status-in-review { background: var(--amber-soft); color: var(--amber); }
@@ -185,7 +185,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .activity-copy { min-width: 0; }
 .activity-copy p { margin: 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
 .activity-copy strong, .activity-copy b { color: var(--ink-soft); font-weight: 650; }
-.activity-copy span { display: block; margin-top: 3px; color: var(--muted-light); font-size: var(--fs-xs); }
+.activity-copy span, .activity-copy time { display: block; margin-top: 3px; color: var(--muted-light); font-size: var(--fs-xs); }
 .activity-link { padding: 10px 0 1px; border-top: 1px solid var(--line); width: 100%; justify-content: flex-start; font-size: var(--fs-sm); }
 .insight-card { position: relative; overflow: hidden; min-height: 190px; padding: 17px 19px; border: 1px solid #e3defb; border-radius: 16px; background: linear-gradient(137deg, #f3f1ff 0%, #fbfaff 85%); }
 .theme-root[data-theme="dark"] .insight-card { border-color: var(--line); background: linear-gradient(137deg, #302d45 0%, #252432 85%); }
@@ -514,7 +514,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .course-subject { font-size: var(--fs-xs); }
   .course-meta { gap: 6px; font-size: var(--fs-xs); }
   .course-meta svg { width: 12px; height: 12px; }
-  .course-progress { display: none; }
+  .course-row-progress { display: none; }
   .course-open { width: 25px; height: 25px; }
   .add-course-row { min-height: 59px; gap: 8px; }
   .add-course-icon { width: 31px; height: 31px; }
@@ -1936,3 +1936,79 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .lesson-prose em { color: var(--ink); }
 .login-dev-hint { margin: 14px 0 0; color: var(--muted); font-size: var(--fs-xs); text-align: center; }
 .login-dev-hint kbd { padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--surface); font: 600 var(--fs-xs) var(--body); }
+
+/* ------------------------------------------------------------------ landing: 3D subject hero */
+.subject-stage { position: relative; z-index: 1; width: min(100%, 380px); aspect-ratio: 1; }
+.subject-layer { position: absolute; inset: 0; opacity: 0; pointer-events: none; transform: scale(.9); transition: opacity .7s ease, transform .7s ease; }
+.subject-layer.is-active { opacity: 1; transform: scale(1); }
+.subject-float { width: 100%; height: 100%; perspective: 1100px; animation: heart-float 6.5s ease-in-out infinite; }
+.turntable-svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 16px 14px rgb(21 20 36 / 26%)); }
+.heart-turntable { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+.heart-turntable.is-spinning { animation: turn-vertical 12s linear infinite; }
+.heart-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.heart-defs { width: 0; height: 0; }
+@keyframes turn-vertical { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+.hero-subject-footer { position: absolute; right: 4%; bottom: 4%; z-index: 2; display: flex; align-items: center; gap: 14px; }
+.hero-subject-footer .heart-caption { position: static; margin: 0; }
+.subject-picker { display: flex; align-items: center; gap: 6px; }
+.subject-dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 99px; background: color-mix(in srgb, var(--accent) 28%, transparent); cursor: pointer; transition: width .3s ease, background .3s ease; }
+.subject-dot:hover { background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.subject-dot.is-active { width: 22px; background: var(--accent); }
+.subject-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.example-heart { position: relative; z-index: 1; width: 190px; aspect-ratio: 1; perspective: 900px; }
+.wide-break { display: inline; }
+@media (max-width: 640px) {
+  .subject-stage { width: min(82vw, 310px); }
+  .hero-subject-footer { right: 50%; bottom: 0; flex-direction: column-reverse; gap: 8px; transform: translateX(50%); white-space: nowrap; }
+  .landing-heart-scene { padding-bottom: 46px; }
+  .heart-label-bottom { bottom: 22%; }
+  .wide-break { display: none; }
+  .example-heart { width: 150px; }
+  /* steps: a vertical timeline instead of a 2-column grid with one left over */
+  .steps-timeline { grid-template-columns: 1fr; gap: 0; max-width: 260px; margin-inline: auto; }
+  .timeline-step { grid-template-columns: 32px 1fr; padding: 6px 0; }
+  .timeline-step:not(:last-child)::after { display: block; top: 40px; left: 15px; width: 0; height: calc(100% - 34px); border-top: 0; border-left: 1px dashed color-mix(in srgb, var(--accent) 38%, var(--line)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .subject-float, .heart-turntable { animation: none !important; }
+  .subject-layer { transition: none; }
+}
+
+/* ------------------------------------------------------------------ dashboards */
+.left-column { display: grid; min-width: 0; gap: 16px; }
+.continue-card + .student-courses-panel { margin-top: 18px; }
+.continue-copy > p { max-width: 420px; line-height: 1.55; }
+.continue-copy > p + .continue-progress { margin-top: 12px; }
+@media (max-width: 640px) {
+  .left-column { gap: 12px; }
+  /* phone nav: keep labels on one line and scroll sideways when there are many links */
+  .mobile-nav { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .mobile-nav::-webkit-scrollbar { display: none; }
+  .mobile-nav-link { flex: 1 0 auto; white-space: nowrap; }
+  /* stat cards: one compact row each instead of three squeezed columns */
+  .metric-grid { grid-template-columns: 1fr; }
+  .metric-card { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 12px 14px; }
+  .metric-top { grid-column: 1; justify-content: flex-start; gap: 8px; font-size: var(--fs-sm); }
+  .metric-top > span:first-child { order: 2; }
+  .metric-value { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 26px; }
+  .metric-note { grid-column: 1; margin: 0; }
+  .continue-card + .student-courses-panel { margin-top: 14px; }
+  .continue-visual { display: none; }
+}
+@media (max-width: 380px) {
+  .mobile-nav-link { flex-direction: row; min-height: 37px; }
+}
+/* Login: student/teacher choice + demo sign-in */
+.login-role-options { grid-template-columns: 1fr 1fr; margin-bottom: 4px; }
+.login-role-options legend { grid-column: 1 / -1; }
+.login-role-options .role-card { min-height: 64px; text-align: left; cursor: pointer; }
+.login-demo { display: grid; gap: 4px; margin-top: 12px; }
+.login-demo-button { display: flex; width: 100%; min-height: 42px; justify-content: center; }
+.login-demo .login-dev-hint { margin-top: 4px; }
+@media (max-width: 520px) { .login-role-options { grid-template-columns: 1fr; } }
+/* Leave room for the 72px logo bar above the sign-in card (it is absolutely positioned). */
+.login-card { padding-top: 128px; padding-bottom: 48px; }
+@media (max-width: 640px) { .login-page { padding-top: 104px; padding-bottom: calc(max(176px, 26vh) + 20px); } .login-card { padding-top: 12px; } }
+
+/* 3D Studio viewers use the full width of the page content column (aligned with the site). */
+.studio-wide { width: 100%; min-width: 0; }

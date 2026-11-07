@@ -2,6 +2,7 @@
 
 import uuid
 from dataclasses import dataclass, field
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -32,6 +33,7 @@ from app.modules.three_d.schemas import (
     ResolvedAsset,
     ResolvedScene,
     SceneOut,
+    StudioSceneOut,
 )
 from app.modules.users.models import User
 
@@ -265,6 +267,22 @@ def get_scene(db: Session, user: User, scene_id: uuid.UUID) -> SceneOut:
     return to_out(scene, published=not manager)
 
 
+def _reviewed_parts(meta: dict[str, Any]) -> list[dict[str, str]]:
+    out = []
+    for p in meta.get("parts") or []:
+        if not isinstance(p, dict) or not p.get("name"):
+            continue
+        reviewed = p.get("reviewed") is not False
+        out.append(
+            {
+                "name": str(p["name"]),
+                "label": str(p.get("label") or p["name"]),
+                "description": str(p.get("description") or "") if reviewed else "",
+            }
+        )
+    return out
+
+
 def resolve_scene(db: Session, user: User, scene_id: uuid.UUID) -> ResolvedScene:
     """Scene Resolver: returns the spec plus short-lived signed URLs for exactly the asset
     versions it references. Students only ever receive the published snapshot."""
@@ -292,6 +310,9 @@ def resolve_scene(db: Session, user: User, scene_id: uuid.UUID) -> ResolvedScene
             license_name=a.license_name,
             attribution_text=a.attribution_text,
             source_url=a.source_url,
+            insights=dict((v.metadata_json or {}).get("insights") or {}),
+            tour=(v.metadata_json or {}).get("tour"),
+            parts=_reviewed_parts(v.metadata_json or {}),
         )
         for a, v in check.assets
     ]
@@ -311,6 +332,43 @@ def resolve_scene(db: Session, user: User, scene_id: uuid.UUID) -> ResolvedScene
         warnings=check.warnings,
         animations=[AnimationSpec.model_validate(a) for a in animations],
     )
+
+
+def student_studio_scenes(db: Session, user: User) -> list[StudioSceneOut]:
+    """Published 3D scenes a student may open in the Studio: published scene, in a published
+    lesson of a published chapter of a published course the student is actively enrolled in."""
+    from app.modules.chapters.models import Chapter, PublishStatus
+    from app.modules.courses.models import CourseEnrollment, CourseStatus
+
+    rows = db.execute(
+        select(ThreeDScene, Lesson, Chapter, Course)
+        .join(Lesson, Lesson.id == ThreeDScene.lesson_id)
+        .join(Chapter, Chapter.id == Lesson.chapter_id)
+        .join(Course, Course.id == Chapter.course_id)
+        .join(CourseEnrollment, CourseEnrollment.course_id == Course.id)
+        .where(
+            CourseEnrollment.student_id == user.id,
+            CourseEnrollment.status == "active",
+            Course.status == CourseStatus.PUBLISHED,
+            Chapter.status == PublishStatus.PUBLISHED,
+            Lesson.published_version.is_not(None),
+            ThreeDScene.published_spec.is_not(None),
+        )
+        .order_by(Course.title, Chapter.position, Lesson.position, ThreeDScene.created_at)
+    ).all()
+    return [
+        StudioSceneOut(
+            scene_id=scene.id,
+            title=str((scene.published_spec or {}).get("title") or lesson.title),
+            lesson_id=lesson.id,
+            lesson_title=lesson.title,
+            chapter_title=chapter.title,
+            course_id=course.id,
+            course_title=course.title,
+            subject=course.subject,
+        )
+        for scene, lesson, chapter, course in rows
+    ]
 
 
 def usable_assets_for_course(

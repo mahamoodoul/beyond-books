@@ -11,7 +11,8 @@ jobs:
     defaults: { run: { working-directory: backend } }
     steps:
       - uses: actions/checkout@v4
-        with: { lfs: true }  # demo GLBs are stored in Git LFS
+      # Only the demo GLBs are needed in CI; sample-course PDFs (also LFS) are not downloaded.
+      - run: git lfs pull --include="packages/demo-assets/**"
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip, cache-dependency-path: backend/pyproject.toml }
       - run: pip install -e ".[dev]"
@@ -53,7 +54,8 @@ jobs:
     defaults: { run: { working-directory: frontend } }
     steps:
       - uses: actions/checkout@v4
-        with: { lfs: true }  # demo GLBs are stored in Git LFS
+      # Only the demo GLBs are needed in CI; sample-course PDFs (also LFS) are not downloaded.
+      - run: git lfs pull --include="packages/demo-assets/**"
       - uses: actions/setup-node@v4
         with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
       - run: npm ci

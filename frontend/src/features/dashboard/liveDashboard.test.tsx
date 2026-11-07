@@ -23,7 +23,7 @@ describe("API-backed dashboard rendering", () => {
     const id = "8ad2b50b-2c1f-4560-a234-ae789b9bc111";
     client.setQueryData(["courses"], [{ id, title: "Saved course", can_manage: true, status: "published", subject: "Physics", grade_level: "Grade 9", updated_at: "2026-11-07T10:00:00Z" }]);
     const html = renderToStaticMarkup(<QueryClientProvider client={client}><MemoryRouter><TeacherCoursesPage /></MemoryRouter></QueryClientProvider>);
-    expect(html).toContain(`/teacher/courses/${id}/review`);
+    expect(html).toContain(`href="/teacher/courses/${id}"`);
     expect(html).not.toContain("Preview not available");
   });
   it("keeps all backend workflows reachable in the connected design", () => {

@@ -163,6 +163,63 @@ class Model3DLLM(BaseModel):
     parts: list[ModelPartLLM]
 
 
+class PartConnectionLLM(BaseModel):
+    part: str
+    relationship: str
+
+
+class PartDeepDiveLLM(BaseModel):
+    """An in-depth study card for one part of a 3D-library model."""
+
+    summary: str
+    structure: str
+    function: str
+    connections: list[PartConnectionLLM]
+    analogy: str
+    misconception: str
+    fact: str
+    check_question: str
+    check_answer: str
+
+
+class PartDescriptionLLM(BaseModel):
+    name: str
+    label: str
+    description: str
+
+
+class PartDescriptionsLLM(BaseModel):
+    """Student-facing descriptions for parts of a 3D model that have none yet."""
+
+    parts: list[PartDescriptionLLM]
+
+
+class TourStepLLM(BaseModel):
+    part: str
+    connection: str
+
+
+class ModelTourLLM(BaseModel):
+    """Guided-tour narration for a 3D-library model: intro + every part in teaching order."""
+
+    intro: str
+    steps: list[TourStepLLM]
+
+
+class PromptDraftPartLLM(BaseModel):
+    name: str
+    label: str
+    description: str
+
+
+class PromptDraftLLM(BaseModel):
+    """A detailed build brief for a 3D model (used by the Blender and other 3D providers)."""
+
+    title: str
+    prompt: str
+    parts: list[PromptDraftPartLLM]
+
+
 class PartInsightLLM(BaseModel):
     text: str
     question_text: str

@@ -19,6 +19,9 @@ export interface ViewerRuntime {
   explode: number;
   hidden: Set<string>;
   selected: string | null;
+  /** Focus mode target: the other parts are ghosted. */
+  isolated: string | null;
+  xray: boolean;
   hovered: string | null;
   showLabels: boolean;
   reducedMotion: boolean;
@@ -40,6 +43,8 @@ export function createViewerRuntime(paths: Record<string, Vec3[]>): ViewerRuntim
     explode: 0,
     hidden: new Set(),
     selected: null,
+    isolated: null,
+    xray: false,
     hovered: null,
     showLabels: true,
     reducedMotion: false,

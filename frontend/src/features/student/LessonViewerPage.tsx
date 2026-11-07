@@ -10,7 +10,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useChapterAssessments } from "@/features/assessments/api";
 import { useLesson } from "@/features/lessons/api";
 import { InteractiveHeartPanel, usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
-import { LazySceneViewer } from "@/features/three-d/LazySceneViewer";
+import { LazySceneStudio } from "@/features/three-d/LazySceneStudio";
 
 import { trackEvent, useOutline, useSetProgress } from "./api";
 
@@ -94,6 +94,12 @@ export function LessonViewerPage() {
         )}
       </header>
 
+      {otherScenes.map((s) => (
+        <section aria-label={`3D: ${s.title}`} className="lesson-scene studio-wide" key={s.id}>
+          <LazySceneStudio sceneId={s.id} onEvent={(e) => trackEvent({ ...e, lesson_id: lessonId, scene_id: s.id })} />
+        </section>
+      ))}
+
       <div className={`lesson-layout${heartScene ? " lesson-layout-has-visual" : ""}`}>
         <article className="lesson-content">
           {objectives.length > 0 && (
@@ -105,12 +111,6 @@ export function LessonViewerPage() {
               </ul>
             </section>
           )}
-
-          {otherScenes.map((s) => (
-            <section aria-label={`3D: ${s.title}`} className="lesson-scene" key={s.id}>
-              <LazySceneViewer sceneId={s.id} onEvent={(e) => trackEvent({ ...e, lesson_id: lessonId, scene_id: s.id })} />
-            </section>
-          ))}
 
           {sections.map((sec, i) => (
             <section aria-labelledby={`lesson-section-${i}`} className="lesson-card panel" key={i}>

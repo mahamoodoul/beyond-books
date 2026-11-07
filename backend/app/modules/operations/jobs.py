@@ -25,6 +25,11 @@ class JobType(StrEnum):
     THREE_D_ASSET_GENERATION = "three_d_asset_generation"
     EXPLAIN_FURTHER = "explain_further"
     PART_INSIGHT = "part_insight"
+    THREE_D_PROMPT_DRAFT = "three_d_prompt_draft"
+    PART_DEEP_DIVE = "part_deep_dive"
+    MODEL_TOUR = "model_tour"
+    PART_DESCRIPTIONS = "part_descriptions"
+    CHAPTER_SPLIT = "chapter_split"
 
 
 TERMINAL_STATUSES = frozenset({JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED})

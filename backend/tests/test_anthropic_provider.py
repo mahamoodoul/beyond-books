@@ -76,6 +76,24 @@ def test_refusal_and_truncation_are_permanent() -> None:
         _call(_provider(lambda **_: _resp(parsed_output=None)))
 
 
+def test_cut_off_json_is_a_clear_permanent_error() -> None:
+    """Regression: a truncated answer made messages.parse raise a pydantic ValidationError,
+    which crashed the 3D job as "Unexpected error"."""
+    from pydantic import BaseModel, ValidationError
+
+    class M(BaseModel):
+        title: str
+
+    def parse(**kw: Any) -> Any:
+        try:
+            M.model_validate_json('{"title": "Heart", "parts": [{"na')
+        except ValidationError as exc:
+            raise exc
+
+    with pytest.raises(ProviderPermanentError, match="cut off or incomplete"):
+        _call(_provider(parse))
+
+
 def test_error_mapping() -> None:
     req = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
 
