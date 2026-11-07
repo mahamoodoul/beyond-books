@@ -94,7 +94,7 @@ export function LandingPage() {
     <main className="landing-page">
       <header className="landing-header">
         <Link aria-label="Beyond Books home" className="brand" to="/">
-          <BeyondBooksLogo showWordmark size={40} variant={theme} />
+          <BeyondBooksLogo showWordmark size={44} variant={theme} />
         </Link>
         <nav aria-label="Landing page navigation" className="landing-nav">
           <a href="#how-it-works">How it works</a>
@@ -205,7 +205,7 @@ export function LandingPage() {
       </section>
       <footer className="landing-footer">
         <Link aria-label="Beyond Books home" className="brand" to="/">
-          <BeyondBooksLogo animated={false} showWordmark size={32} variant={theme} />
+          <BeyondBooksLogo animated={false} showWordmark size={35} variant={theme} />
         </Link>
         <span>Learning, brought to life.</span>
         <span>© 2026 Beyond Books</span>
