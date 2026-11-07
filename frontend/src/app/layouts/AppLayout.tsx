@@ -14,6 +14,9 @@ export function AppLayout() {
           <NavLink to="/" end className={navClass}>
             Home
           </NavLink>
+          <NavLink to="/viewer" className={navClass}>
+            3D Viewer
+          </NavLink>
           <NavLink to="/teacher" className={navClass}>
             Teacher
           </NavLink>
