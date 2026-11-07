@@ -53,7 +53,7 @@
     {
       "component_id": "bond_1",
       "mesh_name": "bond_1",
-      "label": "O–H covalent bond",
+      "label": "O\u2013H covalent bond",
       "actions": [
         "highlight",
         "show_explanation"
@@ -63,7 +63,7 @@
     {
       "component_id": "bond_2",
       "mesh_name": "bond_2",
-      "label": "O–H covalent bond",
+      "label": "O\u2013H covalent bond",
       "actions": [
         "highlight",
         "show_explanation"
@@ -78,5 +78,12 @@
   ],
   "animation_refs": [
     "water_shape_01"
-  ]
+  ],
+  "explanations": {
+    "explanation_bond_1": "A covalent bond is a shared pair of electrons holding a hydrogen atom to the oxygen atom.",
+    "explanation_bond_2": "A covalent bond is a shared pair of electrons holding a hydrogen atom to the oxygen atom. The two bonds form a bent shape of about 104.5\u00b0.",
+    "explanation_hydrogen_1": "Each hydrogen atom shares a pair of electrons with oxygen and has a slight positive charge.",
+    "explanation_hydrogen_2": "Each hydrogen atom shares a pair of electrons with oxygen and has a slight positive charge.",
+    "explanation_oxygen": "The oxygen atom is at the centre of the water molecule. It has a slight negative charge."
+  }
 }

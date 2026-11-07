@@ -71,4 +71,5 @@ def test_demo_asset_matches_metadata_and_fixtures(asset_id: str) -> None:
         assert validate_animation_for_scene(anim, owner) == []
         for step in anim.steps:
             if (path_id := getattr(step, "path_id", None)) is not None:
-                assert path_id in meta["paths"]
+                # Paths may be defined on the scene (contract, ADR 0010) or the asset metadata.
+                assert path_id in owner.paths or path_id in meta["paths"]

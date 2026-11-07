@@ -1,264 +1,227 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-
-import { useReducedMotion } from "@/features/three-d/hooks/useReducedMotion";
-import {
-  AnimationRunner,
-  deriveFrame,
-  validateAnimation,
-  type RunnerSnapshot,
-} from "@/features/three-d/runtime/animation";
-import { proceduralCatalog } from "@/features/three-d/runtime/procedural";
-import { lowerTier, type QualitySetting, type QualityTier } from "@/features/three-d/runtime/quality";
-import { resolveScene } from "@/features/three-d/runtime/sceneResolver";
-import type {
-  AnimationSpec,
-  AssetRegistry,
-  ResolvedScene,
-  SceneSpec,
-  ViewerEvent,
-} from "@/features/three-d/runtime/types";
-import { createViewerRuntime } from "@/features/three-d/runtime/viewerRuntime";
-
-import { AnimationTimeline } from "./AnimationTimeline";
-import { ExplanationPanel } from "./ExplanationPanel";
-import { SceneCanvas, type CameraCommand } from "./SceneCanvas";
-import { SceneToolbar } from "./SceneToolbar";
-
-export interface SceneViewerProps {
-  scene: SceneSpec;
-  /** Animations available to this scene; only those in scene.animation_refs are offered. */
-  animations?: AnimationSpec[];
-  registry: AssetRegistry;
-  /** explanation_ref -> text, from the lesson content. */
-  explanations?: Readonly<Record<string, string>>;
-  onEvent?: (event: ViewerEvent) => void;
-  className?: string;
-}
-
-const IDLE: RunnerSnapshot = { status: "idle", index: 0, progress: 0 };
-const noopSubscribe = () => () => {};
-
 /**
- * Contract-driven 3D viewer: resolves a validated SceneSpec against the asset registry, renders
- * it with selectable, labelled components, an exploded view and the guided animation timeline.
+ * 3D classroom viewer (design §11.4). Lazy-loaded so three.js is never downloaded on pages
+ * without 3D. Provides a text alternative (component list + explanations) for accessibility.
  */
-export function SceneViewer(props: SceneViewerProps) {
-  const { scene: spec, registry } = props;
-  const scene = useMemo(() => resolveScene(spec, registry, proceduralCatalog), [spec, registry]);
-  // remount per scene so each one gets a fresh runtime, registry and GPU resources
-  return <ViewerBody key={spec.scene_id} {...props} scene={scene} />;
-}
+import { useQuery } from "@tanstack/react-query";
+import { Component, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-function ViewerBody({
-  scene,
-  animations = [],
-  explanations,
-  onEvent,
-  className = "",
-}: Omit<SceneViewerProps, "scene"> & { scene: ResolvedScene }) {
-  const spec = scene.spec;
-  const [initialRuntime] = useState(() => createViewerRuntime(scene.paths));
-  const runtime = useRef(initialRuntime);
-  const reducedMotion = useReducedMotion();
-  const container = useRef<HTMLDivElement>(null);
+import { api } from "@/api/client";
+import type { ResolvedScene, SceneComponent } from "@/api/generated/schema";
+import { ErrorAlert, Loading } from "@/components/feedback";
+import { Badge, Button } from "@/components/ui";
 
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [missing, setMissing] = useState<ReadonlySet<string>>(new Set());
-  const [loaded, setLoaded] = useState(false);
-  const [quality, setQuality] = useState<QualitySetting>("auto");
-  const [autoTier, setAutoTier] = useState<QualityTier>("high");
-  const tier: QualityTier = quality === "auto" ? autoTier : quality;
-  const [selected, setSelected] = useState<string | null>(null);
-  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
-  const [showLabels, setShowLabels] = useState(true);
-  const [explode, setExplode] = useState(0);
-  const [camera, setCamera] = useState<CameraCommand>({ kind: "fit", key: 0 });
+import { AnimationLayer, type AnimationClock } from "../runtime/AnimationLayer";
+import { AnimationControls } from "./AnimationControls";
+import { SceneCanvas } from "./SceneCanvas";
 
-  const componentIds = useMemo(
-    () => new Set(scene.components.map((c) => c.componentId)),
-    [scene],
-  );
-  const sceneAnimations = useMemo(
-    () =>
-      (spec.animation_refs ?? [])
-        .map((id) => animations.find((a) => a.animation_id === id))
-        .filter((a): a is AnimationSpec => !!a),
-    [spec, animations],
-  );
-  const [animationId, setAnimationId] = useState<string | null>(null);
-  const animation =
-    sceneAnimations.find((a) => a.animation_id === animationId) ?? sceneAnimations[0] ?? null;
-  const problems = useMemo(
-    () => (animation ? validateAnimation(animation, componentIds, scene.paths) : []),
-    [animation, componentIds, scene.paths],
-  );
-  const runner = useMemo(
-    () => (animation && problems.length === 0 ? new AnimationRunner(animation.steps) : null),
-    [animation, problems],
-  );
-  const snapshot = useSyncExternalStore(
-    runner?.subscribe ?? noopSubscribe,
-    runner?.getSnapshot ?? (() => IDLE),
-  );
-  const uiFrame = useMemo(
-    () => (runner ? deriveFrame(runner.steps, snapshot, scene.paths, true) : deriveFrame([], IDLE, {})),
-    [runner, snapshot, scene.paths],
-  );
-
-  // push UI state into the render loop's runtime
-  useEffect(() => {
-    const rt = runtime.current;
-    rt.runner = runner;
-    rt.selected = selected;
-    rt.hidden = new Set(hidden);
-    rt.showLabels = showLabels;
-    rt.explodeTarget = explode;
-    rt.reducedMotion = reducedMotion;
-  }, [runner, selected, hidden, showLabels, explode, reducedMotion]);
-
-  // learning events
-  const lastEvent = useRef<string>("");
-  useEffect(() => {
-    if (!animation || !onEvent) return;
-    const id = animation.animation_id;
-    const key = `${id}:${snapshot.status}:${snapshot.index}`;
-    if (key === lastEvent.current) return;
-    const prev = lastEvent.current;
-    lastEvent.current = key;
-    if (snapshot.status === "playing" && snapshot.index === 0 && !prev.startsWith(`${id}:playing`)) {
-      onEvent({ type: "animation_started", animationId: id });
-    }
-    if (snapshot.status === "playing" || snapshot.status === "paused") {
-      onEvent({ type: "animation_step", animationId: id, step: snapshot.index + 1 });
-    }
-    if (snapshot.status === "finished") onEvent({ type: "animation_completed", animationId: id });
-  }, [animation, snapshot, onEvent]);
-
-  const byId = useMemo(
-    () => new Map(scene.components.map((c) => [c.componentId, c])),
-    [scene],
-  );
-  const selectable = (spec.controls ?? []).includes("select_component");
-  const canSelect = useCallback(
-    (id: string) => selectable && byId.has(id) && !missing.has(id),
-    [selectable, byId, missing],
-  );
-  const select = useCallback(
-    (id: string | null) => {
-      setSelected(id);
-      if (id) onEvent?.({ type: "component_selected", componentId: id });
-    },
-    [onEvent],
-  );
-  const focus = (id: string) => setCamera((c) => ({ kind: "focus", componentId: id, key: c.key + 1 }));
-  const fit = () => setCamera((c) => ({ kind: "fit", key: c.key + 1 }));
-  const toggleVisibility = (id: string) =>
-    setHidden((h) => {
-      const next = new Set(h);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-
-  if (scene.errors.length > 0) {
-    return (
-      <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-        <p className="font-medium">This 3D scene can't be shown.</p>
-        <ul className="mt-2 list-disc pl-5">
-          {scene.errors.map((e) => (
-            <li key={e}>{e}</li>
-          ))}
-        </ul>
+class WebGLBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? (
+      <div role="alert" className="flex h-full items-center justify-center p-6 text-center text-sm text-slate-200">
+        The 3D view could not be displayed on this device. Use the parts list and explanations instead.
       </div>
+    ) : (
+      this.props.children
     );
   }
+}
 
-  const explodable = scene.assets.length > 0;
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const on = () => setReduced(mq.matches);
+    mq?.addEventListener("change", on);
+    return () => mq?.removeEventListener("change", on);
+  }, []);
+  return reduced;
+}
+
+export interface SceneEvent {
+  event_type: "scene_opened" | "component_selected" | "animation_started" | "animation_completed";
+  component_id?: string;
+  animation_id?: string;
+}
+
+export default function SceneViewer({
+  sceneId,
+  height = 520,
+  onEvent,
+}: {
+  sceneId: string;
+  height?: number;
+  onEvent?: (e: SceneEvent) => void;
+}) {
+  const resolved = useQuery({
+    queryKey: ["scene-resolved", sceneId],
+    queryFn: () => api.get<ResolvedScene>(`/scenes/${sceneId}/resolved`),
+    staleTime: 5 * 60_000, // signed URLs last 10 minutes
+  });
+  const [selected, setSelectedRaw] = useState<SceneComponent | null>(null);
+  const setSelected = (c: SceneComponent | null) => {
+    setSelectedRaw(c);
+    if (c) onEvent?.({ event_type: "component_selected", component_id: c.component_id });
+  };
+  useEffect(() => {
+    onEvent?.({ event_type: "scene_opened" });
+  }, [sceneId]);
+  const [loadedNames, setLoadedNames] = useState<Set<string>>(new Set());
+  const reducedMotion = usePrefersReducedMotion();
+  const box = useRef<HTMLDivElement>(null);
+  const [animIdx, setAnimIdx] = useState<number | null>(null);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const clock = useRef<AnimationClock>({ elapsed: 0 });
+  const onMeshesLoaded = useCallback(
+    (names: string[]) => setLoadedNames((prev) => new Set([...prev, ...names])),
+    [],
+  );
+
+  const spec = resolved.data?.spec;
+  const components = spec?.components ?? [];
+  const missing = useMemo(() => {
+    if (!resolved.data?.assets.length || loadedNames.size === 0) return [];
+    const procedural = new Set((spec?.procedural ?? []).length ? components.map((c) => c.mesh_name) : []);
+    return components.filter((c) => !loadedNames.has(c.mesh_name) && !procedural.has(c.mesh_name));
+  }, [loadedNames, components, resolved.data, spec]);
+
+  if (resolved.isPending) return <Loading label="Preparing 3D scene…" />;
+  if (resolved.error) return <ErrorAlert error={resolved.error} />;
+  const data = resolved.data;
+  const animations = data.animations ?? [];
+  const animation = animIdx !== null ? animations[animIdx] : undefined;
+  const startAnimation = (i: number) => {
+    setSelectedRaw(null);
+    const a = animations[i];
+    if (a) onEvent?.({ event_type: "animation_started", animation_id: a.animation_id });
+    setAnimIdx(i);
+    setStep(0);
+    setPlaying(!reducedMotion);
+  };
+  const onStepComplete = () => {
+    if (!animation) return;
+    if (step < animation.steps.length - 1) setStep(step + 1);
+    else {
+      setPlaying(false);
+      onEvent?.({ event_type: "animation_completed", animation_id: animation.animation_id });
+    }
+  };
+  const explanation = selected?.explanation_ref ? data.spec.explanations?.[selected.explanation_ref] : undefined;
+
   return (
-    <div className={`flex flex-col gap-3 ${className}`}>
-      <SceneToolbar
-        showLabels={showLabels}
-        onShowLabels={setShowLabels}
-        explode={explodable ? explode : null}
-        onExplode={(v) => {
-          setExplode(v);
-          runtime.current.explodeTarget = v;
-        }}
-        onExplodeCommit={() => {
-          fit();
-          onEvent?.({ type: "explode_changed", amount: runtime.current.explodeTarget });
-        }}
-        onResetView={fit}
-        quality={quality}
-        effectiveTier={tier}
-        onQuality={setQuality}
-        onFullscreen={() => void container.current?.requestFullscreen?.()}
-      />
-
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <div
-          ref={container}
-          className="relative aspect-[4/3] min-h-72 overflow-hidden rounded-lg bg-navy-950 sm:aspect-video lg:aspect-auto lg:h-[34rem]"
-        >
-          <SceneCanvas
-            scene={scene}
-            runtime={runtime}
-            camera={camera}
-            canSelect={canSelect}
-            onSelect={select}
-            quality={tier}
-            onQualityDecline={quality === "auto" ? () => setAutoTier(lowerTier) : undefined}
-            onReady={({ missing: m }) => {
-              setLoaded(true);
-              setMissing(new Set(m));
-            }}
-            onError={setLoadError}
-          />
-          {!loaded && !loadError && (
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
-                Loading 3D model…
-              </p>
-            </div>
-          )}
-          {uiFrame.annotation && (
-            <p className="pointer-events-none absolute inset-x-4 top-4 mx-auto max-w-xl rounded-md bg-white/95 px-4 py-2 text-center text-sm text-slate-800 shadow">
-              {uiFrame.annotation.text}
-            </p>
-          )}
-          {loadError && (
-            <div role="alert" className="absolute inset-0 grid place-items-center p-6">
-              <p className="rounded-md bg-white px-4 py-3 text-sm text-red-800">
-                Couldn't load the 3D model: {loadError}
-              </p>
-            </div>
-          )}
+    <div ref={box} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="flex flex-col lg:flex-row">
+        <div className="relative flex-1 bg-navy-950" style={{ height }}>
+          <WebGLBoundary>
+            <SceneCanvas
+              spec={data.spec}
+              assets={data.assets}
+              selected={selected}
+              onSelect={setSelected}
+              onMeshesLoaded={onMeshesLoaded}
+              reducedMotion={reducedMotion}
+              overlay={(root) =>
+                animation ? (
+                  <AnimationLayer
+                    root={root}
+                    scene={data.spec}
+                    animation={animation}
+                    index={step}
+                    playing={playing}
+                    clock={clock}
+                    reducedMotion={reducedMotion}
+                    onStepComplete={onStepComplete}
+                  />
+                ) : null
+              }
+            />
+          </WebGLBoundary>
+          <Button
+            variant="secondary"
+            className="absolute right-3 top-3"
+            onClick={() => (document.fullscreenElement ? document.exitFullscreen() : box.current?.requestFullscreen())}
+          >
+            Fullscreen
+          </Button>
         </div>
-
-        <ExplanationPanel
-          components={scene.components}
-          selected={selected}
-          hidden={hidden}
-          missing={missing}
-          frame={uiFrame}
-          explanations={explanations}
-          onSelect={select}
-          onToggleVisibility={toggleVisibility}
-          onFocus={focus}
-        />
+        <aside className="w-full space-y-4 p-4 lg:w-80" aria-label="Scene parts and explanations">
+          <div>
+            <h3 className="font-semibold">{data.spec.title}</h3>
+            <p className="text-xs text-slate-500">Drag to rotate · scroll to zoom · click a part to learn about it</p>
+          </div>
+          {animations.length > 0 && (
+            <div className="space-y-2 rounded-md border border-slate-200 p-3">
+              <div className="flex flex-wrap gap-1">
+                {animations.map((a, i) => (
+                  <Button key={a.animation_id} variant={animIdx === i ? "primary" : "secondary"} onClick={() => startAnimation(i)}>
+                    ▶ {a.title}
+                  </Button>
+                ))}
+                {animation && <Button variant="ghost" onClick={() => { setAnimIdx(null); setPlaying(false); }}>Stop</Button>}
+              </div>
+              {animation && (
+                <AnimationControls
+                  animation={animation}
+                  index={step}
+                  playing={playing}
+                  onPlay={() => { if (step >= animation.steps.length - 1) setStep(0); setPlaying(true); }}
+                  onPause={() => setPlaying(false)}
+                  onRestart={() => { setStep(0); clock.current.elapsed = 0; setPlaying(!reducedMotion); }}
+                  onStep={(d) => { setPlaying(false); setStep(Math.max(0, Math.min(animation.steps.length - 1, step + d))); }}
+                  onJump={(i) => { setPlaying(false); setStep(i); }}
+                />
+              )}
+            </div>
+          )}
+          <div aria-live="polite" className="min-h-20 rounded-md bg-slate-50 p-3">
+            {selected ? (
+              <>
+                <p className="font-medium">{selected.label}</p>
+                <p className="mt-1 text-sm text-slate-700">{explanation ?? "No explanation has been written for this part yet."}</p>
+              </>
+            ) : (
+              <p className="text-sm text-slate-500">Select a part in the model or from the list.</p>
+            )}
+          </div>
+          {components.length > 0 && (
+            <ul className="space-y-1" aria-label="Parts">
+              {components.map((c) => (
+                <li key={c.component_id}>
+                  <button
+                    className={`w-full rounded-md px-3 py-1.5 text-left text-sm ${selected?.component_id === c.component_id ? "bg-navy-900 text-white" : "hover:bg-slate-100"}`}
+                    aria-pressed={selected?.component_id === c.component_id}
+                    onClick={() => setSelected(selected?.component_id === c.component_id ? null : c)}
+                  >
+                    {c.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {(missing.length > 0 || data.warnings.length > 0) && (
+            <div className="space-y-1">
+              {missing.map((c) => <Badge key={c.component_id} tone="amber">“{c.label}” not found in model</Badge>)}
+              {data.warnings.map((w) => <Badge key={w} tone="amber">{w}</Badge>)}
+            </div>
+          )}
+          {data.assets.map((a) => (
+            <p key={a.asset_id} className="text-xs text-slate-500">
+              Model: {a.name} · {a.license_name}
+              {a.attribution_text && ` · ${a.attribution_text}`}
+              {a.source_url && (
+                <>
+                  {" · "}
+                  <a href={a.source_url} target="_blank" rel="noreferrer noopener" className="underline">source</a>
+                </>
+              )}
+            </p>
+          ))}
+        </aside>
       </div>
-
-      <AnimationTimeline
-        animations={sceneAnimations}
-        selectedId={animation?.animation_id ?? null}
-        onSelectAnimation={(id) => {
-          runner?.reset();
-          setAnimationId(id);
-        }}
-        runner={runner}
-        snapshot={snapshot}
-        problems={problems}
-      />
     </div>
   );
 }

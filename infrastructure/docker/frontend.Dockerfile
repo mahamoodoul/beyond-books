@@ -1,6 +1,7 @@
 FROM node:22-slim
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend/stubs ./stubs
 RUN npm ci
 COPY frontend ./
 EXPOSE 5173

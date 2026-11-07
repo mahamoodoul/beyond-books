@@ -125,5 +125,107 @@
   ],
   "animation_refs": [
     "double_circulation_01"
-  ]
+  ],
+  "explanations": {
+    "explanation_aorta": "The aorta is the largest artery. It carries oxygen-rich blood from the left ventricle to the rest of the body.",
+    "explanation_inferior_vena_cava": "The inferior vena cava returns oxygen-poor blood from the lower body to the right atrium.",
+    "explanation_left_atrium": "The left atrium receives oxygen-rich blood returning from the lungs through the pulmonary veins.",
+    "explanation_left_ventricle": "The left ventricle has the thickest muscular wall because it pumps oxygen-rich blood to the whole body through the aorta.",
+    "explanation_pulmonary_trunk": "The pulmonary trunk carries oxygen-poor blood from the right ventricle towards the lungs, where it picks up oxygen.",
+    "explanation_pulmonary_veins": "The pulmonary veins bring oxygen-rich blood from the lungs back to the left atrium.",
+    "explanation_right_atrium": "The right atrium receives oxygen-poor blood returning from the body through the superior and inferior vena cava.",
+    "explanation_right_ventricle": "The right ventricle pumps oxygen-poor blood into the pulmonary trunk, which carries it to the lungs.",
+    "explanation_superior_vena_cava": "The superior vena cava returns oxygen-poor blood from the head, neck and arms to the right atrium."
+  },
+  "paths": {
+    "path_to_body": [
+      [
+        1.25,
+        0.7,
+        -0.3
+      ],
+      [
+        0.78,
+        0.64,
+        -0.26
+      ],
+      [
+        0.52,
+        0.62,
+        -0.25
+      ],
+      [
+        0.35,
+        -0.2,
+        0.0
+      ],
+      [
+        0.12,
+        0.3,
+        0.02
+      ],
+      [
+        0.06,
+        1.15,
+        0.05
+      ],
+      [
+        0.3,
+        1.55,
+        -0.15
+      ],
+      [
+        0.68,
+        1.35,
+        -0.45
+      ],
+      [
+        0.78,
+        0.4,
+        -0.58
+      ]
+    ],
+    "path_to_lungs": [
+      [
+        -0.72,
+        1.55,
+        0.02
+      ],
+      [
+        -0.66,
+        0.85,
+        0.1
+      ],
+      [
+        -0.62,
+        0.55,
+        0.1
+      ],
+      [
+        -0.35,
+        -0.1,
+        0.3
+      ],
+      [
+        -0.18,
+        0.3,
+        0.4
+      ],
+      [
+        -0.05,
+        0.95,
+        0.4
+      ],
+      [
+        0.3,
+        1.2,
+        0.22
+      ],
+      [
+        0.85,
+        1.12,
+        0.05
+      ]
+    ]
+  }
 }
