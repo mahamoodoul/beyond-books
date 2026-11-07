@@ -1,0 +1,7 @@
+{
+  "name": "canvas",
+  "version": "2.11.2-edu3d-stub",
+  "description": "Stub for node-canvas. mind-ar only needs canvas for its offline target compiler (Node); the browser AR runtime never loads it. Avoids a native build (cairo) in CI/Docker.",
+  "main": "index.js",
+  "license": "MIT"
+}

@@ -1,4 +1,4 @@
-# Edu3D AI --- Complete System Design
+# Beyond Books --- Complete System Design
 
 > **Turn textbooks into interactive 3D learning experiences.**\
 > System architecture, database design, AI workflows, 3D modelling,
@@ -17,7 +17,7 @@ AI/3D providers.
 
 ## 1. Executive Summary
 
-Edu3D AI transforms textbooks, PDFs and educational references into
+Beyond Books transforms textbooks, PDFs and educational references into
 structured, chapter-based courses enriched with interactive 3D models,
 animations, quizzes and short-answer assessments.
 
@@ -1996,7 +1996,7 @@ see how students performed.
 
 ## 24. Final Engineering Direction
 
-Edu3D AI is built around four connected capabilities:
+Beyond Books is built around four connected capabilities:
 
 1.  **Educational intelligence:** Understand source material and produce
     accurate, structured learning content.

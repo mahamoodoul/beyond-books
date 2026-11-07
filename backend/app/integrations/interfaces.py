@@ -38,7 +38,18 @@ class ReferencePassage:
     text: str
 
 
+class ProviderTransientError(Exception):
+    """Timeouts, rate limits, 5xx: safe to retry."""
+
+
+class ProviderPermanentError(Exception):
+    """Refusals, invalid requests, unparseable output: do not retry."""
+
+
 class LLMProvider(Protocol):
+    name: str
+    model: str
+
     def generate_structured[T: BaseModel](
         self,
         *,
@@ -76,27 +87,57 @@ class ThreeDTask:
     credits_used: float | None = None
     error_code: str | None = None
     transient_error: bool = False
+    # Optional extras: token usage when the provider is LLM-backed, and part metadata
+    # (labels/descriptions) to store with the asset version.
+    llm_usage: "LLMUsage | None" = None
+    part_metadata: list[dict[str, str]] | None = None
 
 
 class ThreeDGenerationProvider(Protocol):
+    """Raise ProviderTransientError / ProviderPermanentError on failures."""
+
     name: str
 
     def create_task(self, *, prompt: str, idempotency_key: str) -> ThreeDTask: ...
 
     def get_task(self, provider_task_id: str) -> ThreeDTask: ...
 
+    def fetch_output(self, task: ThreeDTask, max_bytes: int) -> bytes:
+        """Download the finished GLB (must enforce max_bytes)."""
+        ...
+
 
 # ------------------------------------------------------------------------ storage
 
 
+@dataclass(frozen=True)
+class PresignedUpload:
+    url: str
+    method: str
+    headers: dict[str, str]
+
+
+@dataclass(frozen=True)
+class StoredObject:
+    size_bytes: int
+
+
 class ObjectStorageProvider(Protocol):
-    def presigned_upload_url(
+    """Private object storage. Keys are server-generated; never derived from user filenames."""
+
+    def presigned_upload(
         self, *, key: str, content_type: str, max_bytes: int, expires_in_s: int
-    ) -> str: ...
+    ) -> PresignedUpload: ...
 
-    def presigned_download_url(self, *, key: str, expires_in_s: int) -> str: ...
+    def presigned_download(self, *, key: str, content_type: str, expires_in_s: int) -> str: ...
 
-    def head(self, key: str) -> dict[str, str | int] | None: ...
+    def head(self, key: str) -> StoredObject | None: ...
+
+    def read_bytes(self, key: str, max_bytes: int) -> bytes: ...
+
+    def put_bytes(self, key: str, data: bytes, content_type: str) -> None: ...
+
+    def delete(self, key: str) -> None: ...
 
 
 # ---------------------------------------------------------------------- documents

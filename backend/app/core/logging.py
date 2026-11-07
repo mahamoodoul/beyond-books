@@ -11,11 +11,29 @@ class RequestIdFilter(logging.Filter):
         return True
 
 
-def configure_logging(level: str = "INFO") -> None:
+class JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        import json
+
+        payload = {
+            "ts": self.formatTime(record, "%Y-%m-%dT%H:%M:%S%z"),
+            "level": record.levelname,
+            "logger": record.name,
+            "request_id": getattr(record, "request_id", "-"),
+            "message": record.getMessage(),
+        }
+        if record.exc_info:
+            payload["exc"] = self.formatException(record.exc_info)
+        return json.dumps(payload)
+
+
+def configure_logging(level: str = "INFO", fmt: str = "text") -> None:
     handler = logging.StreamHandler()
     handler.addFilter(RequestIdFilter())
     handler.setFormatter(
-        logging.Formatter("%(asctime)s %(levelname)s %(name)s [%(request_id)s] %(message)s")
+        JsonFormatter()
+        if fmt == "json"
+        else logging.Formatter("%(asctime)s %(levelname)s %(name)s [%(request_id)s] %(message)s")
     )
     root = logging.getLogger()
     root.handlers = [handler]

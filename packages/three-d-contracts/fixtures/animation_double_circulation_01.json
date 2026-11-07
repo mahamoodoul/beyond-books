@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "double_circulation_01",
+  "title": "Double circulation: lungs and body",
+  "steps": [
+    {
+      "step": 1,
+      "action": "camera_focus",
+      "target_component": "right_atrium",
+      "duration_ms": 1000
+    },
+    {
+      "step": 2,
+      "action": "highlight_component",
+      "target_component": "superior_vena_cava",
+      "duration_ms": 2000,
+      "explanation": "Oxygen-poor blood from the body returns through the venae cavae."
+    },
+    {
+      "step": 3,
+      "action": "show_flow_particles",
+      "target_component": "right_ventricle",
+      "path_id": "path_to_lungs",
+      "duration_ms": 5000,
+      "explanation": "It passes through the right atrium and right ventricle, which pumps it into the pulmonary trunk towards the lungs."
+    },
+    {
+      "step": 4,
+      "action": "show_annotation",
+      "duration_ms": 3000,
+      "explanation": "In the lungs, blood releases carbon dioxide and picks up oxygen."
+    },
+    {
+      "step": 5,
+      "action": "camera_focus",
+      "target_component": "left_atrium",
+      "duration_ms": 1000
+    },
+    {
+      "step": 6,
+      "action": "show_flow_particles",
+      "target_component": "left_ventricle",
+      "path_id": "path_to_body",
+      "duration_ms": 5000,
+      "explanation": "Oxygen-rich blood returns via the pulmonary veins to the left atrium, then the left ventricle pumps it into the aorta."
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "aorta",
+      "duration_ms": 2500,
+      "explanation": "The aorta carries oxygen-rich blood to the rest of the body."
+    }
+  ]
+}
