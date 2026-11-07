@@ -33,6 +33,8 @@ export const appRoutes: RouteObject[] = [
       { path: "/teacher/chapters/:chapterId/studio", element: teacher(page(() => import("@/features/three-d/studio/ChapterStudioPage"), "default")) },
       // Full-screen teacher 3D Studio (own dark layout, outside the standard app chrome).
       { path: "/teacher/lessons/:lessonId/studio", element: teacher(page(() => import("@/features/three-d/studio/StudioPage"), "default")) },
+      // Full-screen AR scan of a lesson's interactive heart (teachers previewing and students).
+      { path: "/lessons/:lessonId/ar", element: anyUser(page(() => import("@/features/ar/HeartARPage"), "HeartARPage")) },
       { element: <RequireAuth><AppLayout /></RequireAuth>, children: [
       { path: "/account", element: anyUser(page(() => import("@/features/account/AccountPage"), "AccountPage")) },
       { path: "/teacher", element: teacher(page(() => import("@/features/dashboard/DemoTeacherDashboard"), "DemoTeacherDashboard")) },

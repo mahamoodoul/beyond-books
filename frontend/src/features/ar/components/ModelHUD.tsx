@@ -136,7 +136,7 @@ export function ModelHUD({ model: heart, selected, onClose, colorNote }: Props) 
         )}
         {heart.ct && (
           <button onClick={toggleCT} aria-pressed={ctOn}>
-            <span aria-hidden>◎</span> CT scan
+            <span aria-hidden>◎</span> Slice view
           </button>
         )}
         <button onClick={reset}>
