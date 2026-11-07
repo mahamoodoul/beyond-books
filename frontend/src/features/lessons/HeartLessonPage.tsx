@@ -35,6 +35,7 @@ export function HeartLessonPage() {
   const chapter = course.chapters.find((item) => item.id === lessonId) ?? course.chapters[0];
   if (!chapter) throw new Error(`The requested lesson "${lessonId}" is not available.`);
   const activeChapterId = chapter.id;
+  const hasHeartTrackingPage = activeChapterId === "heart-structure";
   const chapterIndex = course.chapters.findIndex((item) => item.id === activeChapterId);
   const previousChapter = course.chapters[chapterIndex - 1];
   const nextChapter = course.chapters[chapterIndex + 1];
@@ -81,7 +82,7 @@ export function HeartLessonPage() {
         </div>
       </header>
 
-      <div className="heart-learning-grid">
+      <div className={`heart-learning-grid${hasHeartTrackingPage ? " heart-course-standard" : ""}`}>
         <article className="heart-lesson-copy">
           <section aria-labelledby="objectives-title" className="heart-objectives panel">
             <div className="heart-copy-label"><span className="heart-copy-icon"><Icon name="target" size={17} /></span><span className="eyebrow eyebrow-muted">IN THIS CHAPTER</span></div>
@@ -110,36 +111,47 @@ export function HeartLessonPage() {
         </article>
 
         <aside className="heart-viewer-column">
-          <Suspense fallback={<ViewerSkeleton />}>
-            <CardiacViewer model={chapter.model} />
-          </Suspense>
-          <section aria-label="Explore the heart in 3D or augmented reality" className="heart-ar-launch panel">
-            <span className="heart-ar-launch-icon"><Icon name="eye" size={18} /></span>
-            <div className="heart-ar-launch-copy">
-              <strong>Explore the heart in 3D</strong>
-              <p>Open the interactive model here, or bring it into your space with AR.</p>
-            </div>
-            <div className="heart-view-actions">
-              <button className="button button-secondary heart-ar-launch-button" onClick={() => setShow3D(true)} ref={view3DButtonRef} type="button">
-                View 3D on the web <Icon name="layers" size={15} />
-              </button>
+          {hasHeartTrackingPage ? (
+            <section aria-labelledby="heart-page-title" className="heart-page-visual panel">
+              <div className="heart-page-visual-heading">
+                <div>
+                  <span className="eyebrow eyebrow-muted">COURSE VISUAL</span>
+                  <h2 id="heart-page-title">The heart, at a glance</h2>
+                </div>
+                <button className="button button-primary heart-page-3d-button" onClick={() => setShow3D(true)} ref={view3DButtonRef} type="button">
+                  <Icon name="layers" size={16} /> View in 3D
+                </button>
+              </div>
+              <figure className="heart-page-figure">
+                <a
+                  aria-label="Open the full-size heart course illustration in a new tab"
+                  href={`${import.meta.env.BASE_URL}targets/heart-page.png`}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <img
+                    alt="Textbook-style labeled diagram of the human heart, showing its chambers and major blood vessels."
+                    className="heart-page-image"
+                    src={`${import.meta.env.BASE_URL}targets/heart-page.png`}
+                  />
+                </a>
+                <figcaption>
+                  This labeled 2D diagram is also the AR scan page. Print it or open it on another screen, then use <strong>Scan page</strong> in the navigation.
+                </figcaption>
+              </figure>
               <Link
-                className="button button-primary heart-ar-launch-button"
+                aria-label="Scan the printed heart page with augmented reality"
+                className="button button-secondary heart-page-scan-button"
                 to={`/student/courses/${course.id}/lessons/${activeChapterId}/ar`}
               >
-                Start AR <Icon name="arrow-up-right" size={15} />
+                <Icon name="eye" size={16} /> Scan page with AR
               </Link>
-            </div>
-            <a
-              aria-label="Open or print the heart tracking page in a new tab"
-              className="heart-ar-print-link"
-              href={`${import.meta.env.BASE_URL}targets/heart-page.png`}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Print or open the heart tracking page
-            </a>
-          </section>
+            </section>
+          ) : (
+            <Suspense fallback={<ViewerSkeleton />}>
+              <CardiacViewer model={chapter.model} />
+            </Suspense>
+          )}
           <nav aria-label="Course chapters" className="heart-chapter-panel panel">
             <div className="heart-chapter-panel-heading"><span className="eyebrow eyebrow-muted">YOUR COURSE</span><span>{course.chapters.length} CHAPTERS</span></div>
             <h2>{course.title}</h2>

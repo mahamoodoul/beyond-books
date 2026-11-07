@@ -1,4 +1,4 @@
-import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router";
+import { Link, matchPath, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { useDemo } from "@/app/providers/DemoProvider";
@@ -21,6 +21,10 @@ const studentNavigation = [
 export function AppLayout() {
   const { role, theme, setRole, toggleTheme } = useDemo();
   const navigate = useNavigate();
+  const location = useLocation();
+  const scanLesson = role === "student"
+    ? matchPath("/student/courses/:courseId/lessons/heart-structure", location.pathname)
+    : null;
   const userQuery = useQuery({
     queryKey: ["demo", "user", role ?? "student"],
     queryFn: () => getDemoUser(role ?? "student"),
@@ -96,6 +100,16 @@ export function AppLayout() {
             <span>{item.label}</span>
           </NavLink>
         ))}
+        {scanLesson && (
+          <Link
+            aria-label="Scan the printed heart page with augmented reality"
+            className="mobile-nav-link mobile-nav-scan"
+            to={`${scanLesson.pathname}/ar`}
+          >
+            <Icon name="eye" size={19} />
+            <span>Scan page</span>
+          </Link>
+        )}
       </nav>
 
       <main className="page-content">

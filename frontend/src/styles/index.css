@@ -1476,3 +1476,87 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (prefers-reduced-motion: reduce) {
   .heart-3d-dialog *, .heart-3d-backdrop { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.mobile-nav-scan { border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line)); background: var(--accent); color: #fff; }
+.mobile-nav-scan:hover { background: var(--accent-deep); color: #fff; }
+
+.heart-lesson-breadcrumb { font-size: 11px; }
+.heart-lesson-heading > div > p { font-size: 14px; }
+.heart-progress > span { font-size: 10px; }
+.heart-progress > span strong { font-size: 11px; }
+.heart-copy-label .eyebrow { font-size: 10px; }
+.heart-objectives h2, .heart-explanation h2, .heart-terms h2 { font-size: 19px; }
+.heart-objectives li { font-size: 13px; }
+.heart-explanation > p { font-size: 14px; }
+.heart-example > span { font-size: 9px; }
+.heart-example > p { font-size: 12px; }
+.heart-summary strong { font-size: 11px; }
+.heart-summary p { font-size: 12px; }
+.heart-terms dt { font-size: 12px; }
+.heart-terms dd { font-size: 11px; }
+.heart-assessment-cta strong { font-size: 11px; }
+.heart-assessment-cta small { font-size: 10px; }
+.heart-chapter-panel-heading { font-size: 9px; }
+.heart-chapter-panel h2 { font-size: 16px; }
+.heart-chapter-link { font-size: 11px; }
+.heart-chapter-navigation .button { font-size: 11px; }
+.heart-page-visual { display: grid; gap: 12px; padding: 15px; border-radius: 16px; }
+.heart-page-visual-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.heart-page-visual-heading h2 { margin: 5px 0 0; font-family: var(--display); font-size: 18px; font-weight: 600; letter-spacing: -.4px; }
+.heart-page-visual-heading .eyebrow { font-size: 9px; }
+.heart-page-3d-button, .heart-page-scan-button { min-height: 42px; font-size: 12px; }
+.heart-page-figure { display: grid; gap: 8px; padding: 0; margin: 0; }
+.heart-page-figure > a { display: grid; max-height: min(67vh, 760px); overflow: auto; place-items: center; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.heart-page-image { display: block; width: 100%; height: auto; object-fit: contain; }
+.heart-page-figure figcaption { color: var(--muted); font-size: 12px; line-height: 1.65; }
+.heart-page-figure figcaption strong { color: var(--ink-soft); }
+.heart-page-scan-button { display: inline-flex; width: fit-content; justify-self: start; }
+.heart-lesson-page .viewer-hint { font-size: 10px; }
+.heart-lesson-page .heart-hotspot, .heart-lesson-page .heart-hotspot.hotspot-aorta { font-size: 10px; }
+.heart-lesson-page .animation-controller-title > span { font-size: 9px; }
+.heart-lesson-page .animation-controller-title > strong { font-size: 10px; }
+.heart-lesson-page .animation-step-count { font-size: 10px; }
+.heart-lesson-page .animation-caption { font-size: 11px; }
+.heart-lesson-page .hotspot-explanation strong { font-size: 11px; }
+.heart-lesson-page .hotspot-explanation small { font-size: 11px; }
+.heart-lesson-page .viewer-model-description { font-size: 10px; }
+
+.heart-3d-dialog .hint { font-size: 13px; }
+.heart-3d-dialog .info-card__head h2 { font-size: 17px; }
+.heart-3d-dialog .info-card p, .heart-3d-dialog .color-key__note { font-size: 13px; }
+.heart-3d-dialog .toolbar button { font-size: 12px; }
+.heart-3d-dialog .part-label { font-size: 12px; }
+.ar-root .hint { font-size: 13px; }
+.ar-root .info-card__head h2 { font-size: 17px; }
+.ar-root .info-card p { font-size: 13px; }
+.ar-root .toolbar button { font-size: 12px; }
+.ar-root .part-label { font-size: 12px; }
+
+@media (max-width: 820px) {
+  .heart-page-visual { padding: 13px; }
+  .heart-page-figure > a { max-height: 58vh; }
+  .heart-page-scan-button { display: none; }
+}
+@media (max-width: 640px) {
+  .heart-lesson-breadcrumb { font-size: 10px; }
+  .heart-lesson-heading > div > p { font-size: 13px; }
+  .heart-copy-label .eyebrow { font-size: 9px; }
+  .heart-objectives h2, .heart-explanation h2, .heart-terms h2 { font-size: 18px; }
+  .heart-objectives li { font-size: 13px; }
+  .heart-explanation > p { font-size: 14px; }
+  .heart-example > p, .heart-summary p { font-size: 12px; }
+  .heart-terms dt { font-size: 12px; }
+  .heart-terms dd { font-size: 11px; }
+  .heart-chapter-link { min-height: 38px; font-size: 12px; }
+  .heart-page-visual-heading { align-items: flex-start; flex-direction: column; }
+  .heart-page-visual-heading h2 { font-size: 19px; }
+  .heart-page-3d-button { width: 100%; }
+  .heart-page-figure > a { max-height: 55vh; }
+  .heart-page-figure figcaption { font-size: 12px; }
+  .heart-lesson-page .heart-hotspot, .heart-lesson-page .heart-hotspot.hotspot-aorta { min-height: 28px; font-size: 10px; }
+  .heart-lesson-page .animation-caption, .heart-lesson-page .hotspot-explanation small { font-size: 12px; }
+  .heart-chapter-navigation .button { min-height: 43px; font-size: 11px; }
+  .mobile-nav-scan { gap: 4px; padding: 0 5px; font-size: 9px; }
+  .heart-course-standard .heart-lesson-copy { grid-row: 1; }
+  .heart-course-standard .heart-viewer-column { grid-row: 2; }
+}
