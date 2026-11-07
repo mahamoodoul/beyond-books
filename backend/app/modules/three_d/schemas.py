@@ -105,6 +105,24 @@ class ResolvedAsset(BaseModel):
     license_name: str
     attribution_text: str
     source_url: str | None
+    # cached AI study content (read-only for students): deep-dive cards per part, tour narration
+    insights: dict[str, Any] = {}
+    tour: dict[str, Any] | None = None
+    # part names, labels and teacher-reviewed descriptions (unreviewed AI drafts are left out)
+    parts: list[dict[str, str]] = []
+
+
+class StudioSceneOut(BaseModel):
+    """A published 3D scene a student can open in the Studio (from their enrolled courses)."""
+
+    scene_id: uuid.UUID
+    title: str
+    lesson_id: uuid.UUID
+    lesson_title: str
+    chapter_title: str
+    course_id: uuid.UUID
+    course_title: str
+    subject: str | None
 
 
 class ResolvedScene(BaseModel):

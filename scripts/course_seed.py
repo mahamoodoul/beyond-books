@@ -19,6 +19,8 @@ rows that already exist are skipped. New columns added later are carried over au
 """
 
 import json
+import os
+import re
 import sys
 import uuid
 from datetime import UTC, datetime
@@ -27,8 +29,11 @@ from typing import Any
 
 from sqlalchemy import Table, select
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "backend"))
+# Repo root (seeds/, sample-courses/). In Docker the repo folders are mounted at SEED_ROOT and
+# the app code is the container's working directory (/app).
+ROOT = Path(os.environ.get("SEED_ROOT") or Path(__file__).resolve().parents[1])
+_backend = ROOT / "backend"
+sys.path.insert(0, str(_backend if _backend.is_dir() else Path.cwd()))
 
 import app.main  # noqa: E402,F401  (registers every model)
 from app.database.base import Base  # noqa: E402
@@ -89,13 +94,26 @@ def _load(col: Any, value: Any) -> Any:
 def _rows(db: Any, name: str, where: Any) -> list[dict[str, Any]]:
     t = table(name)
     return [
-        {k: _dump(v) for k, v in row._mapping.items()}
-        for row in db.execute(select(t).where(where))
+        {k: _dump(v) for k, v in row._mapping.items()} for row in db.execute(select(t).where(where))
     ]
 
 
 def _ids(rows: list[dict[str, Any]]) -> list[uuid.UUID]:
     return [uuid.UUID(r["id"]) for r in rows]
+
+
+def _norm(name: str) -> str:
+    # uploads clean file names ("(Ch 3-4)" -> "_Ch 3-4_"), so compare letters/digits only
+    return re.sub(r"[^a-z0-9]+", "", name.lower())
+
+
+def _find_pdf(filename: str) -> Path | None:
+    """The course PDF in sample-courses/ for an uploaded file name."""
+    want = _norm(filename)
+    return next(
+        (p for p in sorted((ROOT / "sample-courses").rglob("*.pdf")) if _norm(p.name) == want),
+        None,
+    )
 
 
 # ------------------------------------------------------------------------- export
@@ -129,9 +147,7 @@ def export(email: str) -> None:
     data["lesson_versions"] = _rows(
         db, "lesson_versions", t("lesson_versions").c.lesson_id.in_(lessons)
     )
-    data["assessments"] = _rows(
-        db, "assessments", t("assessments").c.chapter_id.in_(chapters)
-    )
+    data["assessments"] = _rows(db, "assessments", t("assessments").c.chapter_id.in_(chapters))
     data["assessment_versions"] = _rows(
         db,
         "assessment_versions",
@@ -178,9 +194,8 @@ def export(email: str) -> None:
         out.write_bytes(storage.read_bytes(key, 200 * 1024 * 1024))
         exported_files += 1
     # course PDFs come from sample-courses/ (already in the repo) - record where
-    pdfs = {p.name: p for p in (ROOT / "sample-courses").rglob("*.pdf")}
     for d in data["source_documents"]:
-        match = pdfs.get(d["original_filename"])
+        match = _find_pdf(d["original_filename"])
         d["_seed_pdf"] = str(match.relative_to(ROOT)) if match else None
 
     BUNDLE.mkdir(parents=True, exist_ok=True)
@@ -189,77 +204,139 @@ def export(email: str) -> None:
         "exported_at": datetime.now(UTC).isoformat(),
         "tables": data,
     }
-    (BUNDLE / "bundle.json").write_text(
-        json.dumps(bundle, indent=1, ensure_ascii=False)
-    )
+    (BUNDLE / "bundle.json").write_text(json.dumps(bundle, indent=1, ensure_ascii=False))
     db.close()
     counts = ", ".join(f"{k}={len(v)}" for k, v in data.items() if v)
-    print(
-        f"exported to {BUNDLE.relative_to(ROOT)}: {counts}; model files={exported_files}"
-    )
+    print(f"exported to {BUNDLE.relative_to(ROOT)}: {counts}; model files={exported_files}")
 
 
 # ------------------------------------------------------------------------- import
-def load(email: str) -> None:
+LFS_POINTER = b"version https://git-lfs"
+
+
+def _real_file(path: Path) -> bool:
+    """False for a Git LFS placeholder (run `git lfs pull` to get the real file)."""
+    with path.open("rb") as f:
+        return not f.read(len(LFS_POINTER)).startswith(LFS_POINTER)
+
+
+def _ensure_teacher(db: Any, email: str, password: str | None) -> uuid.UUID:
+    users = table("users")
+    user_id = db.scalar(select(users.c.id).where(users.c.email == email.lower()))
+    if user_id is not None:
+        return uuid.UUID(str(user_id))
+    if not password:
+        raise SystemExit(
+            f"No account {email!r}. Add a password to create it: "
+            "make seed-courses EMAIL=... PASSWORD=... (12+ characters)"
+        )
+    from app.modules.authentication.schemas import RegisterRequest
+    from app.modules.authentication.service import register
+
+    user = register(
+        db,
+        RegisterRequest(
+            email=email,
+            password=password,
+            display_name=email.split("@")[0].replace(".", " ").title(),
+            account_type="teacher",
+        ),
+    )
+    print(f"created teacher account {user.email}")
+    return user.id
+
+
+def _where() -> str:
+    """Where the import writes, so a wrong database/storage is obvious."""
+    from sqlalchemy.engine import make_url
+
+    from app.core.config import get_settings
+
+    s = get_settings()
+    db = make_url(s.database_url).render_as_string(hide_password=True)
+    return f"database: {db} | files: {s.storage_backend}:{s.local_storage_dir}"
+
+
+def _source_file(name: str, raw: dict[str, Any]) -> tuple[Path | None, str] | None:
+    """(file in the repo, content type) for a row that has a stored file, else None."""
+    if name == "source_documents":
+        pdf = (ROOT / raw["_seed_pdf"]) if raw.get("_seed_pdf") else None
+        pdf = pdf if pdf and pdf.exists() else _find_pdf(raw["original_filename"])
+        return pdf, raw["mime_type"]
+    if name == "three_d_asset_versions" and raw.get("storage_key"):
+        f = BUNDLE / "files" / raw["storage_key"]
+        return (f if f.exists() else None), "model/gltf-binary"
+    return None
+
+
+def load(email: str, password: str | None = None) -> None:
+    print(_where())
     bundle = json.loads((BUNDLE / "bundle.json").read_text())
     if bundle.get("format") != FORMAT:
         raise SystemExit("Unsupported seed bundle format.")
     db = session_factory()()
-    users = table("users")
-    user_id = db.scalar(select(users.c.id).where(users.c.email == email))
-    if user_id is None:
-        raise SystemExit(f"No user {email!r}. Register the account first.")
+    user_id = _ensure_teacher(db, email, password)
     storage = get_storage()
     added: dict[str, int] = {}
+    files = restored = missing = 0
     slugs = set(db.scalars(select(table("three_d_assets").c.slug)))
     skipped_assets: set[str] = set()
     for name in TABLES:
         t = table(name)
         existing = set(db.scalars(select(t.c.id)))
         for raw in bundle["tables"].get(name, []):
-            if uuid.UUID(raw["id"]) in existing:
-                continue
-            if name == "three_d_assets" and raw["slug"] in slugs:
-                skipped_assets.add(
-                    raw["id"]
-                )  # same model already here (e.g. the demo heart)
+            is_new = uuid.UUID(raw["id"]) not in existing
+            if name == "three_d_assets" and is_new and raw["slug"] in slugs:
+                skipped_assets.add(raw["id"])  # same model already here (e.g. the demo heart)
                 continue
             if name == "three_d_asset_versions" and raw["asset_id"] in skipped_assets:
                 continue
-            row: dict[str, Any] = {}
-            for col in t.columns:
-                if col.name not in raw:
-                    continue  # column added after export: its default applies
-                target = _fk_target(col)
-                if target == "users":
-                    row[col.name] = user_id
-                elif target == "schools":
-                    row[col.name] = None
-                else:
-                    row[col.name] = _load(col, raw[col.name])
-            db.execute(t.insert().values(**row))
-            added[name] = added.get(name, 0) + 1
-            if name == "source_documents" and raw.get("_seed_pdf"):
-                pdf = ROOT / raw["_seed_pdf"]
-                if pdf.exists() and pdf.stat().st_size > 1000:  # not an LFS pointer
-                    storage.put_bytes(
-                        raw["storage_key"], pdf.read_bytes(), raw["mime_type"]
-                    )
-            if name == "three_d_asset_versions" and raw.get("storage_key"):
-                f = BUNDLE / "files" / raw["storage_key"]
-                if f.exists():
-                    storage.put_bytes(
-                        raw["storage_key"], f.read_bytes(), "model/gltf-binary"
-                    )
+            if is_new:
+                row: dict[str, Any] = {}
+                for col in t.columns:
+                    if col.name not in raw:
+                        continue  # column added after export: its default applies
+                    target = _fk_target(col)
+                    if target == "users":
+                        row[col.name] = user_id
+                    elif target == "schools":
+                        row[col.name] = None
+                    else:
+                        row[col.name] = _load(col, raw[col.name])
+                db.execute(t.insert().values(**row))
+                added[name] = added.get(name, 0) + 1
+            # the PDF / 3D file: written for new rows, and restored when an earlier import
+            # left it out (e.g. Git LFS was missing then)
+            src = _source_file(name, raw)
+            if src is None or (not is_new and storage.head(raw["storage_key"]) is not None):
+                continue
+            path, content_type = src
+            if path is None or not _real_file(path):
+                missing += 1
+                continue
+            storage.put_bytes(raw["storage_key"], path.read_bytes(), content_type)
+            files += 1
+            restored += 0 if is_new else 1
     db.commit()
     db.close()
-    if not added:
+    if added:
+        print("imported: " + ", ".join(f"{k}={v}" for k, v in added.items()))
+    elif not restored:
         print("nothing to import: everything in the bundle is already here")
-        return
-    print("imported: " + ", ".join(f"{k}={v}" for k, v in added.items()))
+    if files:
+        note = f" ({restored} restored)" if restored else ""
+        print(f"files: {files} PDF/3D file(s) stored{note}")
+    if missing:
+        print(
+            f"WARNING: {missing} PDF/3D file(s) are missing or Git LFS placeholders. Install Git "
+            "LFS (brew install git-lfs), run `git lfs pull`, then run this again."
+        )
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[1] not in {"export", "import"}:
-        raise SystemExit("usage: course_seed.py export|import TEACHER_EMAIL")
-    (export if sys.argv[1] == "export" else load)(sys.argv[2])
+    if len(sys.argv) not in (3, 4) or sys.argv[1] not in {"export", "import"}:
+        raise SystemExit("usage: course_seed.py export EMAIL | import EMAIL [PASSWORD]")
+    if sys.argv[1] == "export":
+        export(sys.argv[2])
+    else:
+        load(sys.argv[2], sys.argv[3] if len(sys.argv) == 4 else None)

@@ -38,6 +38,7 @@ from app.modules.three_d.schemas import (
     SceneCreate,
     SceneOut,
     SceneUpdate,
+    StudioSceneOut,
     ThreeDProviderOut,
 )
 from app.modules.users.models import User
@@ -331,6 +332,12 @@ def create_scene(lesson_id: uuid.UUID, body: SceneCreate, user: CurrentUser, db:
 @router.get("/lessons/{lesson_id}/scenes", response_model=list[SceneOut])
 def list_scenes(lesson_id: uuid.UUID, user: CurrentUser, db: DB) -> list[SceneOut]:
     return scenes.list_scenes(db, user, lesson_id)
+
+
+@router.get("/studio/scenes", response_model=list[StudioSceneOut])
+def studio_scenes(user: CurrentUser, db: DB) -> list[StudioSceneOut]:
+    """Student 3D Studio: only the published scenes of the student's enrolled courses."""
+    return scenes.student_studio_scenes(db, user)
 
 
 @router.get("/scenes/{scene_id}", response_model=SceneOut)

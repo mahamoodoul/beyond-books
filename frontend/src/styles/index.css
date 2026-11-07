@@ -2009,3 +2009,6 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 /* Leave room for the 72px logo bar above the sign-in card (it is absolutely positioned). */
 .login-card { padding-top: 128px; padding-bottom: 48px; }
 @media (max-width: 640px) { .login-page { padding-top: 104px; padding-bottom: calc(max(176px, 26vh) + 20px); } .login-card { padding-top: 12px; } }
+
+/* 3D Studio viewers use the full width of the page content column (aligned with the site). */
+.studio-wide { width: 100%; min-width: 0; }

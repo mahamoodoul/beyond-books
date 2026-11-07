@@ -14,6 +14,7 @@ import {
   fixtureScenes,
 } from "@/features/three-d/library/runtime/fixtureRegistry";
 import { PartDeepDive, type DeepDiveCard } from "@/features/three-d/PartDeepDive";
+import { SceneStudio, StudentStudio } from "@/features/three-d/library/pages/StudentStudio";
 import { PartEditor, partsOf, Readiness, UseInLesson, useTourNarration } from "@/features/three-d/StudioTools";
 
 // prefer the high-detail cell; fall back to the detailed one when its GLB is missing
@@ -107,9 +108,30 @@ function LibraryStudio({ assetId }: { assetId: string }) {
 /** 3D Studio: your library models (incl. Claude + Blender) and demo scenes, with focus mode,
  *  X-ray, guided tour and in-depth explanations. */
 export function ViewerDemoPage() {
-  const { sceneId, assetId } = useParams();
   const me = useMe();
-  const isTeacher = me.data?.account_type === "teacher";
+  if (me.isPending) return <Loading />;
+  // Students get a read-only Studio with only their courses' published 3D models.
+  if (me.data?.account_type !== "teacher") return <StudentStudio />;
+  return <TeacherStudio />;
+}
+
+/** Teacher /studio/scene/:id: a lesson scene exactly as students see it in their Studio. */
+function StudentViewPreview({ sceneId }: { sceneId: string }) {
+  return (
+    <section className="space-y-4">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-accent">3D Studio · student view</p>
+        <h1 className="text-2xl font-semibold text-navy-950">What students see</h1>
+        <p className="text-sm text-slate-600">Read-only: students can explore, X-ray and tour this model, and read saved study cards.</p>
+      </div>
+      <div className="studio-wide"><SceneStudio sceneId={sceneId} /></div>
+    </section>
+  );
+}
+
+function TeacherStudio() {
+  const { sceneId, assetId, studioSceneId } = useParams();
+  const isTeacher = true;
   const library = useLibrary(isTeacher);
   const libraryAsset = assetId ? library.data?.find((a) => a.id === assetId) : undefined;
 
@@ -118,6 +140,7 @@ export function ViewerDemoPage() {
     ? undefined
     : (wanted.map((id) => scenes.find((s) => s.scene_id === id)).find(Boolean) ?? scenes[0]);
 
+  if (studioSceneId) return <StudentViewPreview sceneId={studioSceneId} />;
   const title = assetId ? (libraryAsset?.name ?? "3D model") : (scene?.title ?? "3D Studio");
   const subtitle = assetId
     ? `${libraryAsset ? (SOURCE[libraryAsset.provider ?? ""] ?? "Uploaded") + " · " : ""}Click a part to focus on it and explore it in depth.`
@@ -155,6 +178,7 @@ export function ViewerDemoPage() {
           ))}
         </nav>
       </div>
+      <div className="studio-wide">
       {assetId ? (
         <LibraryStudio key={assetId} assetId={assetId} />
       ) : scene ? (
@@ -169,6 +193,7 @@ export function ViewerDemoPage() {
       ) : (
         <p>No scene fixtures found.</p>
       )}
+      </div>
     </section>
   );
 }

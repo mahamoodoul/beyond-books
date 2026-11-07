@@ -65,6 +65,8 @@ export const appRoutes: RouteObject[] = [
       // 3D Studio: library models (incl. Claude + Blender) + demo scenes (Prinon's viewer).
       { path: "/viewer", element: <Navigate to="/studio" replace /> },
       { path: "/studio", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
+      // student Studio (and teachers' "student view"): one published lesson scene
+      { path: "/studio/scene/:studioSceneId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
       { path: "/studio/library/:assetId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
       { path: "/studio/:sceneId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
       // old 3D viewer links keep working

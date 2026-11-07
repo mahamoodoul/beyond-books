@@ -23,9 +23,21 @@ migrate:       ## Apply migrations to EDU3D_DATABASE_URL
 seed:          ## Seed the 3D library with the schematic demo heart (idempotent)
 	cd backend && .venv/bin/python -m app.modules.three_d.seed
 
-seed-courses:   ## Import the shared courses (seeds/courses) for a teacher: make seed-courses EMAIL=you@example.com
-	@test -n "$(EMAIL)" || (echo "usage: make seed-courses EMAIL=you@example.com" && exit 1)
-	cd backend && .venv/bin/python ../scripts/course_seed.py import $(EMAIL)
+seed-courses:   ## One step: files, DB, teacher account (if new), shared courses: make seed-courses EMAIL=you@example.com PASSWORD=12+chars
+	@test -n "$(EMAIL)" || (echo "usage: make seed-courses EMAIL=you@example.com PASSWORD=your-password" && exit 1)
+	@git lfs pull 2>/dev/null || echo "note: Git LFS not installed (brew install git-lfs) - PDFs and 3D models will be missing"
+	@if docker compose ps --status running --services 2>/dev/null | grep -qx api; then \
+	  echo "Docker stack is running: importing inside the api container (its database and file storage)"; \
+	  docker compose run --rm --no-deps -e SEED_ROOT=/seed \
+	    -v "$(CURDIR)/scripts:/seed/scripts:ro" -v "$(CURDIR)/seeds:/seed/seeds:ro" \
+	    -v "$(CURDIR)/sample-courses:/seed/sample-courses:ro" \
+	    api sh -c 'alembic upgrade head && python /seed/scripts/course_seed.py import "$$0" $$1' "$(EMAIL)" "$(PASSWORD)"; \
+	elif [ -x backend/.venv/bin/python ]; then \
+	  cd backend && .venv/bin/alembic upgrade head && \
+	  .venv/bin/python ../scripts/course_seed.py import "$(EMAIL)" $(if $(PASSWORD),"$(PASSWORD)",); \
+	else \
+	  echo "Start the app first: 'make up' (Docker), or 'make backend-install' for a local backend." && exit 1; \
+	fi
 
 export-courses: ## Re-export a teacher's courses into seeds/courses: make export-courses EMAIL=you@example.com
 	@test -n "$(EMAIL)" || (echo "usage: make export-courses EMAIL=you@example.com" && exit 1)
