@@ -16,12 +16,12 @@ from sqlalchemy.engine import Engine  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+import app.main as _app_main  # noqa: E402
 from app.core.config import get_settings  # noqa: E402
 from app.core.hardening import api_limiter  # noqa: E402
 from app.core.rate_limit import login_limiter  # noqa: E402
 from app.database.models import Base  # noqa: E402
 from app.database.session import configure_engine, session_factory  # noqa: E402
-import app.main as _app_main  # noqa: E402
 
 # --------------------------------------------------------------- API coverage gate
 # Every app built in tests records which routes answered with a 2xx. When the WHOLE suite runs,
