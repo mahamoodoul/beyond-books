@@ -1,0 +1,71 @@
+# Production stack for Coolify. Public entrypoint: frontend (nginx) on port 3939,
+# which serves the SPA and proxies /api to the backend. Postgres/Redis stay internal.
+# In Coolify: Build Pack = Docker Compose, compose file = docker-compose.coolify.yml,
+# then assign your domain to the "frontend" service with port 3939 (e.g. https://app.example.com:3939).
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-edu3d}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-edu3d}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-edu3d}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/backend.Dockerfile
+      args: { EXTRAS: "" }
+    restart: unless-stopped
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"
+    environment: &backend-env
+      EDU3D_ENVIRONMENT: ${EDU3D_ENVIRONMENT:-production}
+      EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-edu3d}
+      EDU3D_REDIS_URL: redis://redis:6379/0
+      EDU3D_CORS_ORIGINS: ${EDU3D_CORS_ORIGINS:-[]}
+    expose: ["8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/backend.Dockerfile
+      args: { EXTRAS: "" }
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker --loglevel=INFO
+    environment: *backend-env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  frontend:
+    build: { context: ., dockerfile: infrastructure/docker/frontend.prod.Dockerfile }
+    restart: unless-stopped
+    ports: ["3939:3939"]
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  redisdata:
