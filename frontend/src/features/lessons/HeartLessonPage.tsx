@@ -139,13 +139,6 @@ export function HeartLessonPage() {
                   This labeled 2D diagram is also the AR scan page. Print it or open it on another screen, then use <strong>Scan page</strong> in the navigation.
                 </figcaption>
               </figure>
-              <Link
-                aria-label="Scan the printed heart page with augmented reality"
-                className="button button-secondary heart-page-scan-button"
-                to={`/student/courses/${course.id}/lessons/${activeChapterId}/ar`}
-              >
-                <Icon name="eye" size={16} /> Scan page with AR
-              </Link>
             </section>
           ) : (
             <Suspense fallback={<ViewerSkeleton />}>
