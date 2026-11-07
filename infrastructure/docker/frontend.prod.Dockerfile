@@ -6,6 +6,12 @@ COPY frontend/package.json frontend/package-lock.json ./
 COPY frontend/stubs ./stubs
 RUN npm ci
 COPY frontend ./
+# Demo sign-in (login-page button + Shift+T/Shift+S) is off unless the deployment opts in.
+# The demo credentials become part of the public JS bundle when enabled: demo sites only.
+ARG VITE_DEMO_LOGIN=false
+ARG VITE_DEMO_TEACHER=""
+ARG VITE_DEMO_STUDENT=""
+ENV VITE_DEMO_LOGIN=$VITE_DEMO_LOGIN VITE_DEMO_TEACHER=$VITE_DEMO_TEACHER VITE_DEMO_STUDENT=$VITE_DEMO_STUDENT
 RUN npm run build
 
 FROM nginx:1.27-alpine
