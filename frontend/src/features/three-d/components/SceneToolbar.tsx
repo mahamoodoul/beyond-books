@@ -1,4 +1,9 @@
+import type { QualitySetting, QualityTier } from "@/features/three-d/runtime/quality";
+
 export interface SceneToolbarProps {
+  quality: QualitySetting;
+  effectiveTier: QualityTier;
+  onQuality: (q: QualitySetting) => void;
   showLabels: boolean;
   onShowLabels: (v: boolean) => void;
   explode: number | null;
@@ -19,6 +24,9 @@ export function SceneToolbar({
   onExplodeCommit,
   onResetView,
   onFullscreen,
+  quality,
+  effectiveTier,
+  onQuality,
 }: SceneToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2" role="toolbar" aria-label="3D view">
@@ -59,6 +67,20 @@ export function SceneToolbar({
           />
         </div>
       )}
+
+      <label className="flex items-center gap-2 text-sm text-slate-700">
+        Quality
+        <select
+          className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          value={quality}
+          onChange={(e) => onQuality(e.target.value as QualitySetting)}
+        >
+          <option value="auto">Auto ({effectiveTier})</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </label>
 
       <div className="ml-auto flex gap-2">
         <button type="button" className={btn} onClick={onResetView}>

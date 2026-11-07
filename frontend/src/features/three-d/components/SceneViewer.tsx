@@ -8,6 +8,7 @@ import {
   type RunnerSnapshot,
 } from "@/features/three-d/runtime/animation";
 import { proceduralCatalog } from "@/features/three-d/runtime/procedural";
+import { lowerTier, type QualitySetting, type QualityTier } from "@/features/three-d/runtime/quality";
 import { resolveScene } from "@/features/three-d/runtime/sceneResolver";
 import type {
   AnimationSpec,
@@ -63,6 +64,10 @@ function ViewerBody({
 
   const [loadError, setLoadError] = useState<string | null>(null);
   const [missing, setMissing] = useState<ReadonlySet<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+  const [quality, setQuality] = useState<QualitySetting>("auto");
+  const [autoTier, setAutoTier] = useState<QualityTier>("high");
+  const tier: QualityTier = quality === "auto" ? autoTier : quality;
   const [selected, setSelected] = useState<string | null>(null);
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [showLabels, setShowLabels] = useState(true);
@@ -184,6 +189,9 @@ function ViewerBody({
           onEvent?.({ type: "explode_changed", amount: runtime.current.explodeTarget });
         }}
         onResetView={fit}
+        quality={quality}
+        effectiveTier={tier}
+        onQuality={setQuality}
         onFullscreen={() => void container.current?.requestFullscreen?.()}
       />
 
@@ -198,11 +206,21 @@ function ViewerBody({
             camera={camera}
             canSelect={canSelect}
             onSelect={select}
+            quality={tier}
+            onQualityDecline={quality === "auto" ? () => setAutoTier(lowerTier) : undefined}
             onReady={({ missing: m }) => {
+              setLoaded(true);
               setMissing(new Set(m));
             }}
             onError={setLoadError}
           />
+          {!loaded && !loadError && (
+            <div className="pointer-events-none absolute inset-0 grid place-items-center">
+              <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
+                Loading 3D model…
+              </p>
+            </div>
+          )}
           {uiFrame.annotation && (
             <p className="pointer-events-none absolute inset-x-4 top-4 mx-auto max-w-xl rounded-md bg-white/95 px-4 py-2 text-center text-sm text-slate-800 shadow">
               {uiFrame.annotation.text}
