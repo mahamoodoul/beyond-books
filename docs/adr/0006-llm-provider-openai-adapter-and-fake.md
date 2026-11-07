@@ -23,3 +23,15 @@
 
 Confirm structured-output support for the exact model, data-retention controls, regional/DPA
 terms for Norwegian/EU schools, and current pricing.
+
+## Update (2026-11-07): Claude adapter
+
+`AnthropicProvider` (`app/integrations/anthropic/provider.py`) was added and is the team's chosen
+provider (`EDU3D_LLM_PROVIDER=anthropic`, default model `claude-opus-5-5`):
+- `client.beta.messages.parse(output_format=<Pydantic schema>)` for validated structured output.
+- Adaptive thinking is always on for Claude Opus 5.5; depth is set via `output_config.effort`
+  (`EDU3D_ANTHROPIC_EFFORT`, default `medium` — raise to `high` if lesson quality needs it).
+- Server-side refusal fallbacks enabled (`fallbacks: "default"`, beta
+  `server-side-fallback-2026-07-01`); a final `refusal` or `max_tokens` stop fails the job cleanly.
+- SDK retries disabled; the job runner retries transient errors (429, 5xx/529, timeouts).
+The OpenAI adapter remains available.

@@ -47,7 +47,10 @@ class Settings(BaseSettings):
     jobs_run_inline: bool = False  # True: run jobs in-process (tests / no Redis)
 
     # --- AI (ADR 0006) ---
-    llm_provider: Literal["fake", "openai"] = "fake"
+    llm_provider: Literal["fake", "openai", "anthropic"] = "fake"
+    anthropic_api_key: str = ""
+    anthropic_model: str = "claude-opus-5-5"
+    anthropic_effort: Literal["low", "medium", "high", "xhigh", "max"] = "medium"
     openai_api_key: str = ""
     openai_model: str = ""
     llm_max_output_tokens: int = 8000
@@ -77,6 +80,10 @@ class Settings(BaseSettings):
             self.expose_api_docs = False
         if self.llm_provider == "openai" and not (self.openai_api_key and self.openai_model):
             raise ValueError("EDU3D_OPENAI_API_KEY and EDU3D_OPENAI_MODEL are required")
+        if self.llm_provider == "anthropic" and not (
+            self.anthropic_api_key and self.anthropic_model
+        ):
+            raise ValueError("EDU3D_ANTHROPIC_API_KEY and EDU3D_ANTHROPIC_MODEL are required")
         return self
 
 

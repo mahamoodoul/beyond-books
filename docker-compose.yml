@@ -32,6 +32,9 @@ services:
       EDU3D_LLM_PROVIDER: ${EDU3D_LLM_PROVIDER:-fake}
       EDU3D_OPENAI_API_KEY: ${EDU3D_OPENAI_API_KEY:-}
       EDU3D_OPENAI_MODEL: ${EDU3D_OPENAI_MODEL:-}
+      EDU3D_ANTHROPIC_API_KEY: ${EDU3D_ANTHROPIC_API_KEY:-}
+      EDU3D_ANTHROPIC_MODEL: ${EDU3D_ANTHROPIC_MODEL:-claude-opus-5-5}
+      EDU3D_JWT_SECRET: ${EDU3D_JWT_SECRET:-dev-only-insecure-secret-change-me-0123456789}
     ports: ["8000:8000"]
     volumes: ["./backend/app:/app/app", "./backend/migrations:/app/migrations", "storage:/data"]
     depends_on:
