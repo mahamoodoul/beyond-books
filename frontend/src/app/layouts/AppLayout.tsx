@@ -21,7 +21,10 @@ export function AppLayout() {
             Edu3D AI
           </Link>
           {user?.account_type === "teacher" && (
-            <NavLink to="/teacher" className={navClass}>Courses</NavLink>
+            <>
+              <NavLink to="/teacher" end className={navClass}>Courses</NavLink>
+              <NavLink to="/teacher/assets" className={navClass}>3D library</NavLink>
+            </>
           )}
           {user?.account_type === "student" && (
             <NavLink to="/student" className={navClass}>My learning</NavLink>

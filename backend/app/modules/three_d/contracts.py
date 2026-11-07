@@ -104,6 +104,8 @@ class SceneSpec(_Contract):
         default_factory=lambda: [SceneControl.ROTATE, SceneControl.ZOOM]
     )
     animation_refs: list[Identifier] = Field(default_factory=list, max_length=50)
+    # Text shown when a component is selected; components point here via explanation_ref.
+    explanations: dict[Identifier, LongText] = Field(default_factory=dict, max_length=200)
 
     @model_validator(mode="after")
     def _check_integrity(self) -> Self:
@@ -118,6 +120,12 @@ class SceneSpec(_Contract):
             raise ValueError("duplicate asset_refs")
         if len(self.animation_refs) != len(set(self.animation_refs)):
             raise ValueError("duplicate animation_refs")
+        missing = sorted(
+            {c.explanation_ref for c in self.components if c.explanation_ref}
+            - set(self.explanations)
+        )
+        if missing:
+            raise ValueError(f"explanation_ref values without an explanation: {missing}")
         return self
 
     def component_ids(self) -> set[str]:

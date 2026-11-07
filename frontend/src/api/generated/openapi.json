@@ -62,6 +62,393 @@
         "title": "ApplyOutlineRequest",
         "type": "object"
       },
+      "AssetCreate": {
+        "properties": {
+          "attribution_text": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Attribution Text",
+            "type": "string"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 5000,
+            "title": "Description",
+            "type": "string"
+          },
+          "license_name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "License Name",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "school_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Id"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "format": "uri",
+                "maxLength": 2083,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          }
+        },
+        "required": [
+          "name",
+          "license_name"
+        ],
+        "title": "AssetCreate",
+        "type": "object"
+      },
+      "AssetOut": {
+        "properties": {
+          "attribution_text": {
+            "title": "Attribution Text",
+            "type": "string"
+          },
+          "can_manage": {
+            "default": false,
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_version": {
+            "title": "Latest Version",
+            "type": "integer"
+          },
+          "license_name": {
+            "title": "License Name",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "review_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Notes"
+          },
+          "review_status": {
+            "title": "Review Status",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "versions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AssetVersionOut"
+            },
+            "title": "Versions",
+            "type": "array"
+          },
+          "visibility": {
+            "title": "Visibility",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "category",
+          "subject",
+          "visibility",
+          "license_name",
+          "source_url",
+          "attribution_text",
+          "provider",
+          "review_status",
+          "review_notes",
+          "latest_version",
+          "created_at"
+        ],
+        "title": "AssetOut",
+        "type": "object"
+      },
+      "AssetRef": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Asset Id",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "asset_id",
+          "version"
+        ],
+        "title": "AssetRef",
+        "type": "object"
+      },
+      "AssetReview": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "approved",
+              "rejected"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "AssetReview",
+        "type": "object"
+      },
+      "AssetUploadResponse": {
+        "properties": {
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Headers",
+            "type": "object"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_number",
+          "url",
+          "method",
+          "headers"
+        ],
+        "title": "AssetUploadResponse",
+        "type": "object"
+      },
+      "AssetVersionOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "file_size_bytes": {
+            "title": "File Size Bytes",
+            "type": "integer"
+          },
+          "metadata_json": {
+            "additionalProperties": true,
+            "title": "Metadata Json",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_number",
+          "status",
+          "file_size_bytes",
+          "error_message",
+          "metadata_json",
+          "created_at"
+        ],
+        "title": "AssetVersionOut",
+        "type": "object"
+      },
+      "AssetVersionUploadRequest": {
+        "properties": {
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "size_bytes"
+        ],
+        "title": "AssetVersionUploadRequest",
+        "type": "object"
+      },
+      "Camera": {
+        "additionalProperties": false,
+        "properties": {
+          "max_distance": {
+            "default": 20,
+            "exclusiveMinimum": 0.0,
+            "maximum": 1000.0,
+            "title": "Max Distance",
+            "type": "number"
+          },
+          "min_distance": {
+            "default": 1,
+            "exclusiveMinimum": 0.0,
+            "maximum": 1000.0,
+            "title": "Min Distance",
+            "type": "number"
+          },
+          "preset": {
+            "$ref": "#/components/schemas/CameraPreset",
+            "default": "three_quarter"
+          }
+        },
+        "title": "Camera",
+        "type": "object"
+      },
+      "CameraPreset": {
+        "enum": [
+          "front",
+          "side",
+          "top",
+          "three_quarter"
+        ],
+        "title": "CameraPreset",
+        "type": "string"
+      },
       "ChapterCreate": {
         "properties": {
           "description": {
@@ -419,6 +806,16 @@
         "title": "ClassroomRole",
         "type": "string"
       },
+      "ComponentAction": {
+        "enum": [
+          "highlight",
+          "show_explanation",
+          "toggle_visibility",
+          "focus_camera"
+        ],
+        "title": "ComponentAction",
+        "type": "string"
+      },
       "CourseCreate": {
         "properties": {
           "description": {
@@ -738,6 +1135,24 @@
         "title": "DocumentStatus",
         "type": "string"
       },
+      "DownloadUrl": {
+        "properties": {
+          "expires_in_s": {
+            "title": "Expires In S",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "expires_in_s"
+        ],
+        "title": "DownloadUrl",
+        "type": "object"
+      },
       "EnrollRequest": {
         "properties": {
           "classroom_id": {
@@ -815,6 +1230,82 @@
           "enrolled_at"
         ],
         "title": "EnrollmentOut",
+        "type": "object"
+      },
+      "GeneratorOut": {
+        "properties": {
+          "default_components": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Default Components",
+            "type": "array"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "params": {
+            "items": {
+              "$ref": "#/components/schemas/GeneratorParamOut"
+            },
+            "title": "Params",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "params",
+          "default_components"
+        ],
+        "title": "GeneratorOut",
+        "type": "object"
+      },
+      "GeneratorParamOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "min",
+          "max"
+        ],
+        "title": "GeneratorParamOut",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -1448,6 +1939,47 @@
         "title": "PageOut",
         "type": "object"
       },
+      "ProceduralSource": {
+        "additionalProperties": false,
+        "description": "A trusted, prebuilt procedural generator in the renderer (design \u00a77.1-A).\n\n`generator` must exist in the renderer's allowlisted registry; params are flat scalars only.",
+        "properties": {
+          "generator": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Generator",
+            "type": "string"
+          },
+          "params": {
+            "maxProperties": 32,
+            "patternProperties": {
+              "^[a-z][a-z0-9_]{0,63}$": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "title": "Params",
+            "type": "object"
+          }
+        },
+        "required": [
+          "generator"
+        ],
+        "title": "ProceduralSource",
+        "type": "object"
+      },
       "PublishStatus": {
         "enum": [
           "draft",
@@ -1491,6 +2023,353 @@
           "account_type"
         ],
         "title": "RegisterRequest",
+        "type": "object"
+      },
+      "ResolvedAsset": {
+        "properties": {
+          "asset_id": {
+            "title": "Asset Id",
+            "type": "string"
+          },
+          "attribution_text": {
+            "title": "Attribution Text",
+            "type": "string"
+          },
+          "license_name": {
+            "title": "License Name",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "node_names": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Node Names",
+            "type": "array"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "asset_id",
+          "version",
+          "url",
+          "node_names",
+          "name",
+          "license_name",
+          "attribution_text",
+          "source_url"
+        ],
+        "title": "ResolvedAsset",
+        "type": "object"
+      },
+      "ResolvedScene": {
+        "properties": {
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/ResolvedAsset"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "scene_id": {
+            "format": "uuid",
+            "title": "Scene Id",
+            "type": "string"
+          },
+          "spec": {
+            "$ref": "#/components/schemas/SceneSpec"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scene_id",
+          "version",
+          "spec",
+          "assets",
+          "warnings"
+        ],
+        "title": "ResolvedScene",
+        "type": "object"
+      },
+      "SceneComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentAction"
+            },
+            "maxItems": 4,
+            "title": "Actions",
+            "type": "array"
+          },
+          "component_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Component Id",
+            "type": "string"
+          },
+          "explanation_ref": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation Ref"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "mesh_name": {
+            "pattern": "^[A-Za-z0-9_.\\-]{1,128}$",
+            "title": "Mesh Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id",
+          "mesh_name",
+          "label"
+        ],
+        "title": "SceneComponent",
+        "type": "object"
+      },
+      "SceneControl": {
+        "enum": [
+          "rotate",
+          "zoom",
+          "pan",
+          "select_component"
+        ],
+        "title": "SceneControl",
+        "type": "string"
+      },
+      "SceneCreate": {
+        "properties": {
+          "spec": {
+            "$ref": "#/components/schemas/SceneSpec"
+          }
+        },
+        "required": [
+          "spec"
+        ],
+        "title": "SceneCreate",
+        "type": "object"
+      },
+      "SceneOut": {
+        "properties": {
+          "has_unpublished_changes": {
+            "title": "Has Unpublished Changes",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "published_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published Version"
+          },
+          "spec": {
+            "$ref": "#/components/schemas/SceneSpec"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "lesson_id",
+          "title",
+          "status",
+          "version",
+          "published_version",
+          "has_unpublished_changes",
+          "spec",
+          "updated_at"
+        ],
+        "title": "SceneOut",
+        "type": "object"
+      },
+      "SceneSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "animation_refs": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Animation Refs",
+            "type": "array"
+          },
+          "asset_refs": {
+            "items": {
+              "$ref": "#/components/schemas/AssetRef"
+            },
+            "maxItems": 20,
+            "title": "Asset Refs",
+            "type": "array"
+          },
+          "camera": {
+            "$ref": "#/components/schemas/Camera"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/SceneComponent"
+            },
+            "maxItems": 200,
+            "title": "Components",
+            "type": "array"
+          },
+          "controls": {
+            "items": {
+              "$ref": "#/components/schemas/SceneControl"
+            },
+            "title": "Controls",
+            "type": "array"
+          },
+          "explanations": {
+            "maxProperties": 200,
+            "patternProperties": {
+              "^[a-z][a-z0-9_]{0,63}$": {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "title": "Explanations",
+            "type": "object"
+          },
+          "learning_objective_ids": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Learning Objective Ids",
+            "type": "array"
+          },
+          "procedural": {
+            "items": {
+              "$ref": "#/components/schemas/ProceduralSource"
+            },
+            "maxItems": 20,
+            "title": "Procedural",
+            "type": "array"
+          },
+          "scene_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Scene Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene_id",
+          "title"
+        ],
+        "title": "SceneSpec",
+        "type": "object"
+      },
+      "SceneUpdate": {
+        "properties": {
+          "expected_version": {
+            "minimum": 1.0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "spec": {
+            "$ref": "#/components/schemas/SceneSpec"
+          }
+        },
+        "required": [
+          "expected_version",
+          "spec"
+        ],
+        "title": "SceneUpdate",
         "type": "object"
       },
       "SchoolCreate": {
@@ -2015,6 +2894,323 @@
         "summary": "Discard Outline",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/v1/assets": {
+      "get": {
+        "operationId": "list_assets_api_v1_assets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssetOut"
+                  },
+                  "title": "Response List Assets Api V1 Assets Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Assets",
+        "tags": [
+          "3d"
+        ]
+      },
+      "post": {
+        "operationId": "create_asset_api_v1_assets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Asset",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}": {
+      "get": {
+        "operationId": "get_asset_api_v1_assets__asset_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Asset",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/review": {
+      "post": {
+        "operationId": "review_api_v1_assets__asset_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/versions/upload-url": {
+      "post": {
+        "operationId": "version_upload_url_api_v1_assets__asset_id__versions_upload_url_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetVersionUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetUploadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Version Upload Url",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/versions/{n}/complete": {
+      "post": {
+        "operationId": "complete_version_api_v1_assets__asset_id__versions__n__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "n",
+            "required": true,
+            "schema": {
+              "title": "N",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Version",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/assets/{asset_id}/versions/{n}/download-url": {
+      "get": {
+        "operationId": "download_url_api_v1_assets__asset_id__versions__n__download_url_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "asset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Asset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "n",
+            "required": true,
+            "schema": {
+              "title": "N",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadUrl"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Url",
+        "tags": [
+          "3d"
         ]
       }
     },
@@ -3760,6 +4956,104 @@
         ]
       }
     },
+    "/api/v1/lessons/{lesson_id}/scenes": {
+      "get": {
+        "operationId": "list_scenes_api_v1_lessons__lesson_id__scenes_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SceneOut"
+                  },
+                  "title": "Response List Scenes Api V1 Lessons  Lesson Id  Scenes Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Scenes",
+        "tags": [
+          "3d"
+        ]
+      },
+      "post": {
+        "operationId": "create_scene_api_v1_lessons__lesson_id__scenes_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SceneCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Scene",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
     "/api/v1/lessons/{lesson_id}/unpublish": {
       "post": {
         "operationId": "unpublish_api_v1_lessons__lesson_id__unpublish_post",
@@ -3847,6 +5141,263 @@
         "summary": "List Versions",
         "tags": [
           "lessons"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}": {
+      "delete": {
+        "operationId": "delete_scene_api_v1_scenes__scene_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Scene",
+        "tags": [
+          "3d"
+        ]
+      },
+      "get": {
+        "operationId": "get_scene_api_v1_scenes__scene_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Scene",
+        "tags": [
+          "3d"
+        ]
+      },
+      "patch": {
+        "operationId": "update_scene_api_v1_scenes__scene_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SceneUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Scene",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/publish": {
+      "post": {
+        "operationId": "publish_scene_api_v1_scenes__scene_id__publish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish Scene",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/resolved": {
+      "get": {
+        "operationId": "resolve_api_v1_scenes__scene_id__resolved_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolvedScene"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resolve",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/unpublish": {
+      "post": {
+        "operationId": "unpublish_scene_api_v1_scenes__scene_id__unpublish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unpublish Scene",
+        "tags": [
+          "3d"
         ]
       }
     },
@@ -4099,6 +5650,31 @@
         "summary": "Add Member",
         "tags": [
           "schools"
+        ]
+      }
+    },
+    "/api/v1/three-d/generators": {
+      "get": {
+        "operationId": "generators_api_v1_three_d_generators_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GeneratorOut"
+                  },
+                  "title": "Response Generators Api V1 Three D Generators Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Generators",
+        "tags": [
+          "3d"
         ]
       }
     },

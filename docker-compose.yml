@@ -23,7 +23,7 @@ services:
 
   api:
     build: { context: ., dockerfile: infrastructure/docker/backend.Dockerfile }
-    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    command: sh -c "alembic upgrade head && python -m app.modules.three_d.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     environment: &backend-env
       EDU3D_ENVIRONMENT: local
       EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD:-edu3d}@postgres:5432/${POSTGRES_DB:-edu3d}

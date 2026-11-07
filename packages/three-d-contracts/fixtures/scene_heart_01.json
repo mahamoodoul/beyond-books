@@ -2,19 +2,74 @@
   "schema_version": "1.0",
   "scene_id": "scene_heart_01",
   "title": "Explore the Human Heart",
-  "learning_objective_ids": ["lo_01"],
-  "asset_refs": [{"asset_id": "human_heart_v1", "version": 1}],
-  "camera": {"preset": "three_quarter", "min_distance": 2, "max_distance": 12},
-  "components": [
-    {"component_id": "right_atrium", "mesh_name": "right_atrium", "label": "Right atrium",
-     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_right_atrium"},
-    {"component_id": "right_ventricle", "mesh_name": "right_ventricle", "label": "Right ventricle",
-     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_right_ventricle"},
-    {"component_id": "left_atrium", "mesh_name": "left_atrium", "label": "Left atrium",
-     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_left_atrium"},
-    {"component_id": "left_ventricle", "mesh_name": "left_ventricle", "label": "Left ventricle",
-     "actions": ["highlight", "show_explanation"], "explanation_ref": "explanation_left_ventricle"}
+  "learning_objective_ids": [
+    "lo_01"
   ],
-  "controls": ["rotate", "zoom", "select_component"],
-  "animation_refs": ["blood_flow_01"]
+  "asset_refs": [
+    {
+      "asset_id": "human_heart_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "three_quarter",
+    "min_distance": 2,
+    "max_distance": 12
+  },
+  "components": [
+    {
+      "component_id": "right_atrium",
+      "mesh_name": "right_atrium",
+      "label": "Right atrium",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_right_atrium"
+    },
+    {
+      "component_id": "right_ventricle",
+      "mesh_name": "right_ventricle",
+      "label": "Right ventricle",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_right_ventricle"
+    },
+    {
+      "component_id": "left_atrium",
+      "mesh_name": "left_atrium",
+      "label": "Left atrium",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_left_atrium"
+    },
+    {
+      "component_id": "left_ventricle",
+      "mesh_name": "left_ventricle",
+      "label": "Left ventricle",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_left_ventricle"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "select_component"
+  ],
+  "animation_refs": [
+    "blood_flow_01"
+  ],
+  "explanations": {
+    "explanation_right_atrium": "The right atrium receives oxygen-poor blood returning from the body.",
+    "explanation_right_ventricle": "The right ventricle pumps oxygen-poor blood to the lungs.",
+    "explanation_left_atrium": "The left atrium receives oxygen-rich blood from the lungs.",
+    "explanation_left_ventricle": "The left ventricle has the thickest wall and pumps blood to the whole body."
+  }
 }

@@ -116,3 +116,10 @@ def test_animation_must_be_referenced_by_scene() -> None:
     scene = SceneSpec.model_validate(data)
     anim = AnimationSpec.model_validate(load("animation_blood_flow_01.json"))
     assert "does not reference" in validate_animation_for_scene(anim, scene)[0]
+
+
+def test_explanation_refs_must_resolve() -> None:
+    data = load("scene_heart_01.json")
+    del data["explanations"]["explanation_left_ventricle"]
+    with pytest.raises(ValidationError, match="without an explanation"):
+        SceneSpec.model_validate(data)

@@ -53,8 +53,22 @@ class LocalStorage:
             headers={"Content-Type": content_type},
         )
 
+    def presigned_download(self, *, key: str, content_type: str, expires_in_s: int) -> str:
+        s = get_settings()
+        token = jwt.encode(
+            {
+                "typ": "download",
+                "key": validate_key(key),
+                "ct": content_type,
+                "exp": datetime.now(UTC) + timedelta(seconds=expires_in_s),
+            },
+            s.jwt_secret,
+            algorithm="HS256",
+        )
+        return f"{s.api_v1_prefix}/storage/files/{token}"
+
     @staticmethod
-    def decode_upload_token(token: str) -> dict[str, Any] | None:
+    def decode_token(token: str, typ: str) -> dict[str, Any] | None:
         try:
             data: dict[str, Any] = jwt.decode(
                 token,
@@ -64,7 +78,10 @@ class LocalStorage:
             )
         except jwt.PyJWTError:
             return None
-        return data if data.get("typ") == "upload" else None
+        return data if data.get("typ") == typ else None
+
+    def path_for(self, key: str) -> Path:
+        return self._path(key)
 
     def head(self, key: str) -> StoredObject | None:
         path = self._path(key)
@@ -102,6 +119,18 @@ class S3Storage:
             ExpiresIn=expires_in_s,
         )
         return PresignedUpload(url=url, method="PUT", headers={"Content-Type": content_type})
+
+    def presigned_download(self, *, key: str, content_type: str, expires_in_s: int) -> str:
+        url: str = self.client.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": self.bucket,
+                "Key": validate_key(key),
+                "ResponseContentType": content_type,
+            },
+            ExpiresIn=expires_in_s,
+        )
+        return url
 
     def head(self, key: str) -> StoredObject | None:
         from botocore.exceptions import ClientError

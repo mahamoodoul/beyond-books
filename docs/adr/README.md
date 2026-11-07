@@ -9,6 +9,7 @@
 | [0005](0005-tenant-model-teacher-owned-first.md) | Teacher-owned courses first (interim for #2) | Proposed |
 | [0006](0006-llm-provider-openai-adapter-and-fake.md) | LLM adapter: OpenAI + offline fake (interim for #3) | Proposed |
 | [0007](0007-plain-orchestration-before-langgraph.md) | Plain orchestration before LangGraph (interim for #4) | Proposed |
+| [0008](0008-3d-asset-registry-and-scene-resolution.md) | 3D asset registry, review gate and scene resolution | Proposed |
 
 Copy [0000-template.md](0000-template.md) for new decisions.
 

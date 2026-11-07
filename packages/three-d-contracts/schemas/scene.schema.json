@@ -205,6 +205,18 @@
       "title": "Controls",
       "type": "array"
     },
+    "explanations": {
+      "maxProperties": 200,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]{0,63}$": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "title": "Explanations",
+      "type": "object"
+    },
     "learning_objective_ids": {
       "items": {
         "pattern": "^[a-z][a-z0-9_]{0,63}$",

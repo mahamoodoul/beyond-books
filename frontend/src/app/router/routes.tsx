@@ -6,6 +6,7 @@ import { RequireAuth } from "@/features/auth/auth";
 import { ChapterPage } from "@/features/chapters/ChapterPage";
 import { CoursePage } from "@/features/courses/CoursePage";
 import { LessonEditorPage } from "@/features/lessons/LessonEditorPage";
+import { AssetsPage } from "@/features/three-d/AssetsPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RegisterPage } from "@/features/auth/RegisterPage";
 import { HomePage } from "@/features/dashboard/HomePage";
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "/teacher/courses/:courseId", element: teacher(<CoursePage />) },
       { path: "/teacher/chapters/:chapterId", element: teacher(<ChapterPage />) },
       { path: "/teacher/lessons/:lessonId", element: teacher(<LessonEditorPage />) },
+      { path: "/teacher/assets", element: teacher(<AssetsPage />) },
       { path: "/student", element: student(<StudentDashboard />) },
       { path: "*", element: <Navigate to="/" replace /> },
     ],

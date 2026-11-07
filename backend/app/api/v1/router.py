@@ -12,6 +12,7 @@ from app.modules.documents.api import router as documents_router
 from app.modules.lessons.api import router as lessons_router
 from app.modules.operations.api import router as jobs_router
 from app.modules.organizations.api import router as schools_router
+from app.modules.three_d.api import router as three_d_router
 from app.modules.users.api import router as users_router
 
 api_router = APIRouter()
@@ -28,5 +29,6 @@ for r in (
     chapters_router,
     lessons_router,
     ai_router,
+    three_d_router,
 ):
     api_router.include_router(r)

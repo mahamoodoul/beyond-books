@@ -48,6 +48,7 @@ export interface SceneSpec {
   camera?: Camera;
   components?: Components;
   controls?: Controls;
+  explanations?: Explanations;
   learning_objective_ids?: LearningObjectiveIds;
   procedural?: Procedural;
   scene_id: SceneId;
@@ -69,6 +70,13 @@ export interface SceneComponent {
   explanation_ref?: ExplanationRef;
   label: Label;
   mesh_name: MeshName;
+}
+export interface Explanations {
+  /**
+   * This interface was referenced by `Explanations`'s JSON-Schema definition
+   * via the `patternProperty` "^[a-z][a-z0-9_]{0,63}$".
+   */
+  [k: string]: string;
 }
 /**
  * A trusted, prebuilt procedural generator in the renderer (design §7.1-A).

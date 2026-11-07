@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router";
 import type { LessonContent, LessonSection } from "@/api/generated/schema";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { RegenerateSection } from "@/features/ai/RegenerateSection";
+import { ScenesCard } from "@/features/three-d/ScenesCard";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
 
 import { useLesson, useLessonMutations } from "./api";
@@ -118,6 +119,8 @@ export function LessonEditorPage() {
           </div>
         )}
       </Card>
+
+      <ScenesCard lessonId={l.id} />
     </>
   );
 }

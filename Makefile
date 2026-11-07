@@ -1,4 +1,4 @@
-.PHONY: up down migrate backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down migrate seed backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
@@ -19,6 +19,9 @@ contracts:     ## Regenerate 3D schemas, OpenAPI and all TS types after backend 
 
 migrate:       ## Apply migrations to EDU3D_DATABASE_URL
 	cd backend && .venv/bin/alembic upgrade head
+
+seed:          ## Seed the 3D library with the schematic demo heart (idempotent)
+	cd backend && .venv/bin/python -m app.modules.three_d.seed
 
 frontend-install:
 	cd frontend && npm install

@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     s3_region: str = "eu-north-1"
     upload_max_bytes: int = 50 * 1024 * 1024
     upload_url_ttl_s: int = 10 * 60
+    download_url_ttl_s: int = 10 * 60
+    asset_max_bytes: int = 30 * 1024 * 1024
 
     # --- workers ---
     jobs_run_inline: bool = False  # True: run jobs in-process (tests / no Redis)
