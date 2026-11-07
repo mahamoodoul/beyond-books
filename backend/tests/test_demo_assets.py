@@ -17,8 +17,8 @@ REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "packages" / "three-d-contracts" / "fixtures"
 ASSETS = REPO / "packages" / "demo-assets"
 
-# GLBs too large for git: validated when present, skipped otherwise (see .gitignore)
-LOCAL_ONLY = {"plant_cell_v3"}
+# GLBs are stored in Git LFS. A checkout without `git lfs pull` holds small pointer files.
+LFS_POINTER = b"version https://git-lfs.github.com/spec/"
 
 # asset_id -> (scene fixtures, animation fixtures)
 CASES = {
@@ -49,9 +49,9 @@ def gltf_json(path: Path) -> dict:  # type: ignore[type-arg]
 def test_demo_asset_matches_metadata_and_fixtures(asset_id: str) -> None:
     meta = json.loads((ASSETS / "metadata" / f"{asset_id}.json").read_text())
     glb = ASSETS / "glb" / f"{asset_id}.glb"
-    if asset_id in LOCAL_ONLY and not glb.exists():
-        pytest.skip(f"{glb.name} is not committed (too large); export it from the .blend")
     raw = glb.read_bytes()
+    if raw.startswith(LFS_POINTER):
+        pytest.fail(f"{glb.name} is a Git LFS pointer; run `git lfs pull` (CI: checkout lfs: true)")
     assert meta["content_hash"] == "sha256:" + hashlib.sha256(raw).hexdigest()
     assert meta["size_bytes"] == len(raw)
 
