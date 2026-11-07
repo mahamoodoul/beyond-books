@@ -21,16 +21,24 @@ from app.modules.ai_engine.schemas import (
     LessonLLM,
     Model3DLLM,
     ModelPartLLM,
+    ModelTourLLM,
     OptionLLM,
     OutlineChapterLLM,
     OutlineLLM,
     OutlineObjectiveLLM,
+    PartConnectionLLM,
+    PartDeepDiveLLM,
+    PartDescriptionLLM,
+    PartDescriptionsLLM,
     PartInsightLLM,
+    PromptDraftLLM,
+    PromptDraftPartLLM,
     QuestionLLM,
     SceneComponentLLM,
     ScenePlanLLM,
     SectionLLM,
     SourceRefLLM,
+    TourStepLLM,
     VisualizationLLM,
 )
 
@@ -68,6 +76,10 @@ class FakeLLMProvider:
             EvaluationLLM: self._evaluation,
             ExplainLLM: self._explain,
             Model3DLLM: self._model_3d,
+            PromptDraftLLM: self._prompt_draft,
+            PartDeepDiveLLM: self._deep_dive,
+            ModelTourLLM: self._tour,
+            PartDescriptionsLLM: self._descriptions,
             PartInsightLLM: self._part_insight,
         }
         output = builders[output_schema](references, task)
@@ -330,6 +342,71 @@ class FakeLLMProvider:
         return ExplainLLM(
             explanation=" ".join(sents) or first.text[:400], revision_section_title=title
         )
+
+    def _descriptions(self, refs: list[ReferencePassage], task: str) -> PartDescriptionsLLM:
+        wanted = task.split("Needs a description:", 1)[-1].strip().split(", ")
+        return PartDescriptionsLLM(
+            parts=[
+                PartDescriptionLLM(
+                    name=n,
+                    label=n.replace("_", " ").capitalize(),
+                    description=f"The {n} has a job in this model.",
+                )
+                for n in wanted
+                if n
+            ]
+            + [PartDescriptionLLM(name="invented_part", label="Invented", description="Not real.")]
+        )
+
+    def _tour(self, refs: list[ReferencePassage], task: str) -> ModelTourLLM:
+        names = [line[2:].split(" (", 1)[0] for line in task.splitlines() if line.startswith("- ")]
+        steps = [
+            TourStepLLM(part=n, connection=f"The {n} plays its part in the whole.")
+            for n in reversed(names)
+        ]
+        return ModelTourLLM(
+            intro="This tour shows how every part works together.",
+            steps=[*steps, TourStepLLM(part="invented_part", connection="Not real.")],
+        )
+
+    def _deep_dive(self, refs: list[ReferencePassage], task: str) -> PartDeepDiveLLM:
+        part = task.split("Selected part:", 1)[-1].splitlines()[0].strip() or "part"
+        others = task.split("Other parts:", 1)[-1].splitlines()[0].split(",")
+        return PartDeepDiveLLM(
+            summary=f"The {part} is an important part of this model.",
+            structure=f"The {part} has a distinctive shape.",
+            function=f"The {part} does an important job.",
+            connections=[
+                PartConnectionLLM(part=o.strip(), relationship="Works together with it.")
+                for o in others[:2]
+                if o.strip()
+            ]
+            + [PartConnectionLLM(part="not_a_part", relationship="Invented.")],
+            analogy="Like a team member with one clear job.",
+            misconception="It is not the only part that matters.",
+            fact="Scientists still study it.",
+            check_question=f"What does the {part} do?",
+            check_answer="It does an important job.",
+        )
+
+    def _prompt_draft(self, refs: list[ReferencePassage], task: str) -> PromptDraftLLM:
+        topic = task.split("Topic:", 1)[-1].splitlines()[0].strip() or "object"
+        names = ["outer_shell", "core", "support"]
+        parts = [
+            PromptDraftPartLLM(
+                name=n, label=n.replace("_", " ").capitalize(), description=f"The {n} of {topic}."
+            )
+            for n in names
+        ]
+        brief = "\n".join(
+            [
+                f"1. Purpose and audience: show the main parts of {topic}.",
+                "2. Overall form: about 2 units across, centred at the origin, Z up.",
+                "3. Parts:",
+                *[f"`{p.name}` - {p.description}" for p in parts],
+            ]
+        )
+        return PromptDraftLLM(title=topic[:80], prompt=brief, parts=parts)
 
     def _model_3d(self, refs: list[ReferencePassage], task: str) -> Model3DLLM:
         words = [w.lower() for w in re.findall(r"[A-Za-z]{4,}", task.split(":", 1)[-1])][:3] or [

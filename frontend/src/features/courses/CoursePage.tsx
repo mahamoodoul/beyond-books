@@ -1,71 +1,106 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { ErrorAlert, Loading } from "@/components/feedback";
-import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
+import { Button, Card, Field, Input, Textarea } from "@/components/ui";
+import { Icon } from "@/components/ui/Icon";
 import { OutlinePanel } from "@/features/ai/OutlinePanel";
 import { AnalyticsPanel } from "@/features/analytics/AnalyticsPanel";
-import { useChapters } from "@/features/chapters/api";
-import { ChaptersPanel } from "@/features/chapters/ChaptersPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
 import { useCourse, useUpdateCourse } from "./api";
+import { ChapterBoard, useChapterOverview } from "./ChapterBoard";
 import { ProgressPanel } from "./ProgressPanel";
 import { StudentsPanel } from "./StudentsPanel";
+import { subjectStyle } from "./subjects";
 
-const TABS = ["Sources & outline", "Chapters", "Students", "Progress", "Analytics", "Course details"] as const;
+const TABS = ["Chapters", "Sources & outline", "Students", "Progress", "Analytics", "Course details"] as const;
 type Tab = (typeof TABS)[number];
+
+function Number_({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="rounded-lg bg-white/10 px-3 py-2">
+      <p className="text-xl font-semibold tabular-nums">{value}</p>
+      <p className="text-xs text-white/70">{label}</p>
+    </div>
+  );
+}
 
 export function CoursePage() {
   const { courseId = "" } = useParams();
   const course = useCourse(courseId);
   const update = useUpdateCourse(courseId);
+  const overview = useChapterOverview(courseId);
   const [details, setDetails] = useState({ title: "", subject: "", grade_level: "", description: "" });
   useEffect(() => {
     if (course.data) setDetails({ title: course.data.title, subject: course.data.subject ?? "", grade_level: course.data.grade_level ?? "", description: course.data.description });
   }, [course.data]);
   const saveDetails = (event: FormEvent) => { event.preventDefault(); update.mutate(details); };
-  const chapters = useChapters(courseId);
   const [chosenTab, setTab] = useState<Tab | null>(null);
-  // Courses that already have chapters open on the chapter list (the studio entry point).
-  const tab: Tab = chosenTab ?? ((chapters.data?.length ?? 0) > 0 ? "Chapters" : "Sources & outline");
+  // New courses start with their sources; once there are chapters, the chapter list comes first.
+  const tab: Tab = chosenTab ?? (overview.data && overview.data.length === 0 ? "Sources & outline" : "Chapters");
 
   if (course.isPending) return <Loading />;
   if (course.error) return <ErrorAlert error={course.error} />;
   const c = course.data;
   const published = c.status === "published";
+  const style = subjectStyle(c.subject, c.title);
+  const chapters = overview.data ?? [];
+  const sum = (k: "lessons" | "scenes" | "quizzes") => chapters.reduce((n, ch) => n + (ch[k] ?? 0), 0);
 
   return (
     <>
-      <PageHeader title={c.title}>
-        <Badge tone={published ? "green" : "slate"}>{c.status}</Badge>
-        <Button variant={published ? "secondary" : "primary"} disabled={update.isPending} onClick={() => update.mutate({ status: published ? "draft" : "published" })}>
-          {published ? "Unpublish course" : "Publish course"}
-        </Button>
-      </PageHeader>
-      <p className="mb-5 text-sm text-slate-600">Upload your textbook and apply the outline, then open each chapter's Studio: generate the lesson, quiz and 3D scenes from the chapter text, preview them, and publish the chapter for enrolled students.</p>
+      <Link to="/teacher/courses" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900">← My courses</Link>
+      <header className={`mb-6 overflow-hidden rounded-2xl bg-gradient-to-r ${style.banner} p-6 text-white shadow-sm`}>
+        <div className="flex flex-wrap items-start gap-4">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-white/15"><Icon name={style.icon} size={28} /></span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm text-white/80">{[c.subject, c.grade_level].filter(Boolean).join(" · ") || "Course"}</p>
+            <h1 className="text-2xl font-semibold">{c.title}</h1>
+            {c.description && <p className="mt-1 max-w-3xl text-sm text-white/85">{c.description}</p>}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${published ? "bg-white text-emerald-800" : "bg-white/20 text-white"}`}>{published ? "Published" : "Draft"}</span>
+            <button
+              type="button"
+              disabled={update.isPending}
+              onClick={() => update.mutate({ status: published ? "draft" : "published" })}
+              className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-white/90 disabled:opacity-60"
+            >
+              {published ? "Unpublish" : "Publish course"}
+            </button>
+          </div>
+        </div>
+        <div className="mt-5 grid max-w-xl grid-cols-4 gap-2">
+          <Number_ value={chapters.length} label="chapters" />
+          <Number_ value={sum("lessons")} label="lessons" />
+          <Number_ value={sum("scenes")} label="3D scenes" />
+          <Number_ value={sum("quizzes")} label="quizzes" />
+        </div>
+      </header>
       <ErrorAlert error={update.error} />
-      <div role="tablist" className="mb-6 flex gap-1 border-b border-slate-200">
+
+      <div role="tablist" className="mb-6 flex gap-1 overflow-x-auto border-b border-slate-200">
         {TABS.map((t) => (
           <button
             key={t}
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900 text-navy-950" : "border-transparent text-slate-500 hover:text-slate-800"}`}
+            className={`-mb-px shrink-0 border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900 text-navy-950" : "border-transparent text-slate-500 hover:text-slate-800"}`}
           >
             {t}
           </button>
         ))}
       </div>
       <div role="tabpanel" className="space-y-6">
+        {tab === "Chapters" && <ChapterBoard courseId={courseId} onGoToSources={() => setTab("Sources & outline")} />}
         {tab === "Sources & outline" && (
           <>
             <SourcesPanel courseId={courseId} />
             <OutlinePanel courseId={courseId} onApplied={() => setTab("Chapters")} />
           </>
         )}
-        {tab === "Chapters" && <ChaptersPanel courseId={courseId} />}
         {tab === "Students" && <StudentsPanel courseId={courseId} />}
         {tab === "Progress" && <ProgressPanel courseId={courseId} />}
         {tab === "Analytics" && <AnalyticsPanel courseId={courseId} />}

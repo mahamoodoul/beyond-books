@@ -3,6 +3,7 @@ import re
 import secrets
 import uuid
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
@@ -19,6 +20,7 @@ from app.modules.three_d.models import (
     ReviewStatus,
     ThreeDAsset,
     ThreeDAssetVersion,
+    ThreeDScene,
 )
 from app.modules.three_d.schemas import AssetCreate
 from app.modules.users.models import AccountType, User
@@ -238,6 +240,8 @@ def review_asset(
         raise ConflictError("Upload a valid model version before reviewing.")
     asset.review_status = decision
     asset.review_notes = notes
+    if decision == ReviewStatus.APPROVED:
+        _mark_descriptions_reviewed(db, asset)
     asset.reviewed_by = user.id
     asset.reviewed_at = datetime.now(UTC)
     audit.record(
@@ -250,6 +254,17 @@ def review_asset(
     )
     db.commit()
     return asset
+
+
+def _mark_descriptions_reviewed(db: Session, asset: ThreeDAsset) -> None:
+    """Approving a model approves its part descriptions too ("Approve all" in the library)."""
+    v = _version(db, asset.id, asset.latest_version)
+    parts = v.metadata_json.get("parts")
+    if parts:
+        v.metadata_json = {
+            **v.metadata_json,
+            "parts": [{**p, "reviewed": True} if isinstance(p, dict) else p for p in parts],
+        }
 
 
 def download_url(db: Session, user: User, asset_id: uuid.UUID, n: int) -> str:
@@ -278,3 +293,99 @@ def search_assets(db: Session, user: User, q: str, limit: int = 20) -> list[Thre
         return visible[:limit]
     scored = sorted(((relevance(q, a), a) for a in visible), key=lambda x: (-x[0], x[1].name))
     return [a for score, a in scored if score > 0][:limit]
+
+
+class AssetInUseError(ConflictError):
+    code = "ASSET_IN_USE"
+    message = "This model is used in lesson scenes. Remove it from those scenes first."
+
+
+def _refs(spec: dict[str, Any] | None) -> set[str]:
+    refs: list[Any] = (spec or {}).get("asset_refs") or []
+    return {str(r.get("asset_id")) for r in refs if isinstance(r, dict)}
+
+
+def scenes_using(db: Session, asset: ThreeDAsset) -> list[ThreeDScene]:
+    """Scenes whose draft OR published spec references this asset (by slug)."""
+    return [
+        s
+        for s in db.scalars(select(ThreeDScene))
+        if asset.slug in _refs(s.scene_spec) or asset.slug in _refs(s.published_spec)
+    ]
+
+
+def delete_asset(db: Session, user: User, asset_id: uuid.UUID) -> None:
+    """Delete a model and its stored files. Refused while any lesson scene still uses it, so
+    published lessons never lose their 3D content."""
+    asset = get_asset_for(db, user, asset_id, manage=True)
+    using = scenes_using(db, asset)
+    if using:
+        titles = ", ".join(sorted({s.title for s in using})[:5])
+        raise AssetInUseError(
+            f"This model is used in {len(using)} lesson scene(s): {titles}. "
+            "Remove it from those scenes first.",
+            details=[{"scene_id": str(s.id), "title": s.title} for s in using],
+        )
+    keys = [v.storage_key for v in versions(db, asset.id)]
+    audit.record(
+        db,
+        action="asset.deleted",
+        resource_type="three_d_asset",
+        resource_id=asset.id,
+        actor_user_id=user.id,
+        school_id=asset.owner_school_id,
+        metadata={"name": asset.name, "versions": len(keys)},
+    )
+    db.delete(asset)
+    db.commit()
+    storage = get_storage()
+    for key in keys:  # after the commit: a storage hiccup never leaves a half-deleted row
+        try:
+            storage.delete(key)
+        except Exception:  # noqa: BLE001 - orphaned blobs are harmless; log and continue
+            import logging
+
+            logging.getLogger(__name__).warning("could not delete stored model %s", key)
+
+
+def update_part(
+    db: Session,
+    user: User,
+    asset_id: uuid.UUID,
+    part: str,
+    *,
+    label: str | None,
+    description: str | None,
+) -> ThreeDAsset:
+    """Edit the label/explanation of one part of the latest model version (Studio)."""
+    asset = get_asset_for(db, user, asset_id, manage=True)
+    v = db.scalar(
+        select(ThreeDAssetVersion).where(
+            ThreeDAssetVersion.asset_id == asset.id,
+            ThreeDAssetVersion.version_number == asset.latest_version,
+        )
+    )
+    meta: dict[str, Any] = dict(v.metadata_json) if v is not None else {}
+    if v is None or part not in meta.get("node_names", []):
+        raise NotFoundError("That part is not in this model.")
+    parts = [dict(p) for p in meta.get("parts", []) if isinstance(p, dict)]
+    entry = next((p for p in parts if p.get("name") == part), None)
+    if entry is None:
+        entry = {"name": part, "label": part.replace("_", " "), "description": ""}
+        parts.append(entry)
+    if label is not None:
+        entry["label"] = label.strip() or part.replace("_", " ")
+    if description is not None:
+        entry["description"] = description.strip()
+    entry.update(source="teacher", reviewed=True)  # a teacher's edit is a reviewed text
+    v.metadata_json = {**meta, "parts": parts}  # reassign: JSON column change
+    audit.record(
+        db,
+        action="asset.part_updated",
+        resource_type="three_d_asset",
+        resource_id=asset.id,
+        actor_user_id=user.id,
+        metadata={"part": part},
+    )
+    db.commit()
+    return asset

@@ -35,3 +35,9 @@ dist/
 
 # Production env files
 .env.production
+
+# Sample textbook PDFs (OpenStax, large) - see sample-courses/README.md
+sample-courses/**/*.pdf
+
+# Local database backups
+backend/dev.db.backup-*

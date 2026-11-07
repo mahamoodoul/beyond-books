@@ -1,111 +1,130 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router";
 
+import { api } from "@/api/client";
+import type { ChapterOverview, CourseOut } from "@/api/generated/schema";
+import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
+import { Badge, Input } from "@/components/ui";
 import { Icon } from "@/components/ui/Icon";
-import type { CourseOut } from "@/api/generated/schema";
 import { useCourses } from "@/features/courses/api";
+import { subjectStyle } from "@/features/courses/subjects";
 
-type CourseFilter = "All courses" | "Published" | "Draft";
-const filters: CourseFilter[] = ["All courses", "Published", "Draft"];
-const statusOf = (course: CourseOut) => course.status === "published" ? "Published" : "Draft";
-export function TeacherCoursesPage() {
-  const [filter, setFilter] = useState<CourseFilter>("All courses");
-  const [search, setSearch] = useState("");
-  const coursesQuery = useCourses();
+type Filter = "all" | "published" | "draft";
 
-  if (coursesQuery.isError) throw coursesQuery.error;
-  if (coursesQuery.isPending) {
-    return <p className="page-loading" role="status">Loading your course library…</p>;
-  }
+function updated(iso: string): string {
+  const d = new Date(iso);
+  const days = Math.floor((Date.now() - d.getTime()) / 86_400_000);
+  if (days < 1) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
 
-  const courses = coursesQuery.data.filter(c => c.can_manage);
-  const query = search.trim().toLowerCase();
-  const visibleCourses = courses.filter((course) => {
-    const matchesFilter = filter === "All courses" || statusOf(course) === filter;
-    const matchesSearch = !query || `${course.title} ${course.subject} ${course.grade_level}`.toLowerCase().includes(query);
-    return matchesFilter && matchesSearch;
+function CourseCard({ course }: { course: CourseOut }) {
+  const style = subjectStyle(course.subject, course.title);
+  const chapters = useQuery({
+    queryKey: ["chapter-overview", course.id],
+    queryFn: () => api.get<ChapterOverview[]>(`/courses/${course.id}/chapter-overview`),
+    staleTime: 60_000,
   });
-  const publishedCount = courses.filter((course) => course.status === "published").length;
-  const draftCount = courses.filter((course) => course.status === "draft").length;
+  const n = chapters.data?.length;
+  const live = chapters.data?.filter((c) => c.status === "published").length ?? 0;
+  const scenes = chapters.data?.reduce((s, c) => s + (c.scenes ?? 0), 0) ?? 0;
+  const with3d = chapters.data?.filter((c) => (c.scenes ?? 0) > 0).length ?? 0;
+  const published = course.status === "published";
+  return (
+    <li>
+      <Link to={`/teacher/courses/${course.id}`} className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+        <div className={`relative flex h-24 items-end bg-gradient-to-r ${style.banner} p-4 text-white`}>
+          <Icon name={style.icon} size={30} className="opacity-90 transition group-hover:scale-110" />
+          <span className={`absolute right-3 top-3 rounded-full px-2 py-0.5 text-xs font-semibold ${published ? "bg-white text-emerald-800" : "bg-white/25 text-white"}`}>
+            {published ? "Published" : "Draft"}
+          </span>
+        </div>
+        <div className="flex flex-1 flex-col gap-1 p-4">
+          <p className={`text-xs font-semibold uppercase tracking-wide ${style.text}`}>
+            {[course.subject, course.grade_level].filter(Boolean).join(" · ") || "Course"}
+          </p>
+          <h3 className="line-clamp-2 font-semibold text-slate-900">{course.title}</h3>
+          {course.description && <p className="line-clamp-2 text-sm text-slate-600">{course.description}</p>}
+          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-1"><Icon name="book" size={13} /> {n === undefined ? "…" : `${n} chapter${n === 1 ? "" : "s"}${n ? ` · ${live} live` : ""}`}</span>
+            {n !== undefined && (
+              <span className="inline-flex items-center gap-1" title={`${with3d} of ${n} chapters have 3D`}>
+                <Icon name="layers" size={13} /> {scenes} 3D{n ? ` · ${with3d}/${n} chapters` : ""}
+              </span>
+            )}
+            <span className="ml-auto">Updated {updated(course.updated_at)}</span>
+          </div>
+        </div>
+      </Link>
+    </li>
+  );
+}
+
+export function TeacherCoursesPage() {
+  const courses = useCourses();
+  const [filter, setFilter] = useState<Filter>("all");
+  const [q, setQ] = useState("");
+
+  const mine = (courses.data ?? []).filter((c) => c.can_manage).sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+  const counts = { all: mine.length, published: mine.filter((c) => c.status === "published").length, draft: mine.filter((c) => c.status !== "published").length };
+  const shown = mine.filter((c) => {
+    const okFilter = filter === "all" || (filter === "published" ? c.status === "published" : c.status !== "published");
+    const text = `${c.title} ${c.subject ?? ""} ${c.grade_level ?? ""}`.toLowerCase();
+    return okFilter && (!q.trim() || text.includes(q.trim().toLowerCase()));
+  });
+  const tabs: { key: Filter; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "published", label: "Published" },
+    { key: "draft", label: "Drafts" },
+  ];
 
   return (
-    <div className="teacher-courses-page dashboard-page">
-      <header className="page-heading teacher-courses-heading">
-        <div>
-          <div className="eyebrow"><span className="eyebrow-dot" /> TEACHER LIBRARY</div>
-          <h1>My courses</h1>
-          <p>Manage your course drafts, published learning, and classroom resources.</p>
+    <>
+      <div className="mb-6 flex flex-wrap items-end gap-3">
+        <div className="mr-auto">
+          <h1 className="text-2xl font-semibold text-navy-950">My courses</h1>
+          <p className="text-sm text-slate-600">Each course is built from a textbook, chapter by chapter.</p>
         </div>
-        <Link className="button button-primary" to="/teacher/upload"><Icon name="plus" size={17} /> Create a course</Link>
-      </header>
+        <Link to="/teacher/upload" className="inline-flex items-center gap-2 rounded-md bg-navy-900 px-3 py-2 text-sm font-medium text-white hover:bg-navy-700">
+          <Icon name="plus" size={16} /> New course
+        </Link>
+      </div>
 
-      <section aria-label="Course library summary" className="course-library-summary">
-        <article className="course-library-stat"><span className="course-library-stat-icon"><Icon name="book" size={17} /></span><span><strong>{courses.length}</strong><small>Total courses</small></span></article>
-        <article className="course-library-stat"><span className="course-library-stat-icon course-stat-published"><Icon name="check" size={17} /></span><span><strong>{publishedCount}</strong><small>Published</small></span></article>
-        <article className="course-library-stat"><span className="course-library-stat-icon course-stat-draft"><Icon name="file" size={17} /></span><span><strong>{draftCount}</strong><small>Drafts</small></span></article>
-        <span className="course-library-summary-note">Your courses, all in one place</span>
-      </section>
-
-      <section aria-labelledby="course-library-title" className="panel course-library-panel">
-        <div className="course-library-toolbar">
-          <div>
-            <span className="eyebrow eyebrow-muted">COURSE LIBRARY</span>
-            <h2 id="course-library-title">Your teaching materials <span className="count-pill">{visibleCourses.length}</span></h2>
-          </div>
-          <label className="course-search">
-            <Icon name="search" size={16} />
-            <span className="visually-hidden">Search courses</span>
-            <input onChange={(event) => setSearch(event.target.value)} placeholder="Search courses" type="search" value={search} />
-          </label>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div role="tablist" aria-label="Filter courses" className="flex gap-1 rounded-lg bg-slate-100 p-1">
+          {tabs.map((t) => (
+            <button key={t.key} role="tab" aria-selected={filter === t.key} onClick={() => setFilter(t.key)}
+              className={`rounded-md px-3 py-1 text-sm font-medium transition ${filter === t.key ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+              {t.label} <span className="text-xs text-slate-400">{counts[t.key]}</span>
+            </button>
+          ))}
         </div>
-
-        <div aria-label="Filter courses by status" className="course-filter-tabs" role="group">
-          {filters.map((item) => {
-            const count = item === "All courses"
-              ? courses.length
-              : courses.filter((course) => statusOf(course) === item).length;
-            return (
-              <button aria-pressed={filter === item} className={filter === item ? "course-filter-active" : ""} key={item} onClick={() => setFilter(item)} type="button">
-                {item}<span>{count}</span>
-              </button>
-            );
-          })}
+        <div className="relative sm:ml-auto sm:w-72">
+          <Icon name="search" size={16} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Input aria-label="Search courses" placeholder="Search by title, subject or grade" className="pl-8" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+      </div>
 
-        {visibleCourses.length > 0 ? (
-          <div className="course-library-list">
-            {visibleCourses.map((course) => {
-              return (
-                <article className="course-library-card" key={course.id}>
-                  <div className="course-art course-art-violet" aria-hidden="true">
-                    <Icon name="book" size={28} />
-                    <span className="art-orb" />
-                  </div>
-                  <div className="course-library-main">
-                    <div className="course-library-meta"><span>{course.subject}</span><span>·</span><span>{course.grade_level}</span><span className={`status-pill status-${course.status.toLowerCase().replace(" ", "-")}`}>{statusOf(course)}</span></div>
-                    <h3>{course.title}</h3>
-                    <div className="course-library-details">
-                      <span><Icon name="book" size={14} /> View chapters</span>
-                      <span><Icon name="users" size={14} /> Manage enrolment</span>
-                      <span><Icon name="clock" size={14} /> Updated {new Date(course.updated_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <div className="course-library-actions">
-                    <Link className="button button-secondary" to={`/teacher/courses/${course.id}/review`}>Open course<Icon name="arrow-right" size={15} /></Link>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+      {courses.isPending && <Loading />}
+      <ErrorAlert error={courses.error} />
+      {courses.data && shown.length === 0 && (
+        mine.length === 0 ? (
+          <EmptyState title="No courses yet">Create a course from a textbook PDF to get started.</EmptyState>
         ) : (
-          <div className="course-library-empty">
-            <span><Icon name="search" size={21} /></span>
-            <strong>{search ? "No courses match that search" : `No ${filter.toLowerCase()} yet`}</strong>
-            <p>{search ? "Try another title, subject, or grade level." : "Create a course from a textbook to get started."}</p>
-            {search && <button className="button button-secondary" onClick={() => setSearch("")} type="button">Clear search</button>}
-          </div>
-        )}
-      </section>
-    </div>
+          <EmptyState title="No courses match">Try another filter or search.</EmptyState>
+        )
+      )}
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {shown.map((c) => <CourseCard key={c.id} course={c} />)}
+      </ul>
+      {mine.length > 0 && (
+        <p className="mt-6 text-xs text-slate-400">
+          <Badge>Tip</Badge> Open a course, then use <strong>Open Studio</strong> on a chapter to generate its lesson, quiz and 3D.
+        </p>
+      )}
+    </>
   );
 }

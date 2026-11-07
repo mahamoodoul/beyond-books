@@ -70,12 +70,12 @@ function Hotspots({ root, components, selected, onSelect }: {
                     onClick={(e) => { e.stopPropagation(); onSelect(c); }}
                     className={`block rounded-full border-2 transition ${active
                       ? "h-5 w-5 border-white bg-[#38b2ac] shadow-[0_0_0_6px_rgba(56,178,172,0.35)]"
-                      : "h-3.5 w-3.5 border-white/80 bg-white/70 hover:scale-125 hover:bg-white"}`}
+                      : "h-3.5 w-3.5 border-white bg-teal-600/80 shadow hover:scale-125 hover:bg-teal-600"}`}
                   />
                   {active && (
                     <div className="absolute left-7 top-1/2 flex -translate-y-1/2 items-center">
                       <span className="h-px w-10 bg-[#38b2ac]" />
-                      <span className="whitespace-nowrap rounded-lg border border-[#38b2ac] bg-[#0f1424]/90 px-3 py-1.5 text-sm font-semibold text-white shadow-lg backdrop-blur">
+                      <span className="whitespace-nowrap rounded-lg border border-[#38b2ac] bg-white/95 shadow-sm px-3 py-1.5 text-sm font-semibold text-slate-900 shadow-lg backdrop-blur">
                         {c.label}
                       </span>
                     </div>
@@ -138,7 +138,7 @@ export default function StudioViewport(p: Props) {
       onSelect={p.onSelect}
       onMeshesLoaded={() => {}}
       reducedMotion={false}
-      background="#0b0d16"
+      background="#eef2f6"
       overlay={(root) => (
         <>
           <Hotspots root={root} components={components} selected={p.selected} onSelect={p.onSelect} />

@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType, type ReactNode } from "react";
-import { Navigate, type RouteObject } from "react-router";
+import { Navigate, useParams, type RouteObject } from "react-router";
 
 import { AppLayout } from "@/app/layouts/AppLayout";
 import { RouteError } from "@/app/router/RouteError";
@@ -17,6 +17,12 @@ function page<T extends Record<string, unknown>>(load: () => Promise<T>, name: k
       <C />
     </Suspense>
   );
+}
+
+/** /viewer/... → /studio/... (the 3D viewer is now the 3D Studio). */
+function LegacyViewerRedirect() {
+  const { assetId, sceneId } = useParams();
+  return <Navigate to={assetId ? `/studio/library/${assetId}` : `/studio/${sceneId ?? ""}`} replace />;
 }
 
 const teacher = (el: ReactNode) => <RequireAuth role="teacher">{el}</RequireAuth>;
@@ -54,9 +60,14 @@ export const appRoutes: RouteObject[] = [
       { path: "/teacher/schools", element: teacher(page(() => import("@/features/dashboard/SchoolsPage"), "SchoolsPage")) },
       { path: "/student/progress", element: student(page(() => import("@/features/dashboard/StudentProgressPage"), "StudentProgressPage")) },
       { path: "/student/courses", element: student(page(() => import("@/features/courses/StudentCoursesPage"), "StudentCoursesPage")) },
-      // Fixture-driven 3D viewer library (Prinon): demo assets from packages/demo-assets.
-      { path: "/viewer", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
-      { path: "/viewer/:sceneId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
+      // 3D Studio: library models (incl. Claude + Blender) + demo scenes (Prinon's viewer).
+      { path: "/viewer", element: <Navigate to="/studio" replace /> },
+      { path: "/studio", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
+      { path: "/studio/library/:assetId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
+      { path: "/studio/:sceneId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
+      // old 3D viewer links keep working
+      { path: "/viewer/library/:assetId", element: <LegacyViewerRedirect /> },
+      { path: "/viewer/:sceneId", element: <LegacyViewerRedirect /> },
       ] },
       { path: "*", element: <Navigate to="/" replace /> },
     ],

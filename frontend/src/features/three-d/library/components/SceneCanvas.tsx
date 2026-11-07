@@ -211,6 +211,8 @@ function SceneContent({
       frame: rt.frame,
       hidden: rt.hidden,
       selected: rt.selected,
+      isolated: rt.isolated,
+      xray: rt.xray,
       hovered: rt.hovered,
       timeSeconds: time.current,
       reducedMotion: rt.reducedMotion,
@@ -499,7 +501,10 @@ function Labels({
       const pos = rt.registry.labelPosition(id, tmp);
       if (pos) g.position.copy(pos);
       const show =
-        rt.showLabels && rt.registry.isVisible(id) && (anim.components[id]?.opacity ?? 1) > 0.15;
+        rt.showLabels &&
+        rt.registry.isVisible(id) &&
+        (anim.components[id]?.opacity ?? 1) > 0.15 &&
+        (!rt.isolated || rt.isolated === id); // focus mode: only the focused part's label
       const display = show ? "" : "none";
       if (el.style.display !== display) el.style.display = display;
       const emphasised =
