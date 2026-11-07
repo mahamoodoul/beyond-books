@@ -194,3 +194,40 @@ def run_job(job_id: uuid.UUID, *, final_attempt: bool = True) -> JobStatus:
         return JobStatus(job.status)
     finally:
         db.close()
+
+
+def resume_inline_jobs() -> dict[str, int]:
+    """Inline mode (local dev) keeps long-running work in the server process, so a restart
+    (e.g. a code reload) loses it. Called at startup: jobs that were waiting on external work
+    are polled again, so they finish or fail with a clear reason instead of showing "running"
+    forever; jobs cut off mid-run are failed (re-running them could repeat paid AI calls)."""
+    from sqlalchemy import select
+
+    resumed: list[uuid.UUID] = []
+    interrupted = 0
+    with session_factory()() as db:
+        for job in db.scalars(
+            select(Job).where(
+                Job.status.in_([JobStatus.RETRYING, JobStatus.PROCESSING, JobStatus.VALIDATING])
+            )
+        ):
+            if job.status == JobStatus.RETRYING:
+                resumed.append(job.id)
+            else:
+                job.status = JobStatus.FAILED
+                job.error_code = "INTERRUPTED"
+                job.error_message = "Interrupted by a server restart. Please try again."
+                job.finished_at = datetime.now(UTC)
+                interrupted += 1
+        db.commit()
+    for job_id in resumed:
+        threading.Thread(
+            target=_poll_inline, args=(job_id,), name=f"job-{job_id}", daemon=True
+        ).start()
+    if resumed or interrupted:
+        log.warning(
+            "after restart: resumed %d job(s), failed %d interrupted job(s)",
+            len(resumed),
+            interrupted,
+        )
+    return {"resumed": len(resumed), "interrupted": interrupted}

@@ -653,3 +653,57 @@ def test_dismiss_removes_a_failed_build_and_its_empty_entry(
     assert t.post(f"/api/v1/assets/generation-jobs/{r['job_id']}/dismiss").status_code == 204
     assert t.get("/api/v1/assets/generation-jobs").json() == []
     assert t.get(f"/api/v1/assets/{r['asset']['id']}").status_code == 404  # empty entry removed
+
+
+def test_restart_recovery_finishes_orphaned_jobs(
+    login: Login, blender: dict[str, Any], db: Any
+) -> None:
+    """A code reload kills in-process builds; at startup they must fail with a reason (and
+    be retryable) instead of showing "running" forever."""
+    import uuid as _uuid
+
+    from app.modules.operations.models import Job
+
+    t = login("t@example.com")
+    asset = t.post("/api/v1/assets", json={"name": "Cell", "license_name": "AI"}).json()
+    from sqlalchemy import select
+
+    from app.modules.users.models import User
+
+    user_id = db.scalar(select(User.id).where(User.email == "t@example.com"))
+    waiting = Job(
+        id=_uuid.uuid4(),
+        job_type="three_d_asset_generation",
+        target_type="three_d_asset",
+        target_id=_uuid.UUID(asset["id"]),
+        requested_by=user_id,
+        status="retrying",
+        error_code="PENDING",
+        attempt_count=16,
+        provider="blender",
+        provider_task_id="blender_lost_in_restart",  # nothing in memory any more
+        input_snapshot={"prompt": "A cell", "provider": "blender"},
+    )
+    cut_off = Job(
+        id=_uuid.uuid4(),
+        job_type="three_d_prompt_draft",
+        target_type="user",
+        target_id=user_id,
+        requested_by=user_id,
+        status="processing",
+        input_snapshot={"topic": "cell"},
+    )
+    db.add_all([waiting, cut_off])
+    db.commit()
+
+    assert runner.resume_inline_jobs() == {"resumed": 1, "interrupted": 1}
+    lost = _wait(t, str(waiting.id))
+    assert lost["status"] == "failed" and "server restarted" in lost["error_message"]
+    stopped = t.get(f"/api/v1/jobs/{cut_off.id}").json()
+    assert stopped["status"] == "failed" and stopped["error_code"] == "INTERRUPTED"
+    # The lost build can be retried from the tray.
+    row = t.get("/api/v1/assets/generation-jobs").json()[0]
+    assert row["status"] == "failed"
+    retry = t.post(f"/api/v1/assets/{asset['id']}/generation-jobs/retry")
+    assert retry.status_code == 202
+    assert _wait(t, retry.json()["id"])["status"] == "completed"

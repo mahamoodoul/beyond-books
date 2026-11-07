@@ -122,7 +122,11 @@ function Row({ job, dark, now, onOpen }: { job: GenerationJobOut; dark: boolean;
       </div>
       <p className={`mt-1 text-xs ${failed ? "text-red-500" : sub}`}>
         {failed ? (job.error_message ?? "The build failed.") : label}
-        {active && job.provider === "blender" && " · usually 2–8 minutes"}
+        {active && elapsed > typical * 2
+          ? " · taking much longer than usual; it fails by itself if it has stalled"
+          : active && job.provider === "blender"
+            ? " · usually 2–8 minutes"
+            : ""}
       </p>
       {retry.error && <p role="alert" className="mt-1 text-xs text-red-500">{errorMessage(retry.error)}</p>}
     </li>
