@@ -1301,6 +1301,39 @@
         "title": "AttemptStart",
         "type": "object"
       },
+      "AvailablePart": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "in_scene": {
+            "title": "In Scene",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "mesh_name": {
+            "title": "Mesh Name",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mesh_name",
+          "label",
+          "description",
+          "source",
+          "in_scene"
+        ],
+        "title": "AvailablePart",
+        "type": "object"
+      },
       "Camera": {
         "additionalProperties": false,
         "properties": {
@@ -1474,6 +1507,82 @@
         "title": "ChapterDetail",
         "type": "object"
       },
+      "ChapterGenerateItem": {
+        "properties": {
+          "job_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "lesson_title": {
+            "title": "Lesson Title",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lesson_id",
+          "lesson_title",
+          "job_id",
+          "status"
+        ],
+        "title": "ChapterGenerateItem",
+        "type": "object"
+      },
+      "ChapterGenerateRequest": {
+        "properties": {
+          "only_missing": {
+            "default": true,
+            "description": "Skip lessons that already have a scene",
+            "title": "Only Missing",
+            "type": "boolean"
+          }
+        },
+        "title": "ChapterGenerateRequest",
+        "type": "object"
+      },
+      "ChapterGenerateResult": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ChapterGenerateItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ChapterGenerateResult",
+        "type": "object"
+      },
       "ChapterOut": {
         "properties": {
           "course_id": {
@@ -1526,6 +1635,45 @@
           "updated_at"
         ],
         "title": "ChapterOut",
+        "type": "object"
+      },
+      "ChapterSceneOut": {
+        "description": "A scene in the chapter 3D Studio board, with its lesson and readiness.",
+        "properties": {
+          "explained": {
+            "title": "Explained",
+            "type": "integer"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "lesson_position": {
+            "title": "Lesson Position",
+            "type": "integer"
+          },
+          "lesson_title": {
+            "title": "Lesson Title",
+            "type": "string"
+          },
+          "parts": {
+            "title": "Parts",
+            "type": "integer"
+          },
+          "scene": {
+            "$ref": "#/components/schemas/SceneOut"
+          }
+        },
+        "required": [
+          "scene",
+          "lesson_id",
+          "lesson_title",
+          "lesson_position",
+          "parts",
+          "explained"
+        ],
+        "title": "ChapterSceneOut",
         "type": "object"
       },
       "ChapterSourceRef": {
@@ -7305,6 +7453,60 @@
         ]
       }
     },
+    "/api/v1/chapters/{chapter_id}/ai/scenes": {
+      "post": {
+        "description": "AI-plan a 3D scene for every lesson in the chapter (one job per lesson; drafts only).",
+        "operationId": "generate_chapter_scenes_api_v1_chapters__chapter_id__ai_scenes_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChapterGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChapterGenerateResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Chapter Scenes",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
     "/api/v1/chapters/{chapter_id}/assessments": {
       "get": {
         "operationId": "list_assessments_api_v1_chapters__chapter_id__assessments_get",
@@ -7559,6 +7761,53 @@
         "summary": "Replace Objectives",
         "tags": [
           "chapters"
+        ]
+      }
+    },
+    "/api/v1/chapters/{chapter_id}/scenes": {
+      "get": {
+        "operationId": "chapter_scenes_api_v1_chapters__chapter_id__scenes_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChapterSceneOut"
+                  },
+                  "title": "Response Chapter Scenes Api V1 Chapters  Chapter Id  Scenes Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chapter Scenes",
+        "tags": [
+          "3d"
         ]
       }
     },
@@ -9807,6 +10056,96 @@
         "summary": "Create",
         "tags": [
           "animations"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/available-parts": {
+      "get": {
+        "operationId": "available_parts_api_v1_scenes__scene_id__available_parts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AvailablePart"
+                  },
+                  "title": "Response Available Parts Api V1 Scenes  Scene Id  Available Parts Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Available Parts",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/duplicate": {
+      "post": {
+        "operationId": "duplicate_scene_api_v1_scenes__scene_id__duplicate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Duplicate Scene",
+        "tags": [
+          "3d"
         ]
       }
     },

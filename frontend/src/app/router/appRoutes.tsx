@@ -30,6 +30,7 @@ export const appRoutes: RouteObject[] = [
       { path: "/", element: <LandingPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
+      { path: "/teacher/chapters/:chapterId/studio", element: teacher(page(() => import("@/features/three-d/studio/ChapterStudioPage"), "default")) },
       // Full-screen teacher 3D Studio (own dark layout, outside the standard app chrome).
       { path: "/teacher/lessons/:lessonId/studio", element: teacher(page(() => import("@/features/three-d/studio/StudioPage"), "default")) },
       { element: <RequireAuth><AppLayout /></RequireAuth>, children: [

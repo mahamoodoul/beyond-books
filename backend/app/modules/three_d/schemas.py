@@ -148,3 +148,38 @@ class ThreeDProviderOut(BaseModel):
     name: str
     description: str
     is_default: bool
+
+
+class ChapterSceneOut(BaseModel):
+    """A scene in the chapter 3D Studio board, with its lesson and readiness."""
+
+    scene: SceneOut
+    lesson_id: uuid.UUID
+    lesson_title: str
+    lesson_position: int
+    parts: int
+    explained: int
+
+
+class AvailablePart(BaseModel):
+    mesh_name: str
+    label: str
+    description: str
+    source: str  # asset slug or "generator:<name>"
+    in_scene: bool
+
+
+class ChapterGenerateRequest(BaseModel):
+    only_missing: bool = Field(default=True, description="Skip lessons that already have a scene")
+
+
+class ChapterGenerateItem(BaseModel):
+    lesson_id: uuid.UUID
+    lesson_title: str
+    job_id: uuid.UUID | None
+    status: str  # queued/completed/failed… or "skipped"
+    reason: str | None = None
+
+
+class ChapterGenerateResult(BaseModel):
+    items: list[ChapterGenerateItem]

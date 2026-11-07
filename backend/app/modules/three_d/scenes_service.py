@@ -25,7 +25,14 @@ from app.modules.three_d.models import (
     ThreeDScene,
 )
 from app.modules.three_d.procedural import validate_procedural
-from app.modules.three_d.schemas import ResolvedAsset, ResolvedScene, SceneOut
+from app.modules.three_d.schemas import (
+    AvailablePart,
+    ChapterGenerateItem,
+    ChapterSceneOut,
+    ResolvedAsset,
+    ResolvedScene,
+    SceneOut,
+)
 from app.modules.users.models import User
 
 
@@ -124,6 +131,8 @@ def to_out(
         spec=SceneSpec.model_validate(spec),
         warnings=warnings or [],
         updated_at=scene.updated_at,
+        origin=scene.origin,
+        planning_rationale=scene.planning_rationale,
     )
 
 
@@ -345,3 +354,167 @@ def save_ai_scene(
     db.add(scene)
     db.flush()
     return scene
+
+
+# ------------------------------------------------------------ chapter 3D Studio
+
+
+def chapter_scenes(db: Session, user: User, chapter_id: uuid.UUID) -> list[ChapterSceneOut]:
+    """Every scene of every lesson in the chapter (teacher view: drafts included)."""
+    from app.modules.chapters.service import get_chapter_for
+
+    chapter = get_chapter_for(db, user, chapter_id, manage=True)
+    rows = db.execute(
+        select(ThreeDScene, Lesson)
+        .join(Lesson, Lesson.id == ThreeDScene.lesson_id)
+        .where(Lesson.chapter_id == chapter.id)
+        .order_by(Lesson.position, ThreeDScene.created_at)
+    ).all()
+    out = []
+    for scene, lesson in rows:
+        spec = SceneSpec.model_validate(scene.scene_spec)
+        explained = sum(
+            1
+            for c in spec.components
+            if c.explanation_ref and spec.explanations.get(c.explanation_ref)
+        )
+        out.append(
+            ChapterSceneOut(
+                scene=to_out(scene),
+                lesson_id=lesson.id,
+                lesson_title=lesson.title,
+                lesson_position=lesson.position,
+                parts=len(spec.components),
+                explained=explained,
+            )
+        )
+    return out
+
+
+def available_parts(db: Session, user: User, scene_id: uuid.UUID) -> list[AvailablePart]:
+    """Parts that exist in the scene's models/generators (for 'add part' in the editor)."""
+    from app.modules.three_d.procedural import GENERATORS
+
+    scene, course = _manage_scene(db, user, scene_id)
+    spec = SceneSpec.model_validate(scene.scene_spec)
+    used = {c.mesh_name for c in spec.components}
+    check = check_scene(db, course, spec)
+    parts: dict[str, AvailablePart] = {}
+    for asset, version in check.assets:
+        meta = {p.get("name"): p for p in version.metadata_json.get("parts", [])}
+        for name in version.metadata_json.get("node_names", []):
+            m = meta.get(name, {})
+            parts.setdefault(
+                name,
+                AvailablePart(
+                    mesh_name=name,
+                    label=str(m.get("label") or name.replace("_", " ").capitalize()),
+                    description=str(m.get("description") or ""),
+                    source=asset.slug,
+                    in_scene=name in used,
+                ),
+            )
+    for src in spec.procedural:
+        gen = GENERATORS.get(src.generator)
+        if gen is None:
+            continue
+        for name in gen.components(src.params):
+            parts.setdefault(
+                name,
+                AvailablePart(
+                    mesh_name=name,
+                    label=name.replace("_", " ").capitalize(),
+                    description="",
+                    source=f"generator:{gen.name}",
+                    in_scene=name in used,
+                ),
+            )
+    return sorted(parts.values(), key=lambda p: (p.in_scene, p.label))
+
+
+def duplicate_scene(db: Session, user: User, scene_id: uuid.UUID) -> SceneOut:
+    scene, course = _manage_scene(db, user, scene_id)
+    spec = SceneSpec.model_validate(scene.scene_spec)
+    suffix = uuid.uuid4().hex[:4]
+    copy = spec.model_copy(
+        update={
+            "scene_id": f"{spec.scene_id[:58]}_{suffix}",
+            "title": f"{spec.title[:192]} (copy)",
+            "animation_refs": [],  # animations belong to the original scene
+        }
+    )
+    _require_valid(db, course, copy)
+    new = ThreeDScene(
+        lesson_id=scene.lesson_id,
+        title=copy.title,
+        schema_version=copy.schema_version,
+        scene_spec=copy.model_dump(mode="json"),
+        created_by=user.id,
+        origin=scene.origin,
+        planning_rationale=scene.planning_rationale,
+    )
+    db.add(new)
+    db.flush()
+    audit.record(
+        db,
+        action="scene.duplicate",
+        resource_type="three_d_scene",
+        resource_id=new.id,
+        actor_user_id=user.id,
+        school_id=course.school_id,
+        metadata={"source_scene_id": str(scene.id)},
+    )
+    db.commit()
+    return to_out(new)
+
+
+def generate_chapter_scenes(
+    db: Session, user: User, chapter_id: uuid.UUID, only_missing: bool
+) -> list[ChapterGenerateItem]:
+    """Run the AI scene planner for every lesson of the chapter (drafts only, never published)."""
+    from app.core.errors import AppError
+    from app.modules.ai_engine.service import start_scene_plan
+    from app.modules.chapters.service import get_chapter_for
+    from app.modules.lessons.content import LessonContent
+
+    chapter = get_chapter_for(db, user, chapter_id, manage=True)
+    lessons = list(
+        db.scalars(select(Lesson).where(Lesson.chapter_id == chapter.id).order_by(Lesson.position))
+    )
+    with_scene = (
+        set(
+            db.scalars(
+                select(ThreeDScene.lesson_id).where(
+                    ThreeDScene.lesson_id.in_([lesson.id for lesson in lessons])
+                )
+            )
+        )
+        if lessons
+        else set()
+    )
+    items: list[ChapterGenerateItem] = []
+    for lesson in lessons:
+        base = {"lesson_id": lesson.id, "lesson_title": lesson.title}
+        if only_missing and lesson.id in with_scene:
+            items.append(
+                ChapterGenerateItem(
+                    **base, job_id=None, status="skipped", reason="already has a 3D scene"
+                )
+            )
+            continue
+        if not LessonContent.model_validate(lesson.content_json).sections:
+            items.append(
+                ChapterGenerateItem(
+                    **base, job_id=None, status="skipped", reason="lesson has no content yet"
+                )
+            )
+            continue
+        try:
+            job = start_scene_plan(db, user, lesson.id)
+        except AppError as exc:  # e.g. daily AI budget reached: report and stop
+            items.append(
+                ChapterGenerateItem(**base, job_id=None, status="skipped", reason=exc.message)
+            )
+            break
+        items.append(ChapterGenerateItem(**base, job_id=job.id, status=str(job.status)))
+    return items

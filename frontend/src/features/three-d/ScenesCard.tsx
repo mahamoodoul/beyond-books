@@ -17,7 +17,7 @@ function errorDetails(err: unknown): string[] {
   return [];
 }
 
-function NewScene({ lessonId, onCreated }: { lessonId: string; onCreated: () => void }) {
+export function NewScene({ lessonId, onCreated }: { lessonId: string; onCreated: () => void }) {
   const assets = useAssets();
   const gens = useGenerators();
   const m = useSceneMutations(lessonId);

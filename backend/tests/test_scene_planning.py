@@ -165,3 +165,11 @@ def test_asset_search(login: Login, seeded: None) -> None:
         DEMO_HEART_SLUG
     ]
     assert t.get("/api/v1/assets/search?q=volcano").json() == []
+
+
+def test_ai_scene_reports_origin_and_rationale(login: Login, seeded: None) -> None:
+    t = login("t@example.com")
+    lid = _lesson(t, "The heart has four chambers. The left ventricle pumps blood.")
+    t.post(f"/api/v1/lessons/{lid}/ai/scene")
+    scene = t.get(f"/api/v1/lessons/{lid}/scenes").json()[0]
+    assert scene["origin"] == "ai" and scene["planning_rationale"]

@@ -156,6 +156,7 @@ BODIES: dict[tuple[str, str], Any] = {
     },
     ("post", "/api/v1/attempts/{attempt_id}/submit"): {"answers": []},
     ("post", "/api/v1/evaluations/{evaluation_id}/review"): {"final_score": 0},
+    ("post", "/api/v1/chapters/{chapter_id}/ai/scenes"): {"only_missing": False},
     ("post", "/api/v1/scenes/{scene_id}/ai/part-insight"): {
         "component_id": "right_atrium",
         "action": "simplify",
