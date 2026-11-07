@@ -2,11 +2,12 @@
 
 Turn textbooks into interactive, chapter-based learning experiences with 3D models and assessments.
 
-**Full system design:** [README_Edu3D_AI_System_Design.md](README_Edu3D_AI_System_Design.md) — the
+**Full system design:** [read the system design](README_Edu3D_AI_System_Design.md) — the
 high-level source of truth.
 
-The frontend demo uses typed seed data in `frontend/src/features/demo/`. It can be opened locally
-without the separately developed backend; login lets you switch between teacher and student views.
+The frontend demo runs without the separately developed backend; mock login lets you switch
+between teacher and student views. The Beyond Books demo includes the Grade 8 Circulatory System
+course, a student lesson and assessment, teacher upload/review, student progress, and class analytics.
 
 ## Repository layout
 
@@ -14,7 +15,12 @@ without the separately developed backend; login lets you switch between teacher 
 backend/                   FastAPI modular monolith, Celery workers, Alembic migrations
   app/modules/<domain>/    One folder per domain module (design §5)
   app/integrations/        Provider adapters behind app/integrations/interfaces.py
-frontend/                  React + TypeScript + Vite + Tailwind
+frontend/                  React + TypeScript + Vite
+  src/app/                 Router, role/theme providers, and application layout
+  src/components/ui/       Shared interface components
+  src/features/            Landing, courses, lessons, assessments, and dashboards
+  src/lib/api.ts           Typed asynchronous mock service layer
+  src/lib/mock/            Seed course, roster, progress, and analytics data
 packages/three-d-contracts Generated JSON Schema + fixtures for scene/animation specs
 infrastructure/docker/     Dockerfiles for local development
 scripts/                   Repo tooling (contract export)
@@ -36,7 +42,24 @@ Frontend only (mock data; no backend services required):
 cd frontend && npm ci && npm run dev         # http://localhost:5173
 ```
 
+For frontend checks:
+
+```bash
+cd frontend && npm test && npm run build
+```
+
 For the full local stack, start the backend dependencies and services with Docker as shown above.
+
+## Frontend mock data and API boundary
+
+Feature components call the async functions in `frontend/src/lib/api.ts`; they should not import
+seed data directly. The corresponding typed contracts live in `frontend/src/lib/types.ts`, and
+seeded examples are kept in `frontend/src/lib/mock/`. To connect the backend, replace the mock
+function bodies in `lib/api.ts` with HTTP requests while keeping their input and return types, then
+update the API tests to cover the real response and error behavior.
+
+The upload pipeline is a local demo: it simulates analysis and creates an editable draft in
+in-memory storage. Uploaded PDFs are not sent to a server or retained across page reloads.
 
 API docs: http://localhost:8000/docs · Health: `GET /api/v1/health`
 
