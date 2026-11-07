@@ -6,6 +6,7 @@ import { Card, PageHeader } from "@/components/ui";
 import { useChapterAssessments } from "@/features/assessments/api";
 
 import { useOutline } from "./api";
+import { MyInsightsCard } from "./MyInsightsCard";
 import { ProgressBar } from "./ProgressBar";
 
 function ChapterQuizzes({ chapterId }: { chapterId: string }) {
@@ -38,6 +39,7 @@ export function StudentCoursePage() {
         {o.next_lesson_id && <Link to={`/student/lessons/${o.next_lesson_id}`} className="rounded-md bg-navy-900 px-3 py-2 text-sm font-medium text-white">Continue</Link>}
       </PageHeader>
       <div className="mb-6"><ProgressBar done={o.completed_lessons} total={o.total_lessons} label="Course progress" /></div>
+      {courseId && <MyInsightsCard courseId={courseId} />}
       <div className="space-y-4">
         {o.chapters.map((ch) => (
           <Card key={ch.id}>

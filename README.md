@@ -5,7 +5,7 @@ Turn textbooks into interactive 3D learning experiences.
 **Full system design:** [README_Edu3D_AI_System_Design.md](README_Edu3D_AI_System_Design.md) — the
 high-level source of truth.
 
-**Status:** Phases 0–8 implemented on branch `shakil`, with interim decisions in ADRs 0004–0011
+**Status:** Phases 0–9 implemented on branch `shakil`, with interim decisions in ADRs 0004–0012
 that the team still needs to confirm:
 
 | Phase | What works |
@@ -17,6 +17,7 @@ that the team still needs to confirm:
 | 6 Animation | Guided animations (highlight, visibility, opacity, rotation, camera focus, paths, flow particles, annotations), published with the scene, play/pause/step controls, reduced motion, AI animation planning |
 | 7 Students | Student dashboard with progress, course outline, lesson viewer (safe Markdown, source refs, 3D scenes with animations), mark complete / next lesson, allowlisted learning events, teacher progress table |
 | 8 Assessments | Quiz builder (MCQ + rubric short answers), AI quiz generation, versioned publishing, attempts with limits, auto-graded MCQ, advisory AI short-answer feedback + teacher review queue, Explain Further with revision links |
+| 9 Analytics | Course analytics (completion, quiz difficulty, common wrong answers, missing concepts), objective mastery + knowledge-gap records, rule-based insights, students needing attention, student self-insights with revision recommendations, small-group suppression |
 | 4 3D | GLB upload with validation + license metadata + review, 3D library, lesson scenes validated against model parts, procedural generators, R3F viewer with selectable parts and explanations |
 
 ## Repository layout

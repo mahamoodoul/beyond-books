@@ -2,6 +2,7 @@
 
 from app.database.base import Base
 from app.modules.ai_engine.models import AIOutputVersion, AIUsageRecord
+from app.modules.analytics.models import LearningGapRecord
 from app.modules.assessments.models import (
     Assessment,
     AssessmentAttempt,
@@ -48,6 +49,7 @@ __all__ = [
     "DocumentChunk",
     "DocumentPage",
     "Job",
+    "LearningGapRecord",
     "LearningObjective",
     "Lesson",
     "LessonVersion",

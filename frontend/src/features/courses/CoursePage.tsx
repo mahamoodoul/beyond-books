@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, PageHeader } from "@/components/ui";
 import { OutlinePanel } from "@/features/ai/OutlinePanel";
+import { AnalyticsPanel } from "@/features/analytics/AnalyticsPanel";
 import { ChaptersPanel } from "@/features/chapters/ChaptersPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
@@ -11,7 +12,7 @@ import { useCourse, useUpdateCourse } from "./api";
 import { ProgressPanel } from "./ProgressPanel";
 import { StudentsPanel } from "./StudentsPanel";
 
-const TABS = ["Sources & outline", "Chapters", "Students", "Progress"] as const;
+const TABS = ["Sources & outline", "Chapters", "Students", "Progress", "Analytics"] as const;
 type Tab = (typeof TABS)[number];
 
 export function CoursePage() {
@@ -57,6 +58,7 @@ export function CoursePage() {
         {tab === "Chapters" && <ChaptersPanel courseId={courseId} />}
         {tab === "Students" && <StudentsPanel courseId={courseId} />}
         {tab === "Progress" && <ProgressPanel courseId={courseId} />}
+        {tab === "Analytics" && <AnalyticsPanel courseId={courseId} />}
       </div>
     </>
   );

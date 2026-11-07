@@ -554,6 +554,72 @@
         "title": "AssessmentCreate",
         "type": "object"
       },
+      "AssessmentStat": {
+        "properties": {
+          "assessment_id": {
+            "format": "uuid",
+            "title": "Assessment Id",
+            "type": "string"
+          },
+          "avg_score_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Score Rate"
+          },
+          "graded_attempts": {
+            "title": "Graded Attempts",
+            "type": "integer"
+          },
+          "pass_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pass Rate"
+          },
+          "pending_reviews": {
+            "title": "Pending Reviews",
+            "type": "integer"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionStat"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "students_attempted": {
+            "title": "Students Attempted",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assessment_id",
+          "title",
+          "students_attempted",
+          "graded_attempts",
+          "avg_score_rate",
+          "pass_rate",
+          "pending_reviews",
+          "questions"
+        ],
+        "title": "AssessmentStat",
+        "type": "object"
+      },
       "AssessmentSummary": {
         "properties": {
           "chapter_id": {
@@ -1684,6 +1750,130 @@
         "title": "ComponentAction",
         "type": "string"
       },
+      "ConceptCount": {
+        "properties": {
+          "concept": {
+            "title": "Concept",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "concept",
+          "count"
+        ],
+        "title": "ConceptCount",
+        "type": "object"
+      },
+      "CourseAnalytics": {
+        "properties": {
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentStat"
+            },
+            "title": "Assessments",
+            "type": "array"
+          },
+          "attention": {
+            "items": {
+              "$ref": "#/components/schemas/StudentAttention"
+            },
+            "title": "Attention",
+            "type": "array"
+          },
+          "avg_completion_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Completion Rate"
+          },
+          "avg_score_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Score Rate"
+          },
+          "course_id": {
+            "format": "uuid",
+            "title": "Course Id",
+            "type": "string"
+          },
+          "enrolled": {
+            "title": "Enrolled",
+            "type": "integer"
+          },
+          "insights": {
+            "items": {
+              "$ref": "#/components/schemas/Insight"
+            },
+            "title": "Insights",
+            "type": "array"
+          },
+          "lessons": {
+            "items": {
+              "$ref": "#/components/schemas/LessonStat"
+            },
+            "title": "Lessons",
+            "type": "array"
+          },
+          "min_group_size": {
+            "title": "Min Group Size",
+            "type": "integer"
+          },
+          "missing_concepts": {
+            "items": {
+              "$ref": "#/components/schemas/ConceptCount"
+            },
+            "title": "Missing Concepts",
+            "type": "array"
+          },
+          "objectives": {
+            "items": {
+              "$ref": "#/components/schemas/ObjectiveStat"
+            },
+            "title": "Objectives",
+            "type": "array"
+          },
+          "suppressed": {
+            "title": "Suppressed",
+            "type": "boolean"
+          },
+          "total_lessons": {
+            "title": "Total Lessons",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "course_id",
+          "enrolled",
+          "min_group_size",
+          "suppressed",
+          "total_lessons",
+          "avg_completion_rate",
+          "avg_score_rate",
+          "lessons",
+          "assessments",
+          "objectives",
+          "missing_concepts",
+          "attention",
+          "insights"
+        ],
+        "title": "CourseAnalytics",
+        "type": "object"
+      },
       "CourseCreate": {
         "properties": {
           "description": {
@@ -2602,6 +2792,40 @@
         "title": "HighlightStep",
         "type": "object"
       },
+      "Insight": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          }
+        },
+        "required": [
+          "severity",
+          "kind",
+          "message"
+        ],
+        "title": "Insight",
+        "type": "object"
+      },
       "JobOut": {
         "properties": {
           "attempt_count": {
@@ -2895,6 +3119,47 @@
         "title": "LessonSection",
         "type": "object"
       },
+      "LessonStat": {
+        "properties": {
+          "chapter_title": {
+            "title": "Chapter Title",
+            "type": "string"
+          },
+          "completed": {
+            "title": "Completed",
+            "type": "integer"
+          },
+          "completion_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completion Rate"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lesson_id",
+          "title",
+          "chapter_title",
+          "completed",
+          "completion_rate"
+        ],
+        "title": "LessonStat",
+        "type": "object"
+      },
       "LessonSummary": {
         "properties": {
           "has_unpublished_changes": {
@@ -3116,6 +3381,47 @@
         "title": "ObjectiveIn",
         "type": "object"
       },
+      "ObjectiveMastery": {
+        "properties": {
+          "evidence_count": {
+            "title": "Evidence Count",
+            "type": "integer"
+          },
+          "mastery": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mastery"
+          },
+          "objective_id": {
+            "format": "uuid",
+            "title": "Objective Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "objective_id",
+          "text",
+          "mastery",
+          "evidence_count",
+          "status"
+        ],
+        "title": "ObjectiveMastery",
+        "type": "object"
+      },
       "ObjectiveOut": {
         "properties": {
           "id": {
@@ -3147,6 +3453,85 @@
           "source_refs"
         ],
         "title": "ObjectiveOut",
+        "type": "object"
+      },
+      "ObjectiveStat": {
+        "properties": {
+          "avg_mastery": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Mastery"
+          },
+          "chapter_title": {
+            "title": "Chapter Title",
+            "type": "string"
+          },
+          "developing": {
+            "title": "Developing",
+            "type": "integer"
+          },
+          "gaps": {
+            "title": "Gaps",
+            "type": "integer"
+          },
+          "mastered": {
+            "title": "Mastered",
+            "type": "integer"
+          },
+          "objective_id": {
+            "format": "uuid",
+            "title": "Objective Id",
+            "type": "string"
+          },
+          "students_with_evidence": {
+            "title": "Students With Evidence",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "objective_id",
+          "text",
+          "chapter_title",
+          "students_with_evidence",
+          "avg_mastery",
+          "gaps",
+          "developing",
+          "mastered"
+        ],
+        "title": "ObjectiveStat",
+        "type": "object"
+      },
+      "OptionCount": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "option_key": {
+            "title": "Option Key",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "option_key",
+          "text",
+          "count"
+        ],
+        "title": "OptionCount",
         "type": "object"
       },
       "OptionIn": {
@@ -3579,6 +3964,59 @@
         "title": "QuestionIn",
         "type": "object"
       },
+      "QuestionStat": {
+        "properties": {
+          "avg_score_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Score Rate"
+          },
+          "common_wrong": {
+            "items": {
+              "$ref": "#/components/schemas/OptionCount"
+            },
+            "title": "Common Wrong",
+            "type": "array"
+          },
+          "question_key": {
+            "title": "Question Key",
+            "type": "string"
+          },
+          "question_text": {
+            "title": "Question Text",
+            "type": "string"
+          },
+          "question_type": {
+            "title": "Question Type",
+            "type": "string"
+          },
+          "responses": {
+            "title": "Responses",
+            "type": "integer"
+          },
+          "suppressed": {
+            "title": "Suppressed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "question_key",
+          "question_text",
+          "question_type",
+          "responses",
+          "avg_score_rate",
+          "common_wrong",
+          "suppressed"
+        ],
+        "title": "QuestionStat",
+        "type": "object"
+      },
       "QuestionsUpdate": {
         "properties": {
           "content": {
@@ -3595,6 +4033,30 @@
           "content"
         ],
         "title": "QuestionsUpdate",
+        "type": "object"
+      },
+      "Recommendation": {
+        "properties": {
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "lesson_title": {
+            "title": "Lesson Title",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lesson_id",
+          "lesson_title",
+          "reason"
+        ],
+        "title": "Recommendation",
         "type": "object"
       },
       "RegisterRequest": {
@@ -4583,6 +5045,111 @@
           "attempts_used"
         ],
         "title": "StudentAssessment",
+        "type": "object"
+      },
+      "StudentAttention": {
+        "properties": {
+          "completed_lessons": {
+            "title": "Completed Lessons",
+            "type": "integer"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "gap_objectives": {
+            "title": "Gap Objectives",
+            "type": "integer"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "student_id",
+          "display_name",
+          "completed_lessons",
+          "gap_objectives",
+          "reasons"
+        ],
+        "title": "StudentAttention",
+        "type": "object"
+      },
+      "StudentInsights": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "avg_score_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Score Rate"
+          },
+          "completed_lessons": {
+            "title": "Completed Lessons",
+            "type": "integer"
+          },
+          "course_id": {
+            "format": "uuid",
+            "title": "Course Id",
+            "type": "string"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "objectives": {
+            "items": {
+              "$ref": "#/components/schemas/ObjectiveMastery"
+            },
+            "title": "Objectives",
+            "type": "array"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "total_lessons": {
+            "title": "Total Lessons",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "student_id",
+          "display_name",
+          "course_id",
+          "completed_lessons",
+          "total_lessons",
+          "attempts",
+          "avg_score_rate",
+          "objectives",
+          "recommendations"
+        ],
+        "title": "StudentInsights",
         "type": "object"
       },
       "StudentOption": {
@@ -7356,6 +7923,49 @@
         ]
       }
     },
+    "/api/v1/courses/{course_id}/analytics": {
+      "get": {
+        "operationId": "course_analytics_api_v1_courses__course_id__analytics_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseAnalytics"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Course Analytics",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
     "/api/v1/courses/{course_id}/chapters": {
       "get": {
         "operationId": "list_chapters_api_v1_courses__course_id__chapters_get",
@@ -7600,6 +8210,49 @@
         ]
       }
     },
+    "/api/v1/courses/{course_id}/my-insights": {
+      "get": {
+        "operationId": "my_insights_api_v1_courses__course_id__my_insights_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentInsights"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "My Insights",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
     "/api/v1/courses/{course_id}/outline": {
       "get": {
         "operationId": "outline_api_v1_courses__course_id__outline_get",
@@ -7734,6 +8387,59 @@
         "summary": "List Students",
         "tags": [
           "courses"
+        ]
+      }
+    },
+    "/api/v1/courses/{course_id}/students/{student_id}/insights": {
+      "get": {
+        "operationId": "student_insights_api_v1_courses__course_id__students__student_id__insights_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "student_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Student Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentInsights"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Student Insights",
+        "tags": [
+          "analytics"
         ]
       }
     },
