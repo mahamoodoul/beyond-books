@@ -3,8 +3,26 @@ import { Link, useParams } from "react-router";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { Card, PageHeader } from "@/components/ui";
 
+import { useChapterAssessments } from "@/features/assessments/api";
+
 import { useOutline } from "./api";
 import { ProgressBar } from "./ProgressBar";
+
+function ChapterQuizzes({ chapterId }: { chapterId: string }) {
+  const list = useChapterAssessments(chapterId);
+  if (!list.data?.length) return null;
+  return (
+    <ul className="mt-2 border-t border-slate-100 pt-2">
+      {list.data.map((a) => (
+        <li key={a.id}>
+          <Link to={`/student/assessments/${a.id}`} className="flex items-center gap-2 rounded px-2 py-1 text-sm font-medium text-accent hover:bg-slate-50">
+            ✎ {a.title} <span className="font-normal text-slate-500">({a.question_count} questions)</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 const icon = { completed: "✓", in_progress: "◐", not_started: "○" } as const;
 
@@ -35,6 +53,7 @@ export function StudentCoursePage() {
                 </li>
               ))}
             </ul>
+            <ChapterQuizzes chapterId={ch.id} />
           </Card>
         ))}
       </div>

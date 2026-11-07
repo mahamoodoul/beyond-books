@@ -13,11 +13,17 @@ from app.integrations.interfaces import LLMUsage, ReferencePassage, StructuredRe
 from app.modules.ai_engine.schemas import (
     AnimationPlanLLM,
     AnimationStepLLM,
+    AssessmentLLM,
+    CriterionLLM,
+    EvaluationLLM,
+    ExplainLLM,
     GeneratorParamLLM,
     LessonLLM,
+    OptionLLM,
     OutlineChapterLLM,
     OutlineLLM,
     OutlineObjectiveLLM,
+    QuestionLLM,
     SceneComponentLLM,
     ScenePlanLLM,
     SectionLLM,
@@ -55,6 +61,9 @@ class FakeLLMProvider:
             SectionLLM: self._section,
             ScenePlanLLM: self._scene_plan,
             AnimationPlanLLM: self._animation_plan,
+            AssessmentLLM: self._assessment,
+            EvaluationLLM: self._evaluation,
+            ExplainLLM: self._explain,
         }
         output = builders[output_schema](references, task)
         chars_in = len(system_prompt) + len(task) + sum(len(r.text) for r in references)
@@ -243,3 +252,76 @@ class FakeLLMProvider:
             )
         )
         return AnimationPlanLLM(title="Guided tour", steps=steps)
+
+    def _assessment(self, refs: list[ReferencePassage], task: str) -> AssessmentLLM:
+        sents = _sentences(" ".join(r.text for r in refs))[:6] or ["The topic is important."]
+        questions = []
+        for i, sent in enumerate(sents[:4]):
+            words = [w for w in re.findall(r"[A-Za-z]{5,}", sent)]
+            answer = words[-1] if words else "answer"
+            stem = sent.replace(answer, "_____", 1)
+            distractors = [
+                w for w in ("membrane", "nucleus", "pressure", "energy") if w != answer.lower()
+            ][:3]
+            options = [OptionLLM(text=answer, is_correct=True)] + [
+                OptionLLM(text=d, is_correct=False) for d in distractors
+            ]
+            options = options[i % 4 :] + options[: i % 4]
+            questions.append(
+                QuestionLLM(
+                    question_type="mcq",
+                    question_text=f"Fill in the blank: {stem}",
+                    points=1,
+                    difficulty="easy",
+                    explanation_correct=sent[:300],
+                    explanation_general=f"Re-read: {sent[:200]}",
+                    objective_index=0 if i == 0 else -1,
+                    options=options,
+                    rubric=[],
+                    model_answer="",
+                )
+            )
+        model = " ".join(sents[:2])[:400]
+        questions.append(
+            QuestionLLM(
+                question_type="short_answer",
+                question_text="Explain the main idea of this chapter in your own words.",
+                points=2,
+                difficulty="medium",
+                explanation_correct="",
+                explanation_general="",
+                objective_index=-1,
+                options=[],
+                rubric=[
+                    CriterionLLM(description="States the key idea correctly", points=1),
+                    CriterionLLM(description="Uses correct terminology", points=1),
+                ],
+                model_answer=model,
+            )
+        )
+        return AssessmentLLM(title="Chapter quiz", questions=questions)
+
+    def _evaluation(self, refs: list[ReferencePassage], task: str) -> EvaluationLLM:
+        answer = " ".join(r.text for r in refs).lower()
+        model = task.split("Model answer:", 1)[-1].lower()
+        key = {w for w in re.findall(r"[a-z]{5,}", model)}
+        got = {w for w in re.findall(r"[a-z]{5,}", answer)}
+        points = float(re.search(r"\(([\d.]+) points\)", task).group(1))  # type: ignore[union-attr]
+        ratio = len(key & got) / len(key) if key else 0.0
+        missing = sorted(key - got)[:5]
+        return EvaluationLLM(
+            score=round(points * min(1.0, ratio * 1.5), 1),
+            feedback="Good start."
+            if ratio > 0.3
+            else "Your answer misses key ideas from the lesson.",
+            missing_concepts=missing,
+            confidence=0.4 + 0.4 * min(1.0, ratio),
+        )
+
+    def _explain(self, refs: list[ReferencePassage], task: str) -> ExplainLLM:
+        first = refs[0]
+        title = first.text.split("\n", 1)[0].strip()
+        sents = _sentences(" ".join(r.text for r in refs))[:3]
+        return ExplainLLM(
+            explanation=" ".join(sents) or first.text[:400], revision_section_title=title
+        )

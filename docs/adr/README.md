@@ -12,6 +12,7 @@
 | [0008](0008-3d-asset-registry-and-scene-resolution.md) | 3D asset registry, review gate and scene resolution | Proposed |
 | [0009](0009-scene-planning-and-3d-generation.md) | AI scene planning and 3D generation jobs (interim for #5) | Proposed |
 | [0010](0010-animation-engine.md) | Animation engine | Proposed |
+| [0011](0011-assessments-and-advisory-ai-grading.md) | Assessments and advisory AI grading (interim for #8) | Proposed |
 
 Copy [0000-template.md](0000-template.md) for new decisions.
 

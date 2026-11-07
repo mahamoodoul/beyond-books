@@ -104,3 +104,43 @@ class AnimationStepLLM(BaseModel):
 class AnimationPlanLLM(BaseModel):
     title: str
     steps: list[AnimationStepLLM]
+
+
+class OptionLLM(BaseModel):
+    text: str
+    is_correct: bool
+
+
+class CriterionLLM(BaseModel):
+    description: str
+    points: float
+
+
+class QuestionLLM(BaseModel):
+    question_type: Literal["mcq", "short_answer"]
+    question_text: str
+    points: float
+    difficulty: Literal["easy", "medium", "hard"]
+    explanation_correct: str
+    explanation_general: str
+    objective_index: int
+    options: list[OptionLLM]
+    rubric: list[CriterionLLM]
+    model_answer: str
+
+
+class AssessmentLLM(BaseModel):
+    title: str
+    questions: list[QuestionLLM]
+
+
+class EvaluationLLM(BaseModel):
+    score: float
+    feedback: str
+    missing_concepts: list[str]
+    confidence: float
+
+
+class ExplainLLM(BaseModel):
+    explanation: str
+    revision_section_title: str

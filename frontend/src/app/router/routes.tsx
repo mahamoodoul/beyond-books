@@ -2,6 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router";
 
 import { AppLayout } from "@/app/layouts/AppLayout";
 import { RouteError } from "@/app/router/RouteError";
+import { AssessmentEditorPage } from "@/features/assessments/AssessmentEditorPage";
+import { AttemptResultPage } from "@/features/assessments/AttemptResultPage";
+import { QuizPage } from "@/features/assessments/QuizPage";
 import { RequireAuth } from "@/features/auth/auth";
 import { ChapterPage } from "@/features/chapters/ChapterPage";
 import { CoursePage } from "@/features/courses/CoursePage";
@@ -31,6 +34,9 @@ export const router = createBrowserRouter([
       { path: "/teacher/chapters/:chapterId", element: teacher(<ChapterPage />) },
       { path: "/teacher/lessons/:lessonId", element: teacher(<LessonEditorPage />) },
       { path: "/teacher/assets", element: teacher(<AssetsPage />) },
+      { path: "/teacher/assessments/:assessmentId", element: teacher(<AssessmentEditorPage />) },
+      { path: "/student/assessments/:assessmentId", element: student(<QuizPage />) },
+      { path: "/student/attempts/:attemptId", element: student(<AttemptResultPage />) },
       { path: "/student", element: student(<StudentDashboard />) },
       { path: "/student/courses/:courseId", element: student(<StudentCoursePage />) },
       { path: "/student/lessons/:lessonId", element: student(<LessonViewerPage />) },

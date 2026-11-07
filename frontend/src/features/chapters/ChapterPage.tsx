@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
 import { GenerateLessonButton } from "@/features/ai/GenerateLessonButton";
+import { ChapterAssessmentsCard } from "@/features/assessments/ChapterAssessmentsCard";
 import { useCreateLesson, useLessons } from "@/features/lessons/api";
 
 import { useChapter, useChapterMutations, useReplaceObjectives } from "./api";
@@ -109,6 +110,7 @@ export function ChapterPage() {
           ))}
         </ul>
       </Card>
+      <ChapterAssessmentsCard chapterId={c.id} />
     </>
   );
 }

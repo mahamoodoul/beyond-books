@@ -2,6 +2,13 @@
 
 from app.database.base import Base
 from app.modules.ai_engine.models import AIOutputVersion, AIUsageRecord
+from app.modules.assessments.models import (
+    Assessment,
+    AssessmentAttempt,
+    AssessmentVersion,
+    EvaluationResult,
+    StudentAnswer,
+)
 from app.modules.authentication.models import AuthSession
 from app.modules.chapters.models import Chapter, LearningObjective
 from app.modules.classrooms.models import Classroom, ClassroomMembership
@@ -20,6 +27,11 @@ from app.modules.three_d.models import (
 from app.modules.users.models import User
 
 __all__ = [
+    "Assessment",
+    "AssessmentAttempt",
+    "AssessmentVersion",
+    "EvaluationResult",
+    "StudentAnswer",
     "AIOutputVersion",
     "AIUsageRecord",
     "AuditLog",
