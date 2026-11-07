@@ -240,6 +240,24 @@ Then sign in as that teacher and open **My courses**.
 The imported courses start as **drafts** (Biology is published). Students only see published
 courses, chapters, lessons and 3D scenes.
 
+### Demo students with activity (for the analytics)
+
+To see the teacher's **Analytics** and **Progress** pages with real-looking data:
+
+```bash
+make seed-students EMAIL=you@example.com          # 50 students; COUNT=20 for fewer
+```
+
+This creates the school **Beyond Books Demo School** (you as admin) with the classroom
+**Class 9A (demo)**, 50 student accounts (`demo.student01@example.com` … password
+`student-demo-123`) as members of both, links your courses to the school and enrols the whole
+class in every course. For each **published** course it then writes a few weeks of activity:
+lessons opened and completed, 3D scenes opened and parts clicked, and graded quiz attempts, with
+a mix of strong, steady, struggling and inactive students. No AI calls are made.
+
+Safe to repeat: existing students keep their activity; `RESET=1` wipes the demo students'
+activity and generates it again. Publish a draft course first if you want activity in it.
+
 ## 5. Accounts: teacher and student
 
 There are no built-in demo logins. Create accounts in the app:
