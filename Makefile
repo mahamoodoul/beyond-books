@@ -1,4 +1,4 @@
-.PHONY: up down migrate seed smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down migrate seed seed-courses export-courses smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
@@ -22,6 +22,14 @@ migrate:       ## Apply migrations to EDU3D_DATABASE_URL
 
 seed:          ## Seed the 3D library with the schematic demo heart (idempotent)
 	cd backend && .venv/bin/python -m app.modules.three_d.seed
+
+seed-courses:   ## Import the shared courses (seeds/courses) for a teacher: make seed-courses EMAIL=you@example.com
+	@test -n "$(EMAIL)" || (echo "usage: make seed-courses EMAIL=you@example.com" && exit 1)
+	cd backend && .venv/bin/python ../scripts/course_seed.py import $(EMAIL)
+
+export-courses: ## Re-export a teacher's courses into seeds/courses: make export-courses EMAIL=you@example.com
+	@test -n "$(EMAIL)" || (echo "usage: make export-courses EMAIL=you@example.com" && exit 1)
+	cd backend && .venv/bin/python ../scripts/course_seed.py export $(EMAIL)
 
 frontend-install:
 	cd frontend && npm install

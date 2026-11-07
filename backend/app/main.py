@@ -1,3 +1,6 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +11,17 @@ from app.core.errors import register_error_handlers
 from app.core.hardening import AccessLogMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 from app.core.logging import configure_logging
 from app.core.request_id import REQUEST_ID_HEADER, RequestIdMiddleware
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    settings = get_settings()
+    # Local inline jobs live in this process: after a restart, pick up the ones left running.
+    if settings.jobs_run_inline and settings.environment in {"local", "development"}:
+        from app.modules.operations.runner import resume_inline_jobs
+
+        resume_inline_jobs()
+    yield
 
 
 def create_app() -> FastAPI:
@@ -21,6 +35,7 @@ def create_app() -> FastAPI:
         openapi_url="/api/v1/openapi.json" if docs else None,
         docs_url="/docs" if docs else None,
         redoc_url="/redoc" if docs else None,
+        lifespan=lifespan,
     )
     # Starlette runs the LAST added middleware first:
     # CORS → RequestId → AccessLog → SecurityHeaders → RateLimit → CSRF → routes.
