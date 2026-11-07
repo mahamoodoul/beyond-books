@@ -1,0 +1,74 @@
+{
+  "asset_id": "water_molecule_v1",
+  "version": 1,
+  "name": "Water molecule (H2O)",
+  "description": "Ball-and-stick water molecule with experimental bond length and angle.",
+  "subject": "chemistry",
+  "category": "molecular_model",
+  "format": "glb",
+  "object_key": "demo-assets/glb/water_molecule_v1.glb",
+  "preview_key": "demo-assets/previews/water_molecule_v1.png",
+  "size_bytes": 83204,
+  "content_hash": "sha256:ba12b5b186d78e054c64053d6596a92a877c942748542d26c1ab0f385b0a132f",
+  "triangle_count": 4240,
+  "units": "1 unit = 1 \u00c5",
+  "bounds": {
+    "min": [
+      -0.958,
+      -0.787,
+      -0.3
+    ],
+    "max": [
+      0.958,
+      0.3,
+      0.3
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "oxygen",
+      "label": "Oxygen atom"
+    },
+    {
+      "mesh_name": "hydrogen_1",
+      "label": "Hydrogen atom"
+    },
+    {
+      "mesh_name": "hydrogen_2",
+      "label": "Hydrogen atom"
+    },
+    {
+      "mesh_name": "bond_1",
+      "label": "O\u2013H covalent bond"
+    },
+    {
+      "mesh_name": "bond_2",
+      "label": "O\u2013H covalent bond"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "procedural_script",
+    "generator": "edu3d scripts/build_demo_assets.py",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Generated in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Geometry uses experimental gas-phase values (O\u2013H 0.958 \u00c5, 104.45\u00b0). Atom radii are ball-and-stick display sizes, not van der Waals radii."
+}

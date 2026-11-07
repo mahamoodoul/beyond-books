@@ -15,7 +15,7 @@ COPY backend/migrations ./migrations
 COPY --chmod=755 infrastructure/docker/api-start.sh /usr/local/bin/api-start
 COPY backend/tests ./tests
 
-RUN useradd --create-home appuser
+RUN useradd --create-home appuser && mkdir -p /data && chown appuser /data
 USER appuser
 
 EXPOSE 8000

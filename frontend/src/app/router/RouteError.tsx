@@ -4,7 +4,7 @@ export function RouteError() {
   const error = useRouteError();
   const message = isRouteErrorResponse(error)
     ? `${error.status} ${error.statusText}`
-    : "Something went wrong.";
+    : error instanceof Error ? error.message : "Something went wrong.";
   return (
     <div role="alert" className="mx-auto max-w-lg p-8 text-center">
       <h1 className="text-xl font-semibold">{message}</h1>
