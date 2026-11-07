@@ -29,6 +29,7 @@ export function AppLayout() {
           {user?.account_type === "student" && (
             <NavLink to="/student" className={navClass}>My learning</NavLink>
           )}
+          <NavLink to="/viewer" className={navClass}>3D viewer</NavLink>
           <div className="ml-auto flex items-center gap-3">
             {user ? (
               <>

@@ -1,0 +1,184 @@
+{
+  "asset_id": "human_heart_v1",
+  "version": 1,
+  "name": "Human heart (schematic)",
+  "description": "Four-chamber schematic heart with great vessels for the circulatory-system pilot chapter.",
+  "subject": "biology",
+  "category": "anatomy",
+  "format": "glb",
+  "object_key": "demo-assets/glb/human_heart_v1.glb",
+  "preview_key": "demo-assets/previews/human_heart_v1.png",
+  "size_bytes": 383608,
+  "content_hash": "sha256:3ee04db44980ef130f51d4851fa754d477b3e36395eadd8157efe6d8b360dad2",
+  "triangle_count": 20680,
+  "units": "1 unit \u2248 5 cm",
+  "bounds": {
+    "min": [
+      -1.04,
+      -1.265,
+      -0.727
+    ],
+    "max": [
+      1.262,
+      1.71,
+      0.646
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "right_atrium",
+      "label": "Right atrium"
+    },
+    {
+      "mesh_name": "left_atrium",
+      "label": "Left atrium"
+    },
+    {
+      "mesh_name": "right_ventricle",
+      "label": "Right ventricle"
+    },
+    {
+      "mesh_name": "left_ventricle",
+      "label": "Left ventricle"
+    },
+    {
+      "mesh_name": "aorta",
+      "label": "Aorta"
+    },
+    {
+      "mesh_name": "pulmonary_trunk",
+      "label": "Pulmonary trunk"
+    },
+    {
+      "mesh_name": "superior_vena_cava",
+      "label": "Superior vena cava"
+    },
+    {
+      "mesh_name": "inferior_vena_cava",
+      "label": "Inferior vena cava"
+    },
+    {
+      "mesh_name": "pulmonary_veins",
+      "label": "Pulmonary veins"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation",
+    "show_flow_particles",
+    "move_along_path"
+  ],
+  "paths": {
+    "path_to_lungs": [
+      [
+        -0.72,
+        1.55,
+        0.02
+      ],
+      [
+        -0.66,
+        0.85,
+        0.1
+      ],
+      [
+        -0.62,
+        0.55,
+        0.1
+      ],
+      [
+        -0.35,
+        -0.1,
+        0.3
+      ],
+      [
+        -0.18,
+        0.3,
+        0.4
+      ],
+      [
+        -0.05,
+        0.95,
+        0.4
+      ],
+      [
+        0.3,
+        1.2,
+        0.22
+      ],
+      [
+        0.85,
+        1.12,
+        0.05
+      ]
+    ],
+    "path_to_body": [
+      [
+        1.25,
+        0.7,
+        -0.3
+      ],
+      [
+        0.78,
+        0.64,
+        -0.26
+      ],
+      [
+        0.52,
+        0.62,
+        -0.25
+      ],
+      [
+        0.35,
+        -0.2,
+        0.0
+      ],
+      [
+        0.12,
+        0.3,
+        0.02
+      ],
+      [
+        0.06,
+        1.15,
+        0.05
+      ],
+      [
+        0.3,
+        1.55,
+        -0.15
+      ],
+      [
+        0.68,
+        1.35,
+        -0.45
+      ],
+      [
+        0.78,
+        0.4,
+        -0.58
+      ]
+    ]
+  },
+  "provider": {
+    "source": "procedural_script",
+    "generator": "edu3d scripts/build_demo_assets.py",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Generated in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Schematic primitives only. Chamber shapes, vessel positions and valves are simplified; replace with a medically reviewed, licensed model before publishing."
+}

@@ -31,6 +31,9 @@ export const appRoutes = [
       { path: "/", element: <HomePage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
+      // Fixture-driven 3D viewer library (Prinon, Phase 4): demo assets from packages/demo-assets.
+      { path: "/viewer", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
+      { path: "/viewer/:sceneId", element: page(() => import("@/features/three-d/library/pages/ViewerDemoPage"), "default") },
       { path: "/account", element: anyUser(page(() => import("@/features/account/AccountPage"), "AccountPage")) },
       { path: "/teacher", element: teacher(page(() => import("@/features/dashboard/TeacherDashboard"), "TeacherDashboard")) },
       { path: "/teacher/courses/:courseId", element: teacher(page(() => import("@/features/courses/CoursePage"), "CoursePage")) },
