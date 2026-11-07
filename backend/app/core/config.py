@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=None, env_prefix="EDU3D_", extra="ignore")
 
     environment: Literal["local", "development", "staging", "production", "test"] = "local"
-    app_name: str = "Edu3D AI"
+    app_name: str = "Beyond Books"
     api_v1_prefix: str = "/api/v1"
     public_base_url: str = "http://localhost:5173"
 

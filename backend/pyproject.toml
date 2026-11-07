@@ -1,7 +1,7 @@
 [project]
 name = "edu3d-backend"
 version = "0.1.0"
-description = "Edu3D AI backend — FastAPI modular monolith"
+description = "Beyond Books backend — FastAPI modular monolith"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115",

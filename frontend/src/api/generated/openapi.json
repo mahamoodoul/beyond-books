@@ -2593,10 +2593,23 @@
             "type": "string"
           },
           "prompt": {
-            "maxLength": 500,
+            "maxLength": 2000,
             "minLength": 5,
             "title": "Prompt",
             "type": "string"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Default if omitted",
+            "title": "Provider"
           },
           "school_id": {
             "anyOf": [
@@ -5422,6 +5435,29 @@
         "title": "TextDocumentRequest",
         "type": "object"
       },
+      "ThreeDProviderOut": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "is_default"
+        ],
+        "title": "ThreeDProviderOut",
+        "type": "object"
+      },
       "UploadInstructions": {
         "properties": {
           "headers": {
@@ -5705,7 +5741,7 @@
     }
   },
   "info": {
-    "title": "Edu3D AI",
+    "title": "Beyond Books",
     "version": "0.1.0"
   },
   "openapi": "3.1.0",
@@ -10108,6 +10144,32 @@
           }
         },
         "summary": "Generators",
+        "tags": [
+          "3d"
+        ]
+      }
+    },
+    "/api/v1/three-d/providers": {
+      "get": {
+        "description": "3D generation providers that are configured (have their keys) and selectable.",
+        "operationId": "three_d_providers_api_v1_three_d_providers_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ThreeDProviderOut"
+                  },
+                  "title": "Response Three D Providers Api V1 Three D Providers Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Three D Providers",
         "tags": [
           "3d"
         ]

@@ -497,6 +497,10 @@ export type SceneId1 = string | null;
 export type Recorded = number;
 export type Name4 = string;
 export type Prompt = string;
+/**
+ * Default if omitted
+ */
+export type Provider1 = string | null;
 export type SchoolId5 = string | null;
 export type Subject5 = string | null;
 export type JobId = string;
@@ -744,6 +748,9 @@ export type Version9 = number;
 export type CourseId7 = string;
 export type Text6 = string;
 export type Title30 = string;
+export type Description13 = string;
+export type IsDefault = boolean;
+export type Name10 = string;
 export type Method1 = string;
 export type Url3 = string;
 export type CourseId8 = string;
@@ -888,6 +895,7 @@ export interface Api {
   SubmitRequest?: SubmitRequest;
   TeacherAssessment?: TeacherAssessment;
   TextDocumentRequest?: TextDocumentRequest;
+  ThreeDProviderOut?: ThreeDProviderOut;
   UploadInstructions?: UploadInstructions;
   UploadUrlRequest?: UploadUrlRequest;
   UploadUrlResponse?: UploadUrlResponse;
@@ -1786,6 +1794,7 @@ export interface EventResult {
 export interface GenerationRequest {
   name: Name4;
   prompt: Prompt;
+  provider?: Provider1;
   school_id?: SchoolId5;
   subject?: Subject5;
 }
@@ -2315,6 +2324,15 @@ export interface TextDocumentRequest {
   course_id: CourseId7;
   text: Text6;
   title: Title30;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "ThreeDProviderOut".
+ */
+export interface ThreeDProviderOut {
+  description: Description13;
+  is_default: IsDefault;
+  name: Name10;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema

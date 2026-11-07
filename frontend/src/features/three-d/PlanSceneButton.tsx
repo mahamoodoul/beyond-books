@@ -2,8 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
+import { useQuery } from "@tanstack/react-query";
+
 import { api } from "@/api/client";
-import type { GenerationResponse, JobOut } from "@/api/generated/schema";
+import type { GenerationResponse, JobOut, ThreeDProviderOut } from "@/api/generated/schema";
 import { ErrorAlert } from "@/components/feedback";
 import { Badge, Button, Input, Textarea } from "@/components/ui";
 import { JobStatusLine } from "@/features/jobs/JobStatus";
@@ -53,17 +55,40 @@ export function PlanSceneButton({ lessonId }: { lessonId: string }) {
 export function GenerateSuggested({ prompt: initialPrompt, name: initialName }: { prompt: string; name: string }) {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [name, setName] = useState(initialName);
+  const providers = useQuery({ queryKey: ["three-d-providers"], queryFn: () => api.get<ThreeDProviderOut[]>("/three-d/providers"), staleTime: 60_000 });
+  const [provider, setProvider] = useState<string>("");
+  const chosen = provider || providers.data?.find((p) => p.is_default)?.name || providers.data?.[0]?.name || "";
   const [jobId, setJobId] = useState<string | null>(null);
   const job = useJob(jobId);
   const gen = useMutation({
-    mutationFn: () => api.post<GenerationResponse>("/assets/generation-jobs", { name, prompt }),
+    mutationFn: () => api.post<GenerationResponse>("/assets/generation-jobs", { name, prompt, provider: chosen || null }),
     onSuccess: (r) => setJobId(r.job_id),
   });
   return (
     <div className="mt-3 space-y-2">
-      <p className="font-medium">No suitable model exists. Generate one? This uses 3D provider credits.</p>
+      <p className="font-medium">Generate a new 3D model? This uses AI provider tokens or credits.</p>
       <Input aria-label="Model name" value={name} onChange={(e) => setName(e.target.value)} />
-      <Textarea aria-label="Generation prompt" rows={2} value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+      <Textarea
+        aria-label="Generation prompt"
+        rows={5}
+        maxLength={2000}
+        placeholder="Describe the object in detail: which parts students should explore, their shapes, positions, colours, audience level…"
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+      />
+      <label className="flex items-center gap-2 text-sm">
+        Generator
+        <select className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm" value={chosen} onChange={(e) => setProvider(e.target.value)}>
+          {providers.data?.map((p) => (
+            <option key={p.name} value={p.name} title={p.description}>
+              {p.name === "llm" ? "AI designer (three.js primitives)" : p.name}{p.is_default ? " — default" : ""}
+            </option>
+          ))}
+        </select>
+      </label>
+      {providers.data?.find((p) => p.name === chosen)?.description && (
+        <p className="text-xs text-slate-500">{providers.data.find((p) => p.name === chosen)?.description}</p>
+      )}
       <Button variant="secondary" disabled={gen.isPending || !!jobId} onClick={() => gen.mutate()}>Generate model</Button>
       <ErrorAlert error={gen.error} />
       <JobStatusLine job={job.data} label="Generation:" />

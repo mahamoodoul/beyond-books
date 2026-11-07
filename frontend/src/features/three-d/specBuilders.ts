@@ -27,18 +27,35 @@ function componentsFrom(names: string[]): SceneComponent[] {
 
 const sceneId = () => `scene_${Math.random().toString(36).slice(2, 10)}`;
 
+interface PartMeta {
+  name: string;
+  label?: string;
+  description?: string;
+}
+
 export function specFromAsset(asset: AssetOut): SceneSpec {
   const latest = asset.versions?.find((v) => v.version_number === asset.latest_version);
   const names = (latest?.metadata_json?.node_names as string[] | undefined) ?? [];
+  // Models designed by the LLM provider carry labels + descriptions per part.
+  const parts = new Map(((latest?.metadata_json?.parts as PartMeta[] | undefined) ?? []).map((p) => [p.name, p]));
+  const components = componentsFrom(names).map((c) => {
+    const p = parts.get(c.mesh_name);
+    return p?.description
+      ? { ...c, label: p.label || c.label, explanation_ref: `exp_${c.component_id}`.slice(0, 64) }
+      : { ...c, label: p?.label || c.label };
+  });
+  const explanations = Object.fromEntries(
+    components.filter((c) => c.explanation_ref).map((c) => [c.explanation_ref as string, parts.get(c.mesh_name)?.description ?? ""]),
+  );
   return {
     schema_version: "1.0",
     scene_id: sceneId(),
     title: `Explore: ${asset.name}`,
     asset_refs: [{ asset_id: asset.slug, version: asset.latest_version }],
     camera: { preset: "three_quarter", min_distance: 2, max_distance: 12 },
-    components: componentsFrom(names),
+    components,
     controls: ["rotate", "zoom", "select_component"],
-    explanations: {},
+    explanations,
   };
 }
 
