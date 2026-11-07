@@ -9,6 +9,7 @@ import { StudentDashboard } from "@/features/dashboard/StudentDashboard";
 import { StudentProgressPage } from "@/features/dashboard/StudentProgressPage";
 import { TeacherDashboard } from "@/features/dashboard/TeacherDashboard";
 import { TeacherAnalyticsPage } from "@/features/dashboard/TeacherAnalyticsPage";
+import { TeacherCoursesPage } from "@/features/dashboard/TeacherCoursesPage";
 import { CourseReviewPage } from "@/features/courses/CourseReviewPage";
 import { TeacherUploadPage } from "@/features/courses/TeacherUploadPage";
 import { LandingPage } from "@/features/landing/LandingPage";
@@ -42,7 +43,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/teacher/courses",
-            element: <RolePage role="teacher"><TeacherDashboard /></RolePage>,
+            element: <RolePage role="teacher"><TeacherCoursesPage /></RolePage>,
           },
           {
             path: "/teacher/upload",
