@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 
 import type { LessonContent, LessonSection } from "@/api/generated/schema";
 import { ErrorAlert, Loading } from "@/components/feedback";
+import { RegenerateSection } from "@/features/ai/RegenerateSection";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
 
 import { useLesson, useLessonMutations } from "./api";
@@ -74,11 +75,12 @@ export function LessonEditorPage() {
       <div className="space-y-4">
         {sections.map((s, i) => (
           <Card key={i}>
-            <div className="mb-3 flex items-center gap-2">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
               <Input aria-label={`Section ${i + 1} title`} value={s.title} onChange={(e) => setSection(i, { title: e.target.value })} />
               <Button variant="ghost" aria-label="Move section up" disabled={i === 0} onClick={() => move(i, -1)}>↑</Button>
               <Button variant="ghost" aria-label="Move section down" disabled={i === sections.length - 1} onClick={() => move(i, 1)}>↓</Button>
               <Button variant="ghost" aria-label="Remove section" onClick={() => edit({ ...content, sections: sections.filter((_, j) => j !== i) })}>✕</Button>
+              <RegenerateSection lessonId={l.id} index={i} version={l.version} disabled={dirty} onDone={() => void lesson.refetch()} />
             </div>
             <Textarea aria-label={`Section ${i + 1} body`} rows={8} value={s.body_markdown} onChange={(e) => setSection(i, { body_markdown: e.target.value })} />
             <div className="mt-3 grid gap-3 sm:grid-cols-2">

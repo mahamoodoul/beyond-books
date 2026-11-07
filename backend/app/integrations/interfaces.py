@@ -38,7 +38,18 @@ class ReferencePassage:
     text: str
 
 
+class ProviderTransientError(Exception):
+    """Timeouts, rate limits, 5xx: safe to retry."""
+
+
+class ProviderPermanentError(Exception):
+    """Refusals, invalid requests, unparseable output: do not retry."""
+
+
 class LLMProvider(Protocol):
+    name: str
+    model: str
+
     def generate_structured[T: BaseModel](
         self,
         *,

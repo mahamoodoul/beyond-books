@@ -17,6 +17,7 @@ class JobType(StrEnum):
     DOCUMENT_EXTRACTION = "document_extraction"
     OUTLINE_GENERATION = "outline_generation"
     LESSON_GENERATION = "lesson_generation"
+    SECTION_REGENERATION = "section_regeneration"
     SCENE_PLANNING = "scene_planning"
     ANIMATION_PLANNING = "animation_planning"
     ASSESSMENT_GENERATION = "assessment_generation"

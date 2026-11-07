@@ -3,7 +3,16 @@
 Turn textbooks into interactive 3D learning experiences.
 
 **Full system design:** [README_Edu3D_AI_System_Design.md](README_Edu3D_AI_System_Design.md) — the
-high-level source of truth. **Status:** Phase 0 (architecture and foundation).
+high-level source of truth.
+
+**Status:** Phases 0–3 implemented on branch `shakil`, with interim decisions in ADRs 0004–0007
+that the team still needs to confirm:
+
+| Phase | What works |
+|---|---|
+| 1 Identity | Register/login (local provider), rotating refresh sessions, CSRF, rate limits, schools, classrooms, audit log |
+| 2 Content | Courses, enrolment, PDF/text upload → extraction with page refs, chapters, objectives, versioned lessons with approve & publish |
+| 3 AI | Outline proposals → teacher review/apply, grounded lesson generation, section regeneration, usage tracking, daily AI cap |
 
 ## Repository layout
 
@@ -35,6 +44,18 @@ make frontend-install && make frontend-dev   # http://localhost:5173
 ```
 
 API docs: http://localhost:8000/docs · Health: `GET /api/v1/health`
+
+### Try the full teacher flow without Docker or an API key
+
+```bash
+cd backend
+export EDU3D_DATABASE_URL=sqlite:///./dev.db EDU3D_JOBS_RUN_INLINE=true EDU3D_LLM_PROVIDER=fake
+.venv/bin/alembic upgrade head && .venv/bin/uvicorn app.main:app --port 8000
+# other terminal: make frontend-dev → register as teacher → create course → upload PDF →
+# Generate outline → Apply → open chapter → Generate lesson with AI → review → Approve & publish
+```
+
+SQLite is for quick local runs and tests only; PostgreSQL is the real database.
 
 ## Contracts
 

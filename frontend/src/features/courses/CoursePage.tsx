@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, PageHeader } from "@/components/ui";
+import { OutlinePanel } from "@/features/ai/OutlinePanel";
 import { ChaptersPanel } from "@/features/chapters/ChaptersPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
@@ -47,7 +48,10 @@ export function CoursePage() {
       </div>
       <div role="tabpanel" className="space-y-6">
         {tab === "Sources & outline" && (
-          <SourcesPanel courseId={courseId} />
+          <>
+            <SourcesPanel courseId={courseId} />
+            <OutlinePanel courseId={courseId} onApplied={() => setTab("Chapters")} />
+          </>
         )}
         {tab === "Chapters" && <ChaptersPanel courseId={courseId} />}
         {tab === "Students" && <StudentsPanel courseId={courseId} />}

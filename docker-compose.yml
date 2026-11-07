@@ -28,8 +28,12 @@ services:
       EDU3D_ENVIRONMENT: local
       EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD:-edu3d}@postgres:5432/${POSTGRES_DB:-edu3d}
       EDU3D_REDIS_URL: redis://redis:6379/0
+      EDU3D_LOCAL_STORAGE_DIR: /data/storage
+      EDU3D_LLM_PROVIDER: ${EDU3D_LLM_PROVIDER:-fake}
+      EDU3D_OPENAI_API_KEY: ${EDU3D_OPENAI_API_KEY:-}
+      EDU3D_OPENAI_MODEL: ${EDU3D_OPENAI_MODEL:-}
     ports: ["8000:8000"]
-    volumes: ["./backend/app:/app/app", "./backend/migrations:/app/migrations"]
+    volumes: ["./backend/app:/app/app", "./backend/migrations:/app/migrations", "storage:/data"]
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -38,7 +42,7 @@ services:
     build: { context: ., dockerfile: infrastructure/docker/backend.Dockerfile }
     command: celery -A app.workers.celery_app worker --loglevel=INFO
     environment: *backend-env
-    volumes: ["./backend/app:/app/app"]
+    volumes: ["./backend/app:/app/app", "storage:/data"]
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -53,3 +57,4 @@ services:
 
 volumes:
   pgdata:
+  storage:

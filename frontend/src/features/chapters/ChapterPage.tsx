@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
+import { GenerateLessonButton } from "@/features/ai/GenerateLessonButton";
 import { useCreateLesson, useLessons } from "@/features/lessons/api";
 
 import { useChapter, useChapterMutations, useReplaceObjectives } from "./api";
@@ -80,7 +81,8 @@ export function ChapterPage() {
       <Card className="mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-semibold">Lessons</h2>
-          <div className="flex gap-2">
+          <div className="flex items-start gap-2">
+            <GenerateLessonButton chapterId={c.id} />
             <Button
               variant="secondary"
               disabled={createLesson.isPending}

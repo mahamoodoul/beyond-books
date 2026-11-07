@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     llm_max_output_tokens: int = 8000
     llm_timeout_s: float = 120
     llm_max_input_chars: int = 120_000
+    ai_max_jobs_per_course_per_day: int = 40
     # Optional pricing for cost estimates, per 1M tokens. Leave 0 = unknown; never guess.
     llm_input_price_per_mtok: float = 0
     llm_output_price_per_mtok: float = 0

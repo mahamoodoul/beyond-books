@@ -1,6 +1,41 @@
 {
   "components": {
     "schemas": {
+      "AIUsageOut": {
+        "properties": {
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "estimated_cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Cost Usd"
+          },
+          "input_tokens": {
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "output_tokens": {
+            "title": "Output Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "calls",
+          "input_tokens",
+          "output_tokens",
+          "estimated_cost_usd"
+        ],
+        "title": "AIUsageOut",
+        "type": "object"
+      },
       "AccountType": {
         "enum": [
           "teacher",
@@ -8,6 +43,24 @@
         ],
         "title": "AccountType",
         "type": "string"
+      },
+      "ApplyOutlineRequest": {
+        "properties": {
+          "chapters": {
+            "items": {
+              "$ref": "#/components/schemas/OutlineChapterIn"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Chapters",
+            "type": "array"
+          }
+        },
+        "required": [
+          "chapters"
+        ],
+        "title": "ApplyOutlineRequest",
+        "type": "object"
       },
       "ChapterCreate": {
         "properties": {
@@ -1257,6 +1310,95 @@
         "title": "ObjectiveOut",
         "type": "object"
       },
+      "OutlineChapterIn": {
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 5000,
+            "title": "Description",
+            "type": "string"
+          },
+          "objectives": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Objectives",
+            "type": "array"
+          },
+          "source_refs": {
+            "items": {
+              "$ref": "#/components/schemas/ChapterSourceRef"
+            },
+            "maxItems": 20,
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "OutlineChapterIn",
+        "type": "object"
+      },
+      "OutlineProposalOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "output": {
+            "additionalProperties": true,
+            "title": "Output",
+            "type": "object"
+          },
+          "prompt_id": {
+            "title": "Prompt Id",
+            "type": "string"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": true,
+            "title": "Validation",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "output",
+          "validation",
+          "prompt_id",
+          "prompt_version",
+          "model",
+          "created_at"
+        ],
+        "title": "OutlineProposalOut",
+        "type": "object"
+      },
       "PageList": {
         "properties": {
           "items": {
@@ -1460,6 +1602,32 @@
         ],
         "title": "SchoolRole",
         "type": "string"
+      },
+      "SectionRegenerateRequest": {
+        "properties": {
+          "expected_version": {
+            "minimum": 1.0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "instruction": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruction"
+          }
+        },
+        "required": [
+          "expected_version"
+        ],
+        "title": "SectionRegenerateRequest",
+        "type": "object"
       },
       "SourceRef": {
         "additionalProperties": false,
@@ -1757,6 +1925,99 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/ai/outline-proposals/{proposal_id}/apply": {
+      "post": {
+        "operationId": "apply_outline_api_v1_ai_outline_proposals__proposal_id__apply_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyOutlineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChapterOut"
+                  },
+                  "title": "Response Apply Outline Api V1 Ai Outline Proposals  Proposal Id  Apply Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Apply Outline",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/ai/outline-proposals/{proposal_id}/discard": {
+      "post": {
+        "operationId": "discard_outline_api_v1_ai_outline_proposals__proposal_id__discard_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Discard Outline",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "login_api_v1_auth_login_post",
@@ -1999,6 +2260,49 @@
         "summary": "Update Chapter",
         "tags": [
           "chapters"
+        ]
+      }
+    },
+    "/api/v1/chapters/{chapter_id}/ai/lesson": {
+      "post": {
+        "operationId": "generate_lesson_api_v1_chapters__chapter_id__ai_lesson_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Lesson",
+        "tags": [
+          "ai"
         ]
       }
     },
@@ -2498,6 +2802,139 @@
         "summary": "Update Course",
         "tags": [
           "courses"
+        ]
+      }
+    },
+    "/api/v1/courses/{course_id}/ai/outline": {
+      "post": {
+        "operationId": "generate_outline_api_v1_courses__course_id__ai_outline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Outline",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/courses/{course_id}/ai/outline-proposals": {
+      "get": {
+        "operationId": "outline_proposals_api_v1_courses__course_id__ai_outline_proposals_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OutlineProposalOut"
+                  },
+                  "title": "Response Outline Proposals Api V1 Courses  Course Id  Ai Outline Proposals Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Outline Proposals",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/courses/{course_id}/ai/usage": {
+      "get": {
+        "operationId": "usage_api_v1_courses__course_id__ai_usage_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIUsageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Usage",
+        "tags": [
+          "ai"
         ]
       }
     },
@@ -3215,6 +3652,68 @@
         "summary": "Update Lesson",
         "tags": [
           "lessons"
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/ai/sections/{index}/regenerate": {
+      "post": {
+        "operationId": "regenerate_section_api_v1_lessons__lesson_id__ai_sections__index__regenerate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "index",
+            "required": true,
+            "schema": {
+              "title": "Index",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionRegenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Regenerate Section",
+        "tags": [
+          "ai"
         ]
       }
     },

@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import health, storage
+from app.modules.ai_engine.api import router as ai_router
 from app.modules.authentication.api import router as auth_router
 from app.modules.chapters.api import router as chapters_router
 from app.modules.classrooms.api import router as classrooms_router
@@ -26,5 +27,6 @@ for r in (
     jobs_router,
     chapters_router,
     lessons_router,
+    ai_router,
 ):
     api_router.include_router(r)

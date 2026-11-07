@@ -7,12 +7,15 @@
 | [0003](0003-declarative-scene-and-animation-contracts.md) | Declarative scene and animation contracts | Proposed |
 | [0004](0004-identity-local-provider-behind-interface.md) | Local identity provider behind an interface (interim for #1) | Proposed |
 | [0005](0005-tenant-model-teacher-owned-first.md) | Teacher-owned courses first (interim for #2) | Proposed |
+| [0006](0006-llm-provider-openai-adapter-and-fake.md) | LLM adapter: OpenAI + offline fake (interim for #3) | Proposed |
+| [0007](0007-plain-orchestration-before-langgraph.md) | Plain orchestration before LangGraph (interim for #4) | Proposed |
 
 Copy [0000-template.md](0000-template.md) for new decisions.
 
 ## Open decisions (design §22) — not yet decided
 
-Each needs an ADR before the phase that depends on it.
+Each needs an ADR before the phase that depends on it. #1–#4 have *interim* ADRs (0004–0007) so
+Phases 1–3 could proceed; the team must still confirm or replace them.
 
 | # | Decision | Blocks |
 |---|---|---|
