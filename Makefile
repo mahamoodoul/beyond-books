@@ -1,4 +1,4 @@
-.PHONY: up down db migrate seed seed-courses export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down db migrate seed seed-courses seed-students export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
@@ -43,6 +43,18 @@ seed-courses:   ## Load the shared courses: make seed-courses EMAIL=teacher@x.co
 	fi
 
 SEED_ARGS = "$(EMAIL)" $(if $(PASSWORD),"$(PASSWORD)",) $(if $(STUDENT),--student "$(STUDENT)",) $(if $(STUDENT_PASSWORD),--student-password "$(STUDENT_PASSWORD)",)
+
+seed-students:  ## 50 demo students in a demo school with activity for the analytics: make seed-students EMAIL=teacher@x.com [COUNT=50] [RESET=1]
+	@test -n "$(EMAIL)" || (echo "usage: make seed-students EMAIL=teacher@x.com [COUNT=50] [RESET=1]" && exit 1)
+	@if docker compose ps --status running --services 2>/dev/null | grep -qx api; then \
+	  docker compose run --rm --no-deps -e SEED_ROOT=/seed -v "$(CURDIR)/scripts:/seed/scripts:ro" \
+	    api python /seed/scripts/seed_students.py "$(EMAIL)" $(STUDENTS_ARGS); \
+	elif [ -x backend/.venv/bin/python ]; then \
+	  cd backend && .venv/bin/python ../scripts/seed_students.py "$(EMAIL)" $(STUDENTS_ARGS); \
+	else \
+	  echo "Start the app first: 'make up' (Docker), or 'make backend-install' for a local backend." && exit 1; \
+	fi
+STUDENTS_ARGS = $(if $(COUNT),--count $(COUNT),) $(if $(RESET),--reset,)
 
 export-courses: ## Re-export a teacher's courses into seeds/courses: make export-courses EMAIL=you@example.com
 	@test -n "$(EMAIL)" || (echo "usage: make export-courses EMAIL=you@example.com" && exit 1)
