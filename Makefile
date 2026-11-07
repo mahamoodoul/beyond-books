@@ -1,4 +1,4 @@
-.PHONY: up down migrate seed backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down migrate seed smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
@@ -32,3 +32,6 @@ check: backend-lint backend-test   ## What CI runs (minus migrations)
 	backend/.venv/bin/python scripts/export_contracts.py --check
 	backend/.venv/bin/python scripts/export_openapi.py --check
 	cd frontend && npm run contracts:check && npm run api:check && npm run build
+
+smoke:         ## Live HTTP smoke test of a running API: make smoke URL=http://localhost:8000 [AI=1]
+	python3 scripts/api_smoke.py --base-url $(or $(URL),http://localhost:8000) $(if $(AI),--with-ai,)

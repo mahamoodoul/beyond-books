@@ -21,7 +21,31 @@ from app.core.hardening import api_limiter  # noqa: E402
 from app.core.rate_limit import login_limiter  # noqa: E402
 from app.database.models import Base  # noqa: E402
 from app.database.session import configure_engine, session_factory  # noqa: E402
-from app.main import create_app  # noqa: E402
+import app.main as _app_main  # noqa: E402
+
+# --------------------------------------------------------------- API coverage gate
+# Every app built in tests records which routes answered with a 2xx. When the WHOLE suite runs,
+# pytest_sessionfinish fails the run if any documented route was never exercised successfully.
+API_HITS: set[tuple[str, str]] = set()
+_original_create_app = _app_main.create_app
+
+
+def _instrumented_create_app() -> Any:
+    app = _original_create_app()
+
+    @app.middleware("http")
+    async def _record(request: Any, call_next: Any) -> Any:
+        response = await call_next(request)
+        route = request.scope.get("route")
+        if route is not None and 200 <= response.status_code < 300:
+            API_HITS.add((request.method.lower(), "/api/v1" + getattr(route, "path", "")))
+        return response
+
+    return app
+
+
+_app_main.create_app = _instrumented_create_app  # type: ignore[assignment]
+create_app = _instrumented_create_app
 
 PASSWORD = "correct-horse-battery"  # noqa: S105
 
@@ -94,3 +118,29 @@ def register_and_login(email: str, account_type: str = "teacher", name: str = ""
 @pytest.fixture
 def login() -> Callable[..., TestClient]:
     return register_and_login
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """Fail the full-suite run if any OpenAPI route never returned 2xx in any test."""
+    from pathlib import Path
+
+    test_files = {p.name for p in Path(__file__).parent.glob("test_*.py")}
+    ran_files = {Path(str(item.fspath)).name for item in session.items}
+    if session.config.getoption("keyword") or ran_files != test_files or exitstatus != 0:
+        return  # partial run or already failing: don't add noise
+    spec = _original_create_app().openapi()
+    routes = {(m, p) for p, ops in spec["paths"].items() for m in ops}
+    missing = sorted(routes - API_HITS)
+    if missing:
+        reporter = session.config.pluginmanager.get_plugin("terminalreporter")
+        lines = "\n".join(f"  {m.upper():6} {p}" for m, p in missing)
+        msg = f"API coverage gate: {len(missing)} route(s) never returned 2xx in tests:\n{lines}"
+        if reporter:
+            reporter.write_line(msg, red=True)
+        session.exitstatus = 1
+    else:
+        reporter = session.config.pluginmanager.get_plugin("terminalreporter")
+        if reporter:
+            reporter.write_line(
+                f"API coverage gate: all {len(routes)} routes exercised with 2xx.", green=True
+            )
