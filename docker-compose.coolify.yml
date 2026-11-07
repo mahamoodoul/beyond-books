@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-edu3d}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # set in Coolify → Environment Variables
       POSTGRES_DB: ${POSTGRES_DB:-edu3d}
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
