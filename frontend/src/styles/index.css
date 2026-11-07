@@ -887,6 +887,110 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (prefers-reduced-motion: reduce) {
   .skeleton-heart, .animation-highlight { animation: none !important; }
 }
+.assessment-page { width: min(760px, 100%); margin: 0 auto; animation: page-in .4s ease both; }
+.assessment-back-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 24px; color: var(--muted-light); font-size: 9px; }
+.assessment-back-row .back-link { font-size: 9px; }
+.assessment-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 17px; }
+.assessment-heading h1, .assessment-result-intro h1 { margin: 9px 0 5px; font-family: var(--display); font-size: clamp(31px, 4vw, 42px); font-weight: 600; letter-spacing: -1.6px; }
+.assessment-heading p, .assessment-result-intro > p { max-width: 520px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.assessment-heading .eyebrow { font-size: 8px; }
+.question-mode-toggle { flex: 0 0 auto; min-height: 36px; font-size: 9px; }
+.assessment-progress { margin: 23px 0 12px; }
+.assessment-progress > span { display: flex; justify-content: space-between; margin-bottom: 7px; color: var(--muted-light); font-size: 8px; font-weight: 650; letter-spacing: .5px; }
+.assessment-progress > span strong { color: var(--ink-soft); letter-spacing: 0; }
+.assessment-question-list, .assessment-single-question { display: grid; gap: 12px; }
+.assessment-question-card { padding: 21px; border-radius: 15px; }
+.assessment-question-meta { display: flex; justify-content: space-between; color: var(--muted-light); font-size: 7px; font-weight: 750; letter-spacing: .7px; text-transform: uppercase; }
+.assessment-question-card h2 { margin: 13px 0 17px; font-family: var(--display); font-size: clamp(17px, 2.2vw, 21px); font-weight: 600; letter-spacing: -.5px; line-height: 1.4; }
+.assessment-options { display: grid; gap: 8px; }
+.assessment-option { display: flex; min-height: 47px; align-items: center; gap: 10px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-soft); cursor: pointer; font-size: 9px; line-height: 1.5; text-align: left; }
+.assessment-option:hover { border-color: var(--line-strong); background: var(--surface-soft); }
+.assessment-option > svg { margin-left: auto; color: var(--accent); }
+.assessment-option-selected { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.assessment-option-key { display: grid; width: 25px; height: 25px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); font-size: 8px; font-weight: 700; }
+.assessment-binary { grid-template-columns: repeat(2, 1fr); }
+.assessment-binary .assessment-option { justify-content: center; font-weight: 650; }
+.assessment-binary .assessment-option > svg { margin-left: 0; }
+.fill-blank-answer { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; color: var(--ink-soft); font-size: 11px; line-height: 2; }
+.fill-blank-answer input { min-width: 100px; max-width: 170px; height: 35px; padding: 0 9px; border: 1px solid var(--line-strong); border-radius: 7px; background: var(--bg); color: var(--ink); }
+.short-answer-field { display: grid; gap: 8px; color: var(--ink-soft); font-size: 9px; font-weight: 650; }
+.short-answer-field textarea { width: 100%; resize: vertical; padding: 10px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--bg); color: var(--ink); font-size: 9px; line-height: 1.7; }
+.short-answer-field textarea::placeholder { color: var(--muted-light); }
+.short-answer-field small { color: var(--muted-light); font-size: 8px; font-weight: 400; }
+.rubric-hint { display: flex; align-items: center; gap: 6px; margin: 13px 0 0; color: var(--muted); font-size: 8px; }
+.rubric-hint svg { color: var(--accent); }
+.assessment-step-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; }
+.assessment-step-actions .button { min-height: 40px; font-size: 9px; }
+.assessment-step-actions .button:disabled { cursor: not-allowed; opacity: .48; }
+.assessment-answered-count { color: var(--muted); font-size: 9px; }
+.assessment-results { width: min(760px, 100%); margin: 0 auto; animation: page-in .4s ease both; }
+.assessment-result-intro { display: grid; justify-items: center; margin-bottom: 19px; text-align: center; }
+.assessment-result-sparkle { display: grid; width: 37px; height: 37px; place-items: center; margin-bottom: 10px; border-radius: 11px; background: var(--accent-soft); color: var(--accent); }
+.assessment-result-intro .eyebrow { font-size: 8px; }
+.assessment-result-intro h1 { margin: 7px 0 4px; font-size: clamp(27px, 3.2vw, 35px); }
+.score-summary { display: flex; align-items: center; gap: 22px; padding: 20px; border-radius: 15px; }
+.score-ring { display: grid; width: 105px; height: 105px; flex: 0 0 auto; place-items: center; border-radius: 50%; animation: ring-enter .9s cubic-bezier(.2,.8,.2,1) both; }
+.score-ring::before { position: absolute; width: 83px; height: 83px; border-radius: 50%; background: var(--surface); content: ""; }
+.score-ring > span { z-index: 1; display: grid; justify-items: center; gap: 2px; }
+.score-ring strong { color: var(--ink); font-family: var(--display); font-size: 22px; font-weight: 600; }
+.score-ring small { color: var(--muted); font-size: 8px; }
+.score-summary-copy { flex: 1; }
+.score-summary-copy .eyebrow { font-size: 7px; }
+.score-summary-copy h2 { margin: 6px 0 4px; font-family: var(--display); font-size: 18px; font-weight: 600; }
+.score-summary-copy > p { margin: 0; color: var(--muted); font-size: 9px; }
+.score-concept-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+.concept-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 6px; font-size: 7px; }
+.concept-chip-covered { background: var(--mint-soft); color: var(--mint); }
+.revision-note { display: flex; gap: 10px; margin-top: 11px; padding: 12px; border: 1px solid color-mix(in srgb, var(--amber) 22%, var(--line)); border-radius: 11px; background: var(--amber-soft); }
+.revision-note > span { display: grid; width: 27px; height: 27px; flex: 0 0 auto; place-items: center; border-radius: 8px; background: var(--surface); color: var(--amber); }
+.revision-note > div > strong { color: var(--ink-soft); font-size: 9px; }
+.revision-note p { margin: 4px 0; color: var(--ink-soft); font-size: 8px; }
+.revision-note small { color: var(--muted); font-size: 8px; line-height: 1.5; }
+.assessment-reviews { margin-top: 24px; }
+.assessment-reviews .section-heading { margin-bottom: 12px; }
+.assessment-reviews .section-heading h2 { font-size: 18px; }
+.assessment-review-item { margin-bottom: 9px; padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
+.assessment-review-heading { display: flex; align-items: flex-start; gap: 8px; }
+.review-result-icon { display: grid; width: 23px; height: 23px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--mint-soft); color: var(--mint); }
+.review-result-missed { background: var(--red-soft); color: var(--red); }
+.assessment-review-heading > span:last-child { display: grid; gap: 4px; }
+.assessment-review-heading strong { color: var(--ink-soft); font-size: 9px; line-height: 1.55; }
+.assessment-review-heading small { color: var(--muted-light); font-size: 7px; }
+.assessment-review-item > p { margin: 9px 0 0 31px; color: var(--muted); font-size: 8px; line-height: 1.6; }
+.revisit-link { display: inline-flex; align-items: center; gap: 5px; margin: 8px 0 0 31px; color: var(--accent); font-size: 8px; font-weight: 650; }
+.revisit-link:hover { color: var(--accent-deep); }
+.ai-review-box { margin: 11px 0 0 31px; padding: 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); }
+.ai-review-heading { display: flex; align-items: center; gap: 6px; color: var(--accent); font-size: 7px; font-weight: 750; letter-spacing: .5px; }
+.ai-review-heading strong { margin-left: auto; color: var(--ink-soft); font-size: 9px; letter-spacing: 0; }
+.ai-review-box ul { display: grid; gap: 6px; padding: 0; margin: 9px 0; list-style: none; }
+.ai-review-box li { display: flex; align-items: flex-start; gap: 6px; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.ai-review-box li svg { flex: 0 0 auto; margin-top: 1px; }
+.rubric-covered svg { color: var(--mint); }
+.rubric-missing svg { color: var(--red); }
+.ai-review-box > p { margin: 7px 0 0; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.ai-review-box > p strong { color: var(--ink-soft); }
+.assessment-result-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+.assessment-result-actions .button { min-height: 39px; font-size: 9px; }
+@keyframes ring-enter { from { opacity: .5; transform: scale(.75) rotate(-35deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+@media (max-width: 640px) {
+  .assessment-page, .assessment-results { width: 100%; }
+  .assessment-back-row { margin-bottom: 18px; font-size: 8px; }
+  .assessment-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .assessment-heading h1 { font-size: 32px; }
+  .question-mode-toggle { min-height: 34px; }
+  .assessment-question-card { padding: 15px; }
+  .assessment-question-card h2 { font-size: 17px; }
+  .assessment-option { min-height: 44px; }
+  .score-summary { align-items: flex-start; gap: 13px; padding: 14px; }
+  .score-ring { width: 82px; height: 82px; }
+  .score-ring::before { width: 66px; height: 66px; }
+  .score-ring strong { font-size: 17px; }
+  .score-summary-copy h2 { font-size: 15px; }
+  .assessment-result-actions .button { min-height: 36px; padding: 0 8px; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .score-ring { animation: none !important; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

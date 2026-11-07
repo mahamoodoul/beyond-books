@@ -4,6 +4,7 @@ import { AppLayout } from "@/app/layouts/AppLayout";
 import { useDemo } from "@/app/providers/DemoProvider";
 import { RouteError } from "@/app/router/RouteError";
 import { LoginPage } from "@/features/auth/LoginPage";
+import { AssessmentPage } from "@/features/assessments/AssessmentPage";
 import { StudentDashboard } from "@/features/dashboard/StudentDashboard";
 import { TeacherDashboard } from "@/features/dashboard/TeacherDashboard";
 import { LandingPage } from "@/features/landing/LandingPage";
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
           {
             path: "/student/progress",
             element: <RolePage role="student"><StudentDashboard /></RolePage>,
+          },
+          {
+            path: "/student/courses/:courseId/assessment",
+            element: <RolePage role="student"><AssessmentPage /></RolePage>,
           },
           {
             path: "/student/courses/:courseId/lessons/:lessonId",
