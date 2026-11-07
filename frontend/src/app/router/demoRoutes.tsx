@@ -14,6 +14,8 @@ import { TeacherCoursesPage } from "@/features/dashboard/TeacherCoursesPage";
 import { CourseReviewPage } from "@/features/courses/CourseReviewPage";
 import { TeacherUploadPage } from "@/features/courses/TeacherUploadPage";
 import { LandingPage } from "@/features/landing/LandingPage";
+import { CellLessonPage } from "@/features/lessons/CellLessonPage";
+import { StudentCoursesPage } from "@/features/courses/StudentCoursesPage";
 import { HeartLessonPage } from "@/features/lessons/HeartLessonPage";
 
 const HeartARPage = lazy(() =>
@@ -69,6 +71,14 @@ export const demoRoutes = [
           {
             path: "/student/progress",
             element: <RolePage role="student"><StudentProgressPage /></RolePage>,
+          },
+          {
+            path: "/student/courses",
+            element: <RolePage role="student"><StudentCoursesPage /></RolePage>,
+          },
+          {
+            path: "/student/courses/cell-biology/lessons/cell-structure",
+            element: <RolePage role="student"><CellLessonPage /></RolePage>,
           },
           {
             path: "/student/courses/:courseId/assessment",

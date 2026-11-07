@@ -12,6 +12,7 @@ export interface DemoUser {
 export interface Course {
   id: string;
   title: string;
+  description?: string;
   subject: string;
   grade: string;
   chapters: number;
@@ -64,6 +65,7 @@ export const courses: Course[] = [
   {
     id: "cell-biology",
     title: "The living cell",
+    description: "Explore how organelles work together to keep plant and animal cells alive.",
     subject: "Biology",
     grade: "Grade 10",
     chapters: 8,
@@ -78,6 +80,7 @@ export const courses: Course[] = [
   {
     id: "forces-motion",
     title: "Forces & motion",
+    description: "Investigate the pushes, pulls, and laws that explain how objects move.",
     subject: "Physics",
     grade: "Grade 9",
     chapters: 6,
@@ -92,6 +95,7 @@ export const courses: Course[] = [
   {
     id: "ancient-civilizations",
     title: "Ancient civilizations",
+    description: "Discover how early societies along rivers built lasting cultures and cities.",
     subject: "World history",
     grade: "Grade 8",
     chapters: 10,

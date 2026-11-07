@@ -78,9 +78,9 @@ export function DemoStudentDashboard() {
           <div className="section-heading">
             <div>
               <span className="eyebrow eyebrow-muted">READY WHEN YOU ARE</span>
-              <h2 id="my-courses-title">Your course</h2>
+              <h2 id="my-courses-title">Your courses</h2>
             </div>
-            <span className="course-collection-count">{course.chapters.length} chapters</span>
+            <Link aria-label="Browse all courses" className="button button-as-link" to="/student/courses">Browse all <Icon name="arrow-right" size={15} /></Link>
           </div>
           <Link className="student-course-row" to={lessonPath}>
             <span className="student-course-thumb thumb-mint"><Icon name="activity" size={22} /></span>

@@ -33,6 +33,76 @@ export interface CoursePatch {
   grade?: string;
 }
 
+export interface StudentCourseListing {
+  course: DemoCourse;
+  enrolled: boolean;
+  canEnroll: boolean;
+}
+
+const studentEnrollmentStorageKey = "beyond-books-enrolled-courses";
+const inMemoryStudentEnrollmentIds = new Set([circulatoryCourse.id]);
+
+function getStudentEnrollmentIds(): Set<string> {
+  if (typeof localStorage === "undefined") return new Set(inMemoryStudentEnrollmentIds);
+  const stored = localStorage.getItem(studentEnrollmentStorageKey);
+  if (stored === null) return new Set([circulatoryCourse.id]);
+
+  const parsed: unknown = JSON.parse(stored);
+  if (!Array.isArray(parsed) || !parsed.every((courseId) => typeof courseId === "string")) {
+    throw new Error("Saved course enrollments are invalid. Clear the Beyond Books site data and try again.");
+  }
+  return new Set(parsed);
+}
+
+function getStudentCourseCatalog(): DemoCourse[] {
+  const publishedCourses: DemoCourse[] = [...courseStore.values()]
+    .filter((course) => course.status === "Published")
+    .map((course) => ({
+      id: course.id,
+      title: course.title,
+      description: course.id === circulatoryCourse.id
+        ? "Follow the path of blood, explore the heart’s chambers, and see how the circulatory system keeps the body moving."
+        : `Learn about ${course.subject.toLowerCase()} through chapter lessons and interactive visuals.`,
+      subject: course.subject,
+      grade: course.grade,
+      chapters: course.chapters.length,
+      students: course.id === circulatoryCourse.id ? students.length : 0,
+      completion: 0,
+      status: course.status,
+      accent: "violet",
+      lastUpdated: "Available now",
+      nextChapter: course.chapters[0]?.title ?? "Start learning",
+    }));
+
+  return [...publishedCourses, ...demoCourses.map((course) => ({ ...course }))];
+}
+
+export async function getStudentCourses(): Promise<StudentCourseListing[]> {
+  await delay(undefined);
+  const enrolledIds = getStudentEnrollmentIds();
+  return getStudentCourseCatalog().map((course) => ({
+    course,
+    enrolled: enrolledIds.has(course.id),
+    canEnroll: course.status === "Published",
+  }));
+}
+
+export async function enrollInStudentCourse(courseId: string): Promise<StudentCourseListing> {
+  await delay(undefined, 180);
+  const course = getStudentCourseCatalog().find((item) => item.id === courseId);
+  if (!course) throw new Error(`Course "${courseId}" was not found.`);
+  if (course.status !== "Published") throw new Error(`Course "${course.title}" is not available to students yet.`);
+
+  const enrolledIds = getStudentEnrollmentIds();
+  enrolledIds.add(courseId);
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem(studentEnrollmentStorageKey, JSON.stringify([...enrolledIds]));
+  } else {
+    inMemoryStudentEnrollmentIds.add(courseId);
+  }
+  return { course, enrolled: true, canEnroll: true };
+}
+
 export async function getTeacherCourses(): Promise<DemoCourse[]> {
   await delay(undefined);
   const generatedCourses: DemoCourse[] = [...courseStore.values()].map((course) => ({
