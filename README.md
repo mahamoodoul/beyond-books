@@ -24,9 +24,10 @@ that the team still needs to confirm:
 **Full system design:** [read the system design](README_Edu3D_AI_System_Design.md) — the
 high-level source of truth.
 
-The frontend demo runs without the separately developed backend; mock login lets you switch
-between teacher and student views. The Beyond Books demo includes the Grade 8 Circulatory System
-course, a student lesson and assessment, teacher upload/review, student progress, and class analytics.
+The Beyond Books frontend is connected to the FastAPI backend. Sign in with a real teacher or
+student account; account roles and access are checked by the server. Course creation, source
+uploads and extraction, AI outlines and lessons, 3D model generation and review, assessments,
+student progress, and class analytics use the backend APIs and persistent storage.
 
 ## Repository layout
 
@@ -35,11 +36,11 @@ backend/                   FastAPI modular monolith, Celery workers, Alembic mig
   app/modules/<domain>/    One folder per domain module (design §5)
   app/integrations/        Provider adapters behind app/integrations/interfaces.py
 frontend/                  React + TypeScript + Vite
-  src/app/                 Router, role/theme providers, and application layout
+  src/app/                 Router, theme preferences, and authenticated application layout
   src/components/ui/       Shared interface components
   src/features/            Landing, courses, lessons, assessments, and dashboards
-  src/lib/api.ts           Typed asynchronous mock service layer
-  src/lib/mock/            Seed course, roster, progress, and analytics data
+  src/lib/api.ts           Typed live course and document API helpers
+  src/lib/mock/            Historical demo fixtures (not used by application routes)
 packages/three-d-contracts Generated JSON Schema + fixtures for scene/animation specs
 infrastructure/docker/     Dockerfiles for local development
 scripts/                   Repo tooling (contract export)
@@ -55,7 +56,7 @@ cp .env.example .env
 make up            # postgres+pgvector, redis, api :8000, worker, frontend :5173
 ```
 
-Frontend only (mock data; no backend services required):
+Frontend development (requires the API on port 8000 for application workflows):
 
 ```bash
 cd frontend && npm ci && npm run dev         # http://localhost:5173
@@ -69,19 +70,34 @@ cd frontend && npm test && npm run build
 
 For the full local stack, start the backend dependencies and services with Docker as shown above.
 
-The authenticated backend application remains at `/`. Rizve’s complete frontend demo is
-available at `/demo` (including `/demo/login`), with independent mock role selection.
+## Connected frontend and API boundary
 
-## Frontend mock data and API boundary
+The full Beyond Books interface is available at `/`. Previously shared `/demo` links use the
+same authenticated app and backend; there is no password-free role switch or simulated grading.
+The Vite development server proxies `/api` to `http://localhost:8000`. Override its target with
+`VITE_API_PROXY` if the API runs elsewhere. Keep frontend and API on the same origin in production
+so session cookies and CSRF headers work correctly.
 
-Feature components call the async functions in `frontend/src/lib/api.ts`; they should not import
-seed data directly. The corresponding typed contracts live in `frontend/src/lib/types.ts`, and
-seeded examples are kept in `frontend/src/lib/mock/`. To connect the backend, replace the mock
-function bodies in `lib/api.ts` with HTTP requests while keeping their input and return types, then
-update the API tests to cover the real response and error behavior.
+- Sign in at `/login` or create an account at `/register`. Accounts open their assigned workspace.
+- Teachers: open **Upload source** to create a course and upload a PDF, text, or Markdown file.
+  Extraction progress comes from the actual job. An upload failure leaves the saved course
+  accessible for retry; it does not report a successful draft.
+- In a course, review **Sources & outline**, generate an outline, and apply the chapters you want.
+  Open a chapter to edit objectives, generate/edit lessons and assessments, and publish reviewed work.
+- Inside a lesson, add library or procedural 3D scenes, use the AI scene planner, edit animations,
+  and publish scenes. **3D library** supports GLB upload, AI model generation, preview, and approval.
+- Publish lessons, chapters, and the course, then enrol registered students from **Students**.
+  Students see their enrolled published courses, explore lessons and scenes, save progress,
+  submit server-graded assessments, and read feedback. Written answers use teacher review.
+- **Insights** and **My progress** display server records. Empty accounts show empty states,
+  rather than seeded learners, invented streaks, or sample scores.
+- **Course details**, **Schools**, and the account page persist changes through the API.
 
-The upload pipeline is a local demo: it simulates analysis and creates an editable draft in
-in-memory storage. Uploaded PDFs are not sent to a server or retained across page reloads.
+The HTTP client in `frontend/src/api/client.ts` sends session cookies and CSRF headers, refreshes
+expired sessions once, and exposes backend errors. Types are generated from OpenAPI; UI feature
+hooks and `frontend/src/lib/api.ts` use those contracts. Source uploads send actual file bytes to
+the backend-provided upload URL before requesting extraction. Cross-origin signed storage uploads
+receive only the signed headers, without application cookies or CSRF credentials.
 
 ## Heart 3D and augmented reality
 

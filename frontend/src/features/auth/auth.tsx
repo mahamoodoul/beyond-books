@@ -4,7 +4,7 @@ import { Navigate, useLocation } from "react-router";
 
 import { api, ApiError } from "@/api/client";
 import type { UserOut } from "@/api/generated/schema";
-import { Loading } from "@/components/feedback";
+import { ErrorAlert, Loading } from "@/components/feedback";
 
 export const ME_KEY = ["me"] as const;
 
@@ -27,7 +27,7 @@ export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: { email: string; password: string }) => api.post<UserOut>("/auth/login", body),
-    onSuccess: (user) => qc.setQueryData(ME_KEY, user),
+    onSuccess: (user) => { qc.clear(); qc.setQueryData(ME_KEY, user); },
   });
 }
 
@@ -46,7 +46,7 @@ export function useLogout() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () => api.post<void>("/auth/logout"),
-    onSettled: () => {
+    onSuccess: () => {
       qc.clear();
       qc.setQueryData(ME_KEY, null);
     },
@@ -67,6 +67,7 @@ export function RequireAuth({
   const me = useMe();
   const location = useLocation();
   if (me.isPending) return <Loading />;
+  if (me.error) return <ErrorAlert error={me.error} />;
   if (!me.data) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (role && me.data.account_type !== role) return <Navigate to={homeFor(me.data)} replace />;
   return <>{children}</>;

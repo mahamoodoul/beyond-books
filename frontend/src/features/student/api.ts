@@ -21,6 +21,7 @@ export function useSetProgress(courseId: string | undefined) {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["outline", courseId] });
       void qc.invalidateQueries({ queryKey: ["my-progress"] });
+      void qc.invalidateQueries({ queryKey: ["my-insights", courseId] });
     },
   });
 }

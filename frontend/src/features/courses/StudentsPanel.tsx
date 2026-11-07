@@ -16,11 +16,17 @@ export function StudentsPanel({ courseId }: { courseId: string }) {
     onSuccess: () => {
       setEmail("");
       void qc.invalidateQueries({ queryKey: key });
+      void qc.invalidateQueries({ queryKey: ["analytics", courseId] });
+      void qc.invalidateQueries({ queryKey: ["course-progress", courseId] });
     },
   });
   const remove = useMutation({
     mutationFn: (id: string) => api.delete<void>(`/courses/${courseId}/enrollments/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: key }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: key });
+      void qc.invalidateQueries({ queryKey: ["analytics", courseId] });
+      void qc.invalidateQueries({ queryKey: ["course-progress", courseId] });
+    },
   });
   const submit = (e: FormEvent) => {
     e.preventDefault();

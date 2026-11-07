@@ -101,7 +101,7 @@ export function LandingPage() {
         </nav>
         <div className="landing-header-actions">
           <Link className="landing-signin" to="/login">Sign in</Link>
-          <Link className="button button-primary landing-get-started" to="/login?role=teacher">Get started <Icon name="arrow-right" size={15} /></Link>
+          <Link className="button button-primary landing-get-started" to="/register">Get started <Icon name="arrow-right" size={15} /></Link>
         </div>
       </header>
 
@@ -188,14 +188,14 @@ export function LandingPage() {
             <li><Icon name="check" size={15} /> Interactive heart model & blood-flow animation</li>
             <li><Icon name="check" size={15} /> Helpful assessment feedback for every learner</li>
           </ul>
-          <Link className="text-link" to="/login?role=student">Step into the student demo <Icon name="arrow-right" size={16} /></Link>
+          <Link className="text-link" to="/login?role=student">Open your student workspace <Icon name="arrow-right" size={16} /></Link>
         </div>
       </section>
 
       <section aria-labelledby="final-cta-title" className="landing-final-cta">
         <span className="eyebrow eyebrow-light">THE NEXT “AHA!” IS CLOSER THAN YOU THINK</span>
         <h2 id="final-cta-title">Ready to see learning differently?</h2>
-        <p>Take a look around. The demo is ready when you are.</p>
+        <p>Create your account and bring your classroom to life.</p>
         <div className="landing-cta-row">
           <Link className="button final-cta-light" to="/login?role=teacher">I’m a teacher <Icon name="arrow-right" size={15} /></Link>
           <Link className="button final-cta-outline" to="/login?role=student">I’m a student</Link>

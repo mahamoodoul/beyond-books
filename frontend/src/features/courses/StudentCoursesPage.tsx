@@ -2,9 +2,44 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { api } from "@/api/client";
+import type { CourseOut, CourseProgressSummary } from "@/api/generated/schema";
 import { Icon } from "@/components/ui/Icon";
-import { enrollInStudentCourse, getStudentCourses } from "@/lib/api";
-import type { StudentCourseListing } from "@/lib/api";
+
+/* Live data adapter (backend): a student's catalog is the published courses they are enrolled
+   in. Enrollment is done by teachers on the server, so there is no self-enroll here. */
+type Accent = "mint" | "amber" | "violet";
+interface StudentCourseListing {
+  course: { id: string; title: string; subject: string; grade: string; lessons: number; description?: string; accent: Accent };
+  enrolled: boolean;
+  canEnroll: boolean;
+}
+const accents: Accent[] = ["mint", "amber", "violet"];
+
+async function getStudentCourses(): Promise<StudentCourseListing[]> {
+  const [courses, progress] = await Promise.all([
+    api.get<CourseOut[]>("/courses"),
+    api.get<CourseProgressSummary[]>("/students/me/progress"),
+  ]);
+  const totals = new Map(progress.map((p) => [p.course_id, p.total_lessons]));
+  return courses.map((c, i) => ({
+    course: {
+      id: c.id,
+      title: c.title,
+      subject: c.subject ?? "Course",
+      grade: c.grade_level ?? "",
+      lessons: totals.get(c.id) ?? 0,
+      description: c.description || undefined,
+      accent: accents[i % accents.length] ?? "mint",
+    },
+    enrolled: true,
+    canEnroll: true,
+  }));
+}
+
+async function enrollInStudentCourse(courseId: string): Promise<StudentCourseListing> {
+  throw new Error(`Ask your teacher to enroll you in this course (${courseId}).`);
+}
 
 type CourseFilter = "all" | "enrolled" | "available";
 
@@ -15,16 +50,7 @@ const filters: Array<{ id: CourseFilter; label: string }> = [
 ];
 
 function courseLink(courseId: string): string | null {
-  if (courseId === "circulatory-system") {
-    return `/student/courses/${courseId}/lessons/heart-structure`;
-  }
-  if (courseId === "cell-biology") {
-    return `/student/courses/${courseId}/lessons/cell-structure`;
-  }
-  if (courseId.startsWith("course-")) {
-    return `/student/courses/${courseId}/lessons/heart-structure`;
-  }
-  return null;
+  return `/student/courses/${courseId}`;
 }
 
 function CourseCard({
@@ -53,7 +79,7 @@ function CourseCard({
         <h2>{course.title}</h2>
         <p>{course.description ?? `Explore ${course.subject.toLowerCase()} with visual lessons and guided activities.`}</p>
         <div className="catalog-course-details">
-          <span><Icon name="book" size={15} /> {course.chapters} chapters</span>
+          <span><Icon name="book" size={15} /> {course.lessons} {course.lessons === 1 ? "lesson" : "lessons"}</span>
           <span className={`catalog-course-status${canEnroll ? "" : " catalog-course-status-pending"}`}>
             {canEnroll ? "Ready to learn" : "Coming soon"}
           </span>
@@ -171,7 +197,7 @@ export function StudentCoursesPage() {
         <section className="catalog-message panel">
           <Icon name="book" size={24} />
           <h2>{filter === "enrolled" ? "Your learning starts here." : "You’re all caught up."}</h2>
-          <p>{filter === "enrolled" ? "Enroll in a course to find it here." : "You’re enrolled in every course currently available."}</p>
+          <p>{filter === "enrolled" ? "Courses your teacher enrolls you in appear here." : "Your teacher adds new courses for you — nothing else to discover right now."}</p>
           <button className="button button-secondary" onClick={() => setFilter("all")} type="button">View all courses</button>
         </section>
       )}

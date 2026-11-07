@@ -15,7 +15,7 @@ export function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed ${variants[variant]} ${className}`}
+      className={`bb-button bb-button-${variant} inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed ${variants[variant]} ${className}`}
       {...props}
     />
   );
@@ -23,7 +23,7 @@ export function Button({
 
 export function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
   return (
-    <label className="block space-y-1">
+    <label className="bb-field block space-y-1">
       <span className="text-sm font-medium text-slate-700">{label}</span>
       {children}
       {hint && <span className="block text-xs text-slate-500">{hint}</span>}
@@ -34,16 +34,16 @@ export function Field({ label, children, hint }: { label: string; children: Reac
 const inputClass =
   "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
 
-export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={inputClass} {...props} />;
+export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
+  return <input className={`bb-input ${inputClass} ${className}`} {...props} />;
 }
 
-export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={`${inputClass} font-mono`} {...props} />;
+export function Textarea({ className = "", ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return <textarea className={`bb-input ${inputClass} ${className}`} {...props} />;
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-lg border border-slate-200 bg-white p-5 shadow-sm ${className}`}>{children}</div>;
+  return <div className={`bb-card rounded-lg border border-slate-200 bg-white p-5 shadow-sm ${className}`}>{children}</div>;
 }
 
 export function PageHeader({ title, children }: { title: string; children?: ReactNode }) {
@@ -63,5 +63,5 @@ export function Badge({ children, tone = "slate" }: { children: ReactNode; tone?
     red: "bg-red-100 text-red-800",
     blue: "bg-blue-100 text-blue-800",
   };
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${tones[tone]}`}>{children}</span>;
+  return <span className={`bb-badge bb-badge-${tone} rounded-full px-2 py-0.5 text-xs font-medium ${tones[tone]}`}>{children}</span>;
 }
