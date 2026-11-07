@@ -10,6 +10,8 @@ import type { ResolvedScene, SceneComponent } from "@/api/generated/schema";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button } from "@/components/ui";
 
+import { AnimationLayer, type AnimationClock } from "../runtime/AnimationLayer";
+import { AnimationControls } from "./AnimationControls";
 import { SceneCanvas } from "./SceneCanvas";
 
 class WebGLBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -49,6 +51,10 @@ export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string
   const [loadedNames, setLoadedNames] = useState<Set<string>>(new Set());
   const reducedMotion = usePrefersReducedMotion();
   const box = useRef<HTMLDivElement>(null);
+  const [animIdx, setAnimIdx] = useState<number | null>(null);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const clock = useRef<AnimationClock>({ elapsed: 0 });
   const onMeshesLoaded = useCallback(
     (names: string[]) => setLoadedNames((prev) => new Set([...prev, ...names])),
     [],
@@ -65,6 +71,19 @@ export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string
   if (resolved.isPending) return <Loading label="Preparing 3D scene…" />;
   if (resolved.error) return <ErrorAlert error={resolved.error} />;
   const data = resolved.data;
+  const animations = data.animations ?? [];
+  const animation = animIdx !== null ? animations[animIdx] : undefined;
+  const startAnimation = (i: number) => {
+    setSelected(null);
+    setAnimIdx(i);
+    setStep(0);
+    setPlaying(!reducedMotion);
+  };
+  const onStepComplete = () => {
+    if (!animation) return;
+    if (step < animation.steps.length - 1) setStep(step + 1);
+    else setPlaying(false);
+  };
   const explanation = selected?.explanation_ref ? data.spec.explanations?.[selected.explanation_ref] : undefined;
 
   return (
@@ -79,6 +98,20 @@ export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string
               onSelect={setSelected}
               onMeshesLoaded={onMeshesLoaded}
               reducedMotion={reducedMotion}
+              overlay={(root) =>
+                animation ? (
+                  <AnimationLayer
+                    root={root}
+                    scene={data.spec}
+                    animation={animation}
+                    index={step}
+                    playing={playing}
+                    clock={clock}
+                    reducedMotion={reducedMotion}
+                    onStepComplete={onStepComplete}
+                  />
+                ) : null
+              }
             />
           </WebGLBoundary>
           <Button
@@ -94,6 +127,30 @@ export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string
             <h3 className="font-semibold">{data.spec.title}</h3>
             <p className="text-xs text-slate-500">Drag to rotate · scroll to zoom · click a part to learn about it</p>
           </div>
+          {animations.length > 0 && (
+            <div className="space-y-2 rounded-md border border-slate-200 p-3">
+              <div className="flex flex-wrap gap-1">
+                {animations.map((a, i) => (
+                  <Button key={a.animation_id} variant={animIdx === i ? "primary" : "secondary"} onClick={() => startAnimation(i)}>
+                    ▶ {a.title}
+                  </Button>
+                ))}
+                {animation && <Button variant="ghost" onClick={() => { setAnimIdx(null); setPlaying(false); }}>Stop</Button>}
+              </div>
+              {animation && (
+                <AnimationControls
+                  animation={animation}
+                  index={step}
+                  playing={playing}
+                  onPlay={() => { if (step >= animation.steps.length - 1) setStep(0); setPlaying(true); }}
+                  onPause={() => setPlaying(false)}
+                  onRestart={() => { setStep(0); clock.current.elapsed = 0; setPlaying(!reducedMotion); }}
+                  onStep={(d) => { setPlaying(false); setStep(Math.max(0, Math.min(animation.steps.length - 1, step + d))); }}
+                  onJump={(i) => { setPlaying(false); setStep(i); }}
+                />
+              )}
+            </div>
+          )}
           <div aria-live="polite" className="min-h-20 rounded-md bg-slate-50 p-3">
             {selected ? (
               <>

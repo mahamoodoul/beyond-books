@@ -6,6 +6,7 @@ import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Textarea } from "@/components/ui";
 
 import { useAsset, useAssets, useGenerators, useSceneMutations, useScenes } from "./api";
+import { AnimationsPanel } from "./AnimationsPanel";
 import { LazySceneViewer } from "./LazySceneViewer";
 import { PlanSceneButton } from "./PlanSceneButton";
 import { specFromAsset, specFromGenerator } from "./specBuilders";
@@ -108,6 +109,7 @@ function SceneRow({ scene, lessonId }: { scene: SceneOut; lessonId: string }) {
           <Button disabled={m.update.isPending} onClick={save}>Save scene</Button>
         </div>
       )}
+      <AnimationsPanel sceneId={scene.id} lessonId={lessonId} firstComponent={scene.spec.components?.[0]?.component_id} />
       {preview && <div className="mt-3"><LazySceneViewer key={`${scene.id}-${scene.version}`} sceneId={scene.id} height={420} /></div>}
     </li>
   );

@@ -71,5 +71,29 @@
     "explanation_right_ventricle": "The right ventricle pumps oxygen-poor blood to the lungs.",
     "explanation_left_atrium": "The left atrium receives oxygen-rich blood from the lungs.",
     "explanation_left_ventricle": "The left ventricle has the thickest wall and pumps blood to the whole body."
+  },
+  "paths": {
+    "pulmonary_loop": [
+      [
+        -0.55,
+        0.65,
+        0.0
+      ],
+      [
+        -0.4,
+        -0.25,
+        0.1
+      ],
+      [
+        0.0,
+        1.6,
+        0.6
+      ],
+      [
+        0.55,
+        0.7,
+        -0.05
+      ]
+    ]
   }
 }

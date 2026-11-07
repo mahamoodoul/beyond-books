@@ -50,6 +50,7 @@ export interface SceneSpec {
   controls?: Controls;
   explanations?: Explanations;
   learning_objective_ids?: LearningObjectiveIds;
+  paths?: Paths;
   procedural?: Procedural;
   scene_id: SceneId;
   schema_version?: SchemaVersion;
@@ -77,6 +78,13 @@ export interface Explanations {
    * via the `patternProperty` "^[a-z][a-z0-9_]{0,63}$".
    */
   [k: string]: string;
+}
+export interface Paths {
+  /**
+   * This interface was referenced by `Paths`'s JSON-Schema definition
+   * via the `patternProperty` "^[a-z][a-z0-9_]{0,63}$".
+   */
+  [k: string]: [number, number, number, ...number[]][];
 }
 /**
  * A trusted, prebuilt procedural generator in the renderer (design §7.1-A).

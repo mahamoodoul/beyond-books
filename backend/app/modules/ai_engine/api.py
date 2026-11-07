@@ -110,6 +110,15 @@ def plan_scene(lesson_id: uuid.UUID, user: CurrentUser, db: DB) -> Job:
     return service.start_scene_plan(db, user, lesson_id)
 
 
+@router.post(
+    "/scenes/{scene_id}/ai/animation", response_model=JobOut, status_code=status.HTTP_202_ACCEPTED
+)
+def plan_animation(scene_id: uuid.UUID, user: CurrentUser, db: DB) -> Job:
+    from app.modules.ai_engine.animation_planning import start_animation_plan
+
+    return start_animation_plan(db, user, scene_id)
+
+
 @router.get("/courses/{course_id}/ai/usage", response_model=AIUsageOut)
 def usage(course_id: uuid.UUID, user: CurrentUser, db: DB) -> AIUsageOut:
     return AIUsageOut(**service.usage_summary(db, user, course_id))

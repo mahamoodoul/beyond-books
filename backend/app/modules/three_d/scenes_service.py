@@ -16,7 +16,7 @@ from app.modules.lessons.models import Lesson
 from app.modules.lessons.service import get_lesson
 from app.modules.operations import audit
 from app.modules.three_d.assets_service import GLB_MIME
-from app.modules.three_d.contracts import SceneSpec
+from app.modules.three_d.contracts import AnimationSpec, SceneSpec
 from app.modules.three_d.models import (
     AssetVisibility,
     ReviewStatus,
@@ -83,8 +83,6 @@ def check_scene(db: Session, course: Course, spec: SceneSpec) -> Check:
     for c in spec.components:
         if c.mesh_name not in names:
             out.errors.append(f"component '{c.component_id}' targets unknown mesh '{c.mesh_name}'")
-    if spec.animation_refs:
-        out.warnings.append("animation_refs are stored but animations arrive in Phase 6")
     return out
 
 
@@ -172,6 +170,9 @@ def publish_scene(db: Session, user: User, scene_id: uuid.UUID) -> SceneOut:
     scene, course = _manage_scene(db, user, scene_id)
     # Re-check at publish time: an asset may have been rejected since the last edit.
     _require_valid(db, course, SceneSpec.model_validate(scene.scene_spec))
+    from app.modules.animations.service import snapshot_for_publish
+
+    scene.published_animations = snapshot_for_publish(db, scene)
     scene.published_spec = scene.scene_spec
     scene.published_version = scene.version
     scene.status = "published"
@@ -191,6 +192,7 @@ def publish_scene(db: Session, user: User, scene_id: uuid.UUID) -> SceneOut:
 def unpublish_scene(db: Session, user: User, scene_id: uuid.UUID) -> SceneOut:
     scene, _ = _manage_scene(db, user, scene_id)
     scene.published_spec = None
+    scene.published_animations = None
     scene.published_version = None
     scene.status = "draft"
     db.commit()
@@ -284,12 +286,21 @@ def resolve_scene(db: Session, user: User, scene_id: uuid.UUID) -> ResolvedScene
         )
         for a, v in check.assets
     ]
+    if manager:
+        from app.modules.three_d.models import ThreeDAnimation
+
+        rows = db.scalars(select(ThreeDAnimation).where(ThreeDAnimation.scene_id == scene.id))
+        by_key = {a.animation_key: a.spec for a in rows}
+        animations = [by_key[k] for k in spec.animation_refs if k in by_key]
+    else:
+        animations = scene.published_animations or []
     return ResolvedScene(
         scene_id=scene.id,
         version=scene.version if manager else scene.published_version or scene.version,
         spec=spec,
         assets=assets,
         warnings=check.warnings,
+        animations=[AnimationSpec.model_validate(a) for a in animations],
     )
 
 

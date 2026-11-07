@@ -77,3 +77,30 @@ class ScenePlanLLM(BaseModel):
     components: list[SceneComponentLLM]
     generation_prompt: str
     rationale: str
+
+
+class AnimationStepLLM(BaseModel):
+    action: Literal[
+        "highlight_component",
+        "set_visibility",
+        "set_opacity",
+        "move_along_path",
+        "rotate_component",
+        "show_flow_particles",
+        "camera_focus",
+        "show_annotation",
+        "wait",
+    ]
+    target_component: str
+    duration_ms: int
+    explanation: str
+    visible: bool
+    opacity: float
+    axis: Literal["x", "y", "z"]
+    degrees: float
+    path_id: str
+
+
+class AnimationPlanLLM(BaseModel):
+    title: str
+    steps: list[AnimationStepLLM]

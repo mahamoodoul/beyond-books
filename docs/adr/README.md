@@ -11,6 +11,7 @@
 | [0007](0007-plain-orchestration-before-langgraph.md) | Plain orchestration before LangGraph (interim for #4) | Proposed |
 | [0008](0008-3d-asset-registry-and-scene-resolution.md) | 3D asset registry, review gate and scene resolution | Proposed |
 | [0009](0009-scene-planning-and-3d-generation.md) | AI scene planning and 3D generation jobs (interim for #5) | Proposed |
+| [0010](0010-animation-engine.md) | Animation engine | Proposed |
 
 Copy [0000-template.md](0000-template.md) for new decisions.
 

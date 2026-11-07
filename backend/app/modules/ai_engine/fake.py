@@ -11,6 +11,8 @@ from pydantic import BaseModel
 
 from app.integrations.interfaces import LLMUsage, ReferencePassage, StructuredResult
 from app.modules.ai_engine.schemas import (
+    AnimationPlanLLM,
+    AnimationStepLLM,
     GeneratorParamLLM,
     LessonLLM,
     OutlineChapterLLM,
@@ -52,6 +54,7 @@ class FakeLLMProvider:
             LessonLLM: self._lesson,
             SectionLLM: self._section,
             ScenePlanLLM: self._scene_plan,
+            AnimationPlanLLM: self._animation_plan,
         }
         output = builders[output_schema](references, task)
         chars_in = len(system_prompt) + len(task) + sum(len(r.text) for r in references)
@@ -196,3 +199,47 @@ class FakeLLMProvider:
                 "components": [],
             }
         )
+
+    def _animation_plan(self, refs: list[ReferencePassage], task: str) -> AnimationPlanLLM:
+        ids = []
+        for line in task.splitlines():
+            if line.startswith("COMPONENT_IDS:"):
+                ids = [x for x in line.split(":", 1)[1].strip().split(",") if x]
+        sents = _sentences(" ".join(r.text for r in refs))
+        neutral = {"visible": True, "opacity": 1.0, "axis": "y", "degrees": 0.0, "path_id": ""}
+
+        def explain(cid: str) -> str:
+            key = cid.replace("_", " ")
+            return next((x for x in sents if key in x.lower()), f"Look at the {key}.")[:300]
+
+        steps = []
+        if ids:
+            steps.append(
+                AnimationStepLLM(
+                    action="camera_focus",
+                    target_component=ids[0],
+                    duration_ms=1500,
+                    explanation=explain(ids[0]),
+                    **neutral,
+                )
+            )
+        steps += [
+            AnimationStepLLM(
+                action="highlight_component",
+                target_component=c,
+                duration_ms=2500,
+                explanation=explain(c),
+                **neutral,
+            )
+            for c in ids[:6]
+        ]
+        steps.append(
+            AnimationStepLLM(
+                action="show_annotation",
+                target_component="",
+                duration_ms=3000,
+                explanation=sents[0][:300] if sents else "Review the parts.",
+                **neutral,
+            )
+        )
+        return AnimationPlanLLM(title="Guided tour", steps=steps)

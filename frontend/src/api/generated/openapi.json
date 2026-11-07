@@ -44,6 +44,210 @@
         "title": "AccountType",
         "type": "string"
       },
+      "AnimationCreate": {
+        "properties": {
+          "spec": {
+            "$ref": "#/components/schemas/AnimationSpec"
+          }
+        },
+        "required": [
+          "spec"
+        ],
+        "title": "AnimationCreate",
+        "type": "object"
+      },
+      "AnimationOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "problems": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Problems",
+            "type": "array"
+          },
+          "scene_id": {
+            "format": "uuid",
+            "title": "Scene Id",
+            "type": "string"
+          },
+          "spec": {
+            "$ref": "#/components/schemas/AnimationSpec"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "scene_id",
+          "title",
+          "version",
+          "origin",
+          "spec"
+        ],
+        "title": "AnimationOut",
+        "type": "object"
+      },
+      "AnimationSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "animation_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Animation Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "camera_focus": "#/components/schemas/CameraFocusStep",
+                  "highlight_component": "#/components/schemas/HighlightStep",
+                  "move_along_path": "#/components/schemas/MoveAlongPathStep",
+                  "rotate_component": "#/components/schemas/RotateComponentStep",
+                  "set_opacity": "#/components/schemas/SetOpacityStep",
+                  "set_visibility": "#/components/schemas/SetVisibilityStep",
+                  "show_annotation": "#/components/schemas/AnnotationStep",
+                  "show_flow_particles": "#/components/schemas/FlowParticlesStep",
+                  "wait": "#/components/schemas/WaitStep"
+                },
+                "propertyName": "action"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/HighlightStep"
+                },
+                {
+                  "$ref": "#/components/schemas/SetVisibilityStep"
+                },
+                {
+                  "$ref": "#/components/schemas/SetOpacityStep"
+                },
+                {
+                  "$ref": "#/components/schemas/MoveAlongPathStep"
+                },
+                {
+                  "$ref": "#/components/schemas/RotateComponentStep"
+                },
+                {
+                  "$ref": "#/components/schemas/FlowParticlesStep"
+                },
+                {
+                  "$ref": "#/components/schemas/CameraFocusStep"
+                },
+                {
+                  "$ref": "#/components/schemas/AnnotationStep"
+                },
+                {
+                  "$ref": "#/components/schemas/WaitStep"
+                }
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Steps",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "animation_id",
+          "title",
+          "steps"
+        ],
+        "title": "AnimationSpec",
+        "type": "object"
+      },
+      "AnimationUpdate": {
+        "properties": {
+          "expected_version": {
+            "minimum": 1.0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "spec": {
+            "$ref": "#/components/schemas/AnimationSpec"
+          }
+        },
+        "required": [
+          "expected_version",
+          "spec"
+        ],
+        "title": "AnimationUpdate",
+        "type": "object"
+      },
+      "AnnotationStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "show_annotation",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Component"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "explanation",
+          "action"
+        ],
+        "title": "AnnotationStep",
+        "type": "object"
+      },
       "ApplyOutlineRequest": {
         "properties": {
           "chapters": {
@@ -437,6 +641,53 @@
           }
         },
         "title": "Camera",
+        "type": "object"
+      },
+      "CameraFocusStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "camera_focus",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component"
+        ],
+        "title": "CameraFocusStep",
         "type": "object"
       },
       "CameraPreset": {
@@ -1232,6 +1483,59 @@
         "title": "EnrollmentOut",
         "type": "object"
       },
+      "FlowParticlesStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "show_flow_particles",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "path_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Path Id",
+            "type": "string"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component",
+          "path_id"
+        ],
+        "title": "FlowParticlesStep",
+        "type": "object"
+      },
       "GenerationRequest": {
         "properties": {
           "name": {
@@ -1406,6 +1710,53 @@
           "environment"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "HighlightStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "highlight_component",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component"
+        ],
+        "title": "HighlightStep",
         "type": "object"
       },
       "JobOut": {
@@ -1813,6 +2164,59 @@
         "title": "LoginRequest",
         "type": "object"
       },
+      "MoveAlongPathStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "move_along_path",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "path_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Path Id",
+            "type": "string"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component",
+          "path_id"
+        ],
+        "title": "MoveAlongPathStep",
+        "type": "object"
+      },
       "ObjectiveIn": {
         "properties": {
           "source_refs": {
@@ -2154,6 +2558,14 @@
       },
       "ResolvedScene": {
         "properties": {
+          "animations": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AnimationSpec"
+            },
+            "title": "Animations",
+            "type": "array"
+          },
           "assets": {
             "items": {
               "$ref": "#/components/schemas/ResolvedAsset"
@@ -2189,6 +2601,70 @@
           "warnings"
         ],
         "title": "ResolvedScene",
+        "type": "object"
+      },
+      "RotateComponentStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "rotate_component",
+            "title": "Action",
+            "type": "string"
+          },
+          "axis": {
+            "enum": [
+              "x",
+              "y",
+              "z"
+            ],
+            "title": "Axis",
+            "type": "string"
+          },
+          "degrees": {
+            "maximum": 720.0,
+            "minimum": -720.0,
+            "title": "Degrees",
+            "type": "number"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component",
+          "axis",
+          "degrees"
+        ],
+        "title": "RotateComponentStep",
         "type": "object"
       },
       "SceneComponent": {
@@ -2406,6 +2882,26 @@
             "title": "Learning Objective Ids",
             "type": "array"
           },
+          "paths": {
+            "maxProperties": 50,
+            "patternProperties": {
+              "^[a-z][a-z0-9_]{0,63}$": {
+                "items": {
+                  "items": {
+                    "maximum": 1000.0,
+                    "minimum": -1000.0,
+                    "type": "number"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3,
+                  "type": "array"
+                },
+                "type": "array"
+              }
+            },
+            "title": "Paths",
+            "type": "object"
+          },
           "procedural": {
             "items": {
               "$ref": "#/components/schemas/ProceduralSource"
@@ -2591,6 +3087,112 @@
           "expected_version"
         ],
         "title": "SectionRegenerateRequest",
+        "type": "object"
+      },
+      "SetOpacityStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "set_opacity",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "opacity": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Opacity",
+            "type": "number"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component",
+          "opacity"
+        ],
+        "title": "SetOpacityStep",
+        "type": "object"
+      },
+      "SetVisibilityStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "set_visibility",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          },
+          "target_component": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Target Component",
+            "type": "string"
+          },
+          "visible": {
+            "title": "Visible",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "target_component",
+          "visible"
+        ],
+        "title": "SetVisibilityStep",
         "type": "object"
       },
       "SourceRef": {
@@ -2880,6 +3482,47 @@
         ],
         "title": "VisualizationCandidate",
         "type": "object"
+      },
+      "WaitStep": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "wait",
+            "title": "Action",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action"
+        ],
+        "title": "WaitStep",
+        "type": "object"
       }
     }
   },
@@ -2979,6 +3622,93 @@
         "summary": "Discard Outline",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/v1/animations/{animation_id}": {
+      "delete": {
+        "operationId": "delete_api_v1_animations__animation_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "animation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Animation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete",
+        "tags": [
+          "animations"
+        ]
+      },
+      "patch": {
+        "operationId": "update_api_v1_animations__animation_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "animation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Animation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnimationUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update",
+        "tags": [
+          "animations"
         ]
       }
     },
@@ -5485,6 +6215,147 @@
         "summary": "Update Scene",
         "tags": [
           "3d"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/ai/animation": {
+      "post": {
+        "operationId": "plan_animation_api_v1_scenes__scene_id__ai_animation_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Plan Animation",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/animations": {
+      "get": {
+        "operationId": "list_animations_api_v1_scenes__scene_id__animations_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AnimationOut"
+                  },
+                  "title": "Response List Animations Api V1 Scenes  Scene Id  Animations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Animations",
+        "tags": [
+          "animations"
+        ]
+      },
+      "post": {
+        "operationId": "create_api_v1_scenes__scene_id__animations_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnimationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create",
+        "tags": [
+          "animations"
         ]
       }
     },

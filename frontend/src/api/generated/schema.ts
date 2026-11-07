@@ -9,6 +9,94 @@ export type OutputTokens = number;
  * via the `definition` "AccountType".
  */
 export type AccountType = "teacher" | "student";
+export type AnimationId = string;
+export type SchemaVersion = "1.0";
+/**
+ * @minItems 1
+ * @maxItems 200
+ */
+export type Steps = [
+  (
+    | HighlightStep
+    | SetVisibilityStep
+    | SetOpacityStep
+    | MoveAlongPathStep
+    | RotateComponentStep
+    | FlowParticlesStep
+    | CameraFocusStep
+    | AnnotationStep
+    | WaitStep
+  ),
+  ...(
+    | HighlightStep
+    | SetVisibilityStep
+    | SetOpacityStep
+    | MoveAlongPathStep
+    | RotateComponentStep
+    | FlowParticlesStep
+    | CameraFocusStep
+    | AnnotationStep
+    | WaitStep
+  )[]
+];
+export type Action = "highlight_component";
+export type DurationMs = number;
+export type Explanation = string | null;
+export type Step = number;
+export type TargetComponent = string;
+export type Action1 = "set_visibility";
+export type DurationMs1 = number;
+export type Explanation1 = string | null;
+export type Step1 = number;
+export type TargetComponent1 = string;
+export type Visible = boolean;
+export type Action2 = "set_opacity";
+export type DurationMs2 = number;
+export type Explanation2 = string | null;
+export type Opacity = number;
+export type Step2 = number;
+export type TargetComponent2 = string;
+export type Action3 = "move_along_path";
+export type DurationMs3 = number;
+export type Explanation3 = string | null;
+export type PathId = string;
+export type Step3 = number;
+export type TargetComponent3 = string;
+export type Action4 = "rotate_component";
+export type Axis = "x" | "y" | "z";
+export type Degrees = number;
+export type DurationMs4 = number;
+export type Explanation4 = string | null;
+export type Step4 = number;
+export type TargetComponent4 = string;
+export type Action5 = "show_flow_particles";
+export type DurationMs5 = number;
+export type Explanation5 = string | null;
+export type PathId1 = string;
+export type Step5 = number;
+export type TargetComponent5 = string;
+export type Action6 = "camera_focus";
+export type DurationMs6 = number;
+export type Explanation6 = string | null;
+export type Step6 = number;
+export type TargetComponent6 = string;
+export type Action7 = "show_annotation";
+export type DurationMs7 = number;
+export type Explanation7 = string;
+export type Step7 = number;
+export type TargetComponent7 = string | null;
+export type Action8 = "wait";
+export type DurationMs8 = number;
+export type Explanation8 = string | null;
+export type Step8 = number;
+export type Title = string;
+export type Id = string;
+export type Origin = string;
+export type Problems = string[];
+export type SceneId = string;
+export type Title1 = string;
+export type Version = number;
+export type ExpectedVersion = number;
 /**
  * @minItems 1
  * @maxItems 50
@@ -26,7 +114,7 @@ export type PageStart = number;
  * @maxItems 20
  */
 export type SourceRefs = ChapterSourceRef[];
-export type Title = string;
+export type Title2 = string;
 export type AttributionText = string;
 export type Category = string | null;
 export type Description1 = string;
@@ -40,7 +128,7 @@ export type CanManage = boolean;
 export type Category1 = string | null;
 export type CreatedAt = string;
 export type Description2 = string;
-export type Id = string;
+export type Id1 = string;
 export type LatestVersion = number;
 export type LicenseName1 = string;
 export type Name1 = string;
@@ -58,7 +146,7 @@ export type VersionNumber = number;
 export type Versions = AssetVersionOut[];
 export type Visibility = string;
 export type AssetId = string;
-export type Version = number;
+export type Version1 = number;
 export type Decision = "approved" | "rejected";
 export type Notes = string | null;
 export type Method = string;
@@ -78,11 +166,11 @@ export type Description3 = string;
  * @maxItems 20
  */
 export type SourceRefs1 = ChapterSourceRef[];
-export type Title1 = string;
+export type Title3 = string;
 export type CourseId = string;
 export type Description4 = string;
-export type Id1 = string;
 export type Id2 = string;
+export type Id3 = string;
 export type ObjectiveText = string;
 export type Position = number;
 export type SourceRefs2 = {
@@ -98,21 +186,21 @@ export type SourceRefs3 = {
  * via the `definition` "PublishStatus".
  */
 export type PublishStatus = "draft" | "published";
-export type Title2 = string;
+export type Title4 = string;
 export type UpdatedAt = string;
 export type CourseId1 = string;
 export type Description5 = string;
-export type Id3 = string;
+export type Id4 = string;
 export type Position2 = number;
 export type SourceRefs4 = {
   [k: string]: unknown;
 }[];
-export type Title3 = string;
+export type Title5 = string;
 export type UpdatedAt1 = string;
 export type Description6 = string | null;
 export type Position3 = number | null;
 export type SourceRefs5 = ChapterSourceRef[] | null;
-export type Title4 = string | null;
+export type Title6 = string | null;
 export type AcademicYear = string | null;
 export type Name2 = string;
 export type SchoolId1 = string;
@@ -124,10 +212,10 @@ export type Email = string;
 export type ClassroomRole = "teacher" | "student";
 export type DisplayName = string;
 export type Email1 = string;
-export type Id4 = string;
+export type Id5 = string;
 export type AcademicYear1 = string | null;
 export type CreatedAt2 = string;
-export type Id5 = string;
+export type Id6 = string;
 export type Name3 = string;
 export type SchoolId2 = string;
 /**
@@ -140,12 +228,12 @@ export type Description7 = string;
 export type GradeLevel = string | null;
 export type SchoolId3 = string | null;
 export type Subject2 = string | null;
-export type Title5 = string;
+export type Title7 = string;
 export type CanManage1 = boolean;
 export type CreatedAt3 = string;
 export type Description8 = string;
 export type GradeLevel1 = string | null;
-export type Id6 = string;
+export type Id7 = string;
 export type SchoolId4 = string | null;
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -153,16 +241,16 @@ export type SchoolId4 = string | null;
  */
 export type CourseStatus = "draft" | "published" | "archived";
 export type Subject3 = string | null;
-export type Title6 = string;
+export type Title8 = string;
 export type UpdatedAt2 = string;
 export type Description9 = string | null;
 export type GradeLevel2 = string | null;
 export type Subject4 = string | null;
-export type Title7 = string | null;
+export type Title9 = string | null;
 export type CourseId2 = string;
 export type CreatedAt4 = string;
 export type ErrorMessage1 = string | null;
-export type Id7 = string;
+export type Id8 = string;
 export type MimeType = string;
 export type OriginalFilename = string;
 export type PageCount = number | null;
@@ -173,13 +261,13 @@ export type PagesNeedingOcr = number;
  */
 export type DocumentStatus = "pending_upload" | "uploaded" | "processing" | "ready" | "failed";
 export type SizeBytes1 = number;
-export type Title8 = string;
+export type Title10 = string;
 export type AttemptCount = number;
 export type CreatedAt5 = string;
 export type ErrorCode = string | null;
 export type ErrorMessage2 = string | null;
 export type FinishedAt = string | null;
-export type Id8 = string;
+export type Id9 = string;
 export type JobType = string;
 export type Result = {
   [k: string]: unknown;
@@ -215,7 +303,7 @@ export type ErrorType = string;
 export type Detail = ValidationError[];
 export type Environment = string;
 export type Status2 = string;
-export type SchemaVersion = "1.0";
+export type SchemaVersion1 = "1.0";
 export type BodyMarkdown = string;
 /**
  * @maxItems 30
@@ -227,7 +315,7 @@ export type Page = number;
  * @maxItems 30
  */
 export type SourceRefs6 = SourceRef[];
-export type Title9 = string;
+export type Title11 = string;
 /**
  * @maxItems 40
  */
@@ -244,33 +332,33 @@ export type VisualizationType =
  * @maxItems 10
  */
 export type VisualizationCandidates = VisualizationCandidate[];
-export type Title10 = string;
+export type Title12 = string;
 export type ChapterId = string;
 export type HasUnpublishedChanges = boolean;
-export type Id9 = string;
-export type Origin = string;
+export type Id10 = string;
+export type Origin1 = string;
 export type Position4 = number;
 export type PublishedVersion = number | null;
 export type Status3 = string;
-export type Title11 = string;
+export type Title13 = string;
 export type UpdatedAt3 = string;
-export type Version1 = number;
+export type Version2 = number;
 export type HasUnpublishedChanges1 = boolean;
-export type Id10 = string;
-export type Origin1 = string;
+export type Id11 = string;
+export type Origin2 = string;
 export type Position5 = number;
 export type PublishedVersion1 = number | null;
 export type Status4 = string;
-export type Title12 = string;
-export type Version2 = number;
+export type Title14 = string;
+export type Version3 = number;
 /**
  * Optimistic concurrency check.
  */
-export type ExpectedVersion = number;
-export type Title13 = string | null;
+export type ExpectedVersion1 = number;
+export type Title15 = string | null;
 export type ChangeSource = string;
 export type CreatedAt6 = string;
-export type Title14 = string;
+export type Title16 = string;
 export type VersionNumber2 = number;
 export type Email2 = string;
 export type Password = string;
@@ -282,7 +370,7 @@ export type SourceRefs7 = {
 }[];
 export type Text = string;
 export type CreatedAt7 = string;
-export type Id11 = string;
+export type Id12 = string;
 export type Model = string;
 export type PromptId = string;
 export type PromptVersion = string;
@@ -305,9 +393,10 @@ export type Name7 = string;
 export type NodeNames = string[];
 export type SourceUrl2 = string | null;
 export type Url2 = string;
-export type Version3 = number;
+export type Version4 = number;
+export type Animations = AnimationSpec[];
 export type Assets = ResolvedAsset[];
-export type SceneId = string;
+export type SceneId1 = string;
 /**
  * @maxItems 50
  */
@@ -342,23 +431,23 @@ export type LearningObjectiveIds = string[];
  * @maxItems 20
  */
 export type Procedural = ProceduralSource[];
-export type SceneId1 = string;
-export type SchemaVersion1 = "1.0";
-export type Title15 = string;
-export type Version4 = number;
+export type SceneId2 = string;
+export type SchemaVersion2 = "1.0";
+export type Title17 = string;
+export type Version5 = number;
 export type Warnings = string[];
 export type HasUnpublishedChanges2 = boolean;
-export type Id12 = string;
+export type Id13 = string;
 export type LessonId = string;
-export type Origin2 = string;
+export type Origin3 = string;
 export type PlanningRationale = string | null;
 export type PublishedVersion2 = number | null;
 export type Status6 = string;
-export type Title16 = string;
+export type Title18 = string;
 export type UpdatedAt4 = string;
-export type Version5 = number;
+export type Version6 = number;
 export type Warnings1 = string[];
-export type ExpectedVersion1 = number;
+export type ExpectedVersion2 = number;
 export type Name8 = string;
 export type Slug1 = string;
 export type Email4 = string;
@@ -369,30 +458,35 @@ export type Email4 = string;
 export type SchoolRole = "school_admin" | "teacher" | "student";
 export type JoinedAt = string;
 export type CreatedAt8 = string;
-export type Id13 = string;
+export type Id14 = string;
 export type Name9 = string;
 export type Slug2 = string;
-export type ExpectedVersion2 = number;
+export type ExpectedVersion3 = number;
 export type Instruction = string | null;
 export type CourseId3 = string;
 export type Text1 = string;
-export type Title17 = string;
+export type Title19 = string;
 export type Method1 = string;
 export type Url3 = string;
 export type CourseId4 = string;
 export type Filename = string;
 export type MimeType1 = "application/pdf" | "text/plain" | "text/markdown";
 export type SizeBytes2 = number;
-export type Title18 = string | null;
+export type Title20 = string | null;
 export type CreatedAt9 = string;
 export type DisplayName2 = string;
 export type Email5 = string;
-export type Id14 = string;
+export type Id15 = string;
 export type DisplayName3 = string;
 
 export interface Api {
   AIUsageOut?: AIUsageOut;
   AccountType?: AccountType;
+  AnimationCreate?: AnimationCreate;
+  AnimationOut?: AnimationOut;
+  AnimationSpec?: AnimationSpec;
+  AnimationUpdate?: AnimationUpdate;
+  AnnotationStep?: AnnotationStep;
   ApplyOutlineRequest?: ApplyOutlineRequest;
   AssetCreate?: AssetCreate;
   AssetOut?: AssetOut;
@@ -402,6 +496,7 @@ export interface Api {
   AssetVersionOut?: AssetVersionOut;
   AssetVersionUploadRequest?: AssetVersionUploadRequest;
   Camera?: Camera;
+  CameraFocusStep?: CameraFocusStep;
   CameraPreset?: CameraPreset1;
   ChapterCreate?: ChapterCreate;
   ChapterDetail?: ChapterDetail;
@@ -425,12 +520,14 @@ export interface Api {
   EnrollRequest?: EnrollRequest;
   EnrollResult?: EnrollResult;
   EnrollmentOut?: EnrollmentOut;
+  FlowParticlesStep?: FlowParticlesStep;
   GenerationRequest?: GenerationRequest;
   GenerationResponse?: GenerationResponse;
   GeneratorOut?: GeneratorOut;
   GeneratorParamOut?: GeneratorParamOut;
   HTTPValidationError?: HTTPValidationError;
   HealthResponse?: HealthResponse;
+  HighlightStep?: HighlightStep;
   JobOut?: JobOut;
   LessonContent?: LessonContent;
   LessonCreate?: LessonCreate;
@@ -440,6 +537,7 @@ export interface Api {
   LessonUpdate?: LessonUpdate;
   LessonVersionOut?: LessonVersionOut;
   LoginRequest?: LoginRequest;
+  MoveAlongPathStep?: MoveAlongPathStep;
   ObjectiveIn?: ObjectiveIn;
   ObjectiveOut?: ObjectiveOut;
   OutlineChapterIn?: OutlineChapterIn;
@@ -451,6 +549,7 @@ export interface Api {
   RegisterRequest?: RegisterRequest;
   ResolvedAsset?: ResolvedAsset;
   ResolvedScene?: ResolvedScene;
+  RotateComponentStep?: RotateComponentStep;
   SceneComponent?: SceneComponent;
   SceneControl?: SceneControl;
   SceneCreate?: SceneCreate;
@@ -463,6 +562,8 @@ export interface Api {
   SchoolOut?: SchoolOut;
   SchoolRole?: SchoolRole;
   SectionRegenerateRequest?: SectionRegenerateRequest;
+  SetOpacityStep?: SetOpacityStep;
+  SetVisibilityStep?: SetVisibilityStep;
   SourceRef?: SourceRef;
   TextDocumentRequest?: TextDocumentRequest;
   UploadInstructions?: UploadInstructions;
@@ -473,6 +574,7 @@ export interface Api {
   UserUpdate?: UserUpdate;
   ValidationError?: ValidationError;
   VisualizationCandidate?: VisualizationCandidate;
+  WaitStep?: WaitStep;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -483,6 +585,148 @@ export interface AIUsageOut {
   estimated_cost_usd: EstimatedCostUsd;
   input_tokens: InputTokens;
   output_tokens: OutputTokens;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "AnimationCreate".
+ */
+export interface AnimationCreate {
+  spec: AnimationSpec;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "AnimationSpec".
+ */
+export interface AnimationSpec {
+  animation_id: AnimationId;
+  schema_version?: SchemaVersion;
+  steps: Steps;
+  title: Title;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "HighlightStep".
+ */
+export interface HighlightStep {
+  action: Action;
+  duration_ms: DurationMs;
+  explanation?: Explanation;
+  step: Step;
+  target_component: TargetComponent;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "SetVisibilityStep".
+ */
+export interface SetVisibilityStep {
+  action: Action1;
+  duration_ms: DurationMs1;
+  explanation?: Explanation1;
+  step: Step1;
+  target_component: TargetComponent1;
+  visible: Visible;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "SetOpacityStep".
+ */
+export interface SetOpacityStep {
+  action: Action2;
+  duration_ms: DurationMs2;
+  explanation?: Explanation2;
+  opacity: Opacity;
+  step: Step2;
+  target_component: TargetComponent2;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "MoveAlongPathStep".
+ */
+export interface MoveAlongPathStep {
+  action: Action3;
+  duration_ms: DurationMs3;
+  explanation?: Explanation3;
+  path_id: PathId;
+  step: Step3;
+  target_component: TargetComponent3;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "RotateComponentStep".
+ */
+export interface RotateComponentStep {
+  action: Action4;
+  axis: Axis;
+  degrees: Degrees;
+  duration_ms: DurationMs4;
+  explanation?: Explanation4;
+  step: Step4;
+  target_component: TargetComponent4;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "FlowParticlesStep".
+ */
+export interface FlowParticlesStep {
+  action: Action5;
+  duration_ms: DurationMs5;
+  explanation?: Explanation5;
+  path_id: PathId1;
+  step: Step5;
+  target_component: TargetComponent5;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "CameraFocusStep".
+ */
+export interface CameraFocusStep {
+  action: Action6;
+  duration_ms: DurationMs6;
+  explanation?: Explanation6;
+  step: Step6;
+  target_component: TargetComponent6;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "AnnotationStep".
+ */
+export interface AnnotationStep {
+  action: Action7;
+  duration_ms: DurationMs7;
+  explanation: Explanation7;
+  step: Step7;
+  target_component?: TargetComponent7;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "WaitStep".
+ */
+export interface WaitStep {
+  action: Action8;
+  duration_ms: DurationMs8;
+  explanation?: Explanation8;
+  step: Step8;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "AnimationOut".
+ */
+export interface AnimationOut {
+  id: Id;
+  origin: Origin;
+  problems?: Problems;
+  scene_id: SceneId;
+  spec: AnimationSpec;
+  title: Title1;
+  version: Version;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "AnimationUpdate".
+ */
+export interface AnimationUpdate {
+  expected_version: ExpectedVersion;
+  spec: AnimationSpec;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -499,7 +743,7 @@ export interface OutlineChapterIn {
   description?: Description;
   objectives?: Objectives;
   source_refs?: SourceRefs;
-  title: Title;
+  title: Title2;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -534,7 +778,7 @@ export interface AssetOut {
   category: Category1;
   created_at: CreatedAt;
   description: Description2;
-  id: Id;
+  id: Id1;
   latest_version: LatestVersion;
   license_name: LicenseName1;
   name: Name1;
@@ -568,7 +812,7 @@ export interface MetadataJson {
  */
 export interface AssetRef {
   asset_id: AssetId;
-  version: Version;
+  version: Version1;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -614,7 +858,7 @@ export interface Camera {
 export interface ChapterCreate {
   description?: Description3;
   source_refs?: SourceRefs1;
-  title: Title1;
+  title: Title3;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -623,12 +867,12 @@ export interface ChapterCreate {
 export interface ChapterDetail {
   course_id: CourseId;
   description: Description4;
-  id: Id1;
+  id: Id2;
   objectives?: Objectives1;
   position: Position1;
   source_refs: SourceRefs3;
   status: PublishStatus;
-  title: Title2;
+  title: Title4;
   updated_at: UpdatedAt;
 }
 /**
@@ -636,7 +880,7 @@ export interface ChapterDetail {
  * via the `definition` "ObjectiveOut".
  */
 export interface ObjectiveOut {
-  id: Id2;
+  id: Id3;
   objective_text: ObjectiveText;
   position: Position;
   source_refs: SourceRefs2;
@@ -648,11 +892,11 @@ export interface ObjectiveOut {
 export interface ChapterOut {
   course_id: CourseId1;
   description: Description5;
-  id: Id3;
+  id: Id4;
   position: Position2;
   source_refs: SourceRefs4;
   status: PublishStatus;
-  title: Title3;
+  title: Title5;
   updated_at: UpdatedAt1;
 }
 /**
@@ -664,7 +908,7 @@ export interface ChapterUpdate {
   position?: Position3;
   source_refs?: SourceRefs5;
   status?: PublishStatus | null;
-  title?: Title4;
+  title?: Title6;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -700,7 +944,7 @@ export interface ClassroomMemberOut {
 export interface UserSummary {
   display_name: DisplayName;
   email: Email1;
-  id: Id4;
+  id: Id5;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -709,7 +953,7 @@ export interface UserSummary {
 export interface ClassroomOut {
   academic_year: AcademicYear1;
   created_at: CreatedAt2;
-  id: Id5;
+  id: Id6;
   name: Name3;
   school_id: SchoolId2;
 }
@@ -722,7 +966,7 @@ export interface CourseCreate {
   grade_level?: GradeLevel;
   school_id?: SchoolId3;
   subject?: Subject2;
-  title: Title5;
+  title: Title7;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -733,11 +977,11 @@ export interface CourseOut {
   created_at: CreatedAt3;
   description: Description8;
   grade_level: GradeLevel1;
-  id: Id6;
+  id: Id7;
   school_id: SchoolId4;
   status: CourseStatus;
   subject: Subject3;
-  title: Title6;
+  title: Title8;
   updated_at: UpdatedAt2;
 }
 /**
@@ -749,7 +993,7 @@ export interface CourseUpdate {
   grade_level?: GradeLevel2;
   status?: CourseStatus | null;
   subject?: Subject4;
-  title?: Title7;
+  title?: Title9;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -767,14 +1011,14 @@ export interface DocumentOut {
   course_id: CourseId2;
   created_at: CreatedAt4;
   error_message: ErrorMessage1;
-  id: Id7;
+  id: Id8;
   mime_type: MimeType;
   original_filename: OriginalFilename;
   page_count: PageCount;
   pages_needing_ocr: PagesNeedingOcr;
   processing_status: DocumentStatus;
   size_bytes: SizeBytes1;
-  title: Title8;
+  title: Title10;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -786,7 +1030,7 @@ export interface JobOut {
   error_code: ErrorCode;
   error_message: ErrorMessage2;
   finished_at: FinishedAt;
-  id: Id8;
+  id: Id9;
   job_type: JobType;
   result: Result;
   status: Status1;
@@ -900,7 +1144,7 @@ export interface HealthResponse {
  * via the `definition` "LessonContent".
  */
 export interface LessonContent {
-  schema_version?: SchemaVersion;
+  schema_version?: SchemaVersion1;
   sections?: Sections;
   summary?: Summary;
   visualization_candidates?: VisualizationCandidates;
@@ -913,7 +1157,7 @@ export interface LessonSection {
   body_markdown: BodyMarkdown;
   key_terms?: KeyTerms;
   source_refs?: SourceRefs6;
-  title: Title9;
+  title: Title11;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -938,7 +1182,7 @@ export interface VisualizationCandidate {
  */
 export interface LessonCreate {
   content?: LessonContent;
-  title: Title10;
+  title: Title12;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -948,14 +1192,14 @@ export interface LessonOut {
   chapter_id: ChapterId;
   content: LessonContent;
   has_unpublished_changes: HasUnpublishedChanges;
-  id: Id9;
-  origin: Origin;
+  id: Id10;
+  origin: Origin1;
   position: Position4;
   published_version: PublishedVersion;
   status: Status3;
-  title: Title11;
+  title: Title13;
   updated_at: UpdatedAt3;
-  version: Version1;
+  version: Version2;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -963,13 +1207,13 @@ export interface LessonOut {
  */
 export interface LessonSummary {
   has_unpublished_changes: HasUnpublishedChanges1;
-  id: Id10;
-  origin: Origin1;
+  id: Id11;
+  origin: Origin2;
   position: Position5;
   published_version: PublishedVersion1;
   status: Status4;
-  title: Title12;
-  version: Version2;
+  title: Title14;
+  version: Version3;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -977,8 +1221,8 @@ export interface LessonSummary {
  */
 export interface LessonUpdate {
   content?: LessonContent | null;
-  expected_version: ExpectedVersion;
-  title?: Title13;
+  expected_version: ExpectedVersion1;
+  title?: Title15;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -987,7 +1231,7 @@ export interface LessonUpdate {
 export interface LessonVersionOut {
   change_source: ChangeSource;
   created_at: CreatedAt6;
-  title: Title14;
+  title: Title16;
   version_number: VersionNumber2;
 }
 /**
@@ -1012,7 +1256,7 @@ export interface ObjectiveIn {
  */
 export interface OutlineProposalOut {
   created_at: CreatedAt7;
-  id: Id11;
+  id: Id12;
   model: Model;
   output: Output;
   prompt_id: PromptId;
@@ -1085,17 +1329,18 @@ export interface ResolvedAsset {
   node_names: NodeNames;
   source_url: SourceUrl2;
   url: Url2;
-  version: Version3;
+  version: Version4;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "ResolvedScene".
  */
 export interface ResolvedScene {
+  animations?: Animations;
   assets: Assets;
-  scene_id: SceneId;
+  scene_id: SceneId1;
   spec: SceneSpec;
-  version: Version4;
+  version: Version5;
   warnings: Warnings;
 }
 /**
@@ -1110,10 +1355,11 @@ export interface SceneSpec {
   controls?: Controls;
   explanations?: Explanations;
   learning_objective_ids?: LearningObjectiveIds;
+  paths?: Paths;
   procedural?: Procedural;
-  scene_id: SceneId1;
-  schema_version?: SchemaVersion1;
-  title: Title15;
+  scene_id: SceneId2;
+  schema_version?: SchemaVersion2;
+  title: Title17;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1133,6 +1379,13 @@ export interface Explanations {
    */
   [k: string]: string;
 }
+export interface Paths {
+  /**
+   * This interface was referenced by `Paths`'s JSON-Schema definition
+   * via the `patternProperty` "^[a-z][a-z0-9_]{0,63}$".
+   */
+  [k: string]: [number, number, number, ...number[]][];
+}
 /**
  * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "SceneCreate".
@@ -1146,16 +1399,16 @@ export interface SceneCreate {
  */
 export interface SceneOut {
   has_unpublished_changes: HasUnpublishedChanges2;
-  id: Id12;
+  id: Id13;
   lesson_id: LessonId;
-  origin?: Origin2;
+  origin?: Origin3;
   planning_rationale?: PlanningRationale;
   published_version: PublishedVersion2;
   spec: SceneSpec;
   status: Status6;
-  title: Title16;
+  title: Title18;
   updated_at: UpdatedAt4;
-  version: Version5;
+  version: Version6;
   warnings?: Warnings1;
 }
 /**
@@ -1163,7 +1416,7 @@ export interface SceneOut {
  * via the `definition` "SceneUpdate".
  */
 export interface SceneUpdate {
-  expected_version: ExpectedVersion1;
+  expected_version: ExpectedVersion2;
   spec: SceneSpec;
 }
 /**
@@ -1197,7 +1450,7 @@ export interface SchoolMemberOut {
  */
 export interface SchoolOut {
   created_at: CreatedAt8;
-  id: Id13;
+  id: Id14;
   my_role?: SchoolRole | null;
   name: Name9;
   slug: Slug2;
@@ -1207,7 +1460,7 @@ export interface SchoolOut {
  * via the `definition` "SectionRegenerateRequest".
  */
 export interface SectionRegenerateRequest {
-  expected_version: ExpectedVersion2;
+  expected_version: ExpectedVersion3;
   instruction?: Instruction;
 }
 /**
@@ -1217,7 +1470,7 @@ export interface SectionRegenerateRequest {
 export interface TextDocumentRequest {
   course_id: CourseId3;
   text: Text1;
-  title: Title17;
+  title: Title19;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1240,7 +1493,7 @@ export interface UploadUrlRequest {
   filename: Filename;
   mime_type: MimeType1;
   size_bytes: SizeBytes2;
-  title?: Title18;
+  title?: Title20;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1259,7 +1512,7 @@ export interface UserOut {
   created_at: CreatedAt9;
   display_name: DisplayName2;
   email: Email5;
-  id: Id14;
+  id: Id15;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema

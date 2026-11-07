@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
-from app.modules.three_d.contracts import SceneSpec
+from app.modules.three_d.contracts import AnimationSpec, SceneSpec
 
 
 class AssetCreate(BaseModel):
@@ -113,6 +113,7 @@ class ResolvedScene(BaseModel):
     spec: SceneSpec
     assets: list[ResolvedAsset]
     warnings: list[str]
+    animations: list[AnimationSpec] = []
 
 
 class GeneratorParamOut(BaseModel):

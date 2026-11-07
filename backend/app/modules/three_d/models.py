@@ -92,6 +92,29 @@ class ThreeDScene(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     published_spec: Mapped[dict[str, Any] | None] = mapped_column(JSONType)
     origin: Mapped[str] = mapped_column(String(20), default="manual")  # manual | ai
     planning_rationale: Mapped[str | None] = mapped_column(Text)
+    # Animation specs snapshotted at publish time (what students play).
+    published_animations: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONType)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
+
+
+class ThreeDAnimation(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    """A guided animation for a scene (design §7.6). Steps live in the validated spec; the
+    design's animation_steps table can be derived if per-step analytics need it."""
+
+    __tablename__ = "three_d_animations"
+    __table_args__ = (UniqueConstraint("scene_id", "animation_key"),)
+
+    scene_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("three_d_scenes.id", ondelete="CASCADE"), index=True
+    )
+    animation_key: Mapped[str] = mapped_column(String(64))
+    title: Mapped[str] = mapped_column(String(200))
+    schema_version: Mapped[str] = mapped_column(String(10))
+    spec: Mapped[dict[str, Any]] = mapped_column(JSONType)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    origin: Mapped[str] = mapped_column(String(20), default="manual")
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL")
     )

@@ -25,6 +25,9 @@ LongText = Annotated[str, Field(min_length=1, max_length=2000)]
 
 MAX_STEP_DURATION_MS = 30_000
 
+Coord = Annotated[float, Field(ge=-1000, le=1000)]
+Point3 = Annotated[list[Coord], Field(min_length=3, max_length=3)]
+
 
 class _Contract(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -106,6 +109,8 @@ class SceneSpec(_Contract):
     animation_refs: list[Identifier] = Field(default_factory=list, max_length=50)
     # Text shown when a component is selected; components point here via explanation_ref.
     explanations: dict[Identifier, LongText] = Field(default_factory=dict, max_length=200)
+    # Named polylines (scene coordinates) for move_along_path / show_flow_particles steps.
+    paths: dict[Identifier, list[Point3]] = Field(default_factory=dict, max_length=50)
 
     @model_validator(mode="after")
     def _check_integrity(self) -> Self:
@@ -126,6 +131,9 @@ class SceneSpec(_Contract):
         )
         if missing:
             raise ValueError(f"explanation_ref values without an explanation: {missing}")
+        for key, points in self.paths.items():
+            if not 2 <= len(points) <= 200:
+                raise ValueError(f"path '{key}' must have between 2 and 200 points")
         return self
 
     def component_ids(self) -> set[str]:
@@ -248,4 +256,9 @@ def validate_animation_for_scene(animation: AnimationSpec, scene: SceneSpec) -> 
     unknown = sorted(animation.target_components() - scene.component_ids())
     if unknown:
         problems.append(f"unknown target components: {unknown}")
+    missing_paths = sorted(
+        {p for s in animation.steps if (p := getattr(s, "path_id", None))} - set(scene.paths)
+    )
+    if missing_paths:
+        problems.append(f"unknown paths: {missing_paths}")
     return problems

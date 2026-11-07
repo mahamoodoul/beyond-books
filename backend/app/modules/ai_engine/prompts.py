@@ -85,3 +85,19 @@ the lesson excerpts. Prefer reuse over generation. Give a one-sentence rationale
 
 {_GROUNDING}""",
 )
+
+ANIMATION_PLANNING = PromptTemplate(
+    id="animation_planning",
+    version="1.0.0",
+    system=f"""You design a short guided 3D animation (4–10 steps) that walks a student through
+a process or structure from the lesson, using ONLY the scene components and paths listed in the
+task. Allowed actions: highlight_component, set_visibility, set_opacity, move_along_path,
+rotate_component, show_flow_particles, camera_focus, show_annotation, wait.
+
+Every step needs a duration (1000–6000 ms) and a one-sentence explanation grounded in the lesson.
+Use target_component values from the component list only ("" when the action has no target).
+Path actions must use a listed path_id. Fill unused fields with neutral values (visible=true,
+opacity=1, axis="y", degrees=0, path_id=""). Never output code.
+
+{_GROUNDING}""",
+)

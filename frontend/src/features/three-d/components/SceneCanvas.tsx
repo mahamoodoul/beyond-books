@@ -1,6 +1,6 @@
 import { Html, OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, type ThreeEvent } from "@react-three/fiber";
-import { Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { Suspense, useEffect, useMemo, useRef, type ReactNode, type RefObject } from "react";
 import type { Group, Object3D } from "three";
 
 import type { ResolvedAsset, SceneComponent, SceneSpec } from "@/api/generated/schema";
@@ -41,9 +41,11 @@ export interface SceneCanvasProps {
   onSelect: (c: SceneComponent | null) => void;
   onMeshesLoaded: (names: string[]) => void;
   reducedMotion: boolean;
+  /** Extra content rendered inside the canvas with access to the scene root (e.g. animations). */
+  overlay?: (root: RefObject<Group | null>) => ReactNode;
 }
 
-export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, reducedMotion }: SceneCanvasProps) {
+export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, reducedMotion, overlay }: SceneCanvasProps) {
   const root = useRef<Group>(null);
   const byMesh = useMemo(
     () => new Map((spec.components ?? []).map((c) => [c.mesh_name, c] as const)),
@@ -100,6 +102,7 @@ export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, 
         <group ref={root} onClick={click}>
           {content}
         </group>
+        {overlay?.(root)}
       </Suspense>
       <OrbitControls
         makeDefault
