@@ -25,6 +25,7 @@ from app.modules.ai_engine.schemas import (
     OutlineChapterLLM,
     OutlineLLM,
     OutlineObjectiveLLM,
+    PartInsightLLM,
     QuestionLLM,
     SceneComponentLLM,
     ScenePlanLLM,
@@ -67,6 +68,7 @@ class FakeLLMProvider:
             EvaluationLLM: self._evaluation,
             ExplainLLM: self._explain,
             Model3DLLM: self._model_3d,
+            PartInsightLLM: self._part_insight,
         }
         output = builders[output_schema](references, task)
         chars_in = len(system_prompt) + len(task) + sum(len(r.text) for r in references)
@@ -361,3 +363,38 @@ class FakeLLMProvider:
                 )
             )
         return Model3DLLM(title=" ".join(words), parts=parts)
+
+    def _part_insight(self, refs: list[ReferencePassage], task: str) -> PartInsightLLM:
+        part = next(
+            (ln.split(":", 1)[1].strip() for ln in task.splitlines() if ln.startswith("Part:")),
+            "part",
+        )
+        action = next(
+            (ln.split(":", 1)[1].strip() for ln in task.splitlines() if ln.startswith("Action:")),
+            "",
+        )
+        sents = _sentences(" ".join(r.text for r in refs))
+        hit = next(
+            (x for x in sents if part.lower().split()[0] in x.lower()), sents[0] if sents else ""
+        )
+        if action == "quiz_question":
+            return PartInsightLLM(
+                text=f"Question about the {part}.",
+                question_text=f"Which statement about the {part} is correct?",
+                options=[
+                    hit[:150] or "It is part of the model.",
+                    "It has no function.",
+                    "It is made of metal.",
+                    "It is outside the body.",
+                ],
+                correct_index=0,
+                explanation=hit[:200],
+            )
+        prefix = {"simplify": "In simple words:", "compare": "Comparison:"}.get(action, "In depth:")
+        return PartInsightLLM(
+            text=f"{prefix} {hit or part}",
+            question_text="",
+            options=[],
+            correct_index=-1,
+            explanation="",
+        )

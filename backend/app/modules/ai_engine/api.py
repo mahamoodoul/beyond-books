@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -117,6 +117,24 @@ def plan_animation(scene_id: uuid.UUID, user: CurrentUser, db: DB) -> Job:
     from app.modules.ai_engine.animation_planning import start_animation_plan
 
     return start_animation_plan(db, user, scene_id)
+
+
+class PartInsightRequest(BaseModel):
+    component_id: str = Field(min_length=1, max_length=64)
+    action: Literal["explain_deeper", "simplify", "compare", "quiz_question"]
+    compare_with: str | None = Field(default=None, max_length=64)
+
+
+@router.post(
+    "/scenes/{scene_id}/ai/part-insight",
+    response_model=JobOut,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def part_insight(scene_id: uuid.UUID, body: PartInsightRequest, user: CurrentUser, db: DB) -> Job:
+    """AI help for one 3D part (teacher 3D Studio). Result in the job's `result`."""
+    from app.modules.ai_engine.part_insight import start_part_insight
+
+    return start_part_insight(db, user, scene_id, body.component_id, body.action, body.compare_with)
 
 
 @router.get("/courses/{course_id}/ai/usage", response_model=AIUsageOut)

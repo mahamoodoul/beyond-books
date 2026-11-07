@@ -161,3 +161,11 @@ class ModelPartLLM(BaseModel):
 class Model3DLLM(BaseModel):
     title: str
     parts: list[ModelPartLLM]
+
+
+class PartInsightLLM(BaseModel):
+    text: str
+    question_text: str
+    options: list[str]
+    correct_index: int
+    explanation: str

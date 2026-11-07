@@ -43,9 +43,10 @@ export interface SceneCanvasProps {
   reducedMotion: boolean;
   /** Extra content rendered inside the canvas with access to the scene root (e.g. animations). */
   overlay?: (root: RefObject<Group | null>) => ReactNode;
+  background?: string;
 }
 
-export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, reducedMotion, overlay }: SceneCanvasProps) {
+export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, reducedMotion, overlay, background = "#0b1630" }: SceneCanvasProps) {
   const root = useRef<Group>(null);
   const byMesh = useMemo(
     () => new Map((spec.components ?? []).map((c) => [c.mesh_name, c] as const)),
@@ -94,7 +95,7 @@ export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, 
       onPointerMissed={() => onSelect(null)}
       aria-label={`3D scene: ${spec.title}`}
     >
-      <color attach="background" args={["#0b1630"]} />
+      <color attach="background" args={[background]} />
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 8, 5]} intensity={1.3} />
       <directionalLight position={[-6, -3, -4]} intensity={0.4} />

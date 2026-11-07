@@ -605,6 +605,9 @@ export type PageNumber = number;
 export type QualityStatus = string;
 export type Items = PageOut[];
 export type Total = number;
+export type Action9 = "explain_deeper" | "simplify" | "compare" | "quiz_question";
+export type CompareWith = string | null;
+export type ComponentId1 = string;
 export type Generator = string;
 export type Status12 = "in_progress" | "completed";
 export type ExpectedVersion2 = number;
@@ -641,7 +644,7 @@ export type AssetRefs = AssetRef[];
  * @maxItems 4
  */
 export type Actions = ComponentAction[];
-export type ComponentId1 = string;
+export type ComponentId2 = string;
 export type ExplanationRef = string | null;
 export type Label = string;
 export type MeshName = string;
@@ -857,6 +860,7 @@ export interface Api {
   OutlineProposalOut?: OutlineProposalOut;
   PageList?: PageList;
   PageOut?: PageOut;
+  PartInsightRequest?: PartInsightRequest;
   ProceduralSource?: ProceduralSource;
   ProgressUpdate?: ProgressUpdate;
   PublishStatus?: PublishStatus;
@@ -2027,6 +2031,15 @@ export interface PageOut {
   quality_status: QualityStatus;
 }
 /**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "PartInsightRequest".
+ */
+export interface PartInsightRequest {
+  action: Action9;
+  compare_with?: CompareWith;
+  component_id: ComponentId1;
+}
+/**
  * A trusted, prebuilt procedural generator in the renderer (design §7.1-A).
  *
  * `generator` must exist in the renderer's allowlisted registry; params are flat scalars only.
@@ -2138,7 +2151,7 @@ export interface SceneSpec {
  */
 export interface SceneComponent {
   actions?: Actions;
-  component_id: ComponentId1;
+  component_id: ComponentId2;
   explanation_ref?: ExplanationRef;
   label: Label;
   mesh_name: MeshName;

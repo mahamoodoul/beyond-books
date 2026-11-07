@@ -25,6 +25,12 @@ const anyUser = (el: ReactNode) => <RequireAuth>{el}</RequireAuth>;
 
 export const appRoutes = [
   {
+    // Full-screen teacher 3D Studio (own dark layout, outside the standard app chrome).
+    path: "/teacher/lessons/:lessonId/studio",
+    errorElement: <RouteError />,
+    element: teacher(page(() => import("@/features/three-d/studio/StudioPage"), "default")),
+  },
+  {
     element: <AppLayout />,
     errorElement: <RouteError />,
     children: [

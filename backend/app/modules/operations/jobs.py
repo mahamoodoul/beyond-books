@@ -24,6 +24,7 @@ class JobType(StrEnum):
     ANSWER_EVALUATION = "answer_evaluation"
     THREE_D_ASSET_GENERATION = "three_d_asset_generation"
     EXPLAIN_FURTHER = "explain_further"
+    PART_INSIGHT = "part_insight"
 
 
 TERMINAL_STATUSES = frozenset({JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED})

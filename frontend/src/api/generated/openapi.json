@@ -3814,6 +3814,44 @@
         "title": "PageOut",
         "type": "object"
       },
+      "PartInsightRequest": {
+        "properties": {
+          "action": {
+            "enum": [
+              "explain_deeper",
+              "simplify",
+              "compare",
+              "quiz_question"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "compare_with": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare With"
+          },
+          "component_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Component Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id",
+          "action"
+        ],
+        "title": "PartInsightRequest",
+        "type": "object"
+      },
       "ProceduralSource": {
         "additionalProperties": false,
         "description": "A trusted, prebuilt procedural generator in the renderer (design \u00a77.1-A).\n\n`generator` must exist in the renderer's allowlisted registry; params are flat scalars only.",
@@ -9615,6 +9653,60 @@
           }
         },
         "summary": "Plan Animation",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/scenes/{scene_id}/ai/part-insight": {
+      "post": {
+        "description": "AI help for one 3D part (teacher 3D Studio). Result in the job's `result`.",
+        "operationId": "part_insight_api_v1_scenes__scene_id__ai_part_insight_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scene_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Scene Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartInsightRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Part Insight",
         "tags": [
           "ai"
         ]
