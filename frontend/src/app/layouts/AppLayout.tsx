@@ -14,7 +14,7 @@ const teacherNavigation = [
 
 const studentNavigation = [
   { to: "/student", label: "My learning", icon: "grid" as const, end: true },
-  { to: "/student/courses/circulatory-system/lessons/heart-structure", label: "My courses", icon: "book" as const },
+  { to: "/student/courses", label: "My courses", icon: "book" as const },
   { to: "/student/progress", label: "My progress", icon: "activity" as const },
 ];
 

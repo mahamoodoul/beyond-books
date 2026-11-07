@@ -8,6 +8,7 @@ import { LoginPage } from "@/features/auth/LoginPage";
 import { AssessmentPage } from "@/features/assessments/AssessmentPage";
 import { StudentDashboard } from "@/features/dashboard/StudentDashboard";
 import { StudentProgressPage } from "@/features/dashboard/StudentProgressPage";
+import { StudentCoursesPage } from "@/features/courses/StudentCoursesPage";
 import { TeacherDashboard } from "@/features/dashboard/TeacherDashboard";
 import { TeacherAnalyticsPage } from "@/features/dashboard/TeacherAnalyticsPage";
 import { TeacherCoursesPage } from "@/features/dashboard/TeacherCoursesPage";
@@ -15,6 +16,7 @@ import { CourseReviewPage } from "@/features/courses/CourseReviewPage";
 import { TeacherUploadPage } from "@/features/courses/TeacherUploadPage";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { HeartLessonPage } from "@/features/lessons/HeartLessonPage";
+import { CellLessonPage } from "@/features/lessons/CellLessonPage";
 
 const HeartARPage = lazy(() =>
   import("@/features/ar/HeartARPage").then((module) => ({ default: module.HeartARPage })),
@@ -69,6 +71,14 @@ export const router = createBrowserRouter([
           {
             path: "/student/progress",
             element: <RolePage role="student"><StudentProgressPage /></RolePage>,
+          },
+          {
+            path: "/student/courses",
+            element: <RolePage role="student"><StudentCoursesPage /></RolePage>,
+          },
+          {
+            path: "/student/courses/cell-biology/lessons/cell-structure",
+            element: <RolePage role="student"><CellLessonPage /></RolePage>,
           },
           {
             path: "/student/courses/:courseId/assessment",
