@@ -6,25 +6,27 @@
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 
 import { api, ApiError, errorMessage } from "@/api/client";
 import type {
+  AssessmentSummary,
   AvailablePart,
   ChapterDetail,
   ChapterSceneOut,
+  ChapterSourceOut,
   CourseOut,
-  JobOut,
   LessonSummary,
   SceneComponent,
   SceneOut,
   SceneSpec,
 } from "@/api/generated/schema";
-import { useJob } from "@/features/jobs/useJob";
 
 import { AnimationsPanel } from "../AnimationsPanel";
-import { NewScene } from "../ScenesCard";
-import { ContentBoard, GeneratePanel, PromptPanel, PublishBar, SourcePanel } from "./ChapterWorkflow";
+import { GenerationTray } from "../GenerationTray";
+import { Add3DPanel } from "./Add3DPanel";
+import { LessonsStep, QuizStep, ReviewStep, StepFooter, StepNav, type StepKey } from "./ChapterSteps";
+import { GeneratePanel, PromptPanel, PublishBar, SourcePanel } from "./ChapterWorkflow";
 import { Chip, panel, Ring } from "./StudioPage";
 import { useResolved } from "./useStudio";
 
@@ -32,9 +34,9 @@ const StudioViewport = lazy(() => import("./StudioViewport"));
 
 const PRESETS = ["three_quarter", "front", "side", "top"] as const;
 const CONTROLS = ["rotate", "zoom", "pan", "select_component"] as const;
-const btn = "inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-200 hover:border-[#38b2ac]/60 hover:text-white disabled:opacity-40";
+const btn = "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:border-[#38b2ac]/60 hover:text-slate-900 disabled:opacity-40";
 const btnPrimary = "inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#38b2ac] px-3 py-1.5 text-sm font-semibold text-[#0b0d16] hover:bg-[#4fc7c0] disabled:opacity-40";
-const input = "w-full rounded-lg border border-white/10 bg-[#0f1220] px-2.5 py-1.5 text-sm text-slate-100 focus:border-[#38b2ac] focus:outline-none";
+const input = "w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 focus:border-[#38b2ac] focus:outline-none";
 
 function ident(raw: string): string {
   let id = raw.toLowerCase().replace(/[^a-z0-9_]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60);
@@ -69,22 +71,6 @@ function useRefresh(chapterId: string) {
       void qc.invalidateQueries({ queryKey: ["available-parts", sceneId] });
     }
   };
-}
-
-/* ------------------------------------------------------- generation rows */
-function JobRow({ title, jobId, status, reason, onDone }: { title: string; jobId: string | null; status: string; reason?: string | null; onDone: () => void }) {
-  const job = useJob(jobId);
-  const s = job.data?.status ?? status;
-  useEffect(() => { if (s === "completed" || s === "failed") onDone(); }, [s]); // eslint-disable-line react-hooks/exhaustive-deps
-  const decision = (job.data?.result as { decision?: string } | null)?.decision;
-  const tone = s === "completed" ? "teal" : s === "failed" ? "amber" : s === "skipped" ? "slate" : "violet";
-  return (
-    <li className="flex items-center gap-2 text-sm">
-      <span className="min-w-0 flex-1 truncate text-slate-200">{title}</span>
-      <Chip tone={tone}>{s}</Chip>
-      <span className="max-w-[45%] truncate text-xs text-slate-500">{job.data?.error_message ?? reason ?? (decision ? decision.replace("_", " ") : "")}</span>
-    </li>
-  );
 }
 
 /* ------------------------------------------------------------ scene editor */
@@ -162,7 +148,7 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
             <input type="number" min={0.5} step={0.5} className={`${input} mt-1`} value={cam.max_distance ?? 20} onChange={(e) => setDraft({ ...draft, camera: { ...cam, max_distance: Number(e.target.value) } })} />
           </label>
         </div>
-        <fieldset className="flex flex-wrap gap-3 text-sm text-slate-300">
+        <fieldset className="flex flex-wrap gap-3 text-sm text-slate-600">
           <legend className="sr-only">Controls</legend>
           {CONTROLS.map((c) => (
             <label key={c} className="flex items-center gap-1.5">
@@ -175,12 +161,12 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
 
       <section className={`${panel} p-4`}>
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-sm font-semibold text-white">Parts ({comps.length})</p>
+          <p className="text-sm font-semibold text-slate-900">Parts ({comps.length})</p>
           <span className="text-xs text-slate-500">{comps.filter((c) => explanation(c)).length} explained</span>
         </div>
         <ul className="max-h-80 space-y-1.5 overflow-auto pr-1">
           {comps.map((c, i) => (
-            <li key={c.component_id} className="rounded-lg border border-white/10 p-2">
+            <li key={c.component_id} className="rounded-lg border border-slate-200 p-2">
               <div className="flex items-center gap-2">
                 <input aria-label={`Label for ${c.mesh_name}`} className={input} value={c.label} maxLength={200} onChange={(e) => setComp(i, { label: e.target.value })} />
                 <button className={btn} aria-expanded={open === c.component_id} onClick={() => setOpen(open === c.component_id ? null : c.component_id)}>{explanation(c) ? "✎" : "+ text"}</button>
@@ -210,10 +196,10 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
           </button>
           <button className={btn} disabled={dup.isPending} onClick={() => dup.mutate()}>Duplicate</button>
           <Link className={btn} to={`/teacher/lessons/${item.lesson_id}/studio`}>Lesson studio ↗</Link>
-          <button className={`${btn} border-red-400/30 text-red-300`} disabled={del.isPending} onClick={() => confirm(`Delete “${scene.title}” and its animations?`) && del.mutate()}>Delete</button>
+          <button className={`${btn} border-red-400/30 text-red-600`} disabled={del.isPending} onClick={() => confirm(`Delete “${scene.title}” and its animations?`) && del.mutate()}>Delete</button>
         </div>
         {[save.error, publish.error, dup.error, del.error].filter(Boolean).map((e, i) => (
-          <div key={i} className="text-sm text-red-300" role="alert">
+          <div key={i} className="text-sm text-red-600" role="alert">
             {errorMessage(e)}
             {details(e).map((d) => <p key={d}>• {d}</p>)}
           </div>
@@ -231,11 +217,13 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
 export default function ChapterStudioPage() {
   const { chapterId = "" } = useParams();
   const { chapter, course, lessons, board } = useChapterStudio(chapterId);
+  const quizzes = useQuery({ queryKey: ["assessments", chapterId], queryFn: () => api.get<AssessmentSummary[]>(`/chapters/${chapterId}/assessments`) });
+  const source = useQuery({ queryKey: ["chapter-source", chapterId], queryFn: () => api.get<ChapterSourceOut>(`/chapters/${chapterId}/source`) });
   const refresh = useRefresh(chapterId);
+  const [params, setParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedPart, setSelectedPart] = useState<SceneComponent | null>(null);
-  const [creatingFor, setCreatingFor] = useState<string | null>(null);
-  const [planJobs, setPlanJobs] = useState<Record<string, string>>({});
+  const [adding, setAdding] = useState<string | null>(null);
 
   const items = board.data ?? [];
   const selected = items.find((i) => i.scene.id === selectedId) ?? items[0];
@@ -247,137 +235,172 @@ export default function ChapterStudioPage() {
     for (const i of items) m.set(i.lesson_id, [...(m.get(i.lesson_id) ?? []), i]);
     return m;
   }, [items]);
+  const lessonList = lessons.data ?? [];
+  const quizList = quizzes.data ?? [];
   const totals = items.reduce((a, i) => ({ parts: a.parts + i.parts, explained: a.explained + i.explained }), { parts: 0, explained: 0 });
-  const lessonsWith = (lessons.data ?? []).filter((l) => byLesson.has(l.id)).length;
+  const lessonsWith = lessonList.filter((l) => byLesson.has(l.id)).length;
 
-  const planOne = useMutation({
-    mutationFn: (lessonId: string) => api.post<JobOut>(`/lessons/${lessonId}/ai/scene`),
-    onSuccess: (j, lessonId) => setPlanJobs((p) => ({ ...p, [lessonId]: j.id })),
-  });
-
-  if (chapter.isPending || board.isPending) return <div className="grid min-h-screen place-items-center bg-[#0b0d16] text-slate-400">Loading chapter 3D studio…</div>;
-  if (chapter.error) return <div className="grid min-h-screen place-items-center bg-[#0b0d16] text-red-300">{errorMessage(chapter.error)}</div>;
+  if (chapter.isPending || board.isPending) return <div className="grid min-h-screen place-items-center bg-slate-50 text-slate-500">Loading chapter studio…</div>;
+  if (chapter.error) return <div className="grid min-h-screen place-items-center bg-slate-50 text-red-600">{errorMessage(chapter.error)}</div>;
   const ch = chapter.data;
 
+  const done: Record<StepKey, boolean> = {
+    source: (source.data?.passages.length ?? 0) > 0,
+    lessons: lessonList.length > 0,
+    "3d": lessonList.length > 0 && lessonsWith === lessonList.length,
+    quiz: quizList.length > 0,
+    publish: ch.status === "published",
+  };
+  const step = (params.get("step") as StepKey | null) ?? (lessonList.length ? "3d" : "source");
+  const goTo = (s: StepKey) => setParams((p) => { p.set("step", s); return p; }, { replace: true });
+  const checks = [
+    { label: "Chapter text", ok: done.source, detail: done.source ? `${source.data?.passages.length} passages from the textbook` : "No textbook pages linked to this chapter", step: "source" as StepKey },
+    { label: "Lessons", ok: done.lessons, detail: `${lessonList.length} lesson(s), ${lessonList.filter((l) => l.published_version).length} live`, step: "lessons" as StepKey },
+    { label: "3D models", ok: done["3d"], detail: `${lessonsWith}/${lessonList.length} lessons have 3D · ${totals.explained}/${totals.parts} parts explained`, step: "3d" as StepKey },
+    { label: "Quiz", ok: done.quiz, detail: quizList.length ? `${quizList.length} quiz(zes)` : "No quiz yet", step: "quiz" as StepKey },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#0b0d16] text-slate-200">
-      <header className="flex flex-wrap items-center gap-3 border-b border-white/10 px-5 py-3">
-        <Link to={`/teacher/chapters/${chapterId}`} className="text-lg font-semibold text-white">Beyond Books <span className="text-[#38b2ac]">Chapter Studio</span></Link>
-        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-400">
-          <Link className="hover:text-white" to="/teacher">Courses</Link><span>›</span>
-          {course.data && <><Link className="hover:text-white" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span>›</span></>}
-          <span className="text-white">{ch.title}</span>
+    <div className="min-h-screen bg-slate-50 text-slate-700">
+      <header className="flex flex-wrap items-center gap-3 border-b border-slate-200 px-5 py-3">
+        <Link to={`/teacher/chapters/${chapterId}`} className="text-lg font-semibold text-slate-900">Beyond Books <span className="text-teal-700">Chapter Studio</span></Link>
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+          <Link className="hover:text-slate-900" to="/teacher/courses">Courses</Link><span>›</span>
+          {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span>›</span></>}
+          <span className="text-slate-900">{ch.position}. {ch.title}</span>
         </nav>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <PublishBar chapter={ch} course={course.data} />
-          <Link to={course.data ? `/teacher/courses/${course.data.id}` : "/teacher/courses"} className="rounded-lg border border-white/10 px-3 py-1.5 text-sm hover:text-white">Exit studio</Link>
+          <Link to={course.data ? `/teacher/courses/${course.data.id}` : "/teacher/courses"} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:text-slate-900">Exit studio</Link>
         </div>
       </header>
+      <StepNav step={step} done={done} onStep={goTo} />
 
-      <div className="grid gap-4 p-4 xl:grid-cols-[19rem_1fr_24rem]">
-        {/* left: chapter overview + generation */}
-        <aside className="space-y-4">
-          <section className={`${panel} p-4`}>
-            <p className="text-xs uppercase tracking-wider text-slate-500">Chapter {ch.position}</p>
-            <h1 className="mt-1 text-xl font-semibold text-white">{ch.title}</h1>
-            <div className="mt-3 flex items-center gap-3">
-              <Ring pct={totals.parts ? Math.round((totals.explained / totals.parts) * 100) : 0} />
-              <dl className="space-y-1 text-sm">
-                <div className="flex gap-2"><dt className="text-slate-400">Lessons with 3D</dt><dd className="text-white">{lessonsWith}/{lessons.data?.length ?? 0}</dd></div>
-                <div className="flex gap-2"><dt className="text-slate-400">Scenes</dt><dd className="text-white">{items.length}</dd></div>
-                <div className="flex gap-2"><dt className="text-slate-400">Published</dt><dd className="text-white">{items.filter((i) => i.scene.published_version).length}</dd></div>
-                <div className="flex gap-2"><dt className="text-slate-400">Parts explained</dt><dd className="text-white">{totals.explained}/{totals.parts}</dd></div>
-              </dl>
+      <main className="space-y-6 p-5">
+        {step === "source" && (
+          <section>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-slate-900">① Source &amp; prompt</h2>
+              <p className="text-sm text-slate-500">Check the textbook pages the AI will use, tell it how to teach this chapter, or generate everything at once.</p>
+            </div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              <SourcePanel chapterId={chapterId} />
+              <PromptPanel chapter={ch} />
+              <GeneratePanel chapter={ch} />
             </div>
           </section>
-          <SourcePanel chapterId={chapterId} />
-          <PromptPanel chapter={ch} />
-          <GeneratePanel chapter={ch} />
-        </aside>
+        )}
 
-        {/* centre: live preview + organized board */}
-        <main className="space-y-4">
-          <section className="relative h-[52vh] min-h-80 overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(ellipse_at_center,#1a2036_0%,#0b0d16_70%)]">
-            {!selected ? (
-              <div className="grid h-full place-items-center p-6 text-center text-slate-400">No 3D scenes in this chapter yet — generate them with AI or add one to a lesson below.</div>
-            ) : resolved.error ? (
-              <div className="p-6 text-sm text-red-300">{errorMessage(resolved.error)}{details(resolved.error).map((d) => <p key={d}>• {d}</p>)}</div>
-            ) : !resolved.data ? (
-              <p className="p-6 text-slate-400" role="status">Preparing preview…</p>
-            ) : (
-              <Suspense fallback={<p className="p-6 text-slate-400">Loading 3D engine…</p>}>
-                <div className="absolute inset-0">
-                  <StudioViewport resolved={resolved.data} selected={selectedPart} onSelect={setSelectedPart} xray={false} zoom={1} tourStep={null} tourPlaying={false} onTourStepComplete={() => {}} resetKey={selected.scene.version} />
-                </div>
-              </Suspense>
-            )}
-            {selected && (
-              <div className="pointer-events-none absolute left-4 top-4 flex flex-wrap items-center gap-2">
-                <span className="rounded-lg bg-black/40 px-2 py-1 text-sm text-white">{selected.scene.title}</span>
-                <span className="text-xs text-slate-400">{selected.lesson_title}{selectedPart ? ` · ${selectedPart.label}` : ""}</span>
+        {step === "lessons" && <LessonsStep chapterId={chapterId} lessons={lessonList} />}
+
+        {step === "3d" && (
+          <section>
+            <div className="mb-4 flex flex-wrap items-end gap-3">
+              <div className="mr-auto">
+                <h2 className="text-lg font-semibold text-slate-900">③ 3D models</h2>
+                <p className="text-sm text-slate-500">Give each lesson a 3D model: let AI choose, pick one from your 3D library, or generate a new one. Then explain its parts.</p>
               </div>
-            )}
-          </section>
-
-          <ContentBoard chapterId={chapterId} />
-
-          <section className="space-y-3" aria-label="Chapter scenes by lesson">
-            {(lessons.data ?? []).map((l) => {
-              const scenes = byLesson.get(l.id) ?? [];
-              return (
-                <div key={l.id} className={`${panel} p-3`}>
-                  <div className="mb-2 flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-slate-500">Lesson {l.position}</span>
-                    <span className="font-medium text-white">{l.title}</span>
-                    <Chip tone={l.published_version ? "teal" : "slate"}>{l.published_version ? "live" : "draft"}</Chip>
-                    <div className="ml-auto flex gap-2">
-                      {planJobs[l.id] ? <ul className="w-56"><JobRow title="AI plan" jobId={planJobs[l.id] ?? null} status="queued" onDone={() => refresh()} /></ul> : (
-                        <button className={btn} disabled={planOne.isPending} onClick={() => planOne.mutate(l.id)}>✦ AI plan</button>
-                      )}
-                      <button className={btn} onClick={() => setCreatingFor(creatingFor === l.id ? null : l.id)}>{creatingFor === l.id ? "Cancel" : "+ New scene"}</button>
+              <div className="flex items-center gap-3 text-sm">
+                <Ring pct={totals.parts ? Math.round((totals.explained / totals.parts) * 100) : 0} />
+                <span className="text-slate-600">{lessonsWith}/{lessonList.length} lessons with 3D<br /><span className="text-xs text-slate-500">{totals.explained}/{totals.parts} parts explained</span></span>
+              </div>
+            </div>
+            <GenerationTray className="mb-4" onOpen={(id) => window.open(`/teacher/assets?open=${id}`, "_blank", "noopener")} />
+            <div className="grid gap-4 xl:grid-cols-[1fr_26rem]">
+              <div className="space-y-4">
+                <section className="relative h-[46vh] min-h-72 overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
+                  {!selected ? (
+                    <div className="grid h-full place-items-center p-6 text-center text-slate-500">No 3D yet. Use “Add 3D” on a lesson below.</div>
+                  ) : resolved.error ? (
+                    <div className="p-6 text-sm text-red-600">{errorMessage(resolved.error)}{details(resolved.error).map((d) => <p key={d}>• {d}</p>)}</div>
+                  ) : !resolved.data ? (
+                    <p className="p-6 text-slate-500" role="status">Preparing preview…</p>
+                  ) : (
+                    <Suspense fallback={<p className="p-6 text-slate-500">Loading 3D engine…</p>}>
+                      <div className="absolute inset-0">
+                        <StudioViewport resolved={resolved.data} selected={selectedPart} onSelect={setSelectedPart} xray={false} zoom={1} tourStep={null} tourPlaying={false} onTourStepComplete={() => {}} resetKey={selected.scene.version} />
+                      </div>
+                    </Suspense>
+                  )}
+                  {selected && (
+                    <div className="pointer-events-none absolute left-4 top-4 flex flex-wrap items-center gap-2">
+                      <span className="rounded-lg bg-white/90 shadow-sm px-2 py-1 text-sm text-slate-900">{selected.scene.title}</span>
+                      <span className="text-xs text-slate-500">{selected.lesson_title}{selectedPart ? ` · ${selectedPart.label}` : ""}</span>
                     </div>
-                  </div>
-                  {creatingFor === l.id && (
-                    <div className="mb-2 rounded-xl bg-white p-2 text-slate-900"><NewScene lessonId={l.id} onCreated={() => { setCreatingFor(null); refresh(); }} /></div>
                   )}
-                  {scenes.length === 0 ? <p className="text-sm text-slate-500">No 3D scene yet.</p> : (
-                    <ul className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
-                      {scenes.map((i) => {
-                        const pct = i.parts ? Math.round((i.explained / i.parts) * 100) : 0;
-                        const active = i.scene.id === selected?.scene.id;
-                        return (
-                          <li key={i.scene.id}>
-                            <button onClick={() => setSelectedId(i.scene.id)} aria-pressed={active}
-                              className={`w-full rounded-xl border p-3 text-left transition ${active ? "border-[#38b2ac] bg-[#38b2ac]/10" : "border-white/10 hover:border-white/30"}`}>
-                              <span className="block truncate font-medium text-white">{i.scene.title}</span>
-                              <span className="mt-1 flex flex-wrap gap-1">
-                                <Chip tone={i.scene.published_version ? (i.scene.has_unpublished_changes ? "amber" : "teal") : "slate"}>{i.scene.published_version ? (i.scene.has_unpublished_changes ? "changed" : "live") : "draft"}</Chip>
-                                {i.scene.origin === "ai" && <Chip tone="violet">AI</Chip>}
-                                <Chip>{(i.scene.spec.asset_refs?.length ? "model" : "generator")}</Chip>
-                              </span>
-                              <span className="mt-2 block h-1.5 overflow-hidden rounded bg-white/10"><span className="block h-full bg-[#38b2ac]" style={{ width: `${pct}%` }} /></span>
-                              <span className="mt-1 block text-xs text-slate-500">{i.explained}/{i.parts} parts explained · v{i.scene.version} · {new Date(i.scene.updated_at).toLocaleDateString()}</span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              );
-            })}
-          </section>
-        </main>
+                </section>
 
-        {/* right: editor */}
-        <aside>
-          {selected ? (
-            <SceneEditor key={selected.scene.id} item={selected} chapterId={chapterId} onDeleted={() => setSelectedId(null)} onDuplicated={(id) => setSelectedId(id)} />
-          ) : (
-            <section className={`${panel} p-4 text-sm text-slate-400`}>Select a scene to edit it.</section>
-          )}
-        </aside>
-      </div>
+                {lessonList.length === 0 && (
+                  <p className={`${panel} p-4 text-sm text-slate-500`}>Create a lesson first (step ②), then add its 3D here.</p>
+                )}
+                <ol className="space-y-3" aria-label="3D by lesson">
+                  {lessonList.map((l) => {
+                    const scenes = byLesson.get(l.id) ?? [];
+                    return (
+                      <li key={l.id} className={`${panel} p-3 ${adding === l.id ? "ring-2 ring-teal-400" : ""}`}>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`grid h-6 w-6 place-items-center rounded-full text-xs font-semibold ${scenes.length ? "bg-[#38b2ac] text-[#0b0d16]" : "bg-slate-100 text-slate-600"}`}>{scenes.length ? "✓" : l.position}</span>
+                          <span className="font-medium text-slate-900">{l.title}</span>
+                          <span className="text-xs text-slate-500">{scenes.length ? `${scenes.length} scene${scenes.length === 1 ? "" : "s"}` : "no 3D yet"}</span>
+                          <button
+                            className={`ml-auto ${adding === l.id ? "inline-flex items-center gap-1.5 rounded-lg bg-teal-50 px-3 py-1.5 text-sm font-semibold text-teal-800 ring-1 ring-teal-300" : btnPrimary}`}
+                            aria-pressed={adding === l.id}
+                            onClick={() => setAdding(adding === l.id ? null : l.id)}
+                          >
+                            {adding === l.id ? "Adding 3D →" : scenes.length ? "+ Add another 3D" : "+ Add 3D"}
+                          </button>
+                        </div>
+                        {scenes.length > 0 && (
+                          <ul className="mt-3 grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+                            {scenes.map((i) => {
+                              const pct = i.parts ? Math.round((i.explained / i.parts) * 100) : 0;
+                              const active = i.scene.id === selected?.scene.id;
+                              return (
+                                <li key={i.scene.id}>
+                                  <button onClick={() => setSelectedId(i.scene.id)} aria-pressed={active}
+                                    className={`w-full rounded-xl border p-3 text-left transition ${active ? "border-[#38b2ac] bg-[#38b2ac]/10" : "border-slate-200 hover:border-slate-400"}`}>
+                                    <span className="block truncate font-medium text-slate-900">{i.scene.title}</span>
+                                    <span className="mt-1 flex flex-wrap gap-1">
+                                      <Chip tone={i.scene.published_version ? (i.scene.has_unpublished_changes ? "amber" : "teal") : "slate"}>{i.scene.published_version ? (i.scene.has_unpublished_changes ? "changed" : "live") : "draft"}</Chip>
+                                      {i.scene.origin === "ai" && <Chip tone="violet">AI</Chip>}
+                                    </span>
+                                    <span className="mt-2 block h-1.5 overflow-hidden rounded bg-slate-100"><span className="block h-full bg-[#38b2ac]" style={{ width: `${pct}%` }} /></span>
+                                    <span className="mt-1 block text-xs text-slate-500">{i.explained}/{i.parts} parts explained</span>
+                                  </button>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+              <aside className="xl:sticky xl:top-4 xl:self-start">
+                {adding && lessonList.some((l) => l.id === adding) ? (
+                  <Add3DPanel
+                    key={adding}
+                    lessonId={adding}
+                    lessonTitle={lessonList.find((l) => l.id === adding)?.title ?? "Lesson"}
+                    onClose={() => setAdding(null)}
+                    onAdded={(sceneId) => { refresh(sceneId); setSelectedId(sceneId); setAdding(null); }}
+                  />
+                ) : selected ? (
+                  <SceneEditor key={selected.scene.id} item={selected} chapterId={chapterId} onDeleted={() => setSelectedId(null)} onDuplicated={(id) => setSelectedId(id)} />
+                ) : (
+                  <section className={`${panel} p-4 text-sm text-slate-500`}>Select a 3D scene to edit it, or use “+ Add 3D” on a lesson.</section>
+                )}
+              </aside>
+            </div>
+          </section>
+        )}
+
+        {step === "quiz" && <QuizStep chapterId={chapterId} quizzes={quizList} />}
+        {step === "publish" && <ReviewStep chapter={ch} course={course.data} checks={checks} onStep={goTo} />}
+
+        <StepFooter step={step} onStep={goTo} />
+      </main>
     </div>
   );
 }

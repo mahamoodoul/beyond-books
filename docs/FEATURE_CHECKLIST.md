@@ -110,6 +110,9 @@ Each section names its owner area so the team can split the work. Where a note s
 - [x] Student course page: chapter cards under the course name, with a 3D marker on lessons that have published scenes
 - [x] Public 3D viewer (`/viewer`, `/viewer/:sceneId`)
 - [x] Student sees published scenes inside the lesson
+- [x] 3D library: topic → AI-written in-depth build prompt (`POST /three-d/prompt-drafts`), editable before generating
+- [x] "blender" 3D provider: Claude builds the model in local Blender via Blender MCP; server exports GLB into the library (dev only, see `docs/BLENDER_MCP.md`)
+- [ ] Verify by hand: one real Blender MCP build end to end (needs the add-on installed and Blender open)
 - [ ] AR heart demo (`features/ar/HeartARPage.tsx`, MindAR) — **code exists but no route links to it**; decide: route it or remove it
 - [ ] Verify by hand: LLM-generated models look recognisable for 3+ demo topics (e.g. heart, cell, plant)
 - [ ] Real Tripo/Meshy integration (only after verifying their APIs)

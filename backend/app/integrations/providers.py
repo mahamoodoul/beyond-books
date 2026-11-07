@@ -70,7 +70,7 @@ def build_llm(settings: "Settings") -> "LLMProvider":
 def build_three_d(settings: "Settings", name: str | None = None) -> "ThreeDGenerationProvider":
     """Build the default 3D provider, or a specific one chosen per request."""
     spec = get_spec("three_d", name or settings.three_d_provider)
-    if spec is None or validate("three_d", spec.name, settings):
+    if spec is None or validate("three_d", spec.name, settings) or not _allowed(spec, settings):
         raise ValueError(f"3D provider '{name}' is not available")
     provider: ThreeDGenerationProvider = spec.factory(settings)
     return provider
@@ -177,6 +177,35 @@ register(
         _llm_3d,
     )
 )
+
+
+def _blender(s: "Settings") -> Any:
+    from app.integrations.blender.provider import BlenderMCPProvider
+    from app.modules.ai_engine.prompts import BLENDER_BUILD
+
+    return BlenderMCPProvider(
+        api_key=s.anthropic_api_key,
+        model=s.blender_model or s.anthropic_model,
+        effort=s.anthropic_effort,
+        command=s.blender_mcp_command,
+        host=s.blender_host,
+        port=s.blender_port,
+        max_turns=s.blender_max_turns,
+        timeout_s=s.blender_timeout_s,
+        system_prompt=BLENDER_BUILD.system,
+    )
+
+
+register(
+    ProviderSpec(
+        "three_d",
+        "blender",
+        "Claude builds the model in your local Blender through Blender MCP (dev only)",
+        ("anthropic_api_key", "blender_mcp_command"),
+        _blender,
+        production_ready=False,
+    )
+)
 register(
     ProviderSpec(
         "three_d", "tripo", "Tripo (adapter pending API verification)", ("tripo_api_key",), _tripo
@@ -189,10 +218,15 @@ register(
 )
 
 
+def _allowed(spec: ProviderSpec, settings: "Settings") -> bool:
+    """Dev-only providers (fake, blender) can never be picked in staging/production."""
+    return spec.production_ready or settings.environment not in {"staging", "production"}
+
+
 def available(kind: Kind, settings: "Settings") -> list[ProviderSpec]:
     """Providers whose required settings are present (selectable per request)."""
     return [
         spec
         for (k, n), spec in sorted(_REGISTRY.items())
-        if k == kind and not validate(kind, n, settings)
+        if k == kind and not validate(kind, n, settings) and _allowed(spec, settings)
     ]

@@ -132,8 +132,11 @@ class GeneratorOut(BaseModel):
 
 class GenerationRequest(BaseModel):
     name: str = Field(min_length=1, max_length=200)
-    prompt: str = Field(min_length=5, max_length=2000)
+    prompt: str = Field(min_length=5, max_length=8000)
     provider: str | None = Field(default=None, max_length=40, description="Default if omitted")
+    lesson_id: uuid.UUID | None = Field(
+        default=None, description="Save the finished model into this lesson as a draft scene"
+    )
     subject: str | None = Field(default=None, max_length=80)
     school_id: uuid.UUID | None = None
 
@@ -183,3 +186,66 @@ class ChapterGenerateItem(BaseModel):
 
 class ChapterGenerateResult(BaseModel):
     items: list[ChapterGenerateItem]
+
+
+class PromptDraftRequest(BaseModel):
+    """Topic for an AI-written, in-depth 3D build brief (3D library)."""
+
+    topic: str = Field(min_length=2, max_length=200)
+    subject: str | None = Field(default=None, max_length=80)
+    level: str | None = Field(default=None, max_length=80, description="e.g. Year 9, university")
+    focus: str | None = Field(default=None, max_length=500, description="What to emphasise")
+
+
+class ProviderHealthOut(BaseModel):
+    name: str
+    ok: bool
+    message: str
+
+
+class PartDeepDiveRequest(BaseModel):
+    part: str = Field(min_length=1, max_length=128, description="Node name of the part")
+
+
+class PartUpdate(BaseModel):
+    label: str | None = Field(default=None, max_length=200)
+    description: str | None = Field(default=None, max_length=2000)
+
+
+class GenerationJobOut(BaseModel):
+    """A 3D generation in the library's "In progress" list (running or recently finished)."""
+
+    job_id: uuid.UUID
+    asset_id: uuid.UUID
+    asset_name: str
+    provider: str
+    status: str
+    error_message: str | None
+    created_at: datetime
+    finished_at: datetime | None
+    prompt_preview: str
+    has_model: bool
+    lesson_id: uuid.UUID | None = None
+    lesson_title: str | None = None
+    scene_id: uuid.UUID | None = None
+
+
+class PromptDraftOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    topic: str
+    subject: str | None
+    level: str | None
+    focus: str | None
+    title: str
+    prompt: str
+    parts: list[dict[str, Any]]
+    edited: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+class PromptDraftUpdate(BaseModel):
+    title: str | None = Field(default=None, max_length=200)
+    prompt: str | None = Field(default=None, min_length=5, max_length=8000)

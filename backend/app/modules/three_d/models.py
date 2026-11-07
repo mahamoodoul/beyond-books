@@ -4,6 +4,7 @@ from enum import StrEnum
 from typing import Any
 
 from sqlalchemy import BigInteger, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import false as sa_false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import (
@@ -118,3 +119,20 @@ class ThreeDAnimation(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL")
     )
+
+
+class ThreeDPromptDraft(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    """An AI-written (teacher-editable) build brief for a 3D model, saved for reuse."""
+
+    __tablename__ = "three_d_prompt_drafts"
+    __table_args__ = (Index("ix_three_d_prompt_drafts_user_updated", "user_id", "updated_at"),)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    topic: Mapped[str] = mapped_column(String(200))
+    subject: Mapped[str | None] = mapped_column(String(80))
+    level: Mapped[str | None] = mapped_column(String(80))
+    focus: Mapped[str | None] = mapped_column(String(500))
+    title: Mapped[str] = mapped_column(String(200))
+    prompt: Mapped[str] = mapped_column(Text)
+    parts: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
+    edited: Mapped[bool] = mapped_column(default=False, server_default=sa_false())

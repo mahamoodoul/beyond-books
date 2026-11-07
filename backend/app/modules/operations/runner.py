@@ -8,6 +8,8 @@ and when running without Redis).
 """
 
 import logging
+import threading
+import time
 import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -89,14 +91,48 @@ def create_job(
 def dispatch(job_id: uuid.UUID) -> None:
     """Call AFTER the transaction that created the job has committed."""
     if get_settings().jobs_run_inline:
-        # In-process (tests/local dev): re-poll pending external work immediately.
+        # In-process (tests/local dev). Transient errors are retried immediately. Long-running
+        # external work (PENDING, e.g. a Blender build) is polled on a background thread so the
+        # HTTP request returns at once; the client polls GET /jobs/{id} as usual.
         status = run_job(job_id)
+        quick_polls = 0
         while status == JobStatus.RETRYING:
+            if _is_pending(job_id):
+                quick_polls += 1
+            if quick_polls > INLINE_QUICK_POLLS:
+                threading.Thread(
+                    target=_poll_inline, args=(job_id,), name=f"job-{job_id}", daemon=True
+                ).start()
+                return
             status = run_job(job_id, final_attempt=False)
         return
     from app.workers.celery_app import run_job_task
 
     run_job_task.delay(str(job_id))
+
+
+INLINE_POLL_INTERVAL_S = 15.0  # same cadence as the Celery path
+INLINE_QUICK_POLLS = 3  # fast fakes/vendors finish within the request; slow work goes background
+
+
+def _is_pending(job_id: uuid.UUID) -> bool:
+    with session_factory()() as db:
+        job = db.get(Job, job_id)
+        return job is not None and job.error_code == "PENDING"
+
+
+def _poll_inline(job_id: uuid.UUID) -> None:
+    status = JobStatus.RETRYING
+    errors = 0
+    while status == JobStatus.RETRYING:
+        time.sleep(INLINE_POLL_INTERVAL_S)
+        try:
+            status = run_job(job_id, final_attempt=False)
+        except Exception:  # a transient DB error must not leave the job "running" forever
+            errors += 1
+            log.exception("inline poll of job %s failed (%d)", job_id, errors)
+            if errors >= 5:
+                return
 
 
 def _set(job: Job, status: JobStatus) -> None:

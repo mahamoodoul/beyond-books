@@ -11,7 +11,7 @@ Edit `backend/.env` (local) or your secret store (deployed), then restart the AP
 ```env
 EDU3D_LLM_PROVIDER=anthropic            # fake | anthropic | openai
 EDU3D_ANTHROPIC_MODEL=claude-opus-5-5   # any model id the vendor offers
-EDU3D_THREE_D_PROVIDER=llm              # llm | fake | tripo | meshy
+EDU3D_THREE_D_PROVIDER=llm              # llm | blender | fake | tripo | meshy
 ```
 
 Startup fails fast with a clear message if the name is unknown or a required key is missing
@@ -57,6 +57,11 @@ review). Part descriptions become scene explanations automatically. Teachers can
 generator per request in the UI; only configured providers are offered
 (`GET /api/v1/three-d/providers`). Prompt: `THREE_D_MODEL_DESIGN` in
 `backend/app/modules/ai_engine/prompts.py` (bump its version when you change it).
+
+## The "blender" 3D provider (Claude + Blender MCP)
+
+Claude builds the model inside your running Blender through Blender MCP; the server exports it
+to GLB and stores it in the 3D library. Local/dev only. Setup: [BLENDER_MCP.md](BLENDER_MCP.md).
 
 ## Add a 3D generation vendor
 

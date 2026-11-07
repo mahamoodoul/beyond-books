@@ -41,6 +41,10 @@ export interface ViewState {
   frame: AnimationFrame;
   hidden: ReadonlySet<string>;
   selected: string | null;
+  /** Focus mode: every other component is ghosted so this one stands out. */
+  isolated?: string | null;
+  /** X-ray: every part except the selected one is see-through, to reveal inner structures. */
+  xray?: boolean;
   hovered: string | null;
   timeSeconds: number;
   reducedMotion: boolean;
@@ -48,6 +52,10 @@ export interface ViewState {
 
 const HIGHLIGHT = new THREE.Color("#ffb020");
 const SELECT = new THREE.Color("#2f80ed");
+/** Opacity of the other parts while one part is focused: visible for context, clearly behind. */
+export const GHOST_OPACITY = 0.12;
+/** Opacity of parts in X-ray mode (stronger than a ghost: everything stays readable). */
+export const XRAY_OPACITY = 0.3;
 
 export class ComponentRegistry {
   private byId = new Map<string, RegisteredComponent>();
@@ -181,7 +189,13 @@ export class ComponentRegistry {
         o.position.add(c0).sub(c1);
       }
 
-      const opacity = anim?.opacity ?? 1;
+      const ghost =
+        view.isolated && view.isolated !== id
+          ? GHOST_OPACITY
+          : view.xray && view.selected !== id
+            ? XRAY_OPACITY
+            : 1;
+      const opacity = (anim?.opacity ?? 1) * ghost;
       o.visible = !view.hidden.has(id) && (anim?.visible ?? true) && opacity > 0.001;
 
       let glow = 0;

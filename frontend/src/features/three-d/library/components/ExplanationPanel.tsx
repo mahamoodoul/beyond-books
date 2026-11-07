@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { AnimationFrame } from "@/features/three-d/library/runtime/animation";
 import type { ResolvedComponent } from "@/features/three-d/library/runtime/types";
 
@@ -11,6 +13,18 @@ export interface ExplanationPanelProps {
   onSelect: (id: string) => void;
   onToggleVisibility: (id: string) => void;
   onFocus: (id: string) => void;
+  /** Focus mode target (the other parts are ghosted). */
+  focused?: string | null;
+  onShowAll?: () => void;
+  /** In-depth content for the focused part (e.g. an AI study card). */
+  details?: ReactNode;
+  onPrev?: () => void;
+  onNext?: () => void;
+  position?: { at: number; of: number } | null;
+  touring?: { at: number; of: number; playing: boolean } | null;
+  /** How the current part connects to the main topic (guided-tour narration). */
+  note?: string;
+  topic?: string;
 }
 
 /**
@@ -27,6 +41,15 @@ export function ExplanationPanel({
   onSelect,
   onToggleVisibility,
   onFocus,
+  focused = null,
+  onShowAll,
+  details,
+  onPrev,
+  onNext,
+  position,
+  touring,
+  note,
+  topic,
 }: ExplanationPanelProps) {
   const current = components.find((c) => c.componentId === selected) ?? null;
   const stepText = frame.annotation?.text ?? frame.explanation;
@@ -34,6 +57,15 @@ export function ExplanationPanel({
   return (
     <aside className="flex min-h-0 flex-col gap-4" aria-label="Explanation">
       <section aria-live="polite" className="rounded-lg border border-slate-200 bg-white p-4">
+        {!stepText && (onPrev || onNext) && (
+          <div className="-mx-4 -mt-4 mb-3 flex items-center gap-2 rounded-t-lg border-b border-slate-200 bg-slate-50 px-3 py-2">
+            <button type="button" onClick={onPrev} className="rounded-md border border-slate-200 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-50" aria-label="Previous part">‹ Prev</button>
+            <span className="flex-1 text-center text-xs text-slate-500">
+              {touring ? `Guided tour ${touring.at}/${touring.of}${touring.playing ? "" : " · paused"}` : position ? `Part ${position.at} of ${position.of}` : "Press Next to start"}
+            </span>
+            <button type="button" onClick={onNext} className="rounded-md bg-navy-900 px-2.5 py-1 text-sm font-medium text-white hover:bg-navy-700" aria-label="Next part">Next ›</button>
+          </div>
+        )}
         {stepText ? (
           <>
             <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-700">
@@ -43,7 +75,18 @@ export function ExplanationPanel({
           </>
         ) : current ? (
           <>
-            <h2 className="text-base font-semibold text-navy-950">{current.label}</h2>
+            <div className="flex items-start gap-2">
+              <h2 className="flex-1 text-base font-semibold text-navy-950">{current.label}</h2>
+              {focused === current.componentId && onShowAll && (
+                <button
+                  type="button"
+                  onClick={onShowAll}
+                  className="shrink-0 rounded-md border border-slate-200 px-2 py-0.5 text-xs text-slate-600 hover:bg-slate-50"
+                >
+                  Show all
+                </button>
+              )}
+            </div>
             {current.actions.has("show_explanation") ? (
               <p className="mt-1 text-sm text-slate-700">
                 {(current.explanationRef && explanations[current.explanationRef]) ??
@@ -53,9 +96,18 @@ export function ExplanationPanel({
           </>
         ) : (
           <p className="text-sm text-slate-600">
-            Select a part of the model or a name below to learn about it.
+            Click a part of the model or a name below to focus on it and learn about it in depth.
           </p>
         )}
+        {!stepText && current && note && (
+          <p className="mt-3 rounded-md border-l-4 border-accent bg-slate-50 px-3 py-2 text-sm text-slate-700">
+            <span className="block text-xs font-semibold uppercase tracking-wide text-accent">
+              Connection to {topic ?? "the topic"}
+            </span>
+            {note}
+          </p>
+        )}
+        {!stepText && current && details}
       </section>
 
       <section className="min-h-0 overflow-y-auto rounded-lg border border-slate-200 bg-white">

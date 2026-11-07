@@ -187,3 +187,36 @@ def chapter_source(chapter_id: uuid.UUID, user: CurrentUser, db: DB) -> ChapterS
         characters=sum(len(p.text) for p in passages),
         passages=passages,
     )
+
+
+class ApplySplitRequest(BaseModel):
+    chapters: list[OutlineChapterIn] = Field(min_length=2, max_length=10)
+    remove_original: bool = Field(
+        default=False, description="Delete the original chapter (only if it has no content)"
+    )
+
+
+@router.post(
+    "/chapters/{chapter_id}/ai/split", response_model=JobOut, status_code=status.HTTP_202_ACCEPTED
+)
+def propose_split(chapter_id: uuid.UUID, user: CurrentUser, db: DB) -> Job:
+    """AI proposes 2-5 smaller chapters for a complex chapter. Result: `result.chapters`."""
+    from app.modules.ai_engine.chapter_split import start_split
+
+    return start_split(db, user, chapter_id)
+
+
+@router.post("/chapters/{chapter_id}/split", response_model=list[ChapterOut])
+def apply_split(
+    chapter_id: uuid.UUID, body: ApplySplitRequest, user: CurrentUser, db: DB
+) -> list[Chapter]:
+    """Insert the (teacher-edited) chapters right after the original, as drafts."""
+    from app.modules.ai_engine.chapter_split import apply_split as apply
+
+    return apply(
+        db,
+        user,
+        chapter_id,
+        [c.model_dump() for c in body.chapters],
+        remove_original=body.remove_original,
+    )

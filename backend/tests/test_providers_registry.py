@@ -10,7 +10,7 @@ from app.integrations.providers import ProviderSpec, build_llm, build_three_d, r
 
 def test_builtin_providers_registered() -> None:
     assert providers.names("llm") == ["anthropic", "fake", "openai"]
-    assert providers.names("three_d") == ["fake", "llm", "meshy", "tripo"]
+    assert providers.names("three_d") == ["blender", "fake", "llm", "meshy", "tripo"]
 
 
 def test_unknown_provider_lists_options() -> None:
