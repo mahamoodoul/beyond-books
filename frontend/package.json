@@ -10,7 +10,9 @@
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "contracts:types": "node scripts/generate-contract-types.mjs",
-    "contracts:check": "node scripts/generate-contract-types.mjs --check"
+    "contracts:check": "node scripts/generate-contract-types.mjs --check",
+    "api:types": "node scripts/generate-api-types.mjs",
+    "api:check": "node scripts/generate-api-types.mjs --check"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.107.1",

@@ -13,6 +13,12 @@ dependencies = [
   "psycopg[binary]>=3.2",
   "celery>=5.4",
   "redis>=5.0",
+  "pyjwt>=2.9",
+  "argon2-cffi>=23.1",
+  "email-validator>=2.2",
+  "pymupdf>=1.24",
+  "boto3>=1.35",
+  "openai>=1.50",
 ]
 
 [project.optional-dependencies]
@@ -48,5 +54,5 @@ exclude = ["migrations/"]
 testpaths = ["tests"]
 
 [[tool.mypy.overrides]]
-module = ["celery", "celery.*"]
+module = ["celery", "celery.*", "boto3", "botocore.*", "pymupdf"]
 ignore_missing_imports = true

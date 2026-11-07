@@ -5,6 +5,8 @@
 | [0001](0001-modular-monolith.md) | Modular monolith with asynchronous workers | Proposed |
 | [0002](0002-async-job-lifecycle.md) | Shared asynchronous job lifecycle | Proposed |
 | [0003](0003-declarative-scene-and-animation-contracts.md) | Declarative scene and animation contracts | Proposed |
+| [0004](0004-identity-local-provider-behind-interface.md) | Local identity provider behind an interface (interim for #1) | Proposed |
+| [0005](0005-tenant-model-teacher-owned-first.md) | Teacher-owned courses first (interim for #2) | Proposed |
 
 Copy [0000-template.md](0000-template.md) for new decisions.
 
