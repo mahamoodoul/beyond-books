@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: backend/pyproject.toml }
+      - run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check . && ruff format --check .
+      - name: Type check
+        run: mypy app
+      - name: Tests
+        run: pytest -q
+      - name: 3D contract schemas are up to date
+        working-directory: .
+        run: python scripts/export_contracts.py --check
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_USER: edu3d, POSTGRES_PASSWORD: edu3d, POSTGRES_DB: edu3d }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U edu3d" --health-interval 5s --health-retries 10
+    defaults: { run: { working-directory: backend } }
+    env:
+      EDU3D_DATABASE_URL: postgresql+psycopg://edu3d:edu3d@localhost:5432/edu3d
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: backend/pyproject.toml }
+      - run: pip install -e .
+      - name: Migrate up from empty database, down, and up again
+        run: alembic upgrade head && alembic downgrade base && alembic upgrade head
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - name: Contract types are up to date
+        run: npm run contracts:check
+      - name: Type check and build
+        run: npm run build

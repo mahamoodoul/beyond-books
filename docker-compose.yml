@@ -1,0 +1,55 @@
+# Local development stack (design §18). Not a production deployment.
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-edu3d}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-edu3d}
+      POSTGRES_DB: ${POSTGRES_DB:-edu3d}
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-edu3d}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: { context: ., dockerfile: infrastructure/docker/backend.Dockerfile }
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    environment: &backend-env
+      EDU3D_ENVIRONMENT: local
+      EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD:-edu3d}@postgres:5432/${POSTGRES_DB:-edu3d}
+      EDU3D_REDIS_URL: redis://redis:6379/0
+    ports: ["8000:8000"]
+    volumes: ["./backend/app:/app/app", "./backend/migrations:/app/migrations"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    build: { context: ., dockerfile: infrastructure/docker/backend.Dockerfile }
+    command: celery -A app.workers.celery_app worker --loglevel=INFO
+    environment: *backend-env
+    volumes: ["./backend/app:/app/app"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  frontend:
+    build: { context: ., dockerfile: infrastructure/docker/frontend.Dockerfile }
+    environment:
+      VITE_API_PROXY: http://api:8000
+    ports: ["5173:5173"]
+    volumes: ["./frontend/src:/app/src"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
