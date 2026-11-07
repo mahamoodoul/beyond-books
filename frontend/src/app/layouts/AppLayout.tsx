@@ -1,124 +1,50 @@
-import { Link, matchPath, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-
-import { useDemo } from "@/app/providers/DemoProvider";
+import { Link, NavLink, Outlet, useNavigate } from "react-router";
+import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
-import { getDemoUser } from "@/lib/api";
+import { ErrorAlert, Loading } from "@/components/feedback";
+import { homeFor, useLogout, useMe } from "@/features/auth/auth";
 
 const teacherNavigation = [
   { to: "/teacher", label: "Overview", icon: "grid" as const, end: true },
-  { to: "/teacher/courses", label: "My courses", icon: "book" as const },
-  { to: "/teacher/upload", label: "Upload source", icon: "file" as const },
-  { to: "/teacher/insights", label: "Insights", icon: "activity" as const },
+  { to: "/teacher/courses", label: "My courses", icon: "book" as const, end: false },
+  { to: "/teacher/upload", label: "Upload source", icon: "file" as const, end: false },
+  { to: "/teacher/assets", label: "3D library", icon: "layers" as const, end: false },
+  { to: "/viewer", label: "3D viewer", icon: "eye" as const, end: false },
+  { to: "/teacher/insights", label: "Insights", icon: "activity" as const, end: false },
+  { to: "/teacher/schools", label: "Schools", icon: "users" as const, end: false },
 ];
-
 const studentNavigation = [
   { to: "/student", label: "My learning", icon: "grid" as const, end: true },
-  { to: "/student/courses", label: "My courses", icon: "book" as const },
-  { to: "/student/progress", label: "My progress", icon: "activity" as const },
+  { to: "/student/courses", label: "My courses", icon: "book" as const, end: false },
+  { to: "/student/progress", label: "My progress", icon: "activity" as const, end: false },
 ];
-
 export function AppLayout() {
-  const { role, theme, setRole, toggleTheme } = useDemo();
+  const me = useMe();
+  const logout = useLogout();
   const navigate = useNavigate();
-  const location = useLocation();
-  const scanLesson = role === "student"
-    ? matchPath("/student/courses/:courseId/lessons/heart-structure", location.pathname)
-    : null;
-  const userQuery = useQuery({
-    queryKey: ["demo", "user", role ?? "student"],
-    queryFn: () => getDemoUser(role ?? "student"),
-    enabled: Boolean(role),
-  });
-
-  if (!role) return <Navigate to="/login" replace />;
-  if (userQuery.isError) throw userQuery.error;
-  if (userQuery.isPending) return <p className="page-loading" role="status">Loading your profile…</p>;
-  const user = userQuery.data;
-  const navigation = role === "teacher" ? teacherNavigation : studentNavigation;
-
-  function changeRole(nextRole: "teacher" | "student") {
-    setRole(nextRole);
-    navigate(`/${nextRole}`);
-  }
-
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <Link aria-label="Beyond Books home" className="brand" to={role === "teacher" ? "/teacher" : "/student"}>
-          <span className="brand-mark"><Icon name="layers" size={19} /></span>
-          <span>Beyond<span className="brand-light"> Books</span></span>
-        </Link>
-
-        <nav aria-label="Main navigation" className="topbar-nav">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.to}
-              end={item.end}
-              to={item.to}
-              className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}
-            >
-              <Icon name={item.icon} size={17} />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="topbar-actions">
-          <button
-            aria-label={`Switch to ${role === "teacher" ? "student" : "teacher"} view`}
-            className="role-switch"
-            onClick={() => changeRole(role === "teacher" ? "student" : "teacher")}
-            type="button"
-          >
-            <span className="role-switch-label">{role === "teacher" ? "Teacher" : "Student"} view</span>
-            <Icon name="chevron-down" size={15} />
-          </button>
-          <button
-            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            className="icon-button theme-toggle"
-            onClick={toggleTheme}
-            type="button"
-          >
-            <Icon name={theme === "light" ? "moon" : "sun"} size={18} />
-          </button>
-          <button aria-label={`Signed in as ${user.name}`} className="user-avatar" type="button">
-            {user.initials}
-          </button>
-        </div>
-      </header>
-
-      <nav aria-label="Mobile navigation" className="mobile-nav">
-        {navigation.map((item) => (
-          <NavLink
-            key={item.to}
-            end={item.end}
-            to={item.to}
-            className={({ isActive }) => `mobile-nav-link${isActive ? " is-active" : ""}`}
-          >
-            <Icon name={item.icon} size={19} />
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
-        {scanLesson && (
-          <Link
-            aria-label="Scan the printed heart page with augmented reality"
-            className="mobile-nav-link mobile-nav-scan"
-            to={`${scanLesson.pathname}/ar`}
-          >
-            <Icon name="eye" size={19} />
-            <span>Scan page</span>
-          </Link>
-        )}
-      </nav>
-
-      <main className="page-content">
-        <Outlet />
-      </main>
-      <footer className="app-footer">
-        <span>Beyond Books</span>
-        <span>Learning, brought to life.</span>
-      </footer>
-    </div>
-  );
+  const { theme, toggleTheme } = usePreferences();
+  if (me.isPending) return <Loading />;
+  if (me.error) return <ErrorAlert error={me.error} />;
+  const user = me.data;
+  const navigation = user?.account_type === "teacher" ? teacherNavigation : studentNavigation;
+  return <div className="app-shell">
+    <header className="topbar">
+      <Link aria-label="Beyond Books home" className="brand" to={user ? homeFor(user) : "/"}>
+        <span className="brand-mark"><Icon name="layers" size={19} /></span><span>Beyond<span className="brand-light"> Books</span></span>
+      </Link>
+      <nav aria-label="Main navigation" className="topbar-nav">{navigation.map(item =>
+        <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}><Icon name={item.icon} size={17} /><span>{item.label}</span></NavLink>
+      )}</nav>
+      <div className="topbar-actions">
+        <button aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} className="icon-button" onClick={toggleTheme} type="button"><Icon name={theme === "light" ? "moon" : "sun"} size={18} /></button>
+        <Link to="/account" className="user-avatar" aria-label={`Account: ${user?.display_name ?? "Profile"}`}>{user?.display_name.split(" ").map(p => p[0]).slice(0, 2).join("")}</Link>
+        <button className="button button-secondary" disabled={logout.isPending} onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/login", { replace: true }) })}>Sign out</button>
+      </div>
+    </header>
+    <nav aria-label="Mobile navigation" className="mobile-nav">{navigation.map(item =>
+      <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `mobile-nav-link${isActive ? " is-active" : ""}`}><Icon name={item.icon} size={19} /><span>{item.label}</span></NavLink>
+    )}</nav>
+    <main className="page-content live-workspace"><ErrorAlert error={logout.error} /><Outlet /></main>
+    <footer className="app-footer"><span>Beyond Books</span><span>Learning, brought to life.</span></footer>
+  </div>;
 }

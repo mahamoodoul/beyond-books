@@ -23,6 +23,9 @@ jobs:
       - name: 3D contract schemas are up to date
         working-directory: .
         run: python scripts/export_contracts.py --check
+      - name: OpenAPI export is up to date
+        working-directory: .
+        run: python scripts/export_openapi.py --check
 
   migrations:
     runs-on: ubuntu-latest
@@ -52,7 +55,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
       - run: npm ci
-      - name: Contract types are up to date
-        run: npm run contracts:check
+      - name: Generated types are up to date
+        run: npm run contracts:check && npm run api:check
+      - name: Frontend tests
+        run: npm test
       - name: Type check and build
         run: npm run build

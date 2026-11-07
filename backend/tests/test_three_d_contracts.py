@@ -116,3 +116,25 @@ def test_animation_must_be_referenced_by_scene() -> None:
     scene = SceneSpec.model_validate(data)
     anim = AnimationSpec.model_validate(load("animation_blood_flow_01.json"))
     assert "does not reference" in validate_animation_for_scene(anim, scene)[0]
+
+
+def test_explanation_refs_must_resolve() -> None:
+    data = load("scene_heart_01.json")
+    del data["explanations"]["explanation_left_ventricle"]
+    with pytest.raises(ValidationError, match="without an explanation"):
+        SceneSpec.model_validate(data)
+
+
+def test_animation_path_must_exist_in_scene() -> None:
+    scene_data = load("scene_heart_01.json")
+    del scene_data["paths"]["pulmonary_loop"]
+    scene = SceneSpec.model_validate(scene_data)
+    anim = AnimationSpec.model_validate(load("animation_blood_flow_01.json"))
+    assert any("unknown paths" in p for p in validate_animation_for_scene(anim, scene))
+
+
+def test_path_needs_two_points() -> None:
+    data = load("scene_heart_01.json")
+    data["paths"]["pulmonary_loop"] = [[0, 0, 0]]
+    with pytest.raises(ValidationError):
+        SceneSpec.model_validate(data)

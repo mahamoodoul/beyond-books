@@ -25,6 +25,7 @@ for (const [schemaFile, outFile] of targets) {
   const ts = await compile(schema, schema.title, {
     bannerComment: banner,
     additionalProperties: false,
+    maxItems: -1,
     style: { singleQuote: false, semi: true, printWidth: 100 },
   });
   const path = join(outDir, outFile);

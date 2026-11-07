@@ -205,6 +205,18 @@
       "title": "Controls",
       "type": "array"
     },
+    "explanations": {
+      "maxProperties": 200,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]{0,63}$": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "title": "Explanations",
+      "type": "object"
+    },
     "learning_objective_ids": {
       "items": {
         "pattern": "^[a-z][a-z0-9_]{0,63}$",
@@ -213,6 +225,26 @@
       "maxItems": 50,
       "title": "Learning Objective Ids",
       "type": "array"
+    },
+    "paths": {
+      "maxProperties": 50,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]{0,63}$": {
+          "items": {
+            "items": {
+              "maximum": 1000,
+              "minimum": -1000,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "type": "array"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Paths",
+      "type": "object"
     },
     "procedural": {
       "items": {

@@ -97,3 +97,15 @@ def register_error_handlers(app: FastAPI) -> None:
     async def _unhandled(_: Request, __: Exception) -> JSONResponse:
         # Never leak internals; the request_id links the response to server logs.
         return _envelope(500, "INTERNAL_ERROR", "An unexpected error occurred.", [])
+
+
+class UnauthenticatedError(AppError):
+    status_code = 401
+    code = "UNAUTHENTICATED"
+    message = "Authentication is required."
+
+
+class RateLimitedError(AppError):
+    status_code = 429
+    code = "RATE_LIMITED"
+    message = "Too many attempts. Please try again later."
