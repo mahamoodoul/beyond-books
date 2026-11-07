@@ -64,8 +64,9 @@ services:
     build: { context: ., dockerfile: infrastructure/docker/frontend.prod.Dockerfile }
     restart: unless-stopped
     ports: ["3939:3939"]
-    depends_on:
-      api: { condition: service_healthy }
+    # Not gated on api health: nginx resolves api per request, and a failing api
+    # shouldn't block the deploy (it would hide the api logs in Coolify).
+    depends_on: [api]
 
 volumes:
   pgdata:
