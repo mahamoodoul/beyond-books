@@ -58,6 +58,14 @@ class Settings(BaseSettings):
     openai_base_url: str = ""  # optional: any OpenAI-compatible endpoint
     llm_max_output_tokens: int = 16000  # detailed 3D designs (20-30 parts) need more than 8k
     llm_timeout_s: float = 120
+
+    # --- voice narration (ElevenLabs text to speech for the 3D Studio tour) ---
+    elevenlabs_api_key: str = ""  # empty = voice narration off (the Studio hides the Voice button)
+    elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"  # "Rachel", an ElevenLabs premade voice
+    # fast and multilingual; eleven_multilingual_v2 for the highest quality
+    elevenlabs_model: str = "eleven_turbo_v2_5"
+    speech_max_chars: int = 1500  # longest text read in one go (one tour step)
+    speech_per_user_per_hour: int = 120  # new syntheses per user; cached audio is free
     llm_max_input_chars: int = 120_000
     ai_max_jobs_per_course_per_day: int = 40
 
@@ -74,6 +82,16 @@ class Settings(BaseSettings):
     blender_model: str = ""  # empty = use EDU3D_ANTHROPIC_MODEL
     blender_max_turns: int = 40  # Claude ↔ Blender tool round trips per model
     blender_timeout_s: float = 540  # whole build, must stay below the job poll window (~10 min)
+    # --- 3D model tuning (both "llm" and "blender" generators) ---
+    # The tuning prompt (quality bar: realism, PBR materials, selectable parts, animations,
+    # validation) is prepended to the generator's built-in prompt. Default text:
+    # app/modules/ai_engine/tuning/three_d_model.md. See docs/BLENDER_MCP.md "Model tuning".
+    three_d_tuning_enabled: bool = True
+    three_d_tuning_prompt: str = ""  # inline override; wins over the file
+    three_d_tuning_prompt_file: str = ""  # path to your own prompt file; empty = built-in file
+    three_d_effort: Literal["", "low", "medium", "high", "xhigh", "max"] = (
+        ""  # "" = ANTHROPIC_EFFORT
+    )
     # Optional pricing for cost estimates, per 1M tokens. Leave 0 = unknown; never guess.
     llm_input_price_per_mtok: float = 0
     llm_output_price_per_mtok: float = 0

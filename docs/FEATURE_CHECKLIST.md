@@ -59,7 +59,7 @@ Each section names its owner area so the team can split the work. Where a note s
 
 ## 3. Textbook upload and processing (Backend: documents)
 
-- [x] Upload a PDF via a signed upload URL (`/teacher/upload`)
+- [x] Upload a PDF via a signed upload URL (course → Sources & outline)
 - [x] Size and file-type validation
 - [x] Text extraction per page (`/documents/{id}/pages`)
 - [x] Document status shown while processing (background job with polling)

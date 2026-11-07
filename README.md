@@ -250,7 +250,7 @@ To give a student a course:
 The student then sees the course under **My courses** and its 3D models in **3D Studio**.
 
 Where to find things:
-- **Teacher:** My courses, Upload source, 3D library (generate and review 3D models), Studio,
+- **Teacher:** My courses (**New course**, then upload the textbook PDF under *Sources & outline*), 3D library (generate and review 3D models), Studio,
   Insights, Schools. Each chapter has **Open Studio** for step-by-step content generation.
 - **Student:** My learning, My courses, 3D Studio (read-only, only their courses' published 3D
   models), My progress.
@@ -324,6 +324,15 @@ both `.env` files are git-ignored.
 | `EDU3D_BLENDER_MODEL` | (= Anthropic model) | Claude model for Blender builds |
 | `EDU3D_BLENDER_MAX_TURNS` / `_TIMEOUT_S` | `40` / `540` | Limits per Blender build |
 
+### Voice narration (3D Studio guided tour)
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `EDU3D_ELEVENLABS_API_KEY` | – | ElevenLabs key. Empty = no Voice button in the Studio |
+| `EDU3D_ELEVENLABS_VOICE_ID` | `21m00Tcm4TlvDq8ikWAM` (Rachel) | Any voice from your ElevenLabs library |
+| `EDU3D_ELEVENLABS_MODEL` | `eleven_turbo_v2_5` | `eleven_multilingual_v2` for the highest quality |
+| `EDU3D_SPEECH_PER_USER_PER_HOUR` | `120` | New syntheses per user per hour. Each text is synthesised once and cached in storage |
+
 The full list with comments is in [.env.example](.env.example). The code is in
 [backend/app/core/config.py](backend/app/core/config.py).
 
@@ -344,6 +353,13 @@ Blender through Blender MCP, and the result is saved to the 3D library. This nee
 with the *MCP for Blender* add-on, `uv` installed, and the Claude key set. It only works with
 Option B or C, because the API must reach Blender on your machine. Then choose **Claude + Blender**
 as the generator in the 3D library. Setup: [docs/BLENDER_MCP.md](docs/BLENDER_MCP.md).
+
+**Tuning the 3D generator.** The quality prompt every 3D build starts with (realism, materials,
+selectable parts, animations, validation) lives in
+`backend/app/modules/ai_engine/tuning/three_d_model.md`. Edit it, or point
+`EDU3D_THREE_D_TUNING_PROMPT_FILE` at your own file; the next generation picks it up without a
+restart. `EDU3D_THREE_D_EFFORT` sets the reasoning effort for 3D builds only. Details:
+[docs/BLENDER_MCP.md](docs/BLENDER_MCP.md#model-tuning-the-quality-prompt).
 
 **Adding another vendor:** [docs/ADDING_A_PROVIDER.md](docs/ADDING_A_PROVIDER.md).
 

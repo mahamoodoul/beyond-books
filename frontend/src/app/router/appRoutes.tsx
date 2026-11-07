@@ -36,7 +36,6 @@ export const appRoutes: RouteObject[] = [
       { path: "/", element: <LandingPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
-      { path: "/teacher/chapters/:chapterId/studio", element: teacher(page(() => import("@/features/three-d/studio/ChapterStudioPage"), "default")) },
       // Full-screen teacher 3D Studio (own dark layout, outside the standard app chrome).
       { path: "/teacher/lessons/:lessonId/studio", element: teacher(page(() => import("@/features/three-d/studio/StudioPage"), "default")) },
       // Full-screen AR scan of a lesson's interactive heart (teachers previewing and students).
@@ -45,6 +44,8 @@ export const appRoutes: RouteObject[] = [
       { path: "/account", element: anyUser(page(() => import("@/features/account/AccountPage"), "AccountPage")) },
       { path: "/teacher", element: teacher(page(() => import("@/features/dashboard/DemoTeacherDashboard"), "DemoTeacherDashboard")) },
       { path: "/teacher/courses/:courseId", element: teacher(page(() => import("@/features/courses/CoursePage"), "CoursePage")) },
+      // Chapter Studio: step-by-step content generation, inside the app layout (navbar on top)
+      { path: "/teacher/chapters/:chapterId/studio", element: teacher(page(() => import("@/features/three-d/studio/ChapterStudioPage"), "default")) },
       { path: "/teacher/chapters/:chapterId/preview", element: teacher(page(() => import("@/features/chapters/ChapterPreviewPage"), "ChapterPreviewPage")) },
       { path: "/teacher/chapters/:chapterId", element: teacher(page(() => import("@/features/chapters/ChapterPage"), "ChapterPage")) },
       { path: "/teacher/lessons/:lessonId", element: teacher(page(() => import("@/features/lessons/LessonEditorPage"), "LessonEditorPage")) },
@@ -56,7 +57,6 @@ export const appRoutes: RouteObject[] = [
       { path: "/student/assessments/:assessmentId", element: student(page(() => import("@/features/assessments/QuizPage"), "QuizPage")) },
       { path: "/student/attempts/:attemptId", element: student(page(() => import("@/features/assessments/AttemptResultPage"), "AttemptResultPage")) },
       { path: "/teacher/courses", element: teacher(page(() => import("@/features/dashboard/TeacherCoursesPage"), "TeacherCoursesPage")) },
-      { path: "/teacher/upload", element: teacher(page(() => import("@/features/courses/TeacherUploadPage"), "TeacherUploadPage")) },
       { path: "/teacher/courses/:courseId/review", element: teacher(page(() => import("@/features/courses/CoursePage"), "CoursePage")) },
       { path: "/teacher/insights", element: teacher(page(() => import("@/features/dashboard/TeacherAnalyticsPage"), "TeacherAnalyticsPage")) },
       { path: "/teacher/schools", element: teacher(page(() => import("@/features/dashboard/SchoolsPage"), "SchoolsPage")) },

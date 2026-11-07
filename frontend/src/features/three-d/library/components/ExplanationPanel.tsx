@@ -63,7 +63,7 @@ export function ExplanationPanel({
             <span className="flex-1 text-center text-xs text-slate-500">
               {touring ? `Guided tour ${touring.at}/${touring.of}${touring.playing ? "" : " · paused"}` : position ? `Part ${position.at} of ${position.of}` : "Press Next to start"}
             </span>
-            <button type="button" onClick={onNext} className="rounded-md bg-navy-900 px-2.5 py-1 text-sm font-medium text-white hover:bg-navy-700" aria-label="Next part">Next ›</button>
+            <button type="button" onClick={onNext} className="rounded-md bg-[#38b2ac] px-2.5 py-1 text-sm font-semibold hover:bg-[#4fc7c0]" style={{ color: "#0b0d16" }} aria-label="Next part">Next ›</button>
           </div>
         )}
         {stepText ? (

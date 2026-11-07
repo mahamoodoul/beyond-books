@@ -1,72 +1,30 @@
 /**
- * Teacher preview of a chapter, laid out the way students see it under the course:
- * course › chapter › lessons (3D scenes + text) and quizzes. Shows drafts too, clearly marked.
+ * Teacher preview of a chapter, rendered with the same components students use
+ * (LessonArticle + LessonContents from the student lesson page). Drafts are shown too, clearly marked.
+ * ?lesson=<id> previews a lesson, ?quiz=<id> previews a quiz with its answers.
  */
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 
 import { api } from "@/api/client";
 import type { CourseOut, SceneOut, TeacherAssessment } from "@/api/generated/schema";
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card } from "@/components/ui";
+import { Icon } from "@/components/ui/Icon";
 import { useChapterAssessments } from "@/features/assessments/api";
 import { useLesson, useLessons } from "@/features/lessons/api";
-import { InteractiveHeartPanel, usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
-import { LazySceneStudio } from "@/features/three-d/LazySceneStudio";
-import { LazySceneViewer } from "@/features/three-d/LazySceneViewer";
+import { useOutline } from "@/features/student/api";
+import { LessonArticle, LessonContents } from "@/features/student/LessonArticle";
 
 import { useChapter } from "./api";
 
-const md = "prose-sm max-w-none space-y-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold";
-
-function LiveBadge({ live, changed }: { live: boolean; changed?: boolean }) {
-  if (!live) return <Badge>draft · hidden from students</Badge>;
-  return changed ? <Badge tone="amber">live · newer draft not published</Badge> : <Badge tone="green">live</Badge>;
+function LiveBadge({ published_version, has_unpublished_changes }: { published_version?: number | null; has_unpublished_changes?: boolean }) {
+  if (!published_version) return <Badge>draft · hidden from students</Badge>;
+  return has_unpublished_changes ? <Badge tone="amber">live · newer draft not published</Badge> : <Badge tone="green">live</Badge>;
 }
 
-function LessonPreview({ lessonId }: { lessonId: string }) {
-  const lesson = useLesson(lessonId);
-  const scenes = useQuery({ queryKey: ["scenes", lessonId], queryFn: () => api.get<SceneOut[]>(`/lessons/${lessonId}/scenes`) });
-  if (lesson.isPending) return <Loading />;
-  if (lesson.error) return <ErrorAlert error={lesson.error} />;
-  const l = lesson.data;
-  return (
-    <article className="space-y-5">
-      <header className="flex flex-wrap items-center gap-2">
-        <h2 className="text-2xl font-semibold text-navy-950">{l.title}</h2>
-        <LiveBadge live={!!l.published_version} changed={l.has_unpublished_changes} />
-      </header>
-      {(scenes.data ?? []).map((s) => (
-        <section key={s.id} aria-label={`3D: ${s.title}`} className="space-y-1">
-          <div className="flex items-center gap-2 text-sm text-slate-600"><span className="font-medium">3D · {s.title}</span><LiveBadge live={!!s.published_version} changed={s.has_unpublished_changes} /></div>
-          {usesInteractiveHeart(s) ? <LazySceneViewer sceneId={s.id} /> : <LazySceneStudio sceneId={s.id} />}
-          {usesInteractiveHeart(s) && <InteractiveHeartPanel lessonId={lessonId} />}
-        </section>
-      ))}
-      {(l.content.sections ?? []).length === 0 && <EmptyState title="This lesson has no content yet" />}
-      {(l.content.sections ?? []).map((sec, i) => (
-        <Card key={i}>
-          <h3 className="mb-2 text-lg font-semibold">{sec.title}</h3>
-          <div className={md}><ReactMarkdown skipHtml>{sec.body_markdown}</ReactMarkdown></div>
-          <div className="mt-3 flex flex-wrap gap-1">
-            {(sec.key_terms ?? []).map((k) => <Badge key={k} tone="blue">{k}</Badge>)}
-            {(sec.source_refs ?? []).map((r, k) => <Badge key={k}>source p. {r.page}</Badge>)}
-          </div>
-        </Card>
-      ))}
-      {(l.content.summary ?? []).length > 0 && (
-        <Card>
-          <h3 className="mb-2 font-semibold">Summary</h3>
-          <ul className="list-disc space-y-1 pl-5 text-sm">{l.content.summary?.map((x, i) => <li key={i}>{x}</li>)}</ul>
-        </Card>
-      )}
-    </article>
-  );
-}
-
-function QuizPreview({ assessmentId }: { assessmentId: string }) {
+function QuizPreview({ assessmentId, onBack }: { assessmentId: string; onBack: () => void }) {
   const quiz = useQuery({ queryKey: ["assessment", assessmentId], queryFn: () => api.get<TeacherAssessment>(`/assessments/${assessmentId}`) });
   const [answers, setAnswers] = useState(false);
   if (quiz.isPending) return <Loading />;
@@ -74,12 +32,17 @@ function QuizPreview({ assessmentId }: { assessmentId: string }) {
   const a = quiz.data;
   return (
     <article className="space-y-4">
-      <header className="flex flex-wrap items-center gap-2">
-        <h2 className="text-2xl font-semibold text-navy-950">{a.title}</h2>
-        <LiveBadge live={!!a.published_version} changed={a.has_unpublished_changes} />
-        <Button variant="secondary" className="ml-auto" onClick={() => setAnswers(!answers)}>{answers ? "Hide answers" : "Show answers"}</Button>
+      <header className="lesson-heading">
+        <div>
+          <div className="eyebrow"><span className="eyebrow-dot" />QUIZ</div>
+          <h1 className="flex flex-wrap items-center gap-3">{a.title}<LiveBadge {...a} /></h1>
+          <p>{a.question_count} questions · pass at {Math.round(a.passing_score)}% · {a.max_attempts} attempts</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={onBack}>← Lesson</Button>
+          <Button variant="secondary" onClick={() => setAnswers(!answers)}>{answers ? "Hide answers" : "Show answers"}</Button>
+        </div>
       </header>
-      <p className="text-sm text-slate-600">{a.question_count} questions · pass at {Math.round(a.passing_score)}% · {a.max_attempts} attempts</p>
       <ol className="space-y-3">
         {(a.content.questions ?? []).map((q, i) => (
           <li key={i}>
@@ -107,98 +70,124 @@ function QuizPreview({ assessmentId }: { assessmentId: string }) {
   );
 }
 
-type View = { kind: "lesson" | "quiz"; id: string };
+function LessonPreview({ lessonId, chapterId, sidebar }: { lessonId: string; chapterId: string; sidebar: React.ReactNode }) {
+  const lesson = useLesson(lessonId);
+  const chapter = useChapter(chapterId);
+  const outline = useOutline(chapter.data?.course_id);
+  const scenes = useQuery({ queryKey: ["scenes", lessonId], queryFn: () => api.get<SceneOut[]>(`/lessons/${lessonId}/scenes`) });
+  const quizzes = useChapterAssessments(chapterId);
+  if (lesson.isPending) return <Loading />;
+  if (lesson.error) return <ErrorAlert error={lesson.error} />;
+  return (
+    <LessonArticle
+      lesson={lesson.data}
+      chapter={chapter.data}
+      outline={outline.data}
+      scenes={scenes.data ?? []}
+      quizzes={quizzes.data ?? []}
+      quizHref={(id) => `/teacher/chapters/${chapterId}/preview?quiz=${id}`}
+      showProgress={false}
+      badge={(item) => <LiveBadge {...item} />}
+      sidebar={sidebar}
+    />
+  );
+}
 
 export function ChapterPreviewPage() {
   const { chapterId = "" } = useParams();
+  const [params, setParams] = useSearchParams();
   const chapter = useChapter(chapterId);
   const course = useQuery({
     queryKey: ["course", chapter.data?.course_id],
     queryFn: () => api.get<CourseOut>(`/courses/${chapter.data?.course_id}`),
     enabled: !!chapter.data,
   });
+  const outline = useOutline(chapter.data?.course_id);
   const lessons = useLessons(chapterId);
   const quizzes = useChapterAssessments(chapterId);
-  const [view, setView] = useState<View | null>(null);
+
+  const quizId = params.get("quiz");
+  const lessonId = params.get("lesson") ?? lessons.data?.[0]?.id ?? null;
+  const show = (next: { lesson?: string; quiz?: string }) =>
+    setParams((p) => { p.delete("quiz"); p.delete("lesson"); if (next.lesson) p.set("lesson", next.lesson); if (next.quiz) p.set("quiz", next.quiz); return p; }, { replace: true });
+
+  // When the chapter has no lessons but has a quiz, open the quiz.
   useEffect(() => {
-    const first = lessons.data?.[0];
-    if (!view && first) setView({ kind: "lesson", id: first.id });
-    else if (!view && lessons.data?.length === 0 && quizzes.data?.[0]) setView({ kind: "quiz", id: quizzes.data[0].id });
-  }, [lessons.data, quizzes.data, view]);
+    if (!quizId && !params.get("lesson") && lessons.data?.length === 0 && quizzes.data?.[0]) show({ quiz: quizzes.data[0].id });
+  }, [lessons.data, quizzes.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (chapter.isPending) return <Loading />;
   if (chapter.error) return <ErrorAlert error={chapter.error} />;
   const ch = chapter.data;
   const chapterLive = ch.status === "published";
   const courseLive = course.data?.status === "published";
-  const navItem = (active: boolean) => `block w-full rounded px-2 py-1.5 text-left text-sm ${active ? "bg-navy-900 text-white" : "hover:bg-slate-100"}`;
+  const o = outline.data;
 
-  return (
+  const sidebar = (
     <>
-      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900" role="note">
-        <span className="font-semibold">Student preview</span>
-        <span>{chapterLive && courseLive ? "Students enrolled in this course can see the live items." : "Students can't see this chapter yet — publish it from the studio."}</span>
-        <Link to={`/teacher/chapters/${chapterId}/studio`} className="ml-auto rounded-md bg-navy-900 px-3 py-1.5 font-medium text-white">← Back to studio</Link>
-      </div>
-
-      <nav aria-label="Breadcrumb" className="mb-2 text-sm text-slate-500">
-        {course.data && <><Link to={`/teacher/courses/${course.data.id}`} className="hover:underline">{course.data.title}</Link> › </>}
-        Chapter {ch.position}
-      </nav>
-      <header className="mb-6 rounded-xl bg-gradient-to-r from-navy-900 to-navy-700 p-6 text-white">
-        <p className="text-xs uppercase tracking-widest text-white/60">Chapter {ch.position}</p>
-        <h1 className="mt-1 text-3xl font-semibold">{ch.title}</h1>
-        {ch.description && <p className="mt-2 max-w-3xl text-white/80">{ch.description}</p>}
-        <div className="mt-3 flex flex-wrap gap-2 text-xs">
-          <span className="rounded bg-white/15 px-2 py-0.5">{lessons.data?.length ?? 0} lessons</span>
-          <span className="rounded bg-white/15 px-2 py-0.5">{quizzes.data?.length ?? 0} quizzes</span>
-          <span className={`rounded px-2 py-0.5 ${chapterLive ? "bg-green-500/30" : "bg-white/15"}`}>{chapterLive ? "chapter live" : "chapter draft"}</span>
-          {course.data && <span className={`rounded px-2 py-0.5 ${courseLive ? "bg-green-500/30" : "bg-amber-500/30"}`}>{courseLive ? "course live" : "course draft"}</span>}
-        </div>
-        {(ch.objectives ?? []).length > 0 && (
-          <div className="mt-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/60">You will learn</p>
-            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-white/90">{ch.objectives?.map((o) => <li key={o.id}>{o.objective_text}</li>)}</ul>
-          </div>
-        )}
-      </header>
-
-      <div className="grid gap-6 lg:grid-cols-[16rem_1fr]">
-        <nav aria-label="Chapter contents" className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-          <div className="rounded-lg border border-slate-200 bg-white p-3">
-            <p className="mb-1 text-xs font-semibold uppercase text-slate-500">Lessons</p>
-            {lessons.data?.length === 0 && <p className="text-sm text-slate-500">No lessons yet.</p>}
-            <ul>
-              {lessons.data?.map((l) => (
-                <li key={l.id}>
-                  <button className={navItem(view?.kind === "lesson" && view.id === l.id)} aria-current={view?.id === l.id ? "page" : undefined} onClick={() => setView({ kind: "lesson", id: l.id })}>
-                    {l.position}. {l.title}{!l.published_version && <span className="ml-1 text-xs opacity-70">(draft)</span>}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          {(quizzes.data?.length ?? 0) > 0 && (
-            <div className="rounded-lg border border-slate-200 bg-white p-3">
-              <p className="mb-1 text-xs font-semibold uppercase text-slate-500">Quizzes</p>
-              <ul>
-                {quizzes.data?.map((a) => (
-                  <li key={a.id}>
-                    <button className={navItem(view?.kind === "quiz" && view.id === a.id)} onClick={() => setView({ kind: "quiz", id: a.id })}>
-                      ✎ {a.title}{!a.published_version && <span className="ml-1 text-xs opacity-70">(draft)</span>}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {o && (
+        <LessonContents
+          outline={o}
+          currentLessonId={lessonId ?? ""}
+          lessonHref={(id, chId) => `/teacher/chapters/${chId}/preview?lesson=${id}`}
+          courseHref={`/teacher/courses/${o.course_id}`}
+          showProgress={false}
+          showDrafts
+        />
+      )}
+      {(quizzes.data?.length ?? 0) > 0 && (
+        <nav aria-label="Chapter quizzes" className="lesson-contents panel">
+          <div className="lesson-contents-heading"><span className="eyebrow eyebrow-muted">QUIZZES IN THIS CHAPTER</span></div>
+          <ul>
+            {quizzes.data?.map((a) => (
+              <li key={a.id}>
+                <Link aria-current={quizId === a.id ? "page" : undefined} className={`lesson-contents-link${quizId === a.id ? " is-current" : ""}`} to={`/teacher/chapters/${chapterId}/preview?quiz=${a.id}`}>
+                  <Icon name="target" size={14} />
+                  <span>{a.title}{!a.published_version && <span className="ml-1 text-xs opacity-60">(draft)</span>}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
-        <div>
-          {!view && <EmptyState title="Nothing to preview yet">Generate a lesson in the chapter studio first.</EmptyState>}
-          {view?.kind === "lesson" && <LessonPreview key={view.id} lessonId={view.id} />}
-          {view?.kind === "quiz" && <QuizPreview key={view.id} assessmentId={view.id} />}
-        </div>
+      )}
+      <div className="lesson-complete">
+        <p className="text-sm text-slate-500">Students see a “Mark lesson complete” button here.</p>
       </div>
     </>
+  );
+
+  return (
+    <div className="lesson-page">
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900" role="note">
+        <span className="font-semibold">Student preview</span>
+        <span>
+          {chapterLive && courseLive
+            ? "This is what enrolled students see. Items marked draft are only visible to you."
+            : "Students can't see this chapter yet — publish it from the studio. Items marked draft are only visible to you."}
+        </span>
+        <Link to={`/teacher/chapters/${chapterId}/studio?step=publish`} className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-[#38b2ac] px-3.5 py-1.5 text-sm font-semibold !text-[#0b0d16] no-underline shadow-sm hover:bg-[#4fc7c0]" style={{ color: "#0b0d16" }}>← Back to studio</Link>
+      </div>
+
+      <nav aria-label="Breadcrumb" className="lesson-breadcrumb">
+        <Link to="/teacher/courses">My courses</Link>
+        <Icon name="chevron-right" size={14} />
+        {course.data ? <Link to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link> : <span>Course</span>}
+        <Icon name="chevron-right" size={14} />
+        <strong>{ch.title}</strong>
+      </nav>
+
+      {quizId ? (
+        <div className="lesson-layout">
+          <div className="lesson-content"><QuizPreview key={quizId} assessmentId={quizId} onBack={() => show(lessonId ? { lesson: lessonId } : {})} /></div>
+          <aside className="lesson-sidebar">{sidebar}</aside>
+        </div>
+      ) : lessonId ? (
+        <LessonPreview key={lessonId} lessonId={lessonId} chapterId={chapterId} sidebar={sidebar} />
+      ) : lessons.isPending ? (
+        <Loading />
+      ) : (
+        <EmptyState title="Nothing to preview yet">Generate a lesson in the chapter studio first.</EmptyState>
+      )}
+    </div>
   );
 }

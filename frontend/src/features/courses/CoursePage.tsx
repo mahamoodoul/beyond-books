@@ -65,9 +65,10 @@ export function CoursePage() {
               type="button"
               disabled={update.isPending}
               onClick={() => update.mutate({ status: published ? "draft" : "published" })}
-              className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-white/90 disabled:opacity-60"
+              className="rounded-md bg-white px-3 py-1.5 text-sm font-medium hover:bg-white/90 disabled:opacity-60"
             >
-              {published ? "Unpublish" : "Publish course"}
+              {/* The global `button { color: inherit }` beats utilities, so the colour sits on a span. */}
+              <span className="text-slate-900">{published ? "Unpublish" : "Publish course"}</span>
             </button>
           </div>
         </div>
@@ -94,7 +95,7 @@ export function CoursePage() {
         ))}
       </div>
       <div role="tabpanel" className="space-y-6">
-        {tab === "Chapters" && <ChapterBoard courseId={courseId} onGoToSources={() => setTab("Sources & outline")} />}
+        {tab === "Chapters" && <ChapterBoard courseId={courseId} accent={style} onGoToSources={() => setTab("Sources & outline")} />}
         {tab === "Sources & outline" && (
           <>
             <SourcesPanel courseId={courseId} />

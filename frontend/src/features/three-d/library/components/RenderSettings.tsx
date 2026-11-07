@@ -123,7 +123,7 @@ export function StudioLights({
 
   return (
     <>
-      <hemisphereLight args={["#eef3ff", "#1a2238", 0.35]} />
+      <hemisphereLight args={["#ffffff", "#c9d1dc", 0.45]} />
       <directionalLight
         ref={key}
         position={[6, 10, 8]}
@@ -142,9 +142,8 @@ export function StudioLights({
  * AO + SMAA + bloom (emissive parts only) + AgX. The pass chain is identical on medium and
  * high, so a tier change only updates N8AO's sample preset on the live pass — no rebuild.
  */
-export function PostEffects({ runtime, tier }: { runtime: RefObject<ViewerRuntime>; tier: QualityTier }) {
+export function PostEffects({ tier }: { runtime: RefObject<ViewerRuntime>; tier: QualityTier }) {
   const q = QUALITY[tier];
-  const radius = explodedBounds(runtime.current.bounds, {}, 0).radius;
   if (!q.postprocessing) return null;
   return (
     <EffectComposer multisampling={0} enableNormalPass={false}>
@@ -159,9 +158,12 @@ export function PostEffects({ runtime, tier }: { runtime: RefObject<ViewerRuntim
         // halfRes is avoided: N8AO never creates its downsample target when it starts half-res
         halfRes={false}
         quality={q.aoQuality}
-        aoRadius={radius * 0.18}
-        distanceFalloff={radius * 0.08}
-        intensity={3}
+        // radius in screen pixels: a world-space radius sized for the whole model turned into
+        // large soft blobs when the camera flew in close to a single part, which read as blur
+        screenSpaceRadius
+        aoRadius={28}
+        distanceFalloff={1}
+        intensity={2}
         color="black"
       />
       <Bloom mipmapBlur luminanceThreshold={4} luminanceSmoothing={0.2} intensity={0.25} />

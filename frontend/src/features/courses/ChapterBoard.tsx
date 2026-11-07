@@ -13,6 +13,8 @@ import { Badge, Button, Field, Input } from "@/components/ui";
 import { Icon } from "@/components/ui/Icon";
 import { useJob } from "@/features/jobs/useJob";
 
+import type { SubjectStyle } from "./subjects";
+
 const overviewKey = (courseId: string) => ["chapter-overview", courseId];
 
 export function useChapterOverview(courseId: string) {
@@ -175,15 +177,17 @@ function SplitPanel({ chapter, courseId, onDone }: { chapter: ChapterOverview; c
 }
 
 /* ------------------------------------------------------------- chapter card */
-function Stat({ icon, label }: { icon: "book" | "layers" | "check" | "target"; label: string }) {
+function Stat({ icon, label, soft, muted }: { icon: "book" | "layers" | "check" | "target"; label: string; soft: string; muted?: boolean }) {
   return (
-    <span className="inline-flex items-center gap-1 text-xs text-slate-600">
-      <Icon name={icon} size={13} className="text-slate-400" /> {label}
+    <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs ${muted ? "bg-slate-50 text-slate-400" : `${soft} text-slate-700`}`}>
+      <Icon name={icon} size={13} className={muted ? "text-slate-300" : "text-slate-500"} /> {label}
     </span>
   );
 }
 
-function ChapterCard({ c, index, total, courseId }: { c: ChapterOverview; index: number; total: number; courseId: string }) {
+const PLAIN: SubjectStyle = { icon: "book", banner: "", text: "text-slate-700", soft: "bg-slate-100", solid: "bg-navy-900" };
+
+function ChapterCard({ c, index, total, courseId, accent = PLAIN }: { c: ChapterOverview; index: number; total: number; courseId: string; accent?: SubjectStyle }) {
   const refresh = useRefresh(courseId);
   const [splitting, setSplitting] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -192,23 +196,32 @@ function ChapterCard({ c, index, total, courseId }: { c: ChapterOverview; index:
   const live = c.status === "published";
   const pages = pagesOf(c);
   const lessons = c.lessons ?? 0;
+  const scenes = c.scenes ?? 0;
+  const quizzes = c.quizzes ?? 0;
+  const empty = !lessons && !scenes && !quizzes;
 
   return (
-    <li className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+    <li className={`rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${live ? "border-slate-200" : "border-dashed border-slate-300"}`}>
       <div className="flex gap-4">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-700">{index + 1}</span>
+        <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg text-sm font-semibold ${accent.soft} ${accent.text}`}>{index + 1}</span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <Link to={`/teacher/chapters/${c.id}`} className="font-semibold text-slate-900 hover:underline">{c.title}</Link>
             <Badge tone={live ? "green" : "slate"}>{live ? "Published" : "Draft"}</Badge>
+            {pages && <span className="text-xs text-slate-400">{pages}</span>}
           </div>
           {c.description && <p className="mt-0.5 line-clamp-2 text-sm text-slate-600">{c.description}</p>}
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-            <Stat icon="book" label={lessons ? `${lessons} lesson${lessons === 1 ? "" : "s"} · ${c.published_lessons ?? 0} live` : "No lessons yet"} />
-            <Stat icon="layers" label={`${c.scenes ?? 0} 3D`} />
-            <Stat icon="check" label={`${c.quizzes ?? 0} quiz${(c.quizzes ?? 0) === 1 ? "" : "zes"}`} />
-            {(c.objectives ?? 0) > 0 && <Stat icon="target" label={`${c.objectives} objectives`} />}
-            {pages && <span className="text-xs text-slate-400">{pages}</span>}
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {empty ? (
+              <span className="text-xs text-slate-400">Nothing generated yet — open the Studio to build this chapter.</span>
+            ) : (
+              <>
+                <Stat icon="book" soft={accent.soft} muted={!lessons} label={lessons ? `${lessons} lesson${lessons === 1 ? "" : "s"} · ${c.published_lessons ?? 0} live` : "no lessons"} />
+                <Stat icon="layers" soft={accent.soft} muted={!scenes} label={`${scenes} 3D`} />
+                <Stat icon="check" soft={accent.soft} muted={!quizzes} label={`${quizzes} quiz${quizzes === 1 ? "" : "zes"}`} />
+                {(c.objectives ?? 0) > 0 && <Stat icon="target" soft={accent.soft} label={`${c.objectives} objectives`} />}
+              </>
+            )}
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-start">
@@ -239,7 +252,7 @@ function ChapterCard({ c, index, total, courseId }: { c: ChapterOverview; index:
 }
 
 /* -------------------------------------------------------------------- board */
-export function ChapterBoard({ courseId, onGoToSources }: { courseId: string; onGoToSources: () => void }) {
+export function ChapterBoard({ courseId, onGoToSources, accent }: { courseId: string; onGoToSources: () => void; accent?: SubjectStyle }) {
   const overview = useChapterOverview(courseId);
   const [adding, setAdding] = useState(false);
   const list = overview.data ?? [];
@@ -263,7 +276,7 @@ export function ChapterBoard({ courseId, onGoToSources }: { courseId: string; on
         </EmptyState>
       )}
       <ol className="space-y-3">
-        {list.map((c, i) => <ChapterCard key={c.id} c={c} index={i} total={list.length} courseId={courseId} />)}
+        {list.map((c, i) => <ChapterCard key={c.id} c={c} index={i} total={list.length} courseId={courseId} accent={accent} />)}
       </ol>
     </section>
   );

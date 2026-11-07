@@ -645,6 +645,7 @@ export type EventType =
 export type LessonId6 = string;
 export type SceneId3 = string | null;
 export type Recorded = number;
+export type Text6 = string;
 export type AssetId1 = string;
 export type AssetName = string;
 export type CreatedAt6 = string;
@@ -754,12 +755,12 @@ export type Password1 = string;
 export type SourceRefs8 = {
   [k: string]: unknown;
 }[];
-export type Text6 = string;
+export type Text7 = string;
 export type EvidenceCount = number;
 export type Mastery = number | null;
 export type ObjectiveId1 = string;
 export type Status13 = string;
-export type Text7 = string;
+export type Text8 = string;
 export type CreatedAt8 = string;
 export type Id18 = string;
 export type Model = string;
@@ -885,6 +886,10 @@ export type Name10 = string;
 export type Slug2 = string;
 export type ExpectedVersion4 = number;
 export type Instruction = string | null;
+export type Text9 = string;
+export type Enabled = boolean;
+export type Model1 = string | null;
+export type VoiceId = string | null;
 export type Attempts = number;
 export type AvgScoreRate3 = number | null;
 export type CompletedLessons3 = number;
@@ -927,7 +932,7 @@ export type Status18 = string;
 export type Title34 = string;
 export type Version9 = number;
 export type CourseId9 = string;
-export type Text8 = string;
+export type Text10 = string;
 export type Title35 = string;
 export type Description16 = string;
 export type IsDefault = boolean;
@@ -1013,6 +1018,7 @@ export interface Api {
   EventBatch?: EventBatch;
   EventIn?: EventIn;
   EventResult?: EventResult;
+  ExplainSelectionRequest?: ExplainSelectionRequest;
   FlowParticlesStep?: FlowParticlesStep;
   GenerationJobOut?: GenerationJobOut;
   GenerationRequest?: GenerationRequest;
@@ -1090,6 +1096,8 @@ export interface Api {
   SkippedItem?: SkippedItem;
   SourcePassageOut?: SourcePassageOut;
   SourceRef?: SourceRef;
+  SpeechIn?: SpeechIn;
+  SpeechStatus?: SpeechStatus;
   StudentAssessment?: StudentAssessment;
   StudentAttention?: StudentAttention;
   StudentInsights?: StudentInsights;
@@ -2227,6 +2235,13 @@ export interface EventResult {
   recorded: Recorded;
 }
 /**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "ExplainSelectionRequest".
+ */
+export interface ExplainSelectionRequest {
+  text: Text6;
+}
+/**
  * A 3D generation in the library's "In progress" list (running or recently finished).
  *
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2436,7 +2451,7 @@ export interface LoginRequest {
  */
 export interface ObjectiveIn {
   source_refs?: SourceRefs8;
-  text: Text6;
+  text: Text7;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2447,7 +2462,7 @@ export interface ObjectiveMastery {
   mastery: Mastery;
   objective_id: ObjectiveId1;
   status: Status13;
-  text: Text7;
+  text: Text8;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2749,6 +2764,26 @@ export interface SectionRegenerateRequest {
   instruction?: Instruction;
 }
 /**
+ * Text to read aloud: one tour step (part name, explanation, link to the topic).
+ *
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "SpeechIn".
+ */
+export interface SpeechIn {
+  text: Text9;
+}
+/**
+ * Whether voice narration is available on this server (an ElevenLabs key is configured).
+ *
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "SpeechStatus".
+ */
+export interface SpeechStatus {
+  enabled: Enabled;
+  model?: Model1;
+  voice_id?: VoiceId;
+}
+/**
  * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "StudentInsights".
  */
@@ -2826,7 +2861,7 @@ export interface TeacherAssessment {
  */
 export interface TextDocumentRequest {
   course_id: CourseId9;
-  text: Text8;
+  text: Text10;
   title: Title35;
 }
 /**

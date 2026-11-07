@@ -22,9 +22,12 @@ export interface QualityProfile {
 }
 
 export const QUALITY: Record<QualityTier, QualityProfile> = {
-  low: { dpr: [1, 1], postprocessing: false, aoQuality: "performance", shadows: false },
-  medium: { dpr: [1, 1.5], postprocessing: true, aoQuality: "performance", shadows: true },
-  high: { dpr: [1, 1.75], postprocessing: true, aoQuality: "high", shadows: true },
+  // Pixel density stays at the screen's own ratio (capped at 2) on medium and high, and never
+  // drops below 1.5 on low: a 1x canvas on a Retina screen reads as a blurry model, which is
+  // worse than losing shadows and ambient occlusion.
+  low: { dpr: [1, 1.5], postprocessing: false, aoQuality: "performance", shadows: false },
+  medium: { dpr: [1, 2], postprocessing: true, aoQuality: "performance", shadows: true },
+  high: { dpr: [1, 2], postprocessing: true, aoQuality: "high", shadows: true },
 };
 
 const ORDER: QualityTier[] = ["low", "medium", "high"];

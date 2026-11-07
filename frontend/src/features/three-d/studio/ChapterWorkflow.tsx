@@ -230,62 +230,147 @@ export function GeneratePanel({ chapter }: { chapter: ChapterDetail }) {
   );
 }
 
-/* ------------------------------------------------------------ publish bar */
-export function PublishBar({ chapter, course }: { chapter: ChapterDetail; course: CourseOut | undefined }) {
+/* ------------------------------------------------------- publish (one place) */
+/**
+ * Publishing lives in exactly one place: the "Review & publish" step. The studio header only
+ * shows the chapter status and a single "Review & publish" button that takes the teacher there.
+ */
+/** What in this chapter is newer than what students see. */
+export type PendingChanges = { lessons: number; scenes: number; quizzes: number };
+export const pendingTotal = (p: PendingChanges) => p.lessons + p.scenes + p.quizzes;
+export function describePending(p: PendingChanges): string {
+  const parts = [
+    p.lessons && `${p.lessons} lesson${p.lessons === 1 ? "" : "s"}`,
+    p.scenes && `${p.scenes} 3D scene${p.scenes === 1 ? "" : "s"}`,
+    p.quizzes && `${p.quizzes} quiz${p.quizzes === 1 ? "" : "zes"}`,
+  ].filter(Boolean) as string[];
+  return parts.join(", ");
+}
+
+export function PublishStatus({ chapter, pending, reviewing, onReview }: { chapter: ChapterDetail; pending: PendingChanges; reviewing: boolean; onReview: () => void }) {
+  const live = chapter.status === "published";
+  const n = pendingTotal(pending);
+  const upToDate = live && n === 0;
+  const pill = upToDate
+    ? "bg-teal-50 text-teal-700 ring-1 ring-teal-200"
+    : live
+      ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+      : "bg-slate-100 text-slate-600";
+  const dot = upToDate ? "bg-teal-500" : live ? "bg-amber-500" : "bg-slate-400";
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${pill}`} title={live && n > 0 ? `Not yet published: ${describePending(pending)}` : undefined}>
+        <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+        {upToDate ? "Published · up to date" : live ? `Live · ${n} unpublished change${n === 1 ? "" : "s"}` : "Draft · not visible to students"}
+      </span>
+      <Link to={`/teacher/chapters/${chapter.id}/preview`} className={btn}>👁 Preview</Link>
+      {!reviewing && !upToDate && <button className={btnPrimary} onClick={onReview}>{live ? "Review & publish updates" : "Review & publish"} →</button>}
+    </div>
+  );
+}
+
+export function PublishPanel({ chapter, course, ready, pending }: { chapter: ChapterDetail; course: CourseOut | undefined; ready: boolean; pending: PendingChanges }) {
   const refresh = useRefreshAll(chapter.id);
   const qc = useQueryClient();
   const courseDraft = course?.status === "draft";
   const [withCourse, setWithCourse] = useState(true);
-  const [open, setOpen] = useState(false);
   const [result, setResult] = useState<PublishChapterResult | null>(null);
   const publish = useMutation({
     mutationFn: () => api.post<PublishChapterResult>(`/chapters/${chapter.id}/publish`, { include_course: courseDraft && withCourse }),
-    onSuccess: (r) => { setResult(r); setOpen(false); refresh(); void qc.invalidateQueries({ queryKey: ["course", chapter.course_id] }); },
+    onSuccess: (r) => { setResult(r); refresh(); void qc.invalidateQueries({ queryKey: ["course", chapter.course_id] }); },
   });
   const unpublish = useMutation({
     mutationFn: () => api.patch<ChapterDetail>(`/chapters/${chapter.id}`, { status: "draft" }),
     onSuccess: () => { setResult(null); refresh(); },
   });
   const live = chapter.status === "published";
+  const busy = publish.isPending || unpublish.isPending;
+  const n = pendingTotal(pending);
+  const upToDate = live && n === 0;
+
+  if (result) {
+    return (
+      <section role="status" className={`${panel} border-teal-200 bg-teal-50/40 p-5`}>
+        <div className="flex items-start gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#38b2ac] text-lg font-bold text-[#0b0d16]">✓</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-semibold text-slate-900">Chapter published</p>
+            <p className="mt-0.5 text-sm text-slate-600">
+              {result.lessons_published} lesson(s) · {result.scenes_published} 3D scene(s) · {result.assessments_published} quiz(zes) are now live
+              {result.course_status === "published" ? <> for students enrolled in <b className="text-slate-800">{course?.title}</b>.</> : "."}
+            </p>
+            {result.course_status !== "published" && <p className="mt-2 text-sm text-amber-700">The course itself is still a draft, so students can't open it yet. Publish the course from its page.</p>}
+            {result.skipped.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-amber-700">
+                {result.skipped.map((s) => <li key={s.id}>Skipped {s.kind} “{s.title}”: {s.reason}</li>)}
+              </ul>
+            )}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Link to={`/teacher/chapters/${chapter.id}/preview`} className={btnPrimary}>See how students see it →</Link>
+              <button className={btn} onClick={() => setResult(null)}>Done</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (upToDate) {
+    return (
+      <section className={`${panel} border-teal-200 bg-teal-50/40 p-5`}>
+        <div className="flex flex-wrap items-start gap-4">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#38b2ac] text-lg font-bold text-[#0b0d16]">✓</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-semibold text-slate-900">Already published</p>
+            <p className="mt-0.5 text-sm text-slate-600">
+              Students enrolled in <b className="text-slate-800">{course?.title ?? "the course"}</b> see the current version of every lesson, 3D scene and quiz. There is nothing new to publish.
+              {courseDraft && <span className="text-amber-700"> The course itself is still a draft, so students can't open it yet.</span>}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">Edit a lesson, a 3D scene or a quiz and this turns into “Publish updates”.</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <Link to={`/teacher/chapters/${chapter.id}/preview`} className={btn}>👁 See how students see it</Link>
+              <button className="text-xs text-slate-500 underline-offset-2 hover:text-red-600 hover:underline disabled:opacity-40" disabled={busy} onClick={() => confirm("Hide this chapter from students?") && unpublish.mutate()}>
+                {unpublish.isPending ? "Hiding…" : "Hide from students (unpublish)"}
+              </button>
+            </div>
+            {unpublish.error && <p className="mt-2 text-sm text-red-600" role="alert">{errorMessage(unpublish.error)}</p>}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <div className="relative flex flex-wrap items-center gap-2">
-      <Chip tone={live ? "teal" : "slate"}>{live ? "chapter live" : "chapter draft"}</Chip>
-      <Link to={`/teacher/chapters/${chapter.id}/preview`} className={btn}>👁 Preview</Link>
-      <button className={btnPrimary} onClick={() => setOpen(!open)} aria-expanded={open}>{live ? "Publish updates" : "Publish chapter"}</button>
-      {live && <button className={btn} disabled={unpublish.isPending} onClick={() => confirm("Hide this chapter from students?") && unpublish.mutate()}>Unpublish</button>}
-
-      {open && (
-        <div role="dialog" aria-label="Publish chapter" className={`${panel} absolute right-0 top-11 z-20 w-80 space-y-3 p-4 text-sm shadow-xl`}>
-          <p className="font-semibold text-slate-900">Publish “{chapter.title}”</p>
-          <p className="text-slate-500">Students enrolled in <b className="text-slate-700">{course?.title}</b> will see this chapter with all its lessons, 3D scenes and quizzes. Items that are not ready (for example an empty lesson) are skipped and listed.</p>
+    <section className={`${panel} p-5`}>
+      <div className="flex flex-wrap items-start gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-base font-semibold text-slate-900">{live ? "Publish your latest changes" : "Publish this chapter"}</p>
+          <p className="mt-0.5 text-sm text-slate-600">
+            {live
+              ? <>Students see an older version. Not yet published: <b className="text-slate-800">{describePending(pending)}</b>. Publishing replaces what they see with the current content.</>
+              : <>Students enrolled in <b className="text-slate-800">{course?.title ?? "the course"}</b> will see this chapter with all its lessons, 3D scenes and quizzes.</>}
+            {" "}{ready ? "Everything is ready." : "Unfinished items are skipped and listed afterwards."}
+          </p>
           {courseDraft && (
-            <label className="flex items-start gap-2 text-slate-600">
+            <label className="mt-3 flex items-start gap-2 text-sm text-slate-700">
               <input type="checkbox" className="mt-1" checked={withCourse} onChange={(e) => setWithCourse(e.target.checked)} />
-              The course is still a draft — publish the course too, so students can open it.
+              <span>Also publish the course <b>{course?.title}</b> (it's still a draft, so students can't open it otherwise).</span>
             </label>
           )}
-          <div className="flex gap-2">
-            <button className={btnPrimary} disabled={publish.isPending} onClick={() => publish.mutate()}>{publish.isPending ? "Publishing…" : "Publish now"}</button>
-            <button className={btn} onClick={() => setOpen(false)}>Cancel</button>
-          </div>
-          {publish.error && <p className="text-red-600" role="alert">{errorMessage(publish.error)}</p>}
+          {publish.error && <p className="mt-2 text-sm text-red-600" role="alert">{errorMessage(publish.error)}</p>}
+          {unpublish.error && <p className="mt-2 text-sm text-red-600" role="alert">{errorMessage(unpublish.error)}</p>}
         </div>
-      )}
-
-      {result && (
-        <div role="status" className={`${panel} absolute right-0 top-11 z-10 w-80 p-4 text-sm`}>
-          <div className="mb-1 flex items-center justify-between"><p className="font-semibold text-teal-700">✓ Chapter published</p><button className="text-slate-500 hover:text-slate-900" aria-label="Close" onClick={() => setResult(null)}>✕</button></div>
-          <p className="text-slate-600">{result.lessons_published} lesson(s) · {result.scenes_published} 3D scene(s) · {result.assessments_published} quiz(zes)</p>
-          {result.course_status !== "published" && <p className="mt-1 text-amber-700">The course is still a draft, so students can't open it yet.</p>}
-          {result.skipped.length > 0 && (
-            <ul className="mt-2 space-y-1 text-xs text-amber-700">
-              {result.skipped.map((s) => <li key={s.id}>Skipped {s.kind} “{s.title}”: {s.reason}</li>)}
-            </ul>
+        <div className="flex shrink-0 flex-col items-stretch gap-2">
+          <button className={`${btnPrimary} px-5 py-2.5 text-base`} disabled={busy} onClick={() => publish.mutate()}>
+            {publish.isPending ? "Publishing…" : live ? "Publish updates" : "Publish chapter"}
+          </button>
+          {live && (
+            <button className="text-xs text-slate-500 underline-offset-2 hover:text-red-600 hover:underline disabled:opacity-40" disabled={busy} onClick={() => confirm("Hide this chapter from students?") && unpublish.mutate()}>
+              {unpublish.isPending ? "Hiding…" : "Hide from students (unpublish)"}
+            </button>
           )}
-          <Link to={`/teacher/chapters/${chapter.id}/preview`} className="mt-2 inline-block text-teal-700 hover:underline">See how students see it →</Link>
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
