@@ -1,9 +1,12 @@
-# Edu3D AI
+# Beyond Books
 
-Turn textbooks into interactive 3D learning experiences.
+Turn textbooks into interactive, chapter-based learning experiences with 3D models and assessments.
 
 **Full system design:** [README_Edu3D_AI_System_Design.md](README_Edu3D_AI_System_Design.md) — the
-high-level source of truth. **Status:** Phase 0 (architecture and foundation).
+high-level source of truth.
+
+The frontend demo uses typed seed data in `frontend/src/features/demo/`. It can be opened locally
+without the separately developed backend; login lets you switch between teacher and student views.
 
 ## Repository layout
 
@@ -27,12 +30,13 @@ cp .env.example .env
 make up            # postgres+pgvector, redis, api :8000, worker, frontend :5173
 ```
 
-Without Docker (backend tests and frontend need no services):
+Frontend only (mock data; no backend services required):
 
 ```bash
-make backend-install && make backend-test
-make frontend-install && make frontend-dev   # http://localhost:5173
+cd frontend && npm ci && npm run dev         # http://localhost:5173
 ```
+
+For the full local stack, start the backend dependencies and services with Docker as shown above.
 
 API docs: http://localhost:8000/docs · Health: `GET /api/v1/health`
 

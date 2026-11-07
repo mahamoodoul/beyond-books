@@ -1,30 +1,101 @@
-import { NavLink, Outlet } from "react-router";
+import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router";
 
-const navClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-md px-3 py-2 text-sm font-medium ${
-    isActive ? "bg-navy-700 text-white" : "text-slate-200 hover:bg-navy-900"
-  }`;
+import { useDemo } from "@/app/providers/DemoProvider";
+import { Icon } from "@/components/ui/Icon";
+import { demoUsers } from "@/features/demo/types";
+
+const teacherNavigation = [
+  { to: "/teacher", label: "Overview", icon: "grid" as const, end: true },
+  { to: "/teacher/courses", label: "My courses", icon: "book" as const },
+  { to: "/teacher/insights", label: "Insights", icon: "activity" as const },
+];
+
+const studentNavigation = [
+  { to: "/student", label: "My learning", icon: "grid" as const, end: true },
+  { to: "/student/courses/cell-biology/lessons/cell-structure", label: "My courses", icon: "book" as const },
+  { to: "/student/progress", label: "My progress", icon: "activity" as const },
+];
 
 export function AppLayout() {
+  const { role, theme, setRole, toggleTheme } = useDemo();
+  const navigate = useNavigate();
+
+  if (!role) return <Navigate to="/login" replace />;
+  const user = demoUsers[role];
+  const navigation = role === "teacher" ? teacherNavigation : studentNavigation;
+
+  function changeRole(nextRole: "teacher" | "student") {
+    setRole(nextRole);
+    navigate(`/${nextRole}`);
+  }
+
   return (
-    <div className="min-h-screen bg-surface font-sans text-slate-900">
-      <header className="bg-navy-950">
-        <nav className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3" aria-label="Main">
-          <span className="mr-6 text-lg font-semibold text-white">Edu3D AI</span>
-          <NavLink to="/" end className={navClass}>
-            Home
-          </NavLink>
-          <NavLink to="/teacher" className={navClass}>
-            Teacher
-          </NavLink>
-          <NavLink to="/student" className={navClass}>
-            Student
-          </NavLink>
+    <div className="app-shell">
+      <header className="topbar">
+        <Link aria-label="Beyond Books home" className="brand" to={role === "teacher" ? "/teacher" : "/student"}>
+          <span className="brand-mark"><Icon name="layers" size={19} /></span>
+          <span>Beyond<span className="brand-light"> Books</span></span>
+        </Link>
+
+        <nav aria-label="Main navigation" className="topbar-nav">
+          {navigation.map((item) => (
+            <NavLink
+              key={item.to}
+              end={item.end}
+              to={item.to}
+              className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}
+            >
+              <Icon name={item.icon} size={17} />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
         </nav>
+
+        <div className="topbar-actions">
+          <button
+            aria-label={`Switch to ${role === "teacher" ? "student" : "teacher"} view`}
+            className="role-switch"
+            onClick={() => changeRole(role === "teacher" ? "student" : "teacher")}
+            type="button"
+          >
+            <span className="role-switch-label">{role === "teacher" ? "Teacher" : "Student"} view</span>
+            <Icon name="chevron-down" size={15} />
+          </button>
+          <button
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            className="icon-button theme-toggle"
+            onClick={toggleTheme}
+            type="button"
+          >
+            <Icon name={theme === "light" ? "moon" : "sun"} size={18} />
+          </button>
+          <button aria-label={`Signed in as ${user.name}`} className="user-avatar" type="button">
+            {user.initials}
+          </button>
+        </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">
+
+      <nav aria-label="Mobile navigation" className="mobile-nav">
+        {navigation.map((item) => (
+          <NavLink
+            key={item.to}
+            end={item.end}
+            to={item.to}
+            className={({ isActive }) => `mobile-nav-link${isActive ? " is-active" : ""}`}
+          >
+            <Icon name={item.icon} size={19} />
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      <main className="page-content">
         <Outlet />
       </main>
+      <footer className="app-footer">
+        <span>Beyond Books</span>
+        <span>Learning, brought to life.</span>
+      </footer>
     </div>
   );
 }
