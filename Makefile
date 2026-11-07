@@ -23,9 +23,11 @@ migrate:       ## Apply migrations to EDU3D_DATABASE_URL
 seed:          ## Seed the 3D library with the schematic demo heart (idempotent)
 	cd backend && .venv/bin/python -m app.modules.three_d.seed
 
-seed-courses:   ## Import the shared courses (seeds/courses) for a teacher: make seed-courses EMAIL=you@example.com
-	@test -n "$(EMAIL)" || (echo "usage: make seed-courses EMAIL=you@example.com" && exit 1)
-	cd backend && .venv/bin/python ../scripts/course_seed.py import $(EMAIL)
+seed-courses:   ## One step: files, DB, teacher account (if new), shared courses: make seed-courses EMAIL=you@example.com PASSWORD=12+chars
+	@test -n "$(EMAIL)" || (echo "usage: make seed-courses EMAIL=you@example.com PASSWORD=your-password" && exit 1)
+	@git lfs pull 2>/dev/null || echo "note: Git LFS not installed (brew install git-lfs) - PDFs and 3D models will be missing"
+	cd backend && .venv/bin/alembic upgrade head
+	cd backend && .venv/bin/python ../scripts/course_seed.py import "$(EMAIL)" $(if $(PASSWORD),"$(PASSWORD)",)
 
 export-courses: ## Re-export a teacher's courses into seeds/courses: make export-courses EMAIL=you@example.com
 	@test -n "$(EMAIL)" || (echo "usage: make export-courses EMAIL=you@example.com" && exit 1)

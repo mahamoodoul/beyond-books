@@ -4,17 +4,20 @@ The four sample courses (Biology, Chemistry, Mathematics, Physics) with everythi
 chapters, learning objectives, the extracted textbook text, lessons, quizzes, 3D scenes, the 3D
 models they use (`files/`, Git LFS) and the saved AI prompts. Importing makes **no AI calls**.
 
-## Load it (collaborators)
+## Load it (collaborators): one command
 
 ```bash
-git lfs pull                         # course PDFs (sample-courses/) and 3D models (files/)
-make migrate                         # database schema up to date
-# register a teacher account in the app (or use one you have), then:
-make seed-courses EMAIL=you@example.com
+git pull
+make seed-courses EMAIL=you@example.com PASSWORD=choose-a-password
 ```
 
-Restart the backend if it was running, then open **My courses**. Re-running is safe: what is
-already there is skipped.
+That's it. It downloads the course PDFs and 3D models (Git LFS), updates the database, creates
+the teacher account if it doesn't exist yet (password: 12+ characters), and loads the courses.
+Then log in with that email and password and open **My courses**.
+
+- Already have an account? Leave out `PASSWORD`.
+- Running it again is safe: what is already there is skipped.
+- Needs Git LFS once per computer: `brew install git-lfs && git lfs install`.
 
 ## Update it (after adding more lessons / 3D)
 

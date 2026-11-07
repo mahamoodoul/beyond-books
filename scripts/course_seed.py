@@ -200,17 +200,50 @@ def export(email: str) -> None:
 
 
 # ------------------------------------------------------------------------- import
-def load(email: str) -> None:
+LFS_POINTER = b"version https://git-lfs"
+
+
+def _real_file(path: Path) -> bool:
+    """False for a Git LFS placeholder (run `git lfs pull` to get the real file)."""
+    with path.open("rb") as f:
+        return not f.read(len(LFS_POINTER)).startswith(LFS_POINTER)
+
+
+def _ensure_teacher(db: Any, email: str, password: str | None) -> uuid.UUID:
+    users = table("users")
+    user_id = db.scalar(select(users.c.id).where(users.c.email == email.lower()))
+    if user_id is not None:
+        return uuid.UUID(str(user_id))
+    if not password:
+        raise SystemExit(
+            f"No account {email!r}. Add a password to create it: "
+            "make seed-courses EMAIL=... PASSWORD=... (12+ characters)"
+        )
+    from app.modules.authentication.schemas import RegisterRequest
+    from app.modules.authentication.service import register
+
+    user = register(
+        db,
+        RegisterRequest(
+            email=email,
+            password=password,
+            display_name=email.split("@")[0].replace(".", " ").title(),
+            account_type="teacher",
+        ),
+    )
+    print(f"created teacher account {user.email}")
+    return user.id
+
+
+def load(email: str, password: str | None = None) -> None:
     bundle = json.loads((BUNDLE / "bundle.json").read_text())
     if bundle.get("format") != FORMAT:
         raise SystemExit("Unsupported seed bundle format.")
     db = session_factory()()
-    users = table("users")
-    user_id = db.scalar(select(users.c.id).where(users.c.email == email))
-    if user_id is None:
-        raise SystemExit(f"No user {email!r}. Register the account first.")
+    user_id = _ensure_teacher(db, email, password)
     storage = get_storage()
     added: dict[str, int] = {}
+    placeholders = 0
     slugs = set(db.scalars(select(table("three_d_assets").c.slug)))
     skipped_assets: set[str] = set()
     for name in TABLES:
@@ -241,25 +274,37 @@ def load(email: str) -> None:
             added[name] = added.get(name, 0) + 1
             if name == "source_documents" and raw.get("_seed_pdf"):
                 pdf = ROOT / raw["_seed_pdf"]
-                if pdf.exists() and pdf.stat().st_size > 1000:  # not an LFS pointer
+                if pdf.exists() and _real_file(pdf):
                     storage.put_bytes(
                         raw["storage_key"], pdf.read_bytes(), raw["mime_type"]
                     )
+                else:
+                    placeholders += 1
             if name == "three_d_asset_versions" and raw.get("storage_key"):
                 f = BUNDLE / "files" / raw["storage_key"]
-                if f.exists():
+                if f.exists() and _real_file(f):
                     storage.put_bytes(
                         raw["storage_key"], f.read_bytes(), "model/gltf-binary"
                     )
+                else:
+                    placeholders += 1
     db.commit()
     db.close()
     if not added:
         print("nothing to import: everything in the bundle is already here")
         return
     print("imported: " + ", ".join(f"{k}={v}" for k, v in added.items()))
+    if placeholders:
+        print(
+            f"WARNING: {placeholders} PDF/3D file(s) were Git LFS placeholders. Install Git LFS "
+            "(brew install git-lfs), run `git lfs pull`, then run this again."
+        )
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[1] not in {"export", "import"}:
-        raise SystemExit("usage: course_seed.py export|import TEACHER_EMAIL")
-    (export if sys.argv[1] == "export" else load)(sys.argv[2])
+    if len(sys.argv) not in (3, 4) or sys.argv[1] not in {"export", "import"}:
+        raise SystemExit("usage: course_seed.py export EMAIL | import EMAIL [PASSWORD]")
+    if sys.argv[1] == "export":
+        export(sys.argv[2])
+    else:
+        load(sys.argv[2], sys.argv[3] if len(sys.argv) == 4 else None)
