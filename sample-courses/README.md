@@ -1,8 +1,9 @@
 # Sample courses (OpenStax textbooks)
 
 Four free, openly licensed textbooks from [OpenStax](https://openstax.org) (Rice University), used as
-sample sources for Beyond Books courses. The PDFs are large, so they are git-ignored; re-download
-them from the links below.
+sample sources for Beyond Books courses. The course excerpts (the PDFs the courses are built from)
+are in the repo via **Git LFS** (`git lfs install && git lfs pull`). The full books are not
+(55-208 MB each, two are over GitHub's 100 MB limit): download them from the links below.
 
 | Course | Full book (source) | Excerpt to upload (≤ 50 MB) | Licence |
 |---|---|---|---|
