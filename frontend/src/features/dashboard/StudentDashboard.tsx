@@ -3,12 +3,14 @@ import { Link } from "react-router";
 
 import { useDemo } from "@/app/providers/DemoProvider";
 import { Icon } from "@/components/ui/Icon";
-import { demoUsers } from "@/features/demo/types";
-import { getCourse, getStudentProgress } from "@/lib/api";
+import { getCourse, getDemoUser, getStudentProgress } from "@/lib/api";
 
 export function StudentDashboard() {
   const { role } = useDemo();
-  const user = demoUsers[role ?? "student"];
+  const userQuery = useQuery({
+    queryKey: ["demo", "user", role ?? "student"],
+    queryFn: () => getDemoUser(role ?? "student"),
+  });
   const courseQuery = useQuery({
     queryKey: ["course", "circulatory-system"],
     queryFn: () => getCourse("circulatory-system"),
@@ -17,14 +19,16 @@ export function StudentDashboard() {
     queryKey: ["student-progress", "student-1"],
     queryFn: () => getStudentProgress("student-1"),
   });
+  if (userQuery.isError) throw userQuery.error;
   if (courseQuery.isError) throw courseQuery.error;
   if (progressQuery.isError) throw progressQuery.error;
-  if (courseQuery.isPending || progressQuery.isPending) {
+  if (userQuery.isPending || courseQuery.isPending || progressQuery.isPending) {
     return <p aria-live="polite" className="page-loading" role="status">Preparing your learning space…</p>;
   }
 
   const course = courseQuery.data;
   const progress = progressQuery.data;
+  const user = userQuery.data;
   const currentChapter = course.chapters.find(
     (chapter) => !progress.completedChapterIds.includes(chapter.id),
   ) ?? course.chapters[0];

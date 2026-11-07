@@ -3,9 +3,9 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { Icon } from "@/components/ui/Icon";
-import { mockDataSource } from "@/features/demo/dataSource";
 import { CellModel, cellParts, type CellPart } from "@/features/lessons/CellModel";
 import { useDemo } from "@/app/providers/DemoProvider";
+import { getLearningSteps } from "@/lib/api";
 
 const quizAnswers = [
   "It stores water and helps the plant cell stay firm.",
@@ -21,7 +21,7 @@ export function CellLessonPage() {
   const currentPart = cellParts[selectedPart];
   const stepsQuery = useQuery({
     queryKey: ["demo", "learning-steps", "cell-biology"],
-    queryFn: () => mockDataSource.getLearningSteps("cell-biology"),
+    queryFn: () => getLearningSteps("cell-biology"),
   });
   if (stepsQuery.isError) throw stepsQuery.error;
   if (stepsQuery.isPending) {

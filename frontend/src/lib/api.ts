@@ -1,5 +1,18 @@
 import { alexProgress, classAnalytics, studentAttempts, students } from "@/lib/mock/seed";
 import { circulatoryCourse } from "@/lib/mock/circulatoryCourse";
+import {
+  courses as demoCourses,
+  demoUsers,
+  learningSteps,
+  recentActivity,
+} from "@/features/demo/types";
+import type {
+  Activity,
+  Course as DemoCourse,
+  DemoRole,
+  DemoUser,
+  LearningStep,
+} from "@/features/demo/types";
 import type {
   Attempt,
   ClassAnalytics,
@@ -20,8 +33,44 @@ export interface CoursePatch {
   grade?: string;
 }
 
+export async function getTeacherCourses(): Promise<DemoCourse[]> {
+  await delay(undefined);
+  const generatedCourses: DemoCourse[] = [...courseStore.values()].map((course) => ({
+    id: course.id,
+    title: course.title,
+    subject: course.subject,
+    grade: course.grade,
+    chapters: course.chapters.length,
+    students: course.id === circulatoryCourse.id ? students.length : 0,
+    completion: 0,
+    status: course.status,
+    accent: "violet",
+    lastUpdated: course.status === "Published" ? "Published just now" : "Created just now",
+    nextChapter: course.chapters[0]?.title ?? "Add your first chapter",
+  }));
+  return [...generatedCourses, ...demoCourses.map((course) => ({ ...course }))];
+}
+
+export async function getRecentActivity(): Promise<Activity[]> {
+  await delay(undefined);
+  return recentActivity.map((activity) => ({ ...activity }));
+}
+
+export async function getDemoUser(role: DemoRole): Promise<DemoUser> {
+  await delay(undefined, 100);
+  return { ...demoUsers[role] };
+}
+
+export async function getLearningSteps(courseId: string): Promise<LearningStep[]> {
+  await delay(undefined);
+  if (courseId !== "cell-biology") throw new Error(`Learning steps for "${courseId}" were not found.`);
+  return learningSteps.map((step) => ({ ...step }));
+}
+
+const courseStore = new Map<string, Course>([[circulatoryCourse.id, copyCourse(circulatoryCourse)]]);
+
 function delay<T>(value: T, milliseconds = 320): Promise<T> {
-  return new Promise((resolve) => window.setTimeout(() => resolve(value), milliseconds));
+  return new Promise((resolve) => setTimeout(() => resolve(value), milliseconds));
 }
 
 function copyCourse(course: Course): Course {
@@ -30,29 +79,44 @@ function copyCourse(course: Course): Course {
 
 export async function getCourse(courseId = circulatoryCourse.id): Promise<Course> {
   await delay(undefined);
-  if (courseId !== circulatoryCourse.id) throw new Error(`Course "${courseId}" was not found`);
-  return copyCourse(circulatoryCourse);
+  const course = courseStore.get(courseId);
+  if (!course) throw new Error(`Course "${courseId}" was not found`);
+  return copyCourse(course);
 }
 
 export async function uploadSource(source: UploadedSource): Promise<UploadResult> {
   await delay(undefined, 600);
   if (!source.name.toLowerCase().endsWith(".pdf")) throw new Error("Please upload a PDF file.");
   if (source.size > 25 * 1024 * 1024) throw new Error("The PDF must be smaller than 25 MB.");
-  return { courseId: circulatoryCourse.id, chapterCount: circulatoryCourse.chapters.length };
+  const draft = copyCourse(circulatoryCourse);
+  draft.id = `course-${Date.now()}`;
+  draft.title = source.courseTitle.trim() || circulatoryCourse.title;
+  draft.subject = source.subject.trim() || circulatoryCourse.subject;
+  draft.grade = source.grade.trim() || circulatoryCourse.grade;
+  draft.sourceName = source.name;
+  draft.status = "Draft";
+  draft.chapters = draft.chapters.map((chapter) => ({ ...chapter, status: "Draft" }));
+  courseStore.set(draft.id, draft);
+  return { courseId: draft.id, chapterCount: draft.chapters.length };
 }
 
 export async function updateCourse(course: Course): Promise<Course> {
   await delay(undefined, 220);
-  return copyCourse(course);
+  if (!courseStore.has(course.id)) throw new Error(`Course "${course.id}" was not found.`);
+  const updated = copyCourse(course);
+  courseStore.set(updated.id, updated);
+  return copyCourse(updated);
 }
 
 export async function publishCourse(courseId: string): Promise<Course> {
-  const course = await getCourse(courseId);
+  const course = courseStore.get(courseId);
+  if (!course) throw new Error(`Course "${courseId}" was not found.`);
   if (course.chapters.some((chapter) => chapter.status !== "Approved")) {
     throw new Error("Approve every chapter before publishing this course.");
   }
-  course.status = "Published";
-  return delay(course, 220);
+  const updated = { ...course, status: "Published" as const };
+  courseStore.set(courseId, updated);
+  return delay(copyCourse(updated), 220);
 }
 
 export async function submitAttempt(

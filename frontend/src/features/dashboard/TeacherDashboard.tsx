@@ -1,12 +1,10 @@
-import { useRef, useState, type KeyboardEvent, type FormEvent } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { Icon } from "@/components/ui/Icon";
-import { demoUsers } from "@/features/demo/types";
-import { mockDataSource } from "@/features/demo/dataSource";
-import type { Course } from "@/features/demo/types";
 import { useDemo } from "@/app/providers/DemoProvider";
+import { getDemoUser, getRecentActivity, getTeacherCourses } from "@/lib/api";
 
 const metrics = [
   { label: "Active learners", value: "83", note: "+12% this month", icon: "users" as const, tone: "violet" },
@@ -16,75 +14,27 @@ const metrics = [
 
 export function TeacherDashboard() {
   const { role } = useDemo();
-  const user = demoUsers[role ?? "teacher"];
-  const [createdCourses, setCreatedCourses] = useState<Course[]>([]);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [courseName, setCourseName] = useState("");
   const [notice, setNotice] = useState("");
-  const createButtonRef = useRef<HTMLButtonElement>(null);
+  const userQuery = useQuery({
+    queryKey: ["demo", "user", role ?? "teacher"],
+    queryFn: () => getDemoUser(role ?? "teacher"),
+  });
   const coursesQuery = useQuery({
     queryKey: ["demo", "courses", "teacher"],
-    queryFn: () => mockDataSource.getCourses("teacher"),
+    queryFn: getTeacherCourses,
   });
   const activityQuery = useQuery({
     queryKey: ["demo", "recent-activity"],
-    queryFn: mockDataSource.getRecentActivity,
+    queryFn: getRecentActivity,
   });
+  if (userQuery.isError) throw userQuery.error;
   if (coursesQuery.isError) throw coursesQuery.error;
   if (activityQuery.isError) throw activityQuery.error;
-  if (coursesQuery.isPending || activityQuery.isPending) {
+  if (userQuery.isPending || coursesQuery.isPending || activityQuery.isPending) {
     return <p aria-live="polite" className="page-loading" role="status">Gathering your classroom snapshot…</p>;
   }
-  const courseList = [...createdCourses, ...coursesQuery.data];
-
-  function closeCreateForm() {
-    setShowCreateForm(false);
-    queueMicrotask(() => createButtonRef.current?.focus());
-  }
-
-  function trapDialogKeys(event: KeyboardEvent<HTMLElement>) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeCreateForm();
-      return;
-    }
-    if (event.key !== "Tab") return;
-    const focusable = event.currentTarget.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled])',
-    );
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && event.target === first) {
-      event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && event.target === last) {
-      event.preventDefault();
-      first?.focus();
-    }
-  }
-
-  function createCourse(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const title = courseName.trim();
-    if (!title) return;
-    const newCourse: Course = {
-      id: `course-${Date.now()}`,
-      title,
-      subject: "New subject",
-      grade: "Grade 10",
-      chapters: 0,
-      students: 0,
-      completion: 0,
-      status: "Draft",
-      accent: "violet",
-      lastUpdated: "Created just now",
-      nextChapter: "Add your first chapter",
-    };
-    setCreatedCourses((current) => [newCourse, ...current]);
-    setCourseName("");
-    closeCreateForm();
-    setNotice(`${title} has been added to your drafts.`);
-  }
+  const user = userQuery.data;
+  const courseList = coursesQuery.data;
 
   return (
     <div className="dashboard-page">
@@ -94,9 +44,9 @@ export function TeacherDashboard() {
           <h1>Good morning, {user.name.split(" ")[0]} <span className="heading-wave">✳</span></h1>
           <p>Here’s what’s happening in your classroom today.</p>
         </div>
-        <button ref={createButtonRef} className="button button-primary" onClick={() => setShowCreateForm(true)} type="button">
+        <Link className="button button-primary" to="/teacher/upload">
           <Icon name="plus" size={18} /> Create a course
-        </button>
+        </Link>
       </div>
 
       <div aria-live="polite" className="visually-hidden">{notice}</div>
@@ -165,11 +115,11 @@ export function TeacherDashboard() {
             ))}
           </div>
 
-          <button className="add-course-row" onClick={() => setShowCreateForm(true)} type="button">
+          <Link className="add-course-row" to="/teacher/upload">
             <span className="add-course-icon"><Icon name="plus" size={18} /></span>
             <span><strong>Build something new</strong><small>Start with a topic or add a textbook</small></span>
             <Icon name="arrow-right" size={17} />
-          </button>
+          </Link>
         </section>
 
         <aside className="right-column">
@@ -215,29 +165,6 @@ export function TeacherDashboard() {
         </aside>
       </div>
 
-      {showCreateForm && (
-        <div className="modal-backdrop" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) closeCreateForm();
-        }}>
-          <section aria-labelledby="create-course-title" aria-modal="true" className="modal-card" onKeyDown={trapDialogKeys} role="dialog">
-            <button aria-label="Close dialog" className="modal-close icon-button" onClick={closeCreateForm} type="button">
-              <Icon name="close" size={19} />
-            </button>
-            <div className="modal-symbol"><Icon name="sparkles" size={21} /></div>
-            <div className="eyebrow eyebrow-muted">NEW LEARNING SPACE</div>
-            <h2 id="create-course-title">Start a new course</h2>
-            <p>Give your course a name. You can add a source and shape the chapters next.</p>
-            <form onSubmit={createCourse}>
-              <label htmlFor="course-name">Course name</label>
-              <input autoFocus id="course-name" onChange={(event) => setCourseName(event.target.value)} placeholder="e.g. Our solar system" required value={courseName} />
-              <div className="modal-actions">
-                <button className="button button-secondary" onClick={closeCreateForm} type="button">Cancel</button>
-                <button className="button button-primary" type="submit"><Icon name="plus" size={17} /> Create draft</button>
-              </div>
-            </form>
-          </section>
-        </div>
-      )}
     </div>
   );
 }

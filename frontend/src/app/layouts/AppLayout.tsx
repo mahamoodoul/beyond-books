@@ -1,12 +1,14 @@
 import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 
 import { useDemo } from "@/app/providers/DemoProvider";
 import { Icon } from "@/components/ui/Icon";
-import { demoUsers } from "@/features/demo/types";
+import { getDemoUser } from "@/lib/api";
 
 const teacherNavigation = [
   { to: "/teacher", label: "Overview", icon: "grid" as const, end: true },
   { to: "/teacher/courses", label: "My courses", icon: "book" as const },
+  { to: "/teacher/upload", label: "Upload source", icon: "file" as const },
   { to: "/teacher/insights", label: "Insights", icon: "activity" as const },
 ];
 
@@ -19,9 +21,16 @@ const studentNavigation = [
 export function AppLayout() {
   const { role, theme, setRole, toggleTheme } = useDemo();
   const navigate = useNavigate();
+  const userQuery = useQuery({
+    queryKey: ["demo", "user", role ?? "student"],
+    queryFn: () => getDemoUser(role ?? "student"),
+    enabled: Boolean(role),
+  });
 
   if (!role) return <Navigate to="/login" replace />;
-  const user = demoUsers[role];
+  if (userQuery.isError) throw userQuery.error;
+  if (userQuery.isPending) return <p className="page-loading" role="status">Loading your profile…</p>;
+  const user = userQuery.data;
   const navigation = role === "teacher" ? teacherNavigation : studentNavigation;
 
   function changeRole(nextRole: "teacher" | "student") {
