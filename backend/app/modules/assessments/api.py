@@ -34,7 +34,7 @@ def create(
 ) -> TeacherAssessment:
     chapter = service.manage_chapter(db, user, chapter_id)
     a = service.create_assessment(
-        db, user, chapter, body.title, body.passing_score, body.max_attempts
+        db, user, chapter, body.title, body.passing_score, body.max_attempts, settings=body.settings
     )
     db.commit()
     return service.teacher_view(a)

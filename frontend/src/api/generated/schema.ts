@@ -148,29 +148,65 @@ export type Chapters1 = [OutlineChapterIn, OutlineChapterIn, ...OutlineChapterIn
  * Delete the original chapter (only if it has no content)
  */
 export type RemoveOriginal = boolean;
+export type CaseSensitive = boolean;
+export type ClozeText = string;
 export type Difficulty = "easy" | "medium" | "hard";
-export type ExplanationCorrect = string;
-export type ExplanationGeneral = string;
-export type Key = string | null;
-export type LearningObjectiveId = string | null;
-export type LessonId1 = string | null;
-export type ModelAnswer = string;
-export type IsCorrect1 = boolean;
-export type Key1 = string | null;
-export type Text = string;
 /**
  * @maxItems 6
  */
+export type Distractors = string[];
+export type ExplanationCorrect = string;
+export type ExplanationGeneral = string;
+export type Key = string | null;
+export type Text = string;
+/**
+ * @maxItems 10
+ */
+export type Items = ItemIn[];
+export type Key1 = string | null;
+export type LearningObjectiveId = string | null;
+export type LessonId1 = string | null;
+export type ModelAnswer = string;
+export type NumericAnswer = number | null;
+export type IsCorrect1 = boolean;
+export type Key2 = string | null;
+export type Text1 = string;
+/**
+ * @maxItems 8
+ */
 export type Options = OptionIn[];
+export type Key3 = string | null;
+export type Match = string;
+export type Prompt = string;
+/**
+ * @maxItems 10
+ */
+export type Pairs = PairIn[];
 export type Points1 = number;
 export type QuestionText1 = string;
-export type QuestionType1 = "mcq" | "short_answer";
+export type QuestionType1 =
+  | "mcq"
+  | "true_false"
+  | "multiple_select"
+  | "short_answer"
+  | "fill_blanks"
+  | "matching"
+  | "ordering"
+  | "numeric"
+  | "hotspot_3d";
 export type Description1 = string;
 export type Points2 = number;
 /**
  * @maxItems 10
  */
 export type Rubric = Criterion[];
+export type SceneId1 = string | null;
+/**
+ * @maxItems 10
+ */
+export type TargetComponentIds = string[];
+export type Tolerance = number;
+export type Unit = string;
 /**
  * @maxItems 50
  */
@@ -178,6 +214,14 @@ export type Questions = QuestionIn[];
 export type SchemaVersion1 = "1.0";
 export type MaxAttempts = number;
 export type PassingScore = number;
+export type AllowBack = boolean;
+export type Layout = "all" | "one_per_page";
+export type PartialCredit = boolean;
+export type QuestionsPerAttempt = number | null;
+export type RevealAnswers = "after_submit" | "after_last_attempt" | "never";
+export type ShuffleOptions = boolean;
+export type ShuffleQuestions = boolean;
+export type TimeLimitMinutes = number | null;
 export type Title3 = string;
 export type AssessmentId = string;
 export type AvgScoreRate = number | null;
@@ -187,7 +231,7 @@ export type PendingReviews = number;
 export type AvgScoreRate1 = number | null;
 export type Count = number;
 export type OptionKey = string;
-export type Text1 = string;
+export type Text2 = string;
 export type CommonWrong = OptionCount[];
 export type QuestionKey2 = string;
 export type QuestionText2 = string;
@@ -206,6 +250,7 @@ export type Origin1 = string;
 export type PassingScore1 = number;
 export type PublishedVersion = number | null;
 export type QuestionCount = number;
+export type QuestionsPerAttempt1 = number;
 export type Status = string;
 export type Title5 = string;
 export type Version1 = number;
@@ -282,14 +327,15 @@ export type Origin2 = string;
 export type PassingScore4 = number;
 export type PublishedVersion1 = number | null;
 export type QuestionCount1 = number;
-export type Key2 = string;
-export type Key3 = string;
-export type Text2 = string;
+export type Key4 = string;
+export type Key5 = string;
+export type Text3 = string;
 export type Options1 = StudentOption[];
 export type Points3 = number;
 export type QuestionText3 = string;
 export type QuestionType3 = string;
 export type Questions2 = StudentQuestion[];
+export type QuestionsPerAttempt2 = number;
 export type Status4 = string;
 export type Title7 = string;
 export type Version3 = number;
@@ -345,7 +391,7 @@ export type Status5 = string;
  * Skip lessons that already have a scene
  */
 export type OnlyMissing = boolean;
-export type Items = ChapterGenerateItem[];
+export type Items1 = ChapterGenerateItem[];
 export type CourseId1 = string;
 export type Description7 = string;
 export type Id6 = string;
@@ -421,7 +467,7 @@ export type Generator = string;
  * @maxItems 20
  */
 export type Procedural = ProceduralSource[];
-export type SceneId1 = string;
+export type SceneId2 = string;
 export type SchemaVersion2 = "1.0";
 export type Title12 = string;
 export type Status6 = string;
@@ -434,7 +480,7 @@ export type DocumentId1 = string;
 export type DocumentTitle = string;
 export type PageEnd1 = number;
 export type PageStart1 = number;
-export type Text3 = string;
+export type Text4 = string;
 export type Passages = SourcePassageOut[];
 export type Strategy = string;
 export type Truncated = boolean;
@@ -493,7 +539,7 @@ export type Gaps = number;
 export type Mastered = number;
 export type ObjectiveId = string;
 export type StudentsWithEvidence = number;
-export type Text4 = string;
+export type Text5 = string;
 export type Objectives3 = ObjectiveStat[];
 export type Suppressed1 = boolean;
 export type TotalLessons = number;
@@ -597,7 +643,7 @@ export type EventType =
   | "animation_started"
   | "animation_completed";
 export type LessonId6 = string;
-export type SceneId2 = string | null;
+export type SceneId3 = string | null;
 export type Recorded = number;
 export type AssetId1 = string;
 export type AssetName = string;
@@ -610,14 +656,14 @@ export type LessonId7 = string | null;
 export type LessonTitle2 = string | null;
 export type PromptPreview = string;
 export type Provider1 = string;
-export type SceneId3 = string | null;
+export type SceneId4 = string | null;
 export type Status8 = string;
 /**
  * Save the finished model into this lesson as a draft scene
  */
 export type LessonId8 = string | null;
 export type Name4 = string;
-export type Prompt = string;
+export type Prompt1 = string;
 /**
  * Default if omitted
  */
@@ -708,12 +754,12 @@ export type Password1 = string;
 export type SourceRefs8 = {
   [k: string]: unknown;
 }[];
-export type Text5 = string;
+export type Text6 = string;
 export type EvidenceCount = number;
 export type Mastery = number | null;
 export type ObjectiveId1 = string;
 export type Status13 = string;
-export type Text6 = string;
+export type Text7 = string;
 export type CreatedAt8 = string;
 export type Id18 = string;
 export type Model = string;
@@ -724,7 +770,7 @@ export type ExtractedText = string;
 export type ExtractionMethod = string;
 export type PageNumber = number;
 export type QualityStatus = string;
-export type Items1 = PageOut[];
+export type Items2 = PageOut[];
 export type Total = number;
 /**
  * Node name of the part
@@ -744,7 +790,7 @@ export type Level = string | null;
 export type Parts1 = {
   [k: string]: unknown;
 }[];
-export type Prompt1 = string;
+export type Prompt2 = string;
 export type Subject6 = string | null;
 export type Title30 = string;
 export type Topic = string;
@@ -759,7 +805,7 @@ export type Focus1 = string | null;
 export type Level1 = string | null;
 export type Subject7 = string | null;
 export type Topic1 = string;
-export type Prompt2 = string | null;
+export type Prompt3 = string | null;
 export type Title31 = string | null;
 export type Message2 = string;
 export type Name7 = string;
@@ -796,7 +842,7 @@ export type Url2 = string;
 export type Version7 = number;
 export type Animations = AnimationSpec[];
 export type Assets = ResolvedAsset[];
-export type SceneId4 = string;
+export type SceneId5 = string;
 export type Version8 = number;
 export type Warnings1 = string[];
 export type FinalScore1 = number;
@@ -862,11 +908,12 @@ export type Origin6 = string;
 export type PassingScore5 = number;
 export type PublishedVersion5 = number | null;
 export type QuestionCount2 = number;
+export type QuestionsPerAttempt3 = number;
 export type Status18 = string;
 export type Title33 = string;
 export type Version9 = number;
 export type CourseId8 = string;
-export type Text7 = string;
+export type Text8 = string;
 export type Title34 = string;
 export type Description16 = string;
 export type IsDefault = boolean;
@@ -962,6 +1009,7 @@ export interface Api {
   HealthResponse?: HealthResponse;
   HighlightStep?: HighlightStep;
   Insight?: Insight;
+  ItemIn?: ItemIn;
   JobOut?: JobOut;
   LessonContent?: LessonContent;
   LessonCreate?: LessonCreate;
@@ -986,6 +1034,7 @@ export interface Api {
   OutlineProposalOut?: OutlineProposalOut;
   PageList?: PageList;
   PageOut?: PageOut;
+  PairIn?: PairIn;
   PartDeepDiveRequest?: PartDeepDiveRequest;
   PartInsightRequest?: PartInsightRequest;
   PartUpdate?: PartUpdate;
@@ -1001,6 +1050,7 @@ export interface Api {
   QuestionIn?: QuestionIn;
   QuestionStat?: QuestionStat;
   QuestionsUpdate?: QuestionsUpdate;
+  QuizSettings?: QuizSettings;
   ReadinessResponse?: ReadinessResponse;
   Recommendation?: Recommendation;
   RegisterRequest?: RegisterRequest;
@@ -1279,18 +1329,36 @@ export interface AssessmentContent {
  * via the `definition` "QuestionIn".
  */
 export interface QuestionIn {
+  case_sensitive?: CaseSensitive;
+  cloze_text?: ClozeText;
   difficulty?: Difficulty;
+  distractors?: Distractors;
   explanation_correct?: ExplanationCorrect;
   explanation_general?: ExplanationGeneral;
-  key?: Key;
+  items?: Items;
+  key?: Key1;
   learning_objective_id?: LearningObjectiveId;
   lesson_id?: LessonId1;
   model_answer?: ModelAnswer;
+  numeric_answer?: NumericAnswer;
   options?: Options;
+  pairs?: Pairs;
   points?: Points1;
   question_text: QuestionText1;
   question_type: QuestionType1;
   rubric?: Rubric;
+  scene_id?: SceneId1;
+  target_component_ids?: TargetComponentIds;
+  tolerance?: Tolerance;
+  unit?: Unit;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "ItemIn".
+ */
+export interface ItemIn {
+  key?: Key;
+  text: Text;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1298,8 +1366,17 @@ export interface QuestionIn {
  */
 export interface OptionIn {
   is_correct?: IsCorrect1;
-  key?: Key1;
-  text: Text;
+  key?: Key2;
+  text: Text1;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "PairIn".
+ */
+export interface PairIn {
+  key?: Key3;
+  match: Match;
+  prompt: Prompt;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1316,7 +1393,24 @@ export interface Criterion {
 export interface AssessmentCreate {
   max_attempts?: MaxAttempts;
   passing_score?: PassingScore;
+  settings?: QuizSettings;
   title: Title3;
+}
+/**
+ * Delivery settings, frozen into each published version.
+ *
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "QuizSettings".
+ */
+export interface QuizSettings {
+  allow_back?: AllowBack;
+  layout?: Layout;
+  partial_credit?: PartialCredit;
+  questions_per_attempt?: QuestionsPerAttempt;
+  reveal_answers?: RevealAnswers;
+  shuffle_options?: ShuffleOptions;
+  shuffle_questions?: ShuffleQuestions;
+  time_limit_minutes?: TimeLimitMinutes;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1352,7 +1446,7 @@ export interface QuestionStat {
 export interface OptionCount {
   count: Count;
   option_key: OptionKey;
-  text: Text1;
+  text: Text2;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1368,6 +1462,8 @@ export interface AssessmentSummary {
   passing_score: PassingScore1;
   published_version: PublishedVersion;
   question_count: QuestionCount;
+  questions_per_attempt: QuestionsPerAttempt1;
+  settings: QuizSettings;
   status: Status;
   title: Title5;
   version: Version1;
@@ -1379,6 +1475,7 @@ export interface AssessmentSummary {
 export interface AssessmentUpdate {
   max_attempts?: MaxAttempts2;
   passing_score?: PassingScore2;
+  settings?: QuizSettings | null;
   title?: Title6;
 }
 /**
@@ -1530,6 +1627,8 @@ export interface StudentAssessment {
   published_version: PublishedVersion1;
   question_count: QuestionCount1;
   questions: Questions2;
+  questions_per_attempt: QuestionsPerAttempt2;
+  settings: QuizSettings;
   status: Status4;
   title: Title7;
   version: Version3;
@@ -1539,7 +1638,7 @@ export interface StudentAssessment {
  * via the `definition` "StudentQuestion".
  */
 export interface StudentQuestion {
-  key: Key2;
+  key: Key4;
   options: Options1;
   points: Points3;
   question_text: QuestionText3;
@@ -1550,8 +1649,8 @@ export interface StudentQuestion {
  * via the `definition` "StudentOption".
  */
 export interface StudentOption {
-  key: Key3;
-  text: Text2;
+  key: Key5;
+  text: Text3;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1631,7 +1730,7 @@ export interface ChapterGenerateRequest {
  * via the `definition` "ChapterGenerateResult".
  */
 export interface ChapterGenerateResult {
-  items: Items;
+  items: Items1;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1714,7 +1813,7 @@ export interface SceneSpec {
   learning_objective_ids?: LearningObjectiveIds;
   paths?: Paths;
   procedural?: Procedural;
-  scene_id: SceneId1;
+  scene_id: SceneId2;
   schema_version?: SchemaVersion2;
   title: Title12;
 }
@@ -1783,7 +1882,7 @@ export interface SourcePassageOut {
   document_title: DocumentTitle;
   page_end: PageEnd1;
   page_start: PageStart1;
-  text: Text3;
+  text: Text4;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -1915,7 +2014,7 @@ export interface ObjectiveStat {
   mastered: Mastered;
   objective_id: ObjectiveId;
   students_with_evidence: StudentsWithEvidence;
-  text: Text4;
+  text: Text5;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2103,7 +2202,7 @@ export interface EventIn {
   component_id?: ComponentId1;
   event_type: EventType;
   lesson_id: LessonId6;
-  scene_id?: SceneId2;
+  scene_id?: SceneId3;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2130,7 +2229,7 @@ export interface GenerationJobOut {
   lesson_title?: LessonTitle2;
   prompt_preview: PromptPreview;
   provider: Provider1;
-  scene_id?: SceneId3;
+  scene_id?: SceneId4;
   status: Status8;
 }
 /**
@@ -2140,7 +2239,7 @@ export interface GenerationJobOut {
 export interface GenerationRequest {
   lesson_id?: LessonId8;
   name: Name4;
-  prompt: Prompt;
+  prompt: Prompt1;
   provider?: Provider2;
   school_id?: SchoolId5;
   subject?: Subject5;
@@ -2322,7 +2421,7 @@ export interface LoginRequest {
  */
 export interface ObjectiveIn {
   source_refs?: SourceRefs8;
-  text: Text5;
+  text: Text6;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2333,7 +2432,7 @@ export interface ObjectiveMastery {
   mastery: Mastery;
   objective_id: ObjectiveId1;
   status: Status13;
-  text: Text6;
+  text: Text7;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2360,7 +2459,7 @@ export interface Validation {
  * via the `definition` "PageList".
  */
 export interface PageList {
-  items: Items1;
+  items: Items2;
   total: Total;
 }
 /**
@@ -2415,7 +2514,7 @@ export interface PromptDraftOut {
   id: Id19;
   level: Level;
   parts: Parts1;
-  prompt: Prompt1;
+  prompt: Prompt2;
   subject: Subject6;
   title: Title30;
   topic: Topic;
@@ -2438,7 +2537,7 @@ export interface PromptDraftRequest {
  * via the `definition` "PromptDraftUpdate".
  */
 export interface PromptDraftUpdate {
-  prompt?: Prompt2;
+  prompt?: Prompt3;
   title?: Title31;
 }
 /**
@@ -2536,7 +2635,7 @@ export interface ResolvedAsset {
 export interface ResolvedScene {
   animations?: Animations;
   assets: Assets;
-  scene_id: SceneId4;
+  scene_id: SceneId5;
   spec: SceneSpec;
   version: Version8;
   warnings: Warnings1;
@@ -2678,6 +2777,8 @@ export interface TeacherAssessment {
   passing_score: PassingScore5;
   published_version: PublishedVersion5;
   question_count: QuestionCount2;
+  questions_per_attempt: QuestionsPerAttempt3;
+  settings: QuizSettings;
   status: Status18;
   title: Title33;
   version: Version9;
@@ -2688,7 +2789,7 @@ export interface TeacherAssessment {
  */
 export interface TextDocumentRequest {
   course_id: CourseId8;
-  text: Text7;
+  text: Text8;
   title: Title34;
 }
 /**

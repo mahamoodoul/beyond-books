@@ -13,6 +13,7 @@ import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card } from "@/components/ui";
 import { useChapterAssessments } from "@/features/assessments/api";
 import { useLesson, useLessons } from "@/features/lessons/api";
+import { InteractiveHeartPanel, usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
 import { LazySceneViewer } from "@/features/three-d/LazySceneViewer";
 
 import { useChapter } from "./api";
@@ -40,6 +41,7 @@ function LessonPreview({ lessonId }: { lessonId: string }) {
         <section key={s.id} aria-label={`3D: ${s.title}`} className="space-y-1">
           <div className="flex items-center gap-2 text-sm text-slate-600"><span className="font-medium">3D · {s.title}</span><LiveBadge live={!!s.published_version} changed={s.has_unpublished_changes} /></div>
           <LazySceneViewer sceneId={s.id} />
+          {usesInteractiveHeart(s) && <InteractiveHeartPanel lessonId={lessonId} />}
         </section>
       ))}
       {(l.content.sections ?? []).length === 0 && <EmptyState title="This lesson has no content yet" />}

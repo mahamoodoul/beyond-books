@@ -20,7 +20,33 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
   const [experience, setExperience] = useState<ModelExperience | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [fullscreen, setFullscreen] = useState(false);
+  const fullscreenRef = useRef(false);
   const onCloseRef = useRef(onClose);
+
+  // Full screen uses the Fullscreen API where available; the `is-fullscreen` class also covers
+  // browsers without it (e.g. iPhone Safari) by filling the viewport.
+  const setFullscreenMode = (on: boolean) => {
+    fullscreenRef.current = on;
+    setFullscreen(on);
+    const dialog = dialogRef.current;
+    if (on && dialog?.requestFullscreen && !document.fullscreenElement) void dialog.requestFullscreen().catch(() => undefined);
+    if (!on && document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+  };
+
+  useEffect(() => {
+    const onChange = () => {
+      if (!document.fullscreenElement && fullscreenRef.current) {
+        fullscreenRef.current = false;
+        setFullscreen(false);
+      }
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+    };
+  }, []);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -46,6 +72,7 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.localClippingEnabled = true; // slice view: lets the scanner's plane cut the model open
       renderer.domElement.setAttribute("aria-label", description);
       container.appendChild(renderer.domElement);
       labelRenderer = new CSS2DRenderer();
@@ -101,6 +128,12 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        if (fullscreenRef.current) {
+          fullscreenRef.current = false;
+          setFullscreen(false);
+          if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+          return;
+        }
         onCloseRef.current();
         return;
       }
@@ -121,6 +154,8 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
     };
     window.addEventListener("resize", resize);
     window.addEventListener("keydown", onKeyDown);
+    const stageObserver = new ResizeObserver(resize);
+    stageObserver.observe(container);
 
     const animationFrame = () => {
       if (disposed || !renderer) return;
@@ -169,6 +204,7 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("keydown", onKeyDown);
+      stageObserver.disconnect();
       detachGestures();
       currentModel.setSelectListener(null);
       currentModel.dispose();
@@ -184,7 +220,7 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
         aria-describedby="heart-3d-description"
         aria-labelledby="heart-3d-title"
         aria-modal="true"
-        className="heart-3d-dialog"
+        className={`heart-3d-dialog${fullscreen ? " is-fullscreen" : ""}`}
         ref={dialogRef}
         role="dialog"
         tabIndex={-1}
@@ -194,8 +230,24 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
             <span className="eyebrow eyebrow-light">INTERACTIVE 3D MODEL</span>
             <h2 id="heart-3d-title">The Human Heart</h2>
           </div>
-          <button aria-label="Close 3D viewer" className="heart-3d-close" onClick={onClose} ref={closeButtonRef} type="button">×</button>
+          <div className="heart-3d-header-actions">
+            <button
+              aria-pressed={fullscreen}
+              className="heart-3d-fullscreen"
+              onClick={() => setFullscreenMode(!fullscreen)}
+              type="button"
+            >
+              <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16">
+                {fullscreen
+                  ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+                  : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
+              </svg>
+              <span>{fullscreen ? "Exit full screen" : "Full screen"}</span>
+            </button>
+            <button aria-label="Close 3D viewer" className="heart-3d-close" onClick={onClose} ref={closeButtonRef} type="button">×</button>
+          </div>
         </header>
+        <div className="heart-3d-body">
         <div className="heart-3d-stage" ref={containerRef}>
           {!experience && !error && <p className="heart-3d-loading" role="status">Loading the 3D heart…</p>}
           {error && (
@@ -213,6 +265,36 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
               selected={selected}
             />
           )}
+        </div>
+        {fullscreen && experience && (
+          <aside aria-labelledby="heart-3d-key-title" className="heart-3d-key">
+            <h3 id="heart-3d-key-title">Key</h3>
+            <p>Select a part to highlight it on the heart and read about it.</p>
+            <ul>
+              {experience.presentParts.map((part) => (
+                <li className={part.key === selected ? "is-open" : ""} key={part.key}>
+                  <button
+                    aria-controls={`heart-3d-key-detail-${part.key}`}
+                    aria-expanded={part.key === selected}
+                    className={part.key === selected ? "is-active" : ""}
+                    onClick={() => experience.select(part.key === selected ? null : part.key)}
+                    type="button"
+                  >
+                    <span aria-hidden="true" className="heart-3d-key-dot" style={{ background: part.color }} />
+                    <span className="heart-3d-key-name">{part.name}</span>
+                    <svg aria-hidden="true" className="heart-3d-key-chevron" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14"><path d="m6 9 6 6 6-6" /></svg>
+                  </button>
+                  {part.key === selected && (
+                    <div aria-live="polite" className="heart-3d-key-detail" id={`heart-3d-key-detail-${part.key}`}>
+                      <p>{part.summary}</p>
+                      <p className="heart-3d-key-fact"><strong>Did you know?</strong> {part.fact}</p>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
         </div>
         <p className="heart-3d-description" id="heart-3d-description"><strong>Model description:</strong> {description} Drag to rotate; pinch or use the controls to zoom.</p>
       </section>

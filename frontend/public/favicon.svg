@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 2 104 104">
+  <style>
+    .page-l { fill: #1E1B4B } .page-r { fill: #312E81 } .stem { stroke: #6366F1 }
+    .o1 { stroke: #8B5CF6 } .o2 { stroke: #7C3AED } .o3 { stroke: #5B21B6 } .e { fill: #0891B2 }
+    @media (prefers-color-scheme: dark) {
+      .page-l { fill: #E0E7FF } .page-r { fill: #C7D2FE }
+      .o1 { stroke: #A78BFA } .o2 { stroke: #8B5CF6 } .o3 { stroke: #7C3AED } .e { fill: #67E8F9 }
+    }
+  </style>
+  <path class="page-l" d="M60 102 Q38 92 14 94 L14 60 Q38 58 60 68 Z"/>
+  <path class="page-r" d="M60 102 Q82 92 106 94 L106 60 Q82 58 60 68 Z"/>
+  <path class="stem" d="M60 68 L48 46 M60 68 L72 46" stroke-width="3" fill="none"/>
+  <g fill="none" stroke-width="5">
+    <ellipse class="o1" cx="60" cy="36" rx="30" ry="10"/>
+    <ellipse class="o2" cx="60" cy="36" rx="30" ry="10" transform="rotate(60 60 36)"/>
+    <ellipse class="o3" cx="60" cy="36" rx="30" ry="10" transform="rotate(-60 60 36)"/>
+  </g>
+  <circle class="e" cx="60" cy="36" r="8"/>
+</svg>
