@@ -79,9 +79,6 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .app-shell { display: flex; min-height: 100vh; flex-direction: column; }
 .topbar { position: sticky; z-index: 20; top: 0; display: flex; height: 72px; align-items: center; padding: 0 max(36px, calc((100vw - 1300px) / 2)); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(16px); }
 .brand { display: inline-flex; min-width: 204px; align-items: center; gap: 10px; color: var(--ink); font-family: var(--display); font-size: 18px; font-weight: 700; letter-spacing: -.7px; }
-.brand-mark { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 10px; background: var(--accent); color: #fff; }
-.theme-root[data-theme="dark"] .brand-mark { color: #252238; }
-.brand-light { font-weight: 400; }
 .topbar-nav { display: flex; height: 100%; align-items: center; gap: 5px; }
 .nav-link { display: inline-flex; height: 40px; align-items: center; gap: 9px; padding: 0 14px; border-radius: 9px; color: var(--muted); font-size: 13px; font-weight: 550; transition: background .2s ease, color .2s ease; }
 .nav-link:hover, .nav-link.is-active { color: var(--ink); background: var(--surface-soft); }
@@ -475,7 +472,6 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 640px) {
   .topbar { height: 60px; padding: 0 16px; }
   .brand { gap: 8px; font-size: 16px; }
-  .brand-mark { width: 29px; height: 29px; }
   .role-switch { min-height: 34px; padding: 0 8px; }
   .role-switch-label { max-width: 71px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
   .topbar-actions { gap: 7px; }
@@ -688,7 +684,6 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .final-cta-outline:hover { background: rgb(255 255 255 / 10%); }
 .landing-footer { display: flex; min-height: 76px; align-items: center; justify-content: space-between; gap: 18px; padding: 13px max(42px, calc((100vw - 1260px) / 2)); background: var(--surface); }
 .landing-footer .brand { min-width: 0; font-size: 14px; }
-.landing-footer .brand-mark { width: 27px; height: 27px; border-radius: 8px; }
 .landing-footer > span { color: var(--muted-light); font-size: 8px; }
 .theme-root[data-theme="dark"] .landing-heart-glow { background: radial-gradient(circle, rgb(160 144 225 / 24%), rgb(111 148 180 / 9%) 48%, transparent 72%); }
 .theme-root[data-theme="dark"] .pain-card { background: var(--surface); }
@@ -713,7 +708,6 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 640px) {
   .landing-header { height: 60px; padding: 0 15px; }
   .landing-header .brand { font-size: 15px; }
-  .landing-header .brand-mark { width: 28px; height: 28px; }
   .landing-nav { display: none; }
   .landing-header-actions { gap: 10px; }
   .landing-signin { font-size: 9px; }
