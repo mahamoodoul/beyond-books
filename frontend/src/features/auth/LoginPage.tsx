@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { useDemo } from "@/app/providers/DemoProvider";
 import { Icon } from "@/components/ui/Icon";
 import type { DemoRole } from "@/features/demo/types";
 
 export function LoginPage() {
-  const [selectedRole, setSelectedRole] = useState<DemoRole>("teacher");
+  const [searchParams] = useSearchParams();
+  const [selectedRole, setSelectedRole] = useState<DemoRole>(
+    searchParams.get("role") === "student" ? "student" : "teacher",
+  );
   const { setRole, theme, toggleTheme } = useDemo();
   const navigate = useNavigate();
 

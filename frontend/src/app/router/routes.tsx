@@ -6,12 +6,8 @@ import { RouteError } from "@/app/router/RouteError";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { StudentDashboard } from "@/features/dashboard/StudentDashboard";
 import { TeacherDashboard } from "@/features/dashboard/TeacherDashboard";
+import { LandingPage } from "@/features/landing/LandingPage";
 import { CellLessonPage } from "@/features/lessons/CellLessonPage";
-
-function RoleHome() {
-  const { role } = useDemo();
-  return <Navigate to={role ? `/${role}` : "/login"} replace />;
-}
 
 function RolePage({ role, children }: { role: "teacher" | "student"; children: React.ReactNode }) {
   const { role: currentRole } = useDemo();
@@ -31,10 +27,10 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
     children: [
       { path: "/login", element: <LoginPage /> },
+      { path: "/", element: <LandingPage /> },
       {
         element: <AppLayout />,
         children: [
-          { path: "/", element: <RoleHome /> },
           {
             path: "/teacher",
             element: <RolePage role="teacher"><TeacherDashboard /></RolePage>,
