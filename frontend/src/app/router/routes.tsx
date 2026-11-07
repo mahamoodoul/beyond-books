@@ -7,7 +7,7 @@ import { LoginPage } from "@/features/auth/LoginPage";
 import { StudentDashboard } from "@/features/dashboard/StudentDashboard";
 import { TeacherDashboard } from "@/features/dashboard/TeacherDashboard";
 import { LandingPage } from "@/features/landing/LandingPage";
-import { CellLessonPage } from "@/features/lessons/CellLessonPage";
+import { HeartLessonPage } from "@/features/lessons/HeartLessonPage";
 
 function RolePage({ role, children }: { role: "teacher" | "student"; children: React.ReactNode }) {
   const { role: currentRole } = useDemo();
@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/student/courses/:courseId/lessons/:lessonId",
-            element: <SignedInPage><CellLessonPage /></SignedInPage>,
+            element: <SignedInPage><HeartLessonPage /></SignedInPage>,
           },
         ],
       },

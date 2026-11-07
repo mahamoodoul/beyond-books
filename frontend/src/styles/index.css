@@ -756,6 +756,137 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (prefers-reduced-motion: reduce) {
   .landing-heart, .heart-flow-dots *, .feature-card { animation: none !important; transition-duration: .01ms !important; }
 }
+.heart-lesson-page { animation: page-in .45s ease both; }
+.heart-lesson-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 22px; color: var(--muted-light); font-size: 9px; }
+.heart-lesson-breadcrumb a:hover { color: var(--accent); }
+.heart-lesson-breadcrumb strong { color: var(--ink-soft); font-weight: 650; }
+.heart-lesson-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
+.heart-lesson-heading h1 { margin: 8px 0 5px; font-family: var(--display); font-size: clamp(32px, 3.5vw, 42px); font-weight: 600; letter-spacing: -1.7px; }
+.heart-lesson-heading h1 span { color: var(--accent); }
+.heart-lesson-heading > div > p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+.heart-progress { width: 172px; flex: 0 0 auto; padding-bottom: 5px; }
+.heart-progress > span { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--muted-light); font-size: 8px; font-weight: 650; letter-spacing: .5px; }
+.heart-progress > span strong { color: var(--ink-soft); font-size: 9px; letter-spacing: 0; }
+.heart-learning-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: start; gap: 17px; }
+.heart-lesson-copy, .heart-viewer-column { display: grid; gap: 12px; min-width: 0; }
+.heart-objectives, .heart-explanation, .heart-terms { padding: 17px; border-radius: 14px; }
+.heart-copy-label { display: flex; align-items: center; gap: 9px; }
+.heart-copy-icon { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 9px; background: var(--accent-soft); color: var(--accent); }
+.heart-copy-icon-mint { background: var(--mint-soft); color: var(--mint); }
+.heart-copy-icon-amber { background: var(--amber-soft); color: var(--amber); }
+.heart-copy-label .eyebrow { font-size: 8px; }
+.heart-objectives h2, .heart-explanation h2, .heart-terms h2 { margin: 12px 0 10px; font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.4px; }
+.heart-objectives ul { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.heart-objectives li { display: flex; align-items: flex-start; gap: 7px; color: var(--ink-soft); font-size: 9px; line-height: 1.6; }
+.heart-objectives li svg { flex: 0 0 auto; margin-top: 1px; color: var(--mint); }
+.heart-explanation > p { margin: 0; color: var(--ink-soft); font-size: 10px; line-height: 1.8; }
+.heart-example { margin-top: 14px; padding: 11px; border-radius: 9px; background: var(--surface-soft); }
+.heart-example > span { display: flex; align-items: center; gap: 6px; color: var(--amber); font-size: 7px; font-weight: 750; letter-spacing: .8px; }
+.heart-example > p { margin: 6px 0 0; color: var(--ink-soft); font-size: 9px; line-height: 1.65; }
+.heart-summary { margin-top: 13px; padding-left: 10px; border-left: 2px solid var(--accent); }
+.heart-summary strong { color: var(--accent); font-size: 8px; }
+.heart-summary p { margin: 3px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+.heart-terms dl { display: grid; gap: 9px; margin: 0; }
+.heart-terms dl > div { display: grid; grid-template-columns: minmax(70px, .34fr) 1fr; gap: 9px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.heart-terms dl > div:last-child { padding-bottom: 0; border-bottom: 0; }
+.heart-terms dt { color: var(--accent); font-size: 9px; font-weight: 650; }
+.heart-terms dd { margin: 0; color: var(--muted); font-size: 8px; line-height: 1.6; }
+.heart-assessment-cta { display: flex; align-items: center; gap: 9px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); transition: border-color .2s ease, transform .2s ease; }
+.heart-assessment-cta:hover { transform: translateY(-1px); border-color: var(--accent); }
+.heart-assessment-icon { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 9px; background: var(--accent-soft); color: var(--accent); }
+.heart-assessment-cta > span:nth-child(2) { display: grid; flex: 1; gap: 4px; }
+.heart-assessment-cta strong { font-size: 8px; font-weight: 650; }
+.heart-assessment-cta small { color: var(--muted); font-size: 7px; }
+.heart-assessment-cta > svg { color: var(--muted-light); }
+.heart-viewer-column { position: sticky; top: 91px; }
+.cardiac-viewer-card { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-card); }
+.cardiac-viewer-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 15px 4px; }
+.cardiac-viewer-head .eyebrow { font-size: 8px; }
+.viewer-hint { color: var(--muted-light); font-size: 7px; }
+.cardiac-stage { position: relative; display: grid; min-height: 345px; overflow: hidden; place-items: center; background: radial-gradient(ellipse at 50% 46%, color-mix(in srgb, #f8e9eb 73%, var(--surface)) 0%, var(--surface) 73%); cursor: grab; touch-action: none; user-select: none; }
+.cardiac-stage:active { cursor: grabbing; }
+.cardiac-stage-grid { position: absolute; inset: 0; opacity: .25; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px); background-size: 35px 35px; mask-image: radial-gradient(ellipse at center, #000 0%, transparent 76%); }
+.heart-model-wrap { position: relative; z-index: 1; display: grid; width: min(100%, 400px); height: 340px; place-items: center; transition: transform .18s ease-out; transform-style: preserve-3d; }
+.cardiac-svg { width: min(100%, 350px); height: 100%; overflow: visible; }
+.heart-hotspot { position: absolute; z-index: 3; display: inline-flex; min-height: 25px; align-items: center; gap: 5px; padding: 4px 7px; border: 1px solid var(--line); border-radius: 7px; background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink-soft); cursor: pointer; font-size: 7px; box-shadow: 0 3px 10px rgb(40 35 50 / 8%); transform: translate(-50%, -50%); transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; backdrop-filter: blur(7px); }
+.heart-hotspot:hover, .heart-hotspot:focus-visible, .heart-hotspot.hotspot-active { z-index: 4; border-color: var(--accent); box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 18%, transparent); transform: translate(-50%, -50%) scale(1.05); }
+.hotspot-dot { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: #d66b80; }
+.hotspot-blue .hotspot-dot { background: #6399cf; }
+.hotspot-active.hotspot-red { border-color: #d66b80; }
+.hotspot-active.hotspot-blue { border-color: #6399cf; }
+.heart-hotspot.hotspot-red:hover, .heart-hotspot.hotspot-red:focus-visible { border-color: #d66b80; }
+.heart-hotspot.hotspot-blue:hover, .heart-hotspot.hotspot-blue:focus-visible { border-color: #6399cf; }
+.heart-hotspot.hotspot-aorta { font-size: 7px; }
+.cardiac-controls { position: absolute; z-index: 5; right: 9px; bottom: 9px; display: flex; align-items: center; gap: 1px; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--surface) 91%, transparent); box-shadow: 0 4px 13px rgb(30 35 50 / 7%); backdrop-filter: blur(8px); }
+.cardiac-controls .model-control { width: 28px; height: 27px; }
+.cardiac-controls .zoom-value { min-width: 29px; }
+.animation-highlight { fill: none; stroke: #ffd76f; stroke-dasharray: 4 5; stroke-width: 4; animation: pulse-ring 1.3s ease-in-out infinite; }
+.animation-controller { padding: 12px 14px; border-top: 1px solid var(--line); background: var(--surface); }
+.animation-controller-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.animation-controller-title > span { display: flex; align-items: center; gap: 6px; color: var(--muted-light); font-size: 7px; font-weight: 750; letter-spacing: .6px; }
+.animation-controller-title .live-dot { width: 5px; height: 5px; }
+.animation-controller-title > strong { overflow: hidden; color: var(--ink-soft); font-size: 8px; font-weight: 600; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.animation-controller-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.animation-play-button { display: grid; width: 26px; height: 26px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 50%; background: var(--accent); color: #fff; cursor: pointer; }
+.theme-root[data-theme="dark"] .animation-play-button { color: #252238; }
+.animation-controller-controls input { height: 4px; flex: 1; accent-color: var(--accent); cursor: pointer; }
+.animation-step-count { min-width: 23px; color: var(--muted-light); font-size: 8px; text-align: right; }
+.animation-caption { min-height: 18px; margin: 8px 0 0; color: var(--muted); font-size: 8px; line-height: 1.6; }
+.hotspot-explanation { display: flex; min-height: 57px; align-items: flex-start; gap: 9px; padding: 11px 14px; border-top: 1px solid var(--line); background: var(--surface-soft); }
+.explanation-indicator { width: 8px; height: 8px; flex: 0 0 auto; margin-top: 3px; border-radius: 50%; background: var(--accent); }
+.indicator-red { background: #d66b80; }
+.indicator-blue { background: #6399cf; }
+.hotspot-explanation > span:last-child { display: grid; gap: 3px; }
+.hotspot-explanation strong { color: var(--ink-soft); font-size: 8px; font-weight: 700; }
+.hotspot-explanation small { color: var(--muted); font-size: 8px; line-height: 1.5; }
+.viewer-model-description { margin: 0; padding: 9px 13px 12px; color: var(--muted-light); font-size: 7px; line-height: 1.55; }
+.viewer-model-description strong { color: var(--muted); }
+.viewer-status { margin: 0; padding: 0 13px 10px; color: var(--red); font-size: 8px; }
+.viewer-skeleton { display: grid; min-height: 400px; justify-items: center; align-content: center; gap: 17px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--muted); font-size: 10px; }
+.skeleton-heart { width: 150px; height: 170px; border-radius: 50% 50% 45% 45%; background: linear-gradient(90deg, var(--surface-soft) 25%, var(--surface-quiet) 50%, var(--surface-soft) 75%); background-size: 200% 100%; animation: skeleton-sweep 1.5s ease-in-out infinite; }
+.heart-chapter-panel { padding: 13px 14px; border-radius: 13px; }
+.heart-chapter-panel-heading { display: flex; justify-content: space-between; color: var(--muted-light); font-size: 7px; font-weight: 700; letter-spacing: .7px; }
+.heart-chapter-panel-heading .eyebrow { font-size: inherit; }
+.heart-chapter-panel h2 { margin: 7px 0 10px; font-family: var(--display); font-size: 13px; font-weight: 600; }
+.heart-chapter-list { display: grid; gap: 4px; }
+.heart-chapter-link { display: flex; min-height: 32px; align-items: center; gap: 8px; padding: 4px 7px; border-radius: 7px; color: var(--muted); font-size: 8px; }
+.heart-chapter-link:hover { background: var(--surface-soft); color: var(--ink); }
+.heart-chapter-active { background: var(--accent-soft); color: var(--accent-deep); font-weight: 650; }
+.chapter-check { display: grid; width: 19px; height: 19px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--muted); font-size: 7px; }
+.heart-chapter-complete .chapter-check { border-color: var(--mint); color: var(--mint); }
+.heart-chapter-active .chapter-check { border-color: var(--accent); color: var(--accent); }
+.heart-mark-row { display: flex; justify-content: flex-end; }
+.button-completed { border: 1px solid color-mix(in srgb, var(--mint) 30%, var(--line)); background: var(--mint-soft); color: var(--mint); }
+.heart-chapter-navigation { display: flex; justify-content: space-between; margin-top: 16px; }
+@keyframes skeleton-sweep { to { background-position: -200% 0; } }
+@keyframes pulse-ring { 0%, 100% { opacity: .35; scale: .96; } 50% { opacity: .95; scale: 1.07; } }
+@media (max-width: 820px) {
+  .heart-learning-grid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 11px; }
+  .heart-viewer-column { top: 84px; }
+}
+@media (max-width: 640px) {
+  .heart-lesson-breadcrumb { gap: 4px; margin-bottom: 17px; font-size: 8px; }
+  .heart-lesson-heading { display: block; margin-bottom: 16px; }
+  .heart-lesson-heading h1 { font-size: 32px; }
+  .heart-lesson-heading > div > p { font-size: 10px; }
+  .heart-progress { width: 100%; margin-top: 13px; }
+  .heart-learning-grid { grid-template-columns: 1fr; gap: 12px; }
+  .heart-viewer-column { position: static; grid-row: 1; }
+  .cardiac-stage { min-height: 340px; }
+  .heart-model-wrap { height: 330px; }
+  .cardiac-svg { width: min(100%, 350px); }
+  .heart-hotspot { min-height: 24px; padding: 4px 6px; font-size: 7px; }
+  .cardiac-controls { right: 5px; bottom: 6px; }
+  .cardiac-controls .model-control { width: 25px; }
+  .heart-lesson-copy { grid-row: 2; }
+  .heart-objectives, .heart-explanation, .heart-terms { padding: 14px; }
+  .heart-objectives h2, .heart-explanation h2, .heart-terms h2 { font-size: 15px; }
+  .heart-chapter-navigation { gap: 8px; }
+  .heart-chapter-navigation .button { min-height: 39px; padding: 0 10px; font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-heart, .animation-highlight { animation: none !important; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

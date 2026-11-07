@@ -152,7 +152,7 @@ export function TeacherDashboard() {
                   <Link
                     aria-label={`Preview ${course.title}`}
                     className="course-open"
-                    to="/student/courses/cell-biology/lessons/cell-structure"
+                    to="/student/courses/circulatory-system/lessons/heart-structure"
                   >
                     <Icon name="arrow-up-right" size={18} />
                   </Link>
@@ -205,7 +205,7 @@ export function TeacherDashboard() {
             <h2 id="insight-title">Cell structure is clicking.</h2>
             <p>Most students can identify organelles, but 6 could use a little more practice with how they work together.</p>
             <Link
-              to="/student/courses/cell-biology/lessons/cell-structure"
+              to="/student/courses/circulatory-system/lessons/heart-structure"
               className="insight-link"
             >
               Explore the lesson <Icon name="arrow-right" size={15} />
