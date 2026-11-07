@@ -3,9 +3,12 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 
+# "[dev]" for local/CI; Coolify passes EXTRAS="" for a lean production image.
+ARG EXTRAS="[dev]"
+
 COPY backend/pyproject.toml ./
 COPY backend/app ./app
-RUN pip install --no-cache-dir -e ".[dev]"
+RUN pip install --no-cache-dir -e ".${EXTRAS}"
 
 COPY backend/alembic.ini ./
 COPY backend/migrations ./migrations

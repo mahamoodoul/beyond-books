@@ -54,7 +54,7 @@ services:
       retries: 3
 
   frontend:
-    build: { context: ., dockerfile: infrastructure/docker/frontend.prod.Dockerfile }
+    build: { context: ., dockerfile: infrastructure/docker/frontend.nginx-template.Dockerfile }
     environment:
       API_UPSTREAM: http://api:8000
       CONNECT_SRC_EXTRA: ${CONNECT_SRC_EXTRA:-}

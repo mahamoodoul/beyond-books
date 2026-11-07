@@ -1,0 +1,18 @@
+# Keep build context small and avoid clobbering in-image installs
+.git
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea
+.vscode
+docs

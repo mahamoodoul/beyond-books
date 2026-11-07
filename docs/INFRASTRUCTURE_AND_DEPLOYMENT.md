@@ -8,7 +8,7 @@ Pilot target: 50–100 users. Region, exact AWS services and budget are **open d
 | Artifact | Built from | Notes |
 |---|---|---|
 | `backend` image | `infrastructure/docker/backend.prod.Dockerfile` | API (`uvicorn`, `WEB_CONCURRENCY` workers) **and** worker (`celery …` command). Non-root, JSON logs, `HEALTHCHECK` on `/api/v1/health`. |
-| `frontend` image | `infrastructure/docker/frontend.prod.Dockerfile` | Static SPA on nginx :8080, CSP + security headers, `/api` reverse proxy (`API_UPSTREAM`). |
+| `frontend` image | `infrastructure/docker/frontend.nginx-template.Dockerfile` | Static SPA on nginx :8080, CSP + security headers, `/api` reverse proxy (`API_UPSTREAM`). |
 
 `release.yml` builds both on a `v*` tag, smoke-tests the backend image (`/health/ready`) and pushes
 to GHCR. `docker-compose.prod.yml` runs the whole stack on one host (staging or a small pilot):

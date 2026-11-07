@@ -1,4 +1,5 @@
-# Production SPA: static build served by nginx with security headers and an /api reverse proxy.
+# Production frontend for Coolify: build the Vite SPA, serve it with nginx on port 3939.
+# nginx also reverse-proxies /api to the backend, so only one port is exposed publicly.
 FROM node:22-slim AS build
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
@@ -8,8 +9,7 @@ COPY frontend ./
 RUN npm run build
 
 FROM nginx:1.27-alpine
-# nginx's entrypoint renders /etc/nginx/templates/*.template with envsubst.
-ENV API_UPSTREAM=http://api:8000 CONNECT_SRC_EXTRA=""
-COPY infrastructure/docker/nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY infrastructure/docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 8080
+EXPOSE 3939
+HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD wget -qO- http://127.0.0.1:3939/ >/dev/null || exit 1

@@ -43,6 +43,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: infrastructure/docker/frontend.prod.Dockerfile
+          file: infrastructure/docker/frontend.nginx-template.Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:${{ github.ref_name }}
