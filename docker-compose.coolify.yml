@@ -106,9 +106,9 @@ services:
       context: .
       dockerfile: infrastructure/docker/frontend.prod.Dockerfile
       args:
-        # Set VITE_DEMO_LOGIN=true in Coolify to show the demo sign-in on a demo deployment.
+        # Demo sign-in is on by default (set VITE_DEMO_LOGIN=false in Coolify to turn it off).
         # Accounts default to the ones scripts/seed_demo_course.py creates ("email:password" to override).
-        VITE_DEMO_LOGIN: ${VITE_DEMO_LOGIN:-false}
+        VITE_DEMO_LOGIN: ${VITE_DEMO_LOGIN:-true}
         VITE_DEMO_TEACHER: ${VITE_DEMO_TEACHER:-}
         VITE_DEMO_STUDENT: ${VITE_DEMO_STUDENT:-}
     restart: unless-stopped
