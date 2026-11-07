@@ -541,6 +541,9 @@
             "title": "Passing Score",
             "type": "number"
           },
+          "settings": {
+            "$ref": "#/components/schemas/QuizSettings"
+          },
           "title": {
             "maxLength": 200,
             "minLength": 1,
@@ -667,6 +670,13 @@
             "title": "Question Count",
             "type": "integer"
           },
+          "questions_per_attempt": {
+            "title": "Questions Per Attempt",
+            "type": "integer"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/QuizSettings"
+          },
           "status": {
             "title": "Status",
             "type": "string"
@@ -692,7 +702,9 @@
           "max_score",
           "passing_score",
           "max_attempts",
-          "origin"
+          "origin",
+          "settings",
+          "questions_per_attempt"
         ],
         "title": "AssessmentSummary",
         "type": "object"
@@ -724,6 +736,16 @@
               }
             ],
             "title": "Passing Score"
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuizSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "title": {
             "anyOf": [
@@ -3051,6 +3073,34 @@
         "title": "Insight",
         "type": "object"
       },
+      "ItemIn": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "text": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "ItemIn",
+        "type": "object"
+      },
       "JobOut": {
         "properties": {
           "attempt_count": {
@@ -4016,6 +4066,41 @@
         "title": "PageOut",
         "type": "object"
       },
+      "PairIn": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "match": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Match",
+            "type": "string"
+          },
+          "prompt": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt",
+          "match"
+        ],
+        "title": "PairIn",
+        "type": "object"
+      },
       "PartInsightRequest": {
         "properties": {
           "action": {
@@ -4175,6 +4260,17 @@
       "QuestionIn": {
         "additionalProperties": false,
         "properties": {
+          "case_sensitive": {
+            "default": false,
+            "title": "Case Sensitive",
+            "type": "boolean"
+          },
+          "cloze_text": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Cloze Text",
+            "type": "string"
+          },
           "difficulty": {
             "default": "medium",
             "enum": [
@@ -4184,6 +4280,14 @@
             ],
             "title": "Difficulty",
             "type": "string"
+          },
+          "distractors": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 6,
+            "title": "Distractors",
+            "type": "array"
           },
           "explanation_correct": {
             "default": "",
@@ -4196,6 +4300,14 @@
             "maxLength": 2000,
             "title": "Explanation General",
             "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ItemIn"
+            },
+            "maxItems": 10,
+            "title": "Items",
+            "type": "array"
           },
           "key": {
             "anyOf": [
@@ -4239,12 +4351,31 @@
             "title": "Model Answer",
             "type": "string"
           },
+          "numeric_answer": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeric Answer"
+          },
           "options": {
             "items": {
               "$ref": "#/components/schemas/OptionIn"
             },
-            "maxItems": 6,
+            "maxItems": 8,
             "title": "Options",
+            "type": "array"
+          },
+          "pairs": {
+            "items": {
+              "$ref": "#/components/schemas/PairIn"
+            },
+            "maxItems": 10,
+            "title": "Pairs",
             "type": "array"
           },
           "points": {
@@ -4263,7 +4394,14 @@
           "question_type": {
             "enum": [
               "mcq",
-              "short_answer"
+              "true_false",
+              "multiple_select",
+              "short_answer",
+              "fill_blanks",
+              "matching",
+              "ordering",
+              "numeric",
+              "hotspot_3d"
             ],
             "title": "Question Type",
             "type": "string"
@@ -4275,6 +4413,39 @@
             "maxItems": 10,
             "title": "Rubric",
             "type": "array"
+          },
+          "scene_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scene Id"
+          },
+          "target_component_ids": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Target Component Ids",
+            "type": "array"
+          },
+          "tolerance": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Tolerance",
+            "type": "number"
+          },
+          "unit": {
+            "default": "",
+            "maxLength": 40,
+            "title": "Unit",
+            "type": "string"
           }
         },
         "required": [
@@ -4353,6 +4524,79 @@
           "content"
         ],
         "title": "QuestionsUpdate",
+        "type": "object"
+      },
+      "QuizSettings": {
+        "additionalProperties": false,
+        "description": "Delivery settings, frozen into each published version.",
+        "properties": {
+          "allow_back": {
+            "default": true,
+            "title": "Allow Back",
+            "type": "boolean"
+          },
+          "layout": {
+            "default": "all",
+            "enum": [
+              "all",
+              "one_per_page"
+            ],
+            "title": "Layout",
+            "type": "string"
+          },
+          "partial_credit": {
+            "default": true,
+            "title": "Partial Credit",
+            "type": "boolean"
+          },
+          "questions_per_attempt": {
+            "anyOf": [
+              {
+                "maximum": 50.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questions Per Attempt"
+          },
+          "reveal_answers": {
+            "default": "after_submit",
+            "enum": [
+              "after_submit",
+              "after_last_attempt",
+              "never"
+            ],
+            "title": "Reveal Answers",
+            "type": "string"
+          },
+          "shuffle_options": {
+            "default": false,
+            "title": "Shuffle Options",
+            "type": "boolean"
+          },
+          "shuffle_questions": {
+            "default": false,
+            "title": "Shuffle Questions",
+            "type": "boolean"
+          },
+          "time_limit_minutes": {
+            "anyOf": [
+              {
+                "maximum": 600.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Limit Minutes"
+          }
+        },
+        "title": "QuizSettings",
         "type": "object"
       },
       "ReadinessResponse": {
@@ -5421,6 +5665,13 @@
             "title": "Questions",
             "type": "array"
           },
+          "questions_per_attempt": {
+            "title": "Questions Per Attempt",
+            "type": "integer"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/QuizSettings"
+          },
           "status": {
             "title": "Status",
             "type": "string"
@@ -5447,6 +5698,8 @@
           "passing_score",
           "max_attempts",
           "origin",
+          "settings",
+          "questions_per_attempt",
           "questions",
           "attempts_used"
         ],
@@ -5731,6 +5984,13 @@
             "title": "Question Count",
             "type": "integer"
           },
+          "questions_per_attempt": {
+            "title": "Questions Per Attempt",
+            "type": "integer"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/QuizSettings"
+          },
           "status": {
             "title": "Status",
             "type": "string"
@@ -5757,6 +6017,8 @@
           "passing_score",
           "max_attempts",
           "origin",
+          "settings",
+          "questions_per_attempt",
           "content"
         ],
         "title": "TeacherAssessment",

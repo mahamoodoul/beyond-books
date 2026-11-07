@@ -34,6 +34,8 @@ class Assessment(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     published_version: Mapped[int | None] = mapped_column(Integer)
     content: Mapped[dict[str, Any]] = mapped_column(JSONType)
     origin: Mapped[str] = mapped_column(String(20), default="manual")
+    # QuizSettings (time limit, shuffling, question pool, partial credit, answer reveal, layout)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
 
 
 class AssessmentVersion(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
