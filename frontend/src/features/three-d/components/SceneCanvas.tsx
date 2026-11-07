@@ -15,6 +15,11 @@ const PRESETS: Record<string, [number, number, number]> = {
   three_quarter: [0.7, 0.45, 0.7],
 };
 
+// Cache evictions are deferred one tick so an immediate remount (React StrictMode's dev double
+// effect, or a quick re-render) cancels them; clearing synchronously made the next render suspend
+// on a cache miss and re-download the model, which could keep the viewer on "Loading model…".
+const pendingCacheClears = new Map<string, number>();
+
 function AssetModel({ asset, onLoaded }: { asset: ResolvedAsset; onLoaded: (names: string[]) => void }) {
   const { scene } = useGLTF(asset.url);
   const clone = useMemo(() => {
@@ -23,12 +28,17 @@ function AssetModel({ asset, onLoaded }: { asset: ResolvedAsset; onLoaded: (name
     return c;
   }, [scene]);
   useEffect(() => {
+    window.clearTimeout(pendingCacheClears.get(asset.url));
+    pendingCacheClears.delete(asset.url);
     const names: string[] = [];
     clone.traverse((o) => o.name && names.push(o.name));
     onLoaded(names);
     return () => {
       disposeTree(clone);
-      useGLTF.clear(asset.url);
+      pendingCacheClears.set(asset.url, window.setTimeout(() => {
+        pendingCacheClears.delete(asset.url);
+        useGLTF.clear(asset.url);
+      }, 0));
     };
   }, [clone, asset.url, onLoaded]);
   return <primitive object={clone} />;

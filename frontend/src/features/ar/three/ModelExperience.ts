@@ -292,11 +292,6 @@ export class ModelExperience {
     const animating = this.beating || Math.abs(this.explodeTarget - this.explodeT) > 1e-3;
     this.scanner?.update(dt, animating);
 
-    // Gentle glow pulse on the selected part.
-    if (this.selectedKey) {
-      const glow = 0.18 + 0.12 * Math.sin(performance.now() / 180);
-      this.parts.get(this.selectedKey)?.materials.forEach((m) => (m.emissiveIntensity = glow));
-    }
   }
 
   /** Raycast from normalised device coords; selects the tapped part (or clears). */
@@ -319,15 +314,18 @@ export class ModelExperience {
   select(key: string | null): void {
     this.selectedKey = key && this.partsInfo[key] && this.parts.has(key) ? key : null;
 
-    // Focus mode: the selected part glows white, everything else turns to "glass".
+    // Focus mode: the selected part glows steadily in its own colour, everything else turns to "glass".
+    const glow = this.selectedKey ? new THREE.Color(this.partsInfo[this.selectedKey]?.color ?? '#ffffff') : null;
     for (const part of this.parts.values()) {
       const focused = this.selectedKey === null || part.key === this.selectedKey;
+      const isSelected = part.key === this.selectedKey && glow !== null;
       for (const m of part.materials) {
         m.transparent = !focused;
-        m.opacity = focused ? 1 : 0.18;
+        m.opacity = focused ? 1 : FADED_OPACITY;
         m.depthWrite = focused;
-        m.emissive.setHex(part.key === this.selectedKey ? 0xffffff : 0x000000);
-        m.emissiveIntensity = 1;
+        if (isSelected) m.emissive.copy(glow);
+        else m.emissive.setHex(0x000000);
+        m.emissiveIntensity = isSelected ? SELECTED_GLOW : 1;
         m.needsUpdate = true;
       }
       part.label?.element.classList.toggle('is-active', part.key === this.selectedKey);
@@ -442,6 +440,11 @@ export class ModelExperience {
 }
 
 /** Smooth 0→1→0 bump between `start` and `end` of the cycle. */
+/** Steady glow (in the part's own colour) on the selected part; no pulsing. */
+const SELECTED_GLOW = 0.6;
+/** Opacity of the other parts while one is selected, so the selection stands out. */
+const FADED_OPACITY = 0.1;
+
 function pulse(phase: number, start: number, end: number): number {
   if (phase < start || phase > end) return 0;
   const t = (phase - start) / (end - start);

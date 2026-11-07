@@ -220,7 +220,7 @@ export function CTPanel({ model }: { model: ModelExperience }) {
 
   return (
     <section
-      aria-label="CT scan view"
+      aria-label="Slice view"
       className="ct-panel"
       ref={(element) => {
         panelRef.current = element;
@@ -235,7 +235,7 @@ export function CTPanel({ model }: { model: ModelExperience }) {
       } : undefined}
     >
       <div
-        aria-label="Move CT scan panel; use arrow keys to move"
+        aria-label="Move slice view panel; use arrow keys to move"
         className="ct-panel-header"
         onKeyDown={(event) => handlePanelKeyDown(event, 'move')}
         onPointerDown={(event) => beginInteraction('move', event)}
@@ -244,7 +244,7 @@ export function CTPanel({ model }: { model: ModelExperience }) {
         role="button"
         tabIndex={0}
       >
-        <span>CT scan</span>
+        <span>Slice view</span>
         <span aria-hidden="true" className="ct-panel-move-icon">↕</span>
       </div>
       <canvas
@@ -252,7 +252,7 @@ export function CTPanel({ model }: { model: ModelExperience }) {
         className="ct-image"
         onPointerUp={onTap}
         role="img"
-        aria-label={`CT ${axis} slice. Tap a structure to identify it.`}
+        aria-label={`${axis} slice of the heart. Tap a structure to identify it.`}
       />
       <div className="ct-axes" role="radiogroup" aria-label="Slice plane">
         {AXES.map((a) => (
@@ -285,7 +285,7 @@ export function CTPanel({ model }: { model: ModelExperience }) {
         />
       </div>
       <button
-        aria-label="Resize CT scan panel; use arrow keys to resize"
+        aria-label="Resize slice view panel; use arrow keys to resize"
         className="ct-panel-resize"
         onKeyDown={(event) => handlePanelKeyDown(event, 'resize')}
         onPointerDown={(event) => beginInteraction('resize', event)}
