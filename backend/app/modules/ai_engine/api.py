@@ -140,3 +140,50 @@ def part_insight(scene_id: uuid.UUID, body: PartInsightRequest, user: CurrentUse
 @router.get("/courses/{course_id}/ai/usage", response_model=AIUsageOut)
 def usage(course_id: uuid.UUID, user: CurrentUser, db: DB) -> AIUsageOut:
     return AIUsageOut(**service.usage_summary(db, user, course_id))
+
+
+class SourcePassageOut(BaseModel):
+    document_id: uuid.UUID
+    document_title: str
+    page_start: int
+    page_end: int
+    text: str
+
+
+class ChapterSourceOut(BaseModel):
+    """The textbook text the AI reads for this chapter (shown in the chapter studio)."""
+
+    strategy: str  # chapter_page_ranges | lexical | none
+    truncated: bool
+    characters: int
+    passages: list[SourcePassageOut]
+
+
+@router.get("/chapters/{chapter_id}/source", response_model=ChapterSourceOut)
+def chapter_source(chapter_id: uuid.UUID, user: CurrentUser, db: DB) -> ChapterSourceOut:
+    from app.modules.ai_engine import retrieval
+    from app.modules.chapters.service import get_chapter_for
+    from app.modules.documents.models import SourceDocument
+
+    chapter = get_chapter_for(db, user, chapter_id, manage=True)
+    found = retrieval.for_chapter(db, chapter)
+    titles = {
+        str(d.id): d.title
+        for d in db.query(SourceDocument).filter(SourceDocument.course_id == chapter.course_id)
+    }
+    passages = [
+        SourcePassageOut(
+            document_id=uuid.UUID(p.document_id),
+            document_title=titles.get(p.document_id, "Source"),
+            page_start=p.page_start,
+            page_end=p.page_end,
+            text=p.text,
+        )
+        for p in found.passages
+    ]
+    return ChapterSourceOut(
+        strategy=found.strategy if passages else "none",
+        truncated=found.truncated,
+        characters=sum(len(p.text) for p in passages),
+        passages=passages,
+    )

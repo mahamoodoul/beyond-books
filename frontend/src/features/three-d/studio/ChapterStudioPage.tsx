@@ -1,17 +1,17 @@
 /**
- * Chapter 3D Studio: generate, preview and manage ALL 3D content of a chapter in one place.
+ * Chapter Studio: the teacher's workspace for one chapter. Read the chapter text, write a chapter
+ * prompt, generate all content (lesson, quiz, 3D) with AI, review it, preview it and publish it.
  * Full CRUD for lesson scenes: create (model / generator / AI), view (live preview), edit
  * (title, camera, controls, parts, explanations, animations), publish/unpublish, duplicate, delete.
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 
 import { api, ApiError, errorMessage } from "@/api/client";
 import type {
   AvailablePart,
   ChapterDetail,
-  ChapterGenerateResult,
   ChapterSceneOut,
   CourseOut,
   JobOut,
@@ -24,6 +24,7 @@ import { useJob } from "@/features/jobs/useJob";
 
 import { AnimationsPanel } from "../AnimationsPanel";
 import { NewScene } from "../ScenesCard";
+import { ContentBoard, GeneratePanel, PromptPanel, PublishBar, SourcePanel } from "./ChapterWorkflow";
 import { Chip, panel, Ring } from "./StudioPage";
 import { useResolved } from "./useStudio";
 
@@ -226,15 +227,6 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
   );
 }
 
-function Section({ title, children, right }: { title: string; children: ReactNode; right?: ReactNode }) {
-  return (
-    <section className={`${panel} p-4`}>
-      <div className="mb-3 flex items-center justify-between gap-2"><p className="text-sm font-semibold text-white">{title}</p>{right}</div>
-      {children}
-    </section>
-  );
-}
-
 /* --------------------------------------------------------------- page */
 export default function ChapterStudioPage() {
   const { chapterId = "" } = useParams();
@@ -242,8 +234,6 @@ export default function ChapterStudioPage() {
   const refresh = useRefresh(chapterId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedPart, setSelectedPart] = useState<SceneComponent | null>(null);
-  const [gen, setGen] = useState<ChapterGenerateResult | null>(null);
-  const [onlyMissing, setOnlyMissing] = useState(true);
   const [creatingFor, setCreatingFor] = useState<string | null>(null);
   const [planJobs, setPlanJobs] = useState<Record<string, string>>({});
 
@@ -260,10 +250,6 @@ export default function ChapterStudioPage() {
   const totals = items.reduce((a, i) => ({ parts: a.parts + i.parts, explained: a.explained + i.explained }), { parts: 0, explained: 0 });
   const lessonsWith = (lessons.data ?? []).filter((l) => byLesson.has(l.id)).length;
 
-  const generateAll = useMutation({
-    mutationFn: () => api.post<ChapterGenerateResult>(`/chapters/${chapterId}/ai/scenes`, { only_missing: onlyMissing }),
-    onSuccess: (r) => { setGen(r); refresh(); },
-  });
   const planOne = useMutation({
     mutationFn: (lessonId: string) => api.post<JobOut>(`/lessons/${lessonId}/ai/scene`),
     onSuccess: (j, lessonId) => setPlanJobs((p) => ({ ...p, [lessonId]: j.id })),
@@ -276,13 +262,16 @@ export default function ChapterStudioPage() {
   return (
     <div className="min-h-screen bg-[#0b0d16] text-slate-200">
       <header className="flex flex-wrap items-center gap-3 border-b border-white/10 px-5 py-3">
-        <Link to={`/teacher/chapters/${chapterId}`} className="text-lg font-semibold text-white">Edu3D <span className="text-[#38b2ac]">Chapter Studio</span></Link>
+        <Link to={`/teacher/chapters/${chapterId}`} className="text-lg font-semibold text-white">Beyond Books <span className="text-[#38b2ac]">Chapter Studio</span></Link>
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-400">
           <Link className="hover:text-white" to="/teacher">Courses</Link><span>›</span>
           {course.data && <><Link className="hover:text-white" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span>›</span></>}
           <span className="text-white">{ch.title}</span>
         </nav>
-        <Link to={`/teacher/chapters/${chapterId}`} className="ml-auto rounded-lg border border-white/10 px-3 py-1.5 text-sm hover:text-white">Exit studio</Link>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <PublishBar chapter={ch} course={course.data} />
+          <Link to={course.data ? `/teacher/courses/${course.data.id}` : "/teacher/courses"} className="rounded-lg border border-white/10 px-3 py-1.5 text-sm hover:text-white">Exit studio</Link>
+        </div>
       </header>
 
       <div className="grid gap-4 p-4 xl:grid-cols-[19rem_1fr_24rem]">
@@ -301,17 +290,9 @@ export default function ChapterStudioPage() {
               </dl>
             </div>
           </section>
-          <Section title="✦ Generate 3D for the chapter">
-            <p className="mb-2 text-sm text-slate-400">AI picks a library model, a generator, or suggests a new model for each lesson. Results are drafts — review before publishing.</p>
-            <label className="mb-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={onlyMissing} onChange={(e) => setOnlyMissing(e.target.checked)} /> Only lessons without a scene</label>
-            <button className={`${btnPrimary} w-full`} disabled={generateAll.isPending} onClick={() => generateAll.mutate()}>{generateAll.isPending ? "Starting…" : "Generate all with AI"}</button>
-            {generateAll.error && <p className="mt-2 text-sm text-red-300">{errorMessage(generateAll.error)}</p>}
-            {gen && (
-              <ul className="mt-3 space-y-1.5" aria-live="polite">
-                {gen.items.map((i) => <JobRow key={i.lesson_id} title={i.lesson_title} jobId={i.job_id ?? null} status={i.status} reason={i.reason} onDone={() => refresh()} />)}
-              </ul>
-            )}
-          </Section>
+          <SourcePanel chapterId={chapterId} />
+          <PromptPanel chapter={ch} />
+          <GeneratePanel chapter={ch} />
         </aside>
 
         {/* centre: live preview + organized board */}
@@ -337,6 +318,8 @@ export default function ChapterStudioPage() {
               </div>
             )}
           </section>
+
+          <ContentBoard chapterId={chapterId} />
 
           <section className="space-y-3" aria-label="Chapter scenes by lesson">
             {(lessons.data ?? []).map((l) => {

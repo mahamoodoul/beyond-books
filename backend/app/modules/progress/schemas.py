@@ -45,6 +45,7 @@ class OutlineLesson(BaseModel):
     position: int
     published: bool
     progress: str  # not_started | in_progress | completed
+    scene_count: int = 0  # published 3D scenes in this lesson
 
 
 class OutlineChapter(BaseModel):

@@ -26,6 +26,7 @@ from app.integrations.interfaces import (
 )
 from app.integrations.three_d import get_three_d_provider
 from app.modules.ai_engine.models import AIUsageRecord
+from app.modules.ai_engine.prompting import teacher_instructions
 from app.modules.ai_engine.prompts import SCENE_PLANNING
 from app.modules.ai_engine.schemas import ScenePlanLLM
 from app.modules.ai_engine.validation import OutputRejectedError
@@ -224,7 +225,8 @@ def plan_scene(db: Session, job: Job) -> dict[str, Any]:
     )
     task = (
         f"Lesson: {lesson.title}\nChapter: {chapter.title}\n"
-        f"Visualization candidates:\n{candidates or '- none listed'}\n\n"
+        f"Visualization candidates:\n{candidates or '- none listed'}\n"
+        f"{teacher_instructions(chapter.ai_instructions)}\n\n"
         f"{CATALOGUE_MARKER}\n{json.dumps(catalogue)}"
     )
     plan, usage = _call(db, job, SCENE_PLANNING, task, passages, ScenePlanLLM)

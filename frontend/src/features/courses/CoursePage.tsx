@@ -5,6 +5,7 @@ import { ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
 import { OutlinePanel } from "@/features/ai/OutlinePanel";
 import { AnalyticsPanel } from "@/features/analytics/AnalyticsPanel";
+import { useChapters } from "@/features/chapters/api";
 import { ChaptersPanel } from "@/features/chapters/ChaptersPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
@@ -24,7 +25,10 @@ export function CoursePage() {
     if (course.data) setDetails({ title: course.data.title, subject: course.data.subject ?? "", grade_level: course.data.grade_level ?? "", description: course.data.description });
   }, [course.data]);
   const saveDetails = (event: FormEvent) => { event.preventDefault(); update.mutate(details); };
-  const [tab, setTab] = useState<Tab>("Sources & outline");
+  const chapters = useChapters(courseId);
+  const [chosenTab, setTab] = useState<Tab | null>(null);
+  // Courses that already have chapters open on the chapter list (the studio entry point).
+  const tab: Tab = chosenTab ?? ((chapters.data?.length ?? 0) > 0 ? "Chapters" : "Sources & outline");
 
   if (course.isPending) return <Loading />;
   if (course.error) return <ErrorAlert error={course.error} />;
@@ -39,7 +43,7 @@ export function CoursePage() {
           {published ? "Unpublish course" : "Publish course"}
         </Button>
       </PageHeader>
-      <p className="mb-5 text-sm text-slate-600">Review your sources and outline, open each chapter to create lessons and assessments, then publish the lessons, chapters, and course for enrolled students. Add 3D scenes inside each lesson.</p>
+      <p className="mb-5 text-sm text-slate-600">Upload your textbook and apply the outline, then open each chapter's Studio: generate the lesson, quiz and 3D scenes from the chapter text, preview them, and publish the chapter for enrolled students.</p>
       <ErrorAlert error={update.error} />
       <div role="tablist" className="mb-6 flex gap-1 border-b border-slate-200">
         {TABS.map((t) => (
