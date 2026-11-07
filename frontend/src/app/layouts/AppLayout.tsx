@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
+import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { homeFor, useLogout, useMe } from "@/features/auth/auth";
 
@@ -30,7 +31,7 @@ export function AppLayout() {
   return <div className="app-shell">
     <header className="topbar">
       <Link aria-label="Beyond Books home" className="brand" to={user ? homeFor(user) : "/"}>
-        <span className="brand-mark"><Icon name="layers" size={19} /></span><span>Beyond<span className="brand-light"> Books</span></span>
+        <BeyondBooksLogo showWordmark size={44} variant={theme} />
       </Link>
       <nav aria-label="Main navigation" className="topbar-nav">{navigation.map(item =>
         <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}><Icon name={item.icon} size={17} /><span>{item.label}</span></NavLink>
@@ -45,6 +46,6 @@ export function AppLayout() {
       <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `mobile-nav-link${isActive ? " is-active" : ""}`}><Icon name={item.icon} size={19} /><span>{item.label}</span></NavLink>
     )}</nav>
     <main className="page-content live-workspace"><ErrorAlert error={logout.error} /><Outlet /></main>
-    <footer className="app-footer"><span>Beyond Books</span><span>Learning, brought to life.</span></footer>
+    <footer className="app-footer"><BeyondBooksLogo animated={false} showWordmark size={35} variant={theme} /><span>Learning, brought to life.</span></footer>
   </div>;
 }

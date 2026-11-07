@@ -1,6 +1,8 @@
 import { Link } from "react-router";
 
+import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
+import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 
 const steps = ["Upload", "Analyse", "Generate", "Review", "Learn", "Assess", "Improve"];
 const painPoints = [
@@ -87,12 +89,12 @@ function HeartIllustration() {
 }
 
 export function LandingPage() {
+  const { theme } = usePreferences();
   return (
     <main className="landing-page">
       <header className="landing-header">
         <Link aria-label="Beyond Books home" className="brand" to="/">
-          <span className="brand-mark"><Icon name="layers" size={19} /></span>
-          <span>Beyond<span className="brand-light"> Books</span></span>
+          <BeyondBooksLogo showWordmark size={44} variant={theme} />
         </Link>
         <nav aria-label="Landing page navigation" className="landing-nav">
           <a href="#how-it-works">How it works</a>
@@ -203,8 +205,7 @@ export function LandingPage() {
       </section>
       <footer className="landing-footer">
         <Link aria-label="Beyond Books home" className="brand" to="/">
-          <span className="brand-mark"><Icon name="layers" size={17} /></span>
-          <span>Beyond<span className="brand-light"> Books</span></span>
+          <BeyondBooksLogo animated={false} showWordmark size={35} variant={theme} />
         </Link>
         <span>Learning, brought to life.</span>
         <span>© 2026 Beyond Books</span>
