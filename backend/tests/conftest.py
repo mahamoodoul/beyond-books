@@ -1,6 +1,7 @@
 import os
 
 os.environ["EDU3D_ENVIRONMENT"] = "test"
+os.environ["EDU3D_ENV_FILE"] = ""  # never read a developer's local .env during tests
 os.environ["EDU3D_JOBS_RUN_INLINE"] = "true"
 os.environ["EDU3D_LLM_PROVIDER"] = "fake"
 os.environ.setdefault("EDU3D_DATABASE_URL", "sqlite+pysqlite:///:memory:")

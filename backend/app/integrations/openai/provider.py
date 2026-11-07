@@ -19,13 +19,18 @@ from app.modules.ai_engine.prompting import render_input
 class OpenAIProvider:
     name = "openai"
 
-    def __init__(self, api_key: str, model: str, timeout_s: float) -> None:
+    def __init__(
+        self, api_key: str, model: str, timeout_s: float, base_url: str | None = None
+    ) -> None:
         import openai
 
         self.model = model
         self._openai = openai
         # Retries are owned by our job runner (bounded, with backoff), not the SDK.
-        self.client = openai.OpenAI(api_key=api_key, timeout=timeout_s, max_retries=0)
+        # base_url lets any OpenAI-compatible endpoint be used without new code.
+        self.client = openai.OpenAI(
+            api_key=api_key, timeout=timeout_s, max_retries=0, base_url=base_url
+        )
 
     def generate_structured[T: BaseModel](
         self,

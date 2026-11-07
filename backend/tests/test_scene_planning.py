@@ -150,6 +150,7 @@ def test_unverified_provider_fails_cleanly(login: Login, monkeypatch: pytest.Mon
     from app.core.config import get_settings
 
     monkeypatch.setenv("EDU3D_THREE_D_PROVIDER", "tripo")
+    monkeypatch.setenv("EDU3D_TRIPO_API_KEY", "test-key")
     get_settings.cache_clear()
     t = login("t@example.com")
     r = t.post("/api/v1/assets/generation-jobs", json={"name": "A", "prompt": "A simple cube"})

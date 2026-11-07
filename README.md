@@ -66,6 +66,13 @@ export EDU3D_DATABASE_URL=sqlite:///./dev.db EDU3D_JOBS_RUN_INLINE=true EDU3D_LL
 
 SQLite is for quick local runs and tests only; PostgreSQL is the real database.
 
+## AI providers
+
+LLM and 3D providers are pluggable: set `EDU3D_LLM_PROVIDER` (`fake` | `anthropic` | `openai`) and
+`EDU3D_THREE_D_PROVIDER` (`fake` | `tripo` | `meshy`) plus that provider's key/model in
+`backend/.env`. Default real LLM: Claude (`claude-opus-5-5`). To add a vendor see
+[docs/ADDING_A_PROVIDER.md](docs/ADDING_A_PROVIDER.md).
+
 ## Operations
 
 - Deployment: [docs/INFRASTRUCTURE_AND_DEPLOYMENT.md](docs/INFRASTRUCTURE_AND_DEPLOYMENT.md)

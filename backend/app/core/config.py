@@ -10,7 +10,8 @@ _DEV_SECRET = "dev-only-insecure-secret-change-me-0123456789"  # noqa: S105
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="EDU3D_", extra="ignore")
+    # The dotenv file is chosen in get_settings() (EDU3D_ENV_FILE), never implicitly.
+    model_config = SettingsConfigDict(env_file=None, env_prefix="EDU3D_", extra="ignore")
 
     environment: Literal["local", "development", "staging", "production", "test"] = "local"
     app_name: str = "Edu3D AI"
@@ -47,20 +48,23 @@ class Settings(BaseSettings):
     jobs_run_inline: bool = False  # True: run jobs in-process (tests / no Redis)
 
     # --- AI (ADR 0006) ---
-    llm_provider: Literal["fake", "openai", "anthropic"] = "fake"
+    # Provider names are validated against app/integrations/providers.py (the registry).
+    llm_provider: str = "fake"
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: Literal["low", "medium", "high", "xhigh", "max"] = "medium"
     openai_api_key: str = ""
     openai_model: str = ""
+    openai_base_url: str = ""  # optional: any OpenAI-compatible endpoint
     llm_max_output_tokens: int = 8000
     llm_timeout_s: float = 120
     llm_max_input_chars: int = 120_000
     ai_max_jobs_per_course_per_day: int = 40
 
     # --- 3D generation (ADR 0009) ---
-    three_d_provider: Literal["fake", "tripo", "meshy"] = "fake"
-    three_d_api_key: str = ""
+    three_d_provider: str = "fake"
+    tripo_api_key: str = ""
+    meshy_api_key: str = ""
     three_d_max_generations_per_user_per_day: int = 5
     # Optional pricing for cost estimates, per 1M tokens. Leave 0 = unknown; never guess.
     llm_input_price_per_mtok: float = 0
@@ -68,22 +72,27 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _check_production_safety(self) -> "Settings":
+        from app.integrations import providers
+
+        problems = providers.validate("llm", self.llm_provider, self) + providers.validate(
+            "three_d", self.three_d_provider, self
+        )
+        if problems:
+            raise ValueError("; ".join(problems))
         if self.environment in {"staging", "production"}:
             if self.jwt_secret == _DEV_SECRET or len(self.jwt_secret) < 32:
                 raise ValueError("EDU3D_JWT_SECRET must be set to a strong secret")
             if not self.cookie_secure:
                 raise ValueError("EDU3D_COOKIE_SECURE must be true outside local/dev")
-            if self.llm_provider == "fake" or self.three_d_provider == "fake":
-                raise ValueError("fake AI/3D providers are not allowed in staging/production")
+            for kind, name in (("llm", self.llm_provider), ("three_d", self.three_d_provider)):
+                spec = providers.get_spec(kind, name)  # type: ignore[arg-type]
+                if spec is not None and not spec.production_ready:
+                    raise ValueError(
+                        f"{kind} provider '{name}' is not allowed in staging/production"
+                    )
             if self.jobs_run_inline:
                 raise ValueError("EDU3D_JOBS_RUN_INLINE must be false in staging/production")
             self.expose_api_docs = False
-        if self.llm_provider == "openai" and not (self.openai_api_key and self.openai_model):
-            raise ValueError("EDU3D_OPENAI_API_KEY and EDU3D_OPENAI_MODEL are required")
-        if self.llm_provider == "anthropic" and not (
-            self.anthropic_api_key and self.anthropic_model
-        ):
-            raise ValueError("EDU3D_ANTHROPIC_API_KEY and EDU3D_ANTHROPIC_MODEL are required")
         return self
 
 
@@ -107,5 +116,9 @@ def _load_aws_secret() -> None:
 
 @lru_cache
 def get_settings() -> Settings:
+    """EDU3D_ENV_FILE overrides which dotenv file is read ("" = none, used by the test suite)."""
+    import os
+
     _load_aws_secret()
-    return Settings()
+    env_file = os.environ.get("EDU3D_ENV_FILE", ".env")
+    return Settings(_env_file=env_file or None)

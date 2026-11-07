@@ -15,6 +15,7 @@
 | [0011](0011-assessments-and-advisory-ai-grading.md) | Assessments and advisory AI grading (interim for #8) | Proposed |
 | [0012](0012-analytics-and-knowledge-gaps.md) | Teacher analytics and knowledge-gap records | Proposed |
 | [0013](0013-pilot-hardening-and-deployment.md) | Pilot hardening and deployment packaging | Proposed |
+| [0014](0014-provider-registry.md) | Pluggable provider registry for LLM and 3D | Proposed |
 
 Copy [0000-template.md](0000-template.md) for new decisions.
 

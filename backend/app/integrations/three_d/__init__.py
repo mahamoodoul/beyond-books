@@ -58,6 +58,9 @@ class FakeThreeDProvider:
 class _UnverifiedProvider:
     name = "unverified"
 
+    def __init__(self, api_key: str = "") -> None:
+        self.api_key = api_key
+
     def _refuse(self) -> ProviderPermanentError:
         return ProviderPermanentError(
             f"The {self.name} adapter is not implemented yet: verify its current API, output "
@@ -82,13 +85,12 @@ class MeshyProvider(_UnverifiedProvider):
     name = "meshy"
 
 
-_fake = FakeThreeDProvider()
+# One instance so polling state survives between calls (dev/tests only).
+FAKE_PROVIDER = FakeThreeDProvider()
 
 
 def get_three_d_provider() -> ThreeDGenerationProvider:
-    provider = get_settings().three_d_provider
-    if provider == "tripo":
-        return TripoProvider()
-    if provider == "meshy":
-        return MeshyProvider()
-    return _fake
+    """The configured 3D provider (EDU3D_THREE_D_PROVIDER), built via the provider registry."""
+    from app.integrations.providers import build_three_d
+
+    return build_three_d(get_settings())

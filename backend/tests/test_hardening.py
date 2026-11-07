@@ -66,6 +66,7 @@ def test_production_disables_api_docs() -> None:
         openai_api_key="k",
         openai_model="m",
         three_d_provider="tripo",
+        tripo_api_key="k",
         expose_api_docs=True,
     )
     assert s.expose_api_docs is False
