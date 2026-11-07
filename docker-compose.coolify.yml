@@ -27,12 +27,17 @@ services:
       POSTGRES_USER: ${SERVICE_USER_POSTGRES}
       POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
       POSTGRES_DB: ${POSTGRES_DB:-edu3d}
-    volumes: [pgdata:/var/lib/postgresql/data]
+    # Renamed from "pgdata": that volume was first initialized by the local compose file with
+    # different credentials. A fresh name gives Postgres a clean init with the Coolify-generated ones.
+    volumes: [postgres-data:/var/lib/postgresql/data]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      # -h 127.0.0.1: TCP check, so the socket-only temp server used during first-boot init
+      # (before Postgres restarts) is not mistaken for "ready".
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+      start_period: 20s
 
   redis:
     image: redis:7-alpine
@@ -49,7 +54,12 @@ services:
   migrate:
     build: *backend-build
     restart: "no"
-    command: alembic upgrade head
+    # Retry briefly so a just-restarted Postgres doesn't fail the whole deploy.
+    command: >-
+      sh -c 'for i in 1 2 3 4 5 6 7 8 9 10; do
+      alembic upgrade head && exit 0;
+      echo "migrate attempt $$i failed, retrying in 3s"; sleep 3;
+      done; exit 1'
     environment: *backend-env
     exclude_from_hc: true  # Coolify: an exited one-shot container shouldn't mark the app unhealthy
     depends_on:
@@ -97,5 +107,5 @@ services:
     depends_on: [api]
 
 volumes:
-  pgdata:
+  postgres-data:
   redisdata:
