@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_water_molecule_01",
+  "title": "The Shape of a Water Molecule",
+  "learning_objective_ids": [
+    "lo_chem_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "water_molecule_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "front",
+    "min_distance": 1,
+    "max_distance": 8
+  },
+  "components": [
+    {
+      "component_id": "oxygen",
+      "mesh_name": "oxygen",
+      "label": "Oxygen atom",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_oxygen"
+    },
+    {
+      "component_id": "hydrogen_1",
+      "mesh_name": "hydrogen_1",
+      "label": "Hydrogen atom",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_hydrogen_1"
+    },
+    {
+      "component_id": "hydrogen_2",
+      "mesh_name": "hydrogen_2",
+      "label": "Hydrogen atom",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_hydrogen_2"
+    },
+    {
+      "component_id": "bond_1",
+      "mesh_name": "bond_1",
+      "label": "O–H covalent bond",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_bond_1"
+    },
+    {
+      "component_id": "bond_2",
+      "mesh_name": "bond_2",
+      "label": "O–H covalent bond",
+      "actions": [
+        "highlight",
+        "show_explanation"
+      ],
+      "explanation_ref": "explanation_bond_2"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "select_component"
+  ],
+  "animation_refs": [
+    "water_shape_01"
+  ]
+}

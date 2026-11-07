@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "water_shape_01",
+  "title": "Why water is bent",
+  "steps": [
+    {
+      "step": 1,
+      "action": "highlight_component",
+      "target_component": "oxygen",
+      "duration_ms": 2000,
+      "explanation": "The oxygen atom sits at the centre and shares electrons with two hydrogen atoms."
+    },
+    {
+      "step": 2,
+      "action": "highlight_component",
+      "target_component": "bond_1",
+      "duration_ms": 1500
+    },
+    {
+      "step": 3,
+      "action": "highlight_component",
+      "target_component": "bond_2",
+      "duration_ms": 1500,
+      "explanation": "Each O–H covalent bond is about 0.96 Å long."
+    },
+    {
+      "step": 4,
+      "action": "show_annotation",
+      "target_component": "oxygen",
+      "duration_ms": 4000,
+      "explanation": "Two lone pairs on oxygen push the bonds closer together, so the H–O–H angle is about 104.5°, not 180°."
+    },
+    {
+      "step": 5,
+      "action": "show_annotation",
+      "duration_ms": 4000,
+      "explanation": "Because the molecule is bent, the oxygen end is slightly negative and the hydrogen end slightly positive: water is polar."
+    }
+  ]
+}

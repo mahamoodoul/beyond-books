@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_heart_02",
+  "title": "The Heart and Great Vessels",
+  "learning_objective_ids": [
+    "lo_01",
+    "lo_02"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "human_heart_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "front",
+    "min_distance": 2,
+    "max_distance": 12
+  },
+  "components": [
+    {
+      "component_id": "right_atrium",
+      "mesh_name": "right_atrium",
+      "label": "Right atrium",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_right_atrium"
+    },
+    {
+      "component_id": "right_ventricle",
+      "mesh_name": "right_ventricle",
+      "label": "Right ventricle",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_right_ventricle"
+    },
+    {
+      "component_id": "left_atrium",
+      "mesh_name": "left_atrium",
+      "label": "Left atrium",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_left_atrium"
+    },
+    {
+      "component_id": "left_ventricle",
+      "mesh_name": "left_ventricle",
+      "label": "Left ventricle",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_left_ventricle"
+    },
+    {
+      "component_id": "aorta",
+      "mesh_name": "aorta",
+      "label": "Aorta",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_aorta"
+    },
+    {
+      "component_id": "pulmonary_trunk",
+      "mesh_name": "pulmonary_trunk",
+      "label": "Pulmonary trunk",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_pulmonary_trunk"
+    },
+    {
+      "component_id": "superior_vena_cava",
+      "mesh_name": "superior_vena_cava",
+      "label": "Superior vena cava",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_superior_vena_cava"
+    },
+    {
+      "component_id": "inferior_vena_cava",
+      "mesh_name": "inferior_vena_cava",
+      "label": "Inferior vena cava",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_inferior_vena_cava"
+    },
+    {
+      "component_id": "pulmonary_veins",
+      "mesh_name": "pulmonary_veins",
+      "label": "Pulmonary veins",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_pulmonary_veins"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "select_component"
+  ],
+  "animation_refs": [
+    "double_circulation_01"
+  ]
+}
