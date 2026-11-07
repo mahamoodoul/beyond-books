@@ -1,10 +1,27 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ErrorAlert } from "@/components/feedback";
 import { homeFor, useLogin, useMe } from "./auth";
+
+/**
+ * Development-only quick sign-in: Shift+T = demo teacher, Shift+S = demo student (the accounts
+ * created by scripts/seed_demo_course.py; override with VITE_DEMO_TEACHER / VITE_DEMO_STUDENT as
+ * "email:password"). `import.meta.env.DEV` is false in production builds, so this is stripped there.
+ */
+const DEV_QUICK_LOGIN: Record<string, { email: string; password: string }> | null = import.meta.env.DEV
+  ? {
+      T: credentials(import.meta.env.VITE_DEMO_TEACHER, "teacher@example.com:teacher-demo-123"),
+      S: credentials(import.meta.env.VITE_DEMO_STUDENT, "student@example.com:student-demo-123"),
+    }
+  : null;
+
+function credentials(value: string | undefined, fallback: string) {
+  const [email = "", ...rest] = (value || fallback).split(":");
+  return { email, password: rest.join(":") };
+}
 
 export function LoginPage() {
   const { theme, toggleTheme } = usePreferences();
@@ -14,6 +31,20 @@ export function LoginPage() {
   const from = (useLocation().state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  useEffect(() => {
+    if (!DEV_QUICK_LOGIN) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!event.shiftKey || event.ctrlKey || event.metaKey || event.altKey || event.repeat) return;
+      // Typing a capital T/S in a field must still work.
+      if ((event.target as HTMLElement | null)?.closest("input, textarea, select, [contenteditable='true']")) return;
+      const account = DEV_QUICK_LOGIN[event.key.toUpperCase()];
+      if (!account || login.isPending) return;
+      event.preventDefault();
+      login.mutate(account, { onSuccess: user => navigate(homeFor(user), { replace: true }) });
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [login, navigate]);
   if (me.data) return <Navigate to={homeFor(me.data)} replace />;
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -33,6 +64,7 @@ export function LoginPage() {
         <ErrorAlert error={login.error ?? me.error} />
         <button type="submit" className="button button-primary login-submit" disabled={login.isPending}>{login.isPending ? "Signing in…" : "Sign in"}<Icon name="arrow-right" size={18} /></button>
       </form>
+      {DEV_QUICK_LOGIN && <p className="login-dev-hint">Dev shortcut: <kbd>Shift</kbd>+<kbd>T</kbd> teacher · <kbd>Shift</kbd>+<kbd>S</kbd> student</p>}
       <p className="demo-note">New here? <Link className="text-link" to="/register">Create an account</Link></p>
     </section>
       <aside aria-label="Learning illustration" className="login-art">

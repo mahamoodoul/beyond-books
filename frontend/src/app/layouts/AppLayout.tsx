@@ -1,9 +1,13 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Link, matchPath, NavLink, Outlet, useLocation, useNavigate } from "react-router";
+import { api } from "@/api/client";
+import type { SceneOut } from "@/api/generated/schema";
 import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { homeFor, useLogout, useMe } from "@/features/auth/auth";
+import { usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
 
 const teacherNavigation = [
   { to: "/teacher", label: "Overview", icon: "grid" as const, end: true },
@@ -24,6 +28,15 @@ export function AppLayout() {
   const logout = useLogout();
   const navigate = useNavigate();
   const { theme, toggleTheme } = usePreferences();
+  const location = useLocation();
+  // Tablet/phone menus offer the AR page scan while a student is on a lesson with the interactive heart.
+  const arLessonId = matchPath("/student/lessons/:lessonId", location.pathname)?.params.lessonId;
+  const arScenes = useQuery({
+    queryKey: ["scenes", arLessonId],
+    queryFn: () => api.get<SceneOut[]>(`/lessons/${arLessonId}/scenes`),
+    enabled: !!arLessonId,
+  });
+  const showScan = !!arLessonId && (arScenes.data ?? []).some(usesInteractiveHeart);
   if (me.isPending) return <Loading />;
   if (me.error) return <ErrorAlert error={me.error} />;
   const user = me.data;
@@ -44,7 +57,13 @@ export function AppLayout() {
     </header>
     <nav aria-label="Mobile navigation" className="mobile-nav">{navigation.map(item =>
       <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `mobile-nav-link${isActive ? " is-active" : ""}`}><Icon name={item.icon} size={19} /><span>{item.label}</span></NavLink>
-    )}</nav>
+    )}
+      {showScan && (
+        <Link aria-label="Scan the printed heart page with augmented reality" className="mobile-nav-link mobile-nav-scan" state={{ returnTo: location.pathname }} to={`/lessons/${arLessonId}/ar`}>
+          <Icon name="eye" size={19} /><span>Scan page</span>
+        </Link>
+      )}
+    </nav>
     <main className="page-content live-workspace"><ErrorAlert error={logout.error} /><Outlet /></main>
     <footer className="app-footer"><BeyondBooksLogo animated={false} showWordmark size={35} variant={theme} /><span>Learning, brought to life.</span></footer>
   </div>;
