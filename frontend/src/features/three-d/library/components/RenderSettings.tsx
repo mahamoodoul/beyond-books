@@ -3,8 +3,7 @@
  * AgX tone mapping, image-based lighting, ambient occlusion and soft shadows.
  * Everything here is generated locally — no HDRI or other files are fetched at runtime.
  */
-import { PerformanceMonitor } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
@@ -12,7 +11,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 import { explodedBounds } from "@/features/three-d/library/runtime/explode";
-import { QUALITY, type QualityTier } from "@/features/three-d/library/runtime/quality";
+import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/library/runtime/quality";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
 
 /** Soft studio lighting from three's RoomEnvironment, prefiltered on the GPU. */
@@ -56,7 +55,13 @@ export function RendererToneMapping({ enabled }: { enabled: boolean }) {
   return null;
 }
 
-/** Key, fill and rim lights. The key light casts soft shadows on the high tier. */
+/**
+ * Key, fill and rim lights. The key light casts soft shadows on medium and high.
+ *
+ * The shadow map is not redrawn every frame: with millions of triangles that would double the
+ * geometry cost. It is redrawn only while something moves (explode easing, a playing animation,
+ * procedural motion) or the visible set changes.
+ */
 export function StudioLights({
   runtime,
   tier,
@@ -67,7 +72,17 @@ export function StudioLights({
   ready: boolean;
 }) {
   const key = useRef<THREE.DirectionalLight>(null);
+  const gl = useThree((s) => s.gl);
   const shadows = QUALITY[tier].shadows;
+  const lastKey = useRef("");
+
+  useEffect(() => {
+    gl.shadowMap.autoUpdate = false;
+    gl.shadowMap.needsUpdate = true;
+    return () => {
+      gl.shadowMap.autoUpdate = true;
+    };
+  }, [gl]);
 
   // fit the shadow camera to the scene, exploded or not, so shadows stay sharp
   useEffect(() => {
@@ -92,8 +107,19 @@ export function StudioLights({
     light.shadow.bias = -0.0004;
     light.shadow.normalBias = b.radius * 0.004;
     light.shadow.radius = 4;
-    light.shadow.needsUpdate = true;
-  }, [runtime, ready, shadows]);
+    gl.shadowMap.needsUpdate = true;
+  }, [runtime, ready, shadows, gl]);
+
+  useFrame(() => {
+    if (!shadows) return;
+    const rt = runtime.current;
+    const playing = rt.runner?.position.status === "playing";
+    const sig = `${rt.explode.toFixed(4)}|${[...rt.hidden].join(",")}|${rt.frame.stepNumber ?? ""}`;
+    if (playing || rt.animatedScene || sig !== lastKey.current) {
+      lastKey.current = sig;
+      gl.shadowMap.needsUpdate = true;
+    }
+  });
 
   return (
     <>
@@ -112,14 +138,16 @@ export function StudioLights({
   );
 }
 
-/** AO + anti-aliasing + AgX, and a little bloom for emissive parts on high. */
+/**
+ * AO + SMAA + bloom (emissive parts only) + AgX. The pass chain is identical on medium and
+ * high, so a tier change only updates N8AO's sample preset on the live pass — no rebuild.
+ */
 export function PostEffects({ runtime, tier }: { runtime: RefObject<ViewerRuntime>; tier: QualityTier }) {
   const q = QUALITY[tier];
-  if (!q.postprocessing) return null;
   const radius = explodedBounds(runtime.current.bounds, {}, 0).radius;
+  if (!q.postprocessing) return null;
   return (
-    // keyed by tier: N8AO crashes if halfRes/quality change on a live pass, so rebuild instead
-    <EffectComposer key={tier} multisampling={q.multisampling} enableNormalPass={false}>
+    <EffectComposer multisampling={0} enableNormalPass={false}>
       <N8AO
         // N8AO's auto "transparencyAware" mode crashes (missing render targets) on scenes with
         // many blended materials. GLTFLoader already disables depthWrite on BLEND materials,
@@ -130,21 +158,41 @@ export function PostEffects({ runtime, tier }: { runtime: RefObject<ViewerRuntim
         }}
         // halfRes is avoided: N8AO never creates its downsample target when it starts half-res
         halfRes={false}
-        quality={q.ambientOcclusion === "full" ? "high" : "performance"}
+        quality={q.aoQuality}
         aoRadius={radius * 0.18}
         distanceFalloff={radius * 0.08}
         intensity={3}
         color="black"
       />
-      {q.bloom ? <Bloom mipmapBlur luminanceThreshold={4} luminanceSmoothing={0.2} intensity={0.25} /> : <></>}
-      {q.multisampling === 0 ? <SMAA /> : <></>}
+      <Bloom mipmapBlur luminanceThreshold={4} luminanceSmoothing={0.2} intensity={0.25} />
+      <SMAA />
       <ToneMapping mode={ToneMappingMode.AGX} />
     </EffectComposer>
   );
 }
 
-/** Steps "auto" quality down when the device can't keep up. */
+/**
+ * Steps "auto" quality down only after a sustained low frame rate while the view is actually
+ * rendering. With on-demand rendering an idle view draws no frames, so gaps between frames
+ * are ignored instead of being read as a low frame rate (drei's PerformanceMonitor does that).
+ * Mounted a few seconds after the model is ready, so load-time hitches don't count.
+ */
 export function QualityMonitor({ enabled, onDecline }: { enabled: boolean; onDecline: () => void }) {
-  if (!enabled) return null;
-  return <PerformanceMonitor flipflops={2} onDecline={onDecline} />;
+  const acc = useRef({ time: 0, frames: 0, declines: 0 });
+  useFrame((_, delta) => {
+    if (!enabled) return;
+    const a = acc.current;
+    if (delta > 0.25) return; // idle gap or tab switch, not a slow frame
+    a.time += delta;
+    a.frames += 1;
+    if (a.time * 1000 < AUTO_QUALITY.sampleMs * AUTO_QUALITY.iterations) return;
+    const fps = a.frames / a.time;
+    a.time = 0;
+    a.frames = 0;
+    if (fps < AUTO_QUALITY.minFps && a.declines < 2) {
+      a.declines += 1;
+      onDecline();
+    }
+  });
+  return null;
 }

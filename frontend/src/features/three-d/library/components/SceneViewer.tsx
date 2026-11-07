@@ -114,7 +114,8 @@ function ViewerBody({
     rt.showLabels = showLabels;
     rt.explodeTarget = explode;
     rt.reducedMotion = reducedMotion;
-  }, [runner, selected, hidden, showLabels, explode, reducedMotion]);
+    rt.invalidate();
+  }, [runner, selected, hidden, showLabels, explode, reducedMotion, snapshot]);
 
   // learning events
   const lastEvent = useRef<string>("");
@@ -183,6 +184,7 @@ function ViewerBody({
         onExplode={(v) => {
           setExplode(v);
           runtime.current.explodeTarget = v;
+          runtime.current.invalidate();
         }}
         onExplodeCommit={() => {
           fit();
