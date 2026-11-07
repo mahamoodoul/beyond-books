@@ -75,9 +75,13 @@ Don't use `join`/`flatten`/`simplify` on the whole file: they can merge or renam
 scene depends on. Compression (`meshopt`, Draco, KTX2) needs matching decoders in the renderer;
 agree that in an ADR before turning it on.
 
-**Proposed budgets per asset** (enforced in `scripts/validate_asset.py`): ≤ 150k triangles,
-≤ 15 MB, textures ≤ 2048². For a full-body anatomy scene, apply the budget per body system and
+**Proposed budgets per asset** (enforced in `scripts/validate_asset.py`): ≤ 3M triangles and
+≤ 64 MB (raised from 150k / 15 MB for high-detail Blender assets; needs team sign-off and testing
+on student devices and school networks — prefer the lightest variant that teaches the concept), textures ≤ 2048². For a full-body anatomy scene, apply the budget per body system and
 load systems lazily (design §7.7).
+
+**Storage:** all `.glb` files are tracked with Git LFS (`.gitattributes`). After cloning, run
+`git lfs install && git lfs pull`; CI checks out with `lfs: true`.
 
 ### 5. Validate
 
@@ -128,6 +132,8 @@ Built by `scripts/build_demo_assets.py`, checked by `scripts/check_demo_assets.s
 |---|---|---|---|
 | `human_heart_v1` | 4 chambers, aorta, pulmonary trunk, venae cavae, pulmonary veins + 2 flow paths | 20.7k | `scene_heart_01` + `blood_flow_01` (existing), `scene_heart_02` + `double_circulation_01` |
 | `plant_cell_v1` | wall, membrane, vacuole, nucleus, chloroplasts, mitochondria | 10.2k | `scene_plant_cell_01` + `plant_cell_tour_01` |
+| `plant_cell_v2` | 12 parts incl. ER, Golgi, ribosomes, peroxisomes, cytoskeleton; authored explode offsets + label anchors. Modelled in Blender (`source/plant_cell_v2.blend`), metadata from `scripts/write_asset_metadata.py` | 495.0k | `scene_plant_cell_02` + `plant_cell_tour_01` |
+| `plant_cell_v3` | Same model as v2 at high detail (export profile `v3` in the .blend's `export_web.py`), 58.7 MB uncompressed, stored in Git LFS | 2.53M | `scene_plant_cell_03` + `plant_cell_tour_01` |
 | `water_molecule_v1` | O, 2×H, 2 bonds (O–H 0.958 Å, 104.45°) | 4.2k | `scene_water_molecule_01` + `water_shape_01` |
 
 They are **schematic placeholders** (`review_status: draft_unreviewed`,

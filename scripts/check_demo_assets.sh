@@ -15,6 +15,12 @@ P=packages/demo-assets/previews
 "$PY" scripts/validate_asset.py $M/plant_cell_v1.json \
   --scene $F/scene_plant_cell_01.json --animation $F/animation_plant_cell_tour_01.json \
   --preview $P/plant_cell_v1.png
+"$PY" scripts/validate_asset.py $M/plant_cell_v2.json \
+  --scene $F/scene_plant_cell_02.json --animation $F/animation_plant_cell_tour_01.json \
+  --preview $P/plant_cell_v2.png
+"$PY" scripts/validate_asset.py $M/plant_cell_v3.json \
+  --scene $F/scene_plant_cell_03.json --animation $F/animation_plant_cell_tour_01.json \
+  --preview $P/plant_cell_v3.png
 "$PY" scripts/validate_asset.py $M/water_molecule_v1.json \
   --scene $F/scene_water_molecule_01.json --animation $F/animation_water_shape_01.json \
   --preview $P/water_molecule_v1.png

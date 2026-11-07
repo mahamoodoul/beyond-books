@@ -21,6 +21,7 @@ from app.integrations.interfaces import (
 from app.modules.ai_engine import retrieval
 from app.modules.ai_engine.llm import get_llm_provider
 from app.modules.ai_engine.models import AIOutputVersion, AIUsageRecord
+from app.modules.ai_engine.prompting import teacher_instructions
 from app.modules.ai_engine.prompts import (
     DOCUMENT_ANALYSIS,
     LESSON_GENERATION,
@@ -198,7 +199,7 @@ def _chapter_task(db: Session, chapter: Chapter) -> str:
         lines.append(f"Description: {chapter.description}")
     if objectives:
         lines.append("Learning objectives:\n" + "\n".join(f"- {o}" for o in objectives))
-    return "\n".join(lines)
+    return "\n".join(lines) + teacher_instructions(chapter.ai_instructions)
 
 
 @handler(JobType.LESSON_GENERATION)

@@ -17,13 +17,16 @@
   "dependencies": {
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
     "@tanstack/react-query": "^5.107.1",
     "mind-ar": "^1.2.5",
+    "postprocessing": "^6.39.6",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-markdown": "^10.1.0",
     "react-router": "^8.5.1",
-    "three": "^0.187.0"
+    "three": "^0.187.0",
+    "three-mesh-bvh": "^0.8.3"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",

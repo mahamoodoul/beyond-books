@@ -32,8 +32,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
-MAX_TRIANGLES = 150_000  # per asset, pilot budget for student laptops / tablets
-MAX_BYTES = 15 * 1024 * 1024
+MAX_TRIANGLES = 3_000_000  # per asset; raised from 150k for high-detail Blender assets (needs team sign-off)
+MAX_BYTES = 64 * 1024 * 1024  # raised from 15 MB with the triangle budget (uncompressed GLB)
 COMPONENT_TYPES = {
     5120: np.int8,
     5121: np.uint8,

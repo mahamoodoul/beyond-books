@@ -79,7 +79,10 @@ export function AnimationTimeline({
             disabled={!runner}
             onClick={() => (playing ? runner?.pause() : runner?.play())}
           >
-            {playing ? "Pause" : snapshot.status === "paused" ? "Resume" : "Play"}
+            {/* colour on a span: the app's unlayered `button { color: inherit }` beats utilities */}
+            <span className="text-white">
+              {playing ? "Pause" : snapshot.status === "paused" ? "Resume" : "Play"}
+            </span>
           </button>
           <button type="button" className={ghost} disabled={!runner} onClick={() => runner?.stepForward()} aria-label="Next step">
             ▶

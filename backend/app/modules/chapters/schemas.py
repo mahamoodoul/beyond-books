@@ -39,6 +39,7 @@ class ChapterUpdate(BaseModel):
     position: int | None = Field(default=None, ge=1)
     status: PublishStatus | None = None
     source_refs: list[ChapterSourceRef] | None = Field(default=None, max_length=20)
+    ai_instructions: str | None = Field(default=None, max_length=2000)
 
 
 class ChapterOut(BaseModel):
@@ -55,4 +56,6 @@ class ChapterOut(BaseModel):
 
 
 class ChapterDetail(ChapterOut):
+    # The teacher's chapter prompt; only returned to people who can manage the chapter.
+    ai_instructions: str = ""
     objectives: list[ObjectiveOut] = []

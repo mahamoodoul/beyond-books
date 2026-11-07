@@ -89,6 +89,10 @@ def _reorder(db: Session, chapter: Chapter, new_position: int) -> None:
 def update_chapter(db: Session, user: User, chapter_id: uuid.UUID, body: ChapterUpdate) -> Chapter:
     chapter = get_chapter_for(db, user, chapter_id, manage=True)
     changes = body.model_dump(exclude_unset=True)
+    if changes.get("ai_instructions") is None:
+        changes.pop("ai_instructions", None)
+    else:
+        changes["ai_instructions"] = changes["ai_instructions"].strip()
     if "position" in changes:
         _reorder(db, chapter, changes.pop("position"))
     if body.source_refs is not None:

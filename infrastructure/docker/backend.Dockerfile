@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir -e ".${EXTRAS}"
 
 COPY backend/alembic.ini ./
 COPY backend/migrations ./migrations
+COPY --chmod=755 infrastructure/docker/api-start.sh /usr/local/bin/api-start
 COPY backend/tests ./tests
 
 RUN useradd --create-home appuser && mkdir -p /data && chown appuser /data
