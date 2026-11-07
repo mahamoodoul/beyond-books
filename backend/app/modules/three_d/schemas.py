@@ -132,7 +132,8 @@ class GeneratorOut(BaseModel):
 
 class GenerationRequest(BaseModel):
     name: str = Field(min_length=1, max_length=200)
-    prompt: str = Field(min_length=5, max_length=500)
+    prompt: str = Field(min_length=5, max_length=2000)
+    provider: str | None = Field(default=None, max_length=40, description="Default if omitted")
     subject: str | None = Field(default=None, max_length=80)
     school_id: uuid.UUID | None = None
 
@@ -141,3 +142,9 @@ class GenerationResponse(BaseModel):
     asset: "AssetOut"
     job_id: uuid.UUID
     job_status: str
+
+
+class ThreeDProviderOut(BaseModel):
+    name: str
+    description: str
+    is_default: bool

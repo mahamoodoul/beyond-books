@@ -89,8 +89,8 @@ class MeshyProvider(_UnverifiedProvider):
 FAKE_PROVIDER = FakeThreeDProvider()
 
 
-def get_three_d_provider() -> ThreeDGenerationProvider:
-    """The configured 3D provider (EDU3D_THREE_D_PROVIDER), built via the provider registry."""
+def get_three_d_provider(name: str | None = None) -> ThreeDGenerationProvider:
+    """The configured 3D provider (EDU3D_THREE_D_PROVIDER) or a named one, via the registry."""
     from app.integrations.providers import build_three_d
 
-    return build_three_d(get_settings())
+    return build_three_d(get_settings(), name)

@@ -87,6 +87,10 @@ class ThreeDTask:
     credits_used: float | None = None
     error_code: str | None = None
     transient_error: bool = False
+    # Optional extras: token usage when the provider is LLM-backed, and part metadata
+    # (labels/descriptions) to store with the asset version.
+    llm_usage: "LLMUsage | None" = None
+    part_metadata: list[dict[str, str]] | None = None
 
 
 class ThreeDGenerationProvider(Protocol):

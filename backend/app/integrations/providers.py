@@ -67,9 +67,11 @@ def build_llm(settings: "Settings") -> "LLMProvider":
     return provider
 
 
-def build_three_d(settings: "Settings") -> "ThreeDGenerationProvider":
-    spec = get_spec("three_d", settings.three_d_provider)
-    assert spec is not None, "validated at startup"
+def build_three_d(settings: "Settings", name: str | None = None) -> "ThreeDGenerationProvider":
+    """Build the default 3D provider, or a specific one chosen per request."""
+    spec = get_spec("three_d", name or settings.three_d_provider)
+    if spec is None or validate("three_d", spec.name, settings):
+        raise ValueError(f"3D provider '{name}' is not available")
     provider: ThreeDGenerationProvider = spec.factory(settings)
     return provider
 
@@ -138,6 +140,12 @@ def _fake_3d(s: "Settings") -> Any:
     return FAKE_PROVIDER
 
 
+def _llm_3d(s: "Settings") -> Any:
+    from app.integrations.three_d.llm_procedural import LLMThreeDProvider
+
+    return LLMThreeDProvider(build_llm(s), s.llm_max_output_tokens)
+
+
 def _tripo(s: "Settings") -> Any:
     from app.integrations.three_d import TripoProvider
 
@@ -162,6 +170,15 @@ register(
 )
 register(
     ProviderSpec(
+        "three_d",
+        "llm",
+        "The configured LLM designs the model from named primitives (rendered by three.js)",
+        (),
+        _llm_3d,
+    )
+)
+register(
+    ProviderSpec(
         "three_d", "tripo", "Tripo (adapter pending API verification)", ("tripo_api_key",), _tripo
     )
 )
@@ -170,3 +187,12 @@ register(
         "three_d", "meshy", "Meshy (adapter pending API verification)", ("meshy_api_key",), _meshy
     )
 )
+
+
+def available(kind: Kind, settings: "Settings") -> list[ProviderSpec]:
+    """Providers whose required settings are present (selectable per request)."""
+    return [
+        spec
+        for (k, n), spec in sorted(_REGISTRY.items())
+        if k == kind and not validate(kind, n, settings)
+    ]

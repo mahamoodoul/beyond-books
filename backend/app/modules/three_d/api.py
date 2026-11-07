@@ -24,6 +24,7 @@ from app.modules.three_d.schemas import (
     SceneCreate,
     SceneOut,
     SceneUpdate,
+    ThreeDProviderOut,
 )
 from app.modules.users.models import User
 
@@ -63,7 +64,12 @@ def generate_asset(body: GenerationRequest, user: Teacher, db: DB) -> Generation
     from app.modules.ai_engine.scene_planning import check_generation_budget, start_generation
 
     check_generation_budget(db, user)
-    provider = get_three_d_provider().name
+    try:
+        provider = get_three_d_provider(body.provider).name
+    except ValueError as exc:
+        from app.core.errors import AppError
+
+        raise AppError(f"3D provider '{body.provider}' is not available.") from exc
     asset = assets.create_asset(
         db,
         user,
@@ -78,7 +84,7 @@ def generate_asset(body: GenerationRequest, user: Teacher, db: DB) -> Generation
     )
     asset.provider = provider
     db.commit()
-    job = start_generation(db, user, asset, body.prompt)
+    job = start_generation(db, user, asset, body.prompt, provider)
     asset = assets.get_asset_for(db, user, asset.id, manage=True)
     return GenerationResponse(
         asset=_asset_out(db, user, asset, with_versions=True), job_id=job.id, job_status=job.status
@@ -129,6 +135,21 @@ def download_url(asset_id: uuid.UUID, n: int, user: CurrentUser, db: DB) -> Down
         url=assets.download_url(db, user, asset_id, n),
         expires_in_s=get_settings().download_url_ttl_s,
     )
+
+
+@router.get("/three-d/providers", response_model=list[ThreeDProviderOut])
+def three_d_providers(user: Teacher) -> list[ThreeDProviderOut]:
+    """3D generation providers that are configured (have their keys) and selectable."""
+    from app.core.config import get_settings
+    from app.integrations import providers
+
+    s = get_settings()
+    return [
+        ThreeDProviderOut(
+            name=p.name, description=p.description, is_default=p.name == s.three_d_provider
+        )
+        for p in providers.available("three_d", s)
+    ]
 
 
 @router.get("/three-d/generators", response_model=list[GeneratorOut])

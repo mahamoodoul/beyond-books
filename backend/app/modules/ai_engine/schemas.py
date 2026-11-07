@@ -144,3 +144,20 @@ class EvaluationLLM(BaseModel):
 class ExplainLLM(BaseModel):
     explanation: str
     revision_section_title: str
+
+
+class ModelPartLLM(BaseModel):
+    name: str
+    label: str
+    shape: Literal["box", "sphere", "ellipsoid", "cylinder", "cone", "torus", "capsule"]
+    size: list[float]
+    position: list[float]
+    rotation_deg: list[float]
+    color: str
+    opacity: float
+    description: str
+
+
+class Model3DLLM(BaseModel):
+    title: str
+    parts: list[ModelPartLLM]

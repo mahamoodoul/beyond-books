@@ -281,7 +281,9 @@ def check_generation_budget(db: Session, user: User) -> None:
         raise GenerationBudgetError()
 
 
-def start_generation(db: Session, user: User, asset: ThreeDAsset, prompt: str) -> Job:
+def start_generation(
+    db: Session, user: User, asset: ThreeDAsset, prompt: str, provider: str | None = None
+) -> Job:
     check_generation_budget(db, user)
     job = create_job(
         db,
@@ -290,7 +292,7 @@ def start_generation(db: Session, user: User, asset: ThreeDAsset, prompt: str) -
         target_id=asset.id,
         requested_by=user.id,
         school_id=asset.owner_school_id,
-        input_snapshot={"prompt": prompt},
+        input_snapshot={"prompt": prompt, "provider": provider},
     )
     audit.record(
         db,
@@ -310,7 +312,10 @@ def generate_asset(db: Session, job: Job) -> dict[str, Any]:
     asset = db.get(ThreeDAsset, job.target_id)
     if asset is None:
         raise PermanentJobError("ASSET_MISSING", "The asset no longer exists.")
-    provider = get_three_d_provider()
+    try:
+        provider = get_three_d_provider(job.input_snapshot.get("provider"))
+    except ValueError as exc:
+        raise PermanentJobError("PROVIDER_UNAVAILABLE", str(exc)) from exc
     job.provider = provider.name
     try:
         if job.provider_task_id is None:
@@ -368,16 +373,19 @@ def _store_output(
         register_version_bytes(asset, v, data)
     except InvalidAssetError as exc:
         raise PermanentJobError("INVALID_MODEL", f"Provider output rejected: {exc}") from exc
+    if task.part_metadata:  # labels/descriptions → explanations when a scene is created
+        v.metadata_json = {**v.metadata_json, "parts": task.part_metadata}
     get_storage().put_bytes(v.storage_key, data, GLB_MIME)
+    u = task.llm_usage  # LLM-backed providers report tokens; vendors report credits
     db.add(
         AIUsageRecord(
             job_id=job.id,
             course_id=None,
-            provider=provider_name,
-            model="3d",
-            provider_request_id=task.provider_task_id,
-            input_tokens=0,
-            output_tokens=0,
+            provider=u.provider if u else provider_name,
+            model=u.model if u else "3d",
+            provider_request_id=(u.provider_request_id if u else None) or task.provider_task_id,
+            input_tokens=u.input_tokens if u else 0,
+            output_tokens=u.output_tokens if u else 0,
             credits_used=task.credits_used,
         )
     )

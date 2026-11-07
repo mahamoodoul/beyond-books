@@ -19,6 +19,8 @@ from app.modules.ai_engine.schemas import (
     ExplainLLM,
     GeneratorParamLLM,
     LessonLLM,
+    Model3DLLM,
+    ModelPartLLM,
     OptionLLM,
     OutlineChapterLLM,
     OutlineLLM,
@@ -64,6 +66,7 @@ class FakeLLMProvider:
             AssessmentLLM: self._assessment,
             EvaluationLLM: self._evaluation,
             ExplainLLM: self._explain,
+            Model3DLLM: self._model_3d,
         }
         output = builders[output_schema](references, task)
         chars_in = len(system_prompt) + len(task) + sum(len(r.text) for r in references)
@@ -325,3 +328,36 @@ class FakeLLMProvider:
         return ExplainLLM(
             explanation=" ".join(sents) or first.text[:400], revision_section_title=title
         )
+
+    def _model_3d(self, refs: list[ReferencePassage], task: str) -> Model3DLLM:
+        words = [w.lower() for w in re.findall(r"[A-Za-z]{4,}", task.split(":", 1)[-1])][:3] or [
+            "object"
+        ]
+        parts = [
+            ModelPartLLM(
+                name="body",
+                label="Body",
+                shape="ellipsoid",
+                size=[1.2, 0.9, 0.9],
+                position=[0, 0, 0],
+                rotation_deg=[0, 0, 0],
+                color="#6688cc",
+                opacity=0.5,
+                description="The outer body of the model.",
+            )
+        ]
+        for i, w in enumerate(words):
+            parts.append(
+                ModelPartLLM(
+                    name=w,
+                    label=w.capitalize(),
+                    shape=["sphere", "box", "cylinder"][i % 3],
+                    size=[0.3, 0.4, 0.3],
+                    position=[-0.6 + 0.6 * i, 0, 0],
+                    rotation_deg=[0, 0, 0],
+                    color=["#cc4444", "#44aa66", "#ddaa33"][i % 3],
+                    opacity=1,
+                    description=f"The {w} part of the model.",
+                )
+            )
+        return Model3DLLM(title=" ".join(words), parts=parts)
