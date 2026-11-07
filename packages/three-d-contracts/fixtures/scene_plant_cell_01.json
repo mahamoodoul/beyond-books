@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "scene_id": "scene_plant_cell_01",
-  "title": "Inside a Plant Cell",
+  "title": "Inside a Plant Cell (simple)",
   "learning_objective_ids": [
     "lo_cell_01"
   ],

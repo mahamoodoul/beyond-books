@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_plant_cell_03",
+  "title": "Inside a Plant Cell (high detail)",
+  "learning_objective_ids": [
+    "lo_cell_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "plant_cell_v3",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "three_quarter",
+    "min_distance": 3,
+    "max_distance": 40
+  },
+  "components": [
+    {
+      "component_id": "cell_wall",
+      "mesh_name": "cell_wall",
+      "label": "Cell wall",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_cell_wall"
+    },
+    {
+      "component_id": "cell_membrane",
+      "mesh_name": "cell_membrane",
+      "label": "Cell membrane",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_cell_membrane"
+    },
+    {
+      "component_id": "central_vacuole",
+      "mesh_name": "central_vacuole",
+      "label": "Central vacuole",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_central_vacuole"
+    },
+    {
+      "component_id": "nucleus",
+      "mesh_name": "nucleus",
+      "label": "Nucleus",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_nucleus"
+    },
+    {
+      "component_id": "chloroplasts",
+      "mesh_name": "chloroplasts",
+      "label": "Chloroplasts",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_chloroplasts"
+    },
+    {
+      "component_id": "mitochondria",
+      "mesh_name": "mitochondria",
+      "label": "Mitochondria",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_mitochondria"
+    },
+    {
+      "component_id": "rough_er",
+      "mesh_name": "rough_er",
+      "label": "Rough ER",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_rough_er"
+    },
+    {
+      "component_id": "smooth_er",
+      "mesh_name": "smooth_er",
+      "label": "Smooth ER",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_smooth_er"
+    },
+    {
+      "component_id": "golgi_apparatus",
+      "mesh_name": "golgi_apparatus",
+      "label": "Golgi apparatus",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_golgi_apparatus"
+    },
+    {
+      "component_id": "ribosomes",
+      "mesh_name": "ribosomes",
+      "label": "Ribosomes",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_ribosomes"
+    },
+    {
+      "component_id": "peroxisomes",
+      "mesh_name": "peroxisomes",
+      "label": "Peroxisomes",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_peroxisomes"
+    },
+    {
+      "component_id": "cytoskeleton",
+      "mesh_name": "cytoskeleton",
+      "label": "Cytoskeleton",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_cytoskeleton"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "plant_cell_tour_01"
+  ]
+}

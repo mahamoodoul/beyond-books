@@ -17,6 +17,9 @@ REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "packages" / "three-d-contracts" / "fixtures"
 ASSETS = REPO / "packages" / "demo-assets"
 
+# GLBs too large for git: validated when present, skipped otherwise (see .gitignore)
+LOCAL_ONLY = {"plant_cell_v3"}
+
 # asset_id -> (scene fixtures, animation fixtures)
 CASES = {
     "human_heart_v1": (
@@ -24,6 +27,8 @@ CASES = {
         ["animation_blood_flow_01.json", "animation_double_circulation_01.json"],
     ),
     "plant_cell_v1": (["scene_plant_cell_01.json"], ["animation_plant_cell_tour_01.json"]),
+    "plant_cell_v2": (["scene_plant_cell_02.json"], ["animation_plant_cell_tour_01.json"]),
+    "plant_cell_v3": (["scene_plant_cell_03.json"], ["animation_plant_cell_tour_01.json"]),
     "water_molecule_v1": (
         ["scene_water_molecule_01.json"],
         ["animation_water_shape_01.json"],
@@ -44,6 +49,8 @@ def gltf_json(path: Path) -> dict:  # type: ignore[type-arg]
 def test_demo_asset_matches_metadata_and_fixtures(asset_id: str) -> None:
     meta = json.loads((ASSETS / "metadata" / f"{asset_id}.json").read_text())
     glb = ASSETS / "glb" / f"{asset_id}.glb"
+    if asset_id in LOCAL_ONLY and not glb.exists():
+        pytest.skip(f"{glb.name} is not committed (too large); export it from the .blend")
     raw = glb.read_bytes()
     assert meta["content_hash"] == "sha256:" + hashlib.sha256(raw).hexdigest()
     assert meta["size_bytes"] == len(raw)
