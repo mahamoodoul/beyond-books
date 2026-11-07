@@ -8,9 +8,10 @@ import { ChaptersPanel } from "@/features/chapters/ChaptersPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
 import { useCourse, useUpdateCourse } from "./api";
+import { ProgressPanel } from "./ProgressPanel";
 import { StudentsPanel } from "./StudentsPanel";
 
-const TABS = ["Sources & outline", "Chapters", "Students"] as const;
+const TABS = ["Sources & outline", "Chapters", "Students", "Progress"] as const;
 type Tab = (typeof TABS)[number];
 
 export function CoursePage() {
@@ -55,6 +56,7 @@ export function CoursePage() {
         )}
         {tab === "Chapters" && <ChaptersPanel courseId={courseId} />}
         {tab === "Students" && <StudentsPanel courseId={courseId} />}
+        {tab === "Progress" && <ProgressPanel courseId={courseId} />}
       </div>
     </>
   );

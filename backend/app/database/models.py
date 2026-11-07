@@ -10,6 +10,7 @@ from app.modules.documents.models import DocumentChunk, DocumentPage, SourceDocu
 from app.modules.lessons.models import Lesson, LessonVersion
 from app.modules.operations.models import AuditLog, Job
 from app.modules.organizations.models import School, SchoolMembership
+from app.modules.progress.models import ChapterProgress, LearningEvent, LessonProgress
 from app.modules.three_d.models import (
     ThreeDAnimation,
     ThreeDAsset,
@@ -23,6 +24,9 @@ __all__ = [
     "AIUsageRecord",
     "AuditLog",
     "AuthSession",
+    "ChapterProgress",
+    "LearningEvent",
+    "LessonProgress",
     "Base",
     "Chapter",
     "Classroom",

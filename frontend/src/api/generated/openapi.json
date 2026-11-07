@@ -1206,6 +1206,116 @@
         "title": "CourseOut",
         "type": "object"
       },
+      "CourseOutline": {
+        "properties": {
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "chapters": {
+            "items": {
+              "$ref": "#/components/schemas/OutlineChapter"
+            },
+            "title": "Chapters",
+            "type": "array"
+          },
+          "completed_lessons": {
+            "title": "Completed Lessons",
+            "type": "integer"
+          },
+          "course_id": {
+            "format": "uuid",
+            "title": "Course Id",
+            "type": "string"
+          },
+          "next_lesson_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Lesson Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "total_lessons": {
+            "title": "Total Lessons",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "course_id",
+          "title",
+          "can_manage",
+          "completed_lessons",
+          "total_lessons",
+          "next_lesson_id",
+          "chapters"
+        ],
+        "title": "CourseOutline",
+        "type": "object"
+      },
+      "CourseProgressSummary": {
+        "properties": {
+          "completed_lessons": {
+            "title": "Completed Lessons",
+            "type": "integer"
+          },
+          "course_id": {
+            "format": "uuid",
+            "title": "Course Id",
+            "type": "string"
+          },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          },
+          "next_lesson_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Lesson Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "total_lessons": {
+            "title": "Total Lessons",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "course_id",
+          "title",
+          "completed_lessons",
+          "total_lessons",
+          "last_activity_at",
+          "next_lesson_id"
+        ],
+        "title": "CourseProgressSummary",
+        "type": "object"
+      },
       "CourseStatus": {
         "enum": [
           "draft",
@@ -1481,6 +1591,99 @@
           "enrolled_at"
         ],
         "title": "EnrollmentOut",
+        "type": "object"
+      },
+      "EventBatch": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventIn"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "events"
+        ],
+        "title": "EventBatch",
+        "type": "object"
+      },
+      "EventIn": {
+        "properties": {
+          "animation_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Animation Id"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          },
+          "event_type": {
+            "enum": [
+              "lesson_opened",
+              "scene_opened",
+              "component_selected",
+              "animation_started",
+              "animation_completed"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "scene_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scene Id"
+          }
+        },
+        "required": [
+          "event_type",
+          "lesson_id"
+        ],
+        "title": "EventIn",
+        "type": "object"
+      },
+      "EventResult": {
+        "properties": {
+          "recorded": {
+            "title": "Recorded",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "recorded"
+        ],
+        "title": "EventResult",
         "type": "object"
       },
       "FlowParticlesStep": {
@@ -1982,6 +2185,38 @@
         "title": "LessonOut",
         "type": "object"
       },
+      "LessonProgressOut": {
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lesson_id",
+          "status",
+          "completed_at"
+        ],
+        "title": "LessonProgressOut",
+        "type": "object"
+      },
       "LessonSection": {
         "additionalProperties": false,
         "properties": {
@@ -2274,6 +2509,53 @@
         "title": "ObjectiveOut",
         "type": "object"
       },
+      "OutlineChapter": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lessons": {
+            "items": {
+              "$ref": "#/components/schemas/OutlineLesson"
+            },
+            "title": "Lessons",
+            "type": "array"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "string"
+          },
+          "published": {
+            "title": "Published",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "position",
+          "published",
+          "progress",
+          "lessons"
+        ],
+        "title": "OutlineChapter",
+        "type": "object"
+      },
       "OutlineChapterIn": {
         "properties": {
           "description": {
@@ -2309,6 +2591,40 @@
           "title"
         ],
         "title": "OutlineChapterIn",
+        "type": "object"
+      },
+      "OutlineLesson": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "string"
+          },
+          "published": {
+            "title": "Published",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "position",
+          "published",
+          "progress"
+        ],
+        "title": "OutlineLesson",
         "type": "object"
       },
       "OutlineProposalOut": {
@@ -2451,6 +2767,23 @@
           "generator"
         ],
         "title": "ProceduralSource",
+        "type": "object"
+      },
+      "ProgressUpdate": {
+        "properties": {
+          "status": {
+            "enum": [
+              "in_progress",
+              "completed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ProgressUpdate",
         "type": "object"
       },
       "PublishStatus": {
@@ -3214,6 +3547,58 @@
           "page"
         ],
         "title": "SourceRef",
+        "type": "object"
+      },
+      "StudentProgressRow": {
+        "properties": {
+          "completed_chapters": {
+            "title": "Completed Chapters",
+            "type": "integer"
+          },
+          "completed_lessons": {
+            "title": "Completed Lessons",
+            "type": "integer"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "total_lessons": {
+            "title": "Total Lessons",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "student_id",
+          "display_name",
+          "email",
+          "completed_lessons",
+          "total_lessons",
+          "completed_chapters",
+          "last_activity_at"
+        ],
+        "title": "StudentProgressRow",
         "type": "object"
       },
       "TextDocumentRequest": {
@@ -5281,6 +5666,96 @@
         ]
       }
     },
+    "/api/v1/courses/{course_id}/outline": {
+      "get": {
+        "operationId": "outline_api_v1_courses__course_id__outline_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseOutline"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Outline",
+        "tags": [
+          "progress"
+        ]
+      }
+    },
+    "/api/v1/courses/{course_id}/progress": {
+      "get": {
+        "operationId": "course_progress_api_v1_courses__course_id__progress_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StudentProgressRow"
+                  },
+                  "title": "Response Course Progress Api V1 Courses  Course Id  Progress Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Course Progress",
+        "tags": [
+          "progress"
+        ]
+      }
+    },
     "/api/v1/courses/{course_id}/students": {
       "get": {
         "operationId": "list_students_api_v1_courses__course_id__students_get",
@@ -5626,6 +6101,47 @@
         ]
       }
     },
+    "/api/v1/learning-events": {
+      "post": {
+        "operationId": "events_api_v1_learning_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Events",
+        "tags": [
+          "progress"
+        ]
+      }
+    },
     "/api/v1/lessons/{lesson_id}": {
       "delete": {
         "operationId": "delete_lesson_api_v1_lessons__lesson_id__delete",
@@ -5856,6 +6372,67 @@
         "summary": "Regenerate Section",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/progress": {
+      "post": {
+        "operationId": "set_progress_api_v1_lessons__lesson_id__progress_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgressUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/LessonProgressOut"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Set Progress Api V1 Lessons  Lesson Id  Progress Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Progress",
+        "tags": [
+          "progress"
         ]
       }
     },
@@ -6737,6 +7314,31 @@
         "summary": "Add Member",
         "tags": [
           "schools"
+        ]
+      }
+    },
+    "/api/v1/students/me/progress": {
+      "get": {
+        "operationId": "my_progress_api_v1_students_me_progress_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CourseProgressSummary"
+                  },
+                  "title": "Response My Progress Api V1 Students Me Progress Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Progress",
+        "tags": [
+          "progress"
         ]
       }
     },

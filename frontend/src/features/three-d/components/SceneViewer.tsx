@@ -41,13 +41,34 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string; height?: number }) {
+export interface SceneEvent {
+  event_type: "scene_opened" | "component_selected" | "animation_started" | "animation_completed";
+  component_id?: string;
+  animation_id?: string;
+}
+
+export default function SceneViewer({
+  sceneId,
+  height = 520,
+  onEvent,
+}: {
+  sceneId: string;
+  height?: number;
+  onEvent?: (e: SceneEvent) => void;
+}) {
   const resolved = useQuery({
     queryKey: ["scene-resolved", sceneId],
     queryFn: () => api.get<ResolvedScene>(`/scenes/${sceneId}/resolved`),
     staleTime: 5 * 60_000, // signed URLs last 10 minutes
   });
-  const [selected, setSelected] = useState<SceneComponent | null>(null);
+  const [selected, setSelectedRaw] = useState<SceneComponent | null>(null);
+  const setSelected = (c: SceneComponent | null) => {
+    setSelectedRaw(c);
+    if (c) onEvent?.({ event_type: "component_selected", component_id: c.component_id });
+  };
+  useEffect(() => {
+    onEvent?.({ event_type: "scene_opened" });
+  }, [sceneId]);
   const [loadedNames, setLoadedNames] = useState<Set<string>>(new Set());
   const reducedMotion = usePrefersReducedMotion();
   const box = useRef<HTMLDivElement>(null);
@@ -74,7 +95,9 @@ export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string
   const animations = data.animations ?? [];
   const animation = animIdx !== null ? animations[animIdx] : undefined;
   const startAnimation = (i: number) => {
-    setSelected(null);
+    setSelectedRaw(null);
+    const a = animations[i];
+    if (a) onEvent?.({ event_type: "animation_started", animation_id: a.animation_id });
     setAnimIdx(i);
     setStep(0);
     setPlaying(!reducedMotion);
@@ -82,7 +105,10 @@ export default function SceneViewer({ sceneId, height = 520 }: { sceneId: string
   const onStepComplete = () => {
     if (!animation) return;
     if (step < animation.steps.length - 1) setStep(step + 1);
-    else setPlaying(false);
+    else {
+      setPlaying(false);
+      onEvent?.({ event_type: "animation_completed", animation_id: animation.animation_id });
+    }
   };
   const explanation = selected?.explanation_ref ? data.spec.explanations?.[selected.explanation_ref] : undefined;
 
