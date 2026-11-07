@@ -30,7 +30,7 @@ export function RegisterPage() {
   const busy = register.isPending || login.isPending;
 
   return (
-    <Card className="mx-auto max-w-md">
+    <Card className="auth-register">
       <h1 className="mb-4 text-xl font-semibold">Create account</h1>
       <form onSubmit={submit} className="space-y-4">
         <Field label="Name">

@@ -1,9 +1,5 @@
 import { createBrowserRouter } from "react-router";
 import { appRoutes } from "./appRoutes";
-import { demoRoutes } from "./demoRoutes";
-
-// The demo has its own role and mock data; keep the authenticated app intact.
+// Preserve previously shared /demo links while using the same real API and authentication.
 const isDemo = /^\/demo(?:\/|$)/.test(window.location.pathname);
-export const router = createBrowserRouter(isDemo ? demoRoutes : appRoutes, {
-  basename: isDemo ? "/demo" : "/",
-});
+export const router = createBrowserRouter(appRoutes, { basename: isDemo ? "/demo" : "/" });

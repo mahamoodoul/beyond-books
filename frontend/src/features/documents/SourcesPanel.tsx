@@ -2,40 +2,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { api, ApiError } from "@/api/client";
-import type { DocumentJobResponse, DocumentOut, PageList, UploadUrlResponse } from "@/api/generated/schema";
+import type { DocumentJobResponse, DocumentOut, PageList } from "@/api/generated/schema";
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, Textarea } from "@/components/ui";
 import { useJob } from "@/features/jobs/useJob";
 
-const ACCEPT = { "application/pdf": ".pdf", "text/plain": ".txt", "text/markdown": ".md" } as const;
-type Mime = keyof typeof ACCEPT;
-
-function mimeOf(file: File): Mime | null {
-  if (file.type in ACCEPT) return file.type as Mime;
-  const ext = file.name.toLowerCase().split(".").pop();
-  return ext === "pdf" ? "application/pdf" : ext === "md" ? "text/markdown" : ext === "txt" ? "text/plain" : null;
-}
-
-async function uploadFile(courseId: string, file: File): Promise<DocumentJobResponse> {
-  const mime = mimeOf(file);
-  if (!mime) throw new Error("Only PDF, .txt and .md files are supported.");
-  const { document, upload } = await api.post<UploadUrlResponse>("/documents/upload-url", {
-    course_id: courseId,
-    filename: file.name,
-    mime_type: mime,
-    size_bytes: file.size,
-  });
-  // Same-origin local upload needs the CSRF header; S3 presigned URLs must not get extra headers.
-  const sameOrigin = upload.url.startsWith("/");
-  const res = await fetch(upload.url, {
-    method: upload.method,
-    body: file,
-    headers: { ...upload.headers, ...(sameOrigin ? { "X-Requested-With": "edu3d" } : {}) },
-    credentials: sameOrigin ? "include" : "omit",
-  });
-  if (!res.ok) throw new Error(`Upload failed (${res.status}).`);
-  return api.post<DocumentJobResponse>(`/documents/${document.id}/complete`);
-}
+import { uploadSource } from "@/lib/api";
 
 const statusTone = { ready: "green", failed: "red", processing: "blue", uploaded: "blue", pending_upload: "slate" } as const;
 
@@ -57,7 +29,7 @@ export function SourcesPanel({ courseId }: { courseId: string }) {
     setJobId(r.job.id);
     void qc.invalidateQueries({ queryKey: key });
   };
-  const upload = useMutation({ mutationFn: (f: File) => uploadFile(courseId, f), onSuccess: onDone });
+  const upload = useMutation({ mutationFn: (f: File) => uploadSource(courseId, f), onSuccess: onDone });
   const pasteText = useMutation({
     mutationFn: () => api.post<DocumentJobResponse>("/documents/text", { course_id: courseId, ...paste }),
     onSuccess: (r) => {

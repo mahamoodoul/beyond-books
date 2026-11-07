@@ -57,5 +57,7 @@ jobs:
       - run: npm ci
       - name: Generated types are up to date
         run: npm run contracts:check && npm run api:check
+      - name: Frontend tests
+        run: npm test
       - name: Type check and build
         run: npm run build

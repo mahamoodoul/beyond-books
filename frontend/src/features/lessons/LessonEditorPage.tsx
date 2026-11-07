@@ -27,8 +27,8 @@ export function LessonEditorPage() {
     }
   }, [lesson.data]);
 
-  if (lesson.isPending || !content) return <Loading />;
   if (lesson.error) return <ErrorAlert error={lesson.error} />;
+  if (lesson.isPending || !content) return <Loading />;
   const l = lesson.data;
   const sections = content.sections ?? [];
 
