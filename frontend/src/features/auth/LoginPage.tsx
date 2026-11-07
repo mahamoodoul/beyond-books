@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
+import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ErrorAlert } from "@/components/feedback";
 import { homeFor, useLogin, useMe } from "./auth";
 
@@ -19,7 +20,7 @@ export function LoginPage() {
     login.mutate({ email, password }, { onSuccess: user => navigate(from?.startsWith("/") && !from.startsWith("//") ? from : homeFor(user), { replace: true }) });
   }
   return <main className="login-page">
-    <div className="login-topbar"><Link className="brand" to="/"><span className="brand-mark"><Icon name="layers" size={19} /></span><span>Beyond<span className="brand-light"> Books</span></span></Link>
+    <div className="login-topbar"><Link aria-label="Beyond Books home" className="brand" to="/"><BeyondBooksLogo showWordmark size={72} variant={theme} /></Link>
       <button className="icon-button" aria-label="Toggle colour theme" onClick={toggleTheme}><Icon name={theme === "light" ? "moon" : "sun"} size={18} /></button>
     </div>
     <section aria-labelledby="login-title" className="login-card">
