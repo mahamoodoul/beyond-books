@@ -50,25 +50,11 @@ services:
       timeout: 5s
       retries: 10
 
-  # One-shot: applies Alembic migrations, then exits. api/worker start only after it succeeds.
-  migrate:
-    build: *backend-build
-    restart: "no"
-    # Retry briefly so a just-restarted Postgres doesn't fail the whole deploy.
-    command: >-
-      sh -c 'for i in 1 2 3 4 5 6 7 8 9 10; do
-      alembic upgrade head && exit 0;
-      echo "migrate attempt $$i failed, retrying in 3s"; sleep 3;
-      done; exit 1'
-    environment: *backend-env
-    exclude_from_hc: true  # Coolify: an exited one-shot container shouldn't mark the app unhealthy
-    depends_on:
-      postgres: { condition: service_healthy }
-
   api:
     build: *backend-build
     restart: unless-stopped
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips=*
+    # Runs migrations (with retries, errors visible in this service's logs), then uvicorn.
+    command: api-start
     environment: *backend-env
     expose: ["8000"]
     healthcheck:
@@ -76,9 +62,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 90s
     depends_on:
-      migrate: { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
 
   worker:
@@ -93,7 +79,7 @@ services:
       retries: 3
       start_period: 30s
     depends_on:
-      migrate: { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
 
   frontend:
