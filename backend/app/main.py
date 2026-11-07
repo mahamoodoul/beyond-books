@@ -5,17 +5,29 @@ from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.core.csrf import CSRF_HEADER, CSRFMiddleware
 from app.core.errors import register_error_handlers
+from app.core.hardening import AccessLogMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 from app.core.logging import configure_logging
 from app.core.request_id import REQUEST_ID_HEADER, RequestIdMiddleware
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    configure_logging()
+    configure_logging(fmt=settings.log_format)
 
-    app = FastAPI(title=settings.app_name, version="0.1.0", openapi_url="/api/v1/openapi.json")
-    # Starlette runs the LAST added middleware first: CORS → RequestId → CSRF → routes.
+    docs = settings.expose_api_docs
+    app = FastAPI(
+        title=settings.app_name,
+        version="0.1.0",
+        openapi_url="/api/v1/openapi.json" if docs else None,
+        docs_url="/docs" if docs else None,
+        redoc_url="/redoc" if docs else None,
+    )
+    # Starlette runs the LAST added middleware first:
+    # CORS → RequestId → AccessLog → SecurityHeaders → RateLimit → CSRF → routes.
     app.add_middleware(CSRFMiddleware)
+    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(AccessLogMiddleware)
     app.add_middleware(RequestIdMiddleware)
     app.add_middleware(
         CORSMiddleware,

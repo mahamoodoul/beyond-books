@@ -32,7 +32,7 @@ export function AppLayout() {
           <div className="ml-auto flex items-center gap-3">
             {user ? (
               <>
-                <span className="text-sm text-slate-300">{user.display_name}</span>
+                <NavLink to="/account" className="text-sm text-slate-300 hover:text-white">{user.display_name}</NavLink>
                 <button
                   className="rounded-md px-3 py-2 text-sm text-slate-200 hover:bg-navy-900"
                   onClick={() => logout.mutate(undefined, { onSettled: () => navigate("/login") })}

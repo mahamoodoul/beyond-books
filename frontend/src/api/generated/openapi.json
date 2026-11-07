@@ -2220,6 +2220,21 @@
         "title": "Criterion",
         "type": "object"
       },
+      "DeleteAccountRequest": {
+        "properties": {
+          "password": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "password"
+        ],
+        "title": "DeleteAccountRequest",
+        "type": "object"
+      },
       "DocumentJobResponse": {
         "properties": {
           "document": {
@@ -4033,6 +4048,29 @@
           "content"
         ],
         "title": "QuestionsUpdate",
+        "type": "object"
+      },
+      "ReadinessResponse": {
+        "properties": {
+          "database": {
+            "title": "Database",
+            "type": "string"
+          },
+          "queue": {
+            "title": "Queue",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "database",
+          "queue"
+        ],
+        "title": "ReadinessResponse",
         "type": "object"
       },
       "Recommendation": {
@@ -8744,6 +8782,28 @@
         ]
       }
     },
+    "/api/v1/health/ready": {
+      "get": {
+        "description": "Readiness for load balancers: database reachable and (when used) Redis reachable.",
+        "operationId": "ready_api_v1_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "health"
+        ]
+      }
+    },
     "/api/v1/jobs/{job_id}": {
       "get": {
         "operationId": "get_job_api_v1_jobs__job_id__get",
@@ -10054,6 +10114,38 @@
       }
     },
     "/api/v1/users/me": {
+      "delete": {
+        "operationId": "delete_me_api_v1_users_me_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Me",
+        "tags": [
+          "users"
+        ]
+      },
       "get": {
         "operationId": "me_api_v1_users_me_get",
         "responses": {
@@ -10108,6 +10200,30 @@
           }
         },
         "summary": "Update Me",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/me/export": {
+      "get": {
+        "description": "Machine-readable copy of the caller's personal data (GDPR art. 15/20).",
+        "operationId": "export_my_data_api_v1_users_me_export_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Export My Data Api V1 Users Me Export Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export My Data",
         "tags": [
           "users"
         ]

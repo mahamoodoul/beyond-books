@@ -442,6 +442,7 @@ export type Description11 = string | null;
 export type GradeLevel2 = string | null;
 export type Subject4 = string | null;
 export type Title19 = string | null;
+export type Password = string;
 export type CourseId5 = string;
 export type CreatedAt4 = string;
 export type ErrorMessage1 = string | null;
@@ -575,7 +576,7 @@ export type CreatedAt6 = string;
 export type Title26 = string;
 export type VersionNumber2 = number;
 export type Email2 = string;
-export type Password = string;
+export type Password1 = string;
 /**
  * @maxItems 20
  */
@@ -603,13 +604,16 @@ export type Total = number;
 export type Generator = string;
 export type Status12 = "in_progress" | "completed";
 export type ExpectedVersion2 = number;
+export type Database = string;
+export type Queue = string;
+export type Status13 = string;
 export type LessonId5 = string;
 export type LessonTitle = string;
 export type Reason = string;
 export type AccountType1 = "teacher" | "student";
 export type DisplayName2 = string;
 export type Email3 = string;
-export type Password1 = string;
+export type Password2 = string;
 export type AssetId1 = string;
 export type AttributionText2 = string;
 export type LicenseName2 = string;
@@ -675,7 +679,7 @@ export type QuestionText4 = string;
 export type Rubric1 = {
   [k: string]: unknown;
 }[];
-export type Status13 = string;
+export type Status14 = string;
 export type StudentName1 = string;
 export type SuggestedScore = number | null;
 export type HasUnpublishedChanges4 = boolean;
@@ -684,7 +688,7 @@ export type LessonId6 = string;
 export type Origin5 = string;
 export type PlanningRationale = string | null;
 export type PublishedVersion4 = number | null;
-export type Status14 = string;
+export type Status15 = string;
 export type Title28 = string;
 export type UpdatedAt4 = string;
 export type Version8 = number;
@@ -734,7 +738,7 @@ export type Origin6 = string;
 export type PassingScore5 = number;
 export type PublishedVersion5 = number | null;
 export type QuestionCount2 = number;
-export type Status15 = string;
+export type Status16 = string;
 export type Title29 = string;
 export type Version9 = number;
 export type CourseId7 = string;
@@ -802,6 +806,7 @@ export interface Api {
   CourseStatus?: CourseStatus;
   CourseUpdate?: CourseUpdate;
   Criterion?: Criterion;
+  DeleteAccountRequest?: DeleteAccountRequest;
   DocumentJobResponse?: DocumentJobResponse;
   DocumentOut?: DocumentOut;
   DocumentStatus?: DocumentStatus;
@@ -851,6 +856,7 @@ export interface Api {
   QuestionIn?: QuestionIn;
   QuestionStat?: QuestionStat;
   QuestionsUpdate?: QuestionsUpdate;
+  ReadinessResponse?: ReadinessResponse;
   Recommendation?: Recommendation;
   RegisterRequest?: RegisterRequest;
   ResolvedAsset?: ResolvedAsset;
@@ -1668,6 +1674,13 @@ export interface CourseUpdate {
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "DeleteAccountRequest".
+ */
+export interface DeleteAccountRequest {
+  password: Password;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "DocumentJobResponse".
  */
 export interface DocumentJobResponse {
@@ -1945,7 +1958,7 @@ export interface LessonVersionOut {
  */
 export interface LoginRequest {
   email: Email2;
-  password: Password;
+  password: Password1;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2040,6 +2053,15 @@ export interface QuestionsUpdate {
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "ReadinessResponse".
+ */
+export interface ReadinessResponse {
+  database: Database;
+  queue: Queue;
+  status: Status13;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "Recommendation".
  */
 export interface Recommendation {
@@ -2055,7 +2077,7 @@ export interface RegisterRequest {
   account_type: AccountType1;
   display_name: DisplayName2;
   email: Email3;
-  password: Password1;
+  password: Password2;
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
@@ -2150,7 +2172,7 @@ export interface ReviewItem {
   question_key: QuestionKey3;
   question_text: QuestionText4;
   rubric: Rubric1;
-  status: Status13;
+  status: Status14;
   student_name: StudentName1;
   suggested_score: SuggestedScore;
 }
@@ -2173,7 +2195,7 @@ export interface SceneOut {
   planning_rationale?: PlanningRationale;
   published_version: PublishedVersion4;
   spec: SceneSpec;
-  status: Status14;
+  status: Status15;
   title: Title28;
   updated_at: UpdatedAt4;
   version: Version8;
@@ -2281,7 +2303,7 @@ export interface TeacherAssessment {
   passing_score: PassingScore5;
   published_version: PublishedVersion5;
   question_count: QuestionCount2;
-  status: Status15;
+  status: Status16;
   title: Title29;
   version: Version9;
 }

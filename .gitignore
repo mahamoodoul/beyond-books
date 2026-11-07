@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.production.example
 
 # Python
 __pycache__/
@@ -27,3 +28,6 @@ dist/
 
 # Local SQLite dev databases
 *.db
+
+# Production env files
+.env.production

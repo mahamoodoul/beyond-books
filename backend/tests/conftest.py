@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
 from app.core.config import get_settings  # noqa: E402
+from app.core.hardening import api_limiter  # noqa: E402
 from app.core.rate_limit import login_limiter  # noqa: E402
 from app.database.models import Base  # noqa: E402
 from app.database.session import configure_engine, session_factory  # noqa: E402
@@ -47,6 +48,7 @@ def _database(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     Base.metadata.create_all(engine)
     configure_engine(engine)
     login_limiter.reset()
+    api_limiter.reset()
     yield
     Base.metadata.drop_all(engine)
     engine.dispose()

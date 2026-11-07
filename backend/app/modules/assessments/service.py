@@ -521,6 +521,10 @@ def result(
 
 
 def my_attempts(db: Session, user: User, assessment_id: uuid.UUID) -> list[AttemptRow]:
+    a = db.get(Assessment, assessment_id)
+    if a is None:
+        raise NotFoundError()
+    chapter_access(db, user, a.chapter_id)  # 404 unless the caller may see this chapter
     rows = db.scalars(
         select(AssessmentAttempt)
         .where(

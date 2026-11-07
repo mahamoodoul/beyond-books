@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://edu3d:edu3d@localhost:5432/edu3d"
     redis_url: str = "redis://localhost:6379/0"
     cors_origins: list[str] = ["http://localhost:5173"]
+    expose_api_docs: bool = True  # forced off in staging/production
+    log_format: Literal["text", "json"] = "text"
+    rate_limit_per_minute: int = 600  # per client IP, all endpoints (in-process)
 
     # --- auth (ADR 0004) ---
     jwt_secret: str = _DEV_SECRET
@@ -67,11 +70,35 @@ class Settings(BaseSettings):
                 raise ValueError("EDU3D_JWT_SECRET must be set to a strong secret")
             if not self.cookie_secure:
                 raise ValueError("EDU3D_COOKIE_SECURE must be true outside local/dev")
+            if self.llm_provider == "fake" or self.three_d_provider == "fake":
+                raise ValueError("fake AI/3D providers are not allowed in staging/production")
+            if self.jobs_run_inline:
+                raise ValueError("EDU3D_JOBS_RUN_INLINE must be false in staging/production")
+            self.expose_api_docs = False
         if self.llm_provider == "openai" and not (self.openai_api_key and self.openai_model):
             raise ValueError("EDU3D_OPENAI_API_KEY and EDU3D_OPENAI_MODEL are required")
         return self
 
 
+def _load_aws_secret() -> None:
+    """If EDU3D_AWS_SECRET_ID is set, load a JSON secret (Secrets Manager) into the environment.
+    Values already present in the environment win, so local overrides keep working."""
+    import json
+    import os
+
+    secret_id = os.environ.get("EDU3D_AWS_SECRET_ID")
+    if not secret_id:
+        return
+    import boto3
+
+    client = boto3.client("secretsmanager", region_name=os.environ.get("EDU3D_AWS_REGION"))
+    payload = json.loads(client.get_secret_value(SecretId=secret_id)["SecretString"])
+    for key, value in payload.items():
+        if key.startswith("EDU3D_") and key not in os.environ:
+            os.environ[key] = str(value)
+
+
 @lru_cache
 def get_settings() -> Settings:
+    _load_aws_secret()
     return Settings()
