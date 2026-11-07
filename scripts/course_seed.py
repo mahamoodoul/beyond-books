@@ -222,9 +222,16 @@ def _real_file(path: Path) -> bool:
 
 def _ensure_teacher(db: Any, email: str, password: str | None) -> uuid.UUID:
     users = table("users")
-    user_id = db.scalar(select(users.c.id).where(users.c.email == email.lower()))
-    if user_id is not None:
-        return uuid.UUID(str(user_id))
+    row = db.execute(
+        select(users.c.id, users.c.account_type).where(users.c.email == email.lower())
+    ).first()
+    if row is not None:
+        if row.account_type != "teacher":
+            raise SystemExit(
+                f"{email!r} is a {row.account_type} account. Courses belong to a teacher: use a "
+                "teacher's email, or a new email with PASSWORD=... to create a teacher account."
+            )
+        return uuid.UUID(str(row.id))
     if not password:
         raise SystemExit(
             f"No account {email!r}. Add a password to create it: "
