@@ -24,6 +24,7 @@ import sys
 
 import course_seed  # puts the backend on sys.path and registers every model
 import seed_students
+
 from app.database.session import session_factory
 
 

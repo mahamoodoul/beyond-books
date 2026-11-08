@@ -239,14 +239,17 @@ def _download_lfs(pointer: str) -> bytes | None:
             "objects": [{"oid": oid.group(1), "size": int(size.group(1))}],
         }
     ).encode()
-    headers = {"Accept": "application/vnd.git-lfs+json", "Content-Type": "application/vnd.git-lfs+json"}
+    headers = {
+        "Accept": "application/vnd.git-lfs+json",
+        "Content-Type": "application/vnd.git-lfs+json",
+    }
     try:
-        req = urllib.request.Request(
+        req = urllib.request.Request(  # noqa: S310  https URL from SEED_LFS_REPO
             LFS_REPO.rstrip("/") + "/info/lfs/objects/batch", data=batch, headers=headers
         )
         with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310  fixed https URL
             action = json.load(r)["objects"][0]["actions"]["download"]
-        dl = urllib.request.Request(action["href"], headers=action.get("header") or {})
+        dl = urllib.request.Request(action["href"], headers=action.get("header") or {})  # noqa: S310
         with urllib.request.urlopen(dl, timeout=180) as r:  # noqa: S310  URL from the LFS server
             data = r.read()
     except (OSError, ValueError, KeyError, IndexError) as exc:
