@@ -5,7 +5,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.errors import ConflictError, PermissionDeniedError, UnauthenticatedError
+from app.core.errors import (
+    ConflictError,
+    NotFoundError,
+    PermissionDeniedError,
+    UnauthenticatedError,
+)
 from app.core.security import create_access_token, hash_token, new_opaque_token
 from app.modules.authentication.identity import get_identity_provider
 from app.modules.authentication.models import AuthSession
@@ -64,6 +69,42 @@ def login(db: Session, email: str, password: str, user_agent: str | None) -> Iss
     tokens = _issue(db, user, user_agent)
     audit.record(
         db, action="auth.login", resource_type="user", resource_id=user.id, actor_user_id=user.id
+    )
+    db.commit()
+    return tokens
+
+
+def demo_login(db: Session, role: str, user_agent: str | None) -> IssuedTokens:
+    """Demo mode: sign in as the demo teacher or student, creating the account on first use."""
+    s = get_settings()
+    if not s.demo_mode:
+        raise NotFoundError("Demo mode is off.")
+    email = s.demo_teacher_email if role == "teacher" else s.demo_student_email
+    user = get_by_email(db, email)
+    if user is None:
+        user = User(
+            email=normalize_email(email),
+            display_name="Demo teacher" if role == "teacher" else "Demo student",
+            account_type=role,
+        )
+        db.add(user)
+        db.flush()
+        audit.record(
+            db,
+            action="user.register",
+            resource_type="user",
+            resource_id=user.id,
+            actor_user_id=user.id,
+        )
+    elif user.account_type != role or not user.is_active:
+        raise ConflictError(f"The demo {role} account ({email}) is not an active {role} account.")
+    tokens = _issue(db, user, user_agent)
+    audit.record(
+        db,
+        action="auth.demo_login",
+        resource_type="user",
+        resource_id=user.id,
+        actor_user_id=user.id,
     )
     db.commit()
     return tokens

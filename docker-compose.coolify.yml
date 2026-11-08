@@ -25,6 +25,9 @@ x-backend-env: &backend-env
   ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}  # set in Coolify; read by app/integrations/elevenlabs
   EDU3D_COOKIE_SECURE: ${EDU3D_COOKIE_SECURE:-true}  # served over HTTPS by the Coolify proxy
   EDU3D_OPEN_REGISTRATION: ${EDU3D_OPEN_REGISTRATION:-true}
+  # Demo deployment: no sign-in, visitors enter as the demo teacher or demo student.
+  # Set EDU3D_DEMO_MODE=false in Coolify to bring back normal sign-in.
+  EDU3D_DEMO_MODE: ${EDU3D_DEMO_MODE:-true}
   EDU3D_JOBS_RUN_INLINE: "false"
   EDU3D_LOG_FORMAT: ${EDU3D_LOG_FORMAT:-json}
   EDU3D_STORAGE_BACKEND: local

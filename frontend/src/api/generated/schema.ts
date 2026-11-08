@@ -26,6 +26,7 @@ export type Steps = [
     | CameraFocusStep
     | AnnotationStep
     | WaitStep
+    | PlayClipStep
   ),
   ...(
     | HighlightStep
@@ -37,6 +38,7 @@ export type Steps = [
     | CameraFocusStep
     | AnnotationStep
     | WaitStep
+    | PlayClipStep
   )[]
 ];
 export type Action = "highlight_component";
@@ -89,6 +91,13 @@ export type Action8 = "wait";
 export type DurationMs8 = number;
 export type Explanation8 = string | null;
 export type Step8 = number;
+export type Action9 = "play_clip";
+export type Clip = string;
+export type DurationMs9 = number;
+export type Explanation9 = string | null;
+export type Loop = boolean;
+export type Speed = number;
+export type Step9 = number;
 export type Title = string;
 export type Id = string;
 export type Origin = string;
@@ -110,7 +119,7 @@ export type EvaluationStatus = string | null;
 export type ExplainFurther = {
   [k: string]: unknown;
 } | null;
-export type Explanation9 = string | null;
+export type Explanation10 = string | null;
 export type FinalScore = number | null;
 export type IsCorrect = boolean | null;
 export type LessonId = string | null;
@@ -593,6 +602,8 @@ export type GradeLevel2 = string | null;
 export type Subject4 = string | null;
 export type Title22 = string | null;
 export type Password = string;
+export type Role = "teacher" | "student";
+export type Enabled = boolean;
 export type CourseId6 = string;
 export type CreatedAt4 = string;
 export type ErrorMessage1 = string | null;
@@ -832,7 +843,7 @@ export type Total = number;
  * Node name of the part
  */
 export type Part = string;
-export type Action9 = "explain_deeper" | "simplify" | "compare" | "quiz_question";
+export type Action10 = "explain_deeper" | "simplify" | "compare" | "quiz_question";
 export type CompareWith = string | null;
 export type ComponentId2 = string;
 export type Description16 = string | null;
@@ -945,7 +956,7 @@ export type Achieved1 = string[];
 export type GoalMet = boolean;
 export type Message3 = string;
 export type Text9 = string;
-export type Enabled = boolean;
+export type Enabled1 = boolean;
 export type Model1 = string | null;
 export type VoiceId = string | null;
 export type Attempts = number;
@@ -1078,6 +1089,8 @@ export interface Api {
   CourseUpdate?: CourseUpdate;
   Criterion?: Criterion;
   DeleteAccountRequest?: DeleteAccountRequest;
+  DemoLoginRequest?: DemoLoginRequest;
+  DemoStatus?: DemoStatus;
   DocumentJobResponse?: DocumentJobResponse;
   DocumentOut?: DocumentOut;
   DocumentStatus?: DocumentStatus;
@@ -1133,6 +1146,7 @@ export interface Api {
   PartDeepDiveRequest?: PartDeepDiveRequest;
   PartInsightRequest?: PartInsightRequest;
   PartUpdate?: PartUpdate;
+  PlayClipStep?: PlayClipStep;
   ProceduralSource?: ProceduralSource;
   ProgressUpdate?: ProgressUpdate;
   PromptDraftOut?: PromptDraftOut;
@@ -1330,6 +1344,24 @@ export interface WaitStep {
   step: Step8;
 }
 /**
+ * Play an animation clip baked into the model (e.g. an engine cycle). The clip keeps
+ * running through the following steps until the animation ends or another clip starts, so
+ * later steps can explain what is moving. Clip names are checked by the viewer, which skips
+ * a clip the model does not have.
+ *
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "PlayClipStep".
+ */
+export interface PlayClipStep {
+  action: Action9;
+  clip: Clip;
+  duration_ms: DurationMs9;
+  explanation?: Explanation9;
+  loop?: Loop;
+  speed?: Speed;
+  step: Step9;
+}
+/**
  * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "AnimationOut".
  */
@@ -1372,7 +1404,7 @@ export interface AnswerResult {
   correct_option_key: CorrectOptionKey;
   evaluation_status: EvaluationStatus;
   explain_further: ExplainFurther;
-  explanation: Explanation9;
+  explanation: Explanation10;
   final_score: FinalScore;
   is_correct: IsCorrect;
   lesson_id: LessonId;
@@ -2215,6 +2247,20 @@ export interface DeleteAccountRequest {
 }
 /**
  * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "DemoLoginRequest".
+ */
+export interface DemoLoginRequest {
+  role: Role;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
+ * via the `definition` "DemoStatus".
+ */
+export interface DemoStatus {
+  enabled: Enabled;
+}
+/**
+ * This interface was referenced by `Api`'s JSON-Schema
  * via the `definition` "DocumentJobResponse".
  */
 export interface DocumentJobResponse {
@@ -2709,7 +2755,7 @@ export interface PartDeepDiveRequest {
  * via the `definition` "PartInsightRequest".
  */
 export interface PartInsightRequest {
-  action: Action9;
+  action: Action10;
   compare_with?: CompareWith;
   component_id: ComponentId2;
 }
@@ -2998,7 +3044,7 @@ export interface SpeechIn {
  * via the `definition` "SpeechStatus".
  */
 export interface SpeechStatus {
-  enabled: Enabled;
+  enabled: Enabled1;
   model?: Model1;
   voice_id?: VoiceId;
 }

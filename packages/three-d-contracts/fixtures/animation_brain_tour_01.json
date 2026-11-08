@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "brain_tour_01",
+  "title": "A tour of the brain",
+  "steps": [
+    {
+      "step": 1,
+      "action": "highlight_component",
+      "target_component": "frontal_lobe",
+      "duration_ms": 2600,
+      "explanation": "The cerebrum is split into lobes. The frontal lobe handles planning, decisions and movement."
+    },
+    {
+      "step": 2,
+      "action": "highlight_component",
+      "target_component": "parietal_lobe",
+      "duration_ms": 2600,
+      "explanation": "The parietal lobe makes sense of touch and where the body is."
+    },
+    {
+      "step": 3,
+      "action": "highlight_component",
+      "target_component": "temporal_lobe",
+      "duration_ms": 2600,
+      "explanation": "The temporal lobe processes sound, language and memory."
+    },
+    {
+      "step": 4,
+      "action": "highlight_component",
+      "target_component": "occipital_lobe",
+      "duration_ms": 2600,
+      "explanation": "The occipital lobe processes vision."
+    },
+    {
+      "step": 5,
+      "action": "camera_focus",
+      "target_component": "cerebellum",
+      "duration_ms": 1200
+    },
+    {
+      "step": 6,
+      "action": "highlight_component",
+      "target_component": "cerebellum",
+      "duration_ms": 2600,
+      "explanation": "The cerebellum keeps movement smooth and balanced."
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "brainstem",
+      "duration_ms": 2600,
+      "explanation": "The brainstem keeps you breathing and your heart beating without you thinking about it."
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 
 import { ErrorAlert } from "@/components/feedback";
 import { Button, Card, Field, Input } from "@/components/ui";
 
-import { homeFor, useLogin, useRegister } from "./auth";
+import { homeFor, useDemoMode, useLogin, useRegister } from "./auth";
 
 export function RegisterPage() {
   const register = useRegister();
@@ -28,6 +28,8 @@ export function RegisterPage() {
     });
   };
   const busy = register.isPending || login.isPending;
+  const demo = useDemoMode();
+  if (demo.enabled) return <Navigate to="/login" replace />; // demo mode: no accounts to create
 
   return (
     <Card className="auth-register">

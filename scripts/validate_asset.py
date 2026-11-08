@@ -74,16 +74,44 @@ def accessor_array(gltf: dict, binary: bytes, idx: int) -> np.ndarray:
     return arr.reshape(acc["count"], n) if n > 1 else arr
 
 
+def node_offsets(gltf: dict) -> list[list[float]]:
+    """Rest translation of every node in world space (parents' translations added): moving parts
+    are child meshes under their component's node."""
+    nodes = gltf.get("nodes", [])
+    parent = {c: i for i, n in enumerate(nodes) for c in n.get("children", [])}
+    out = []
+    for i in range(len(nodes)):
+        t = [0.0, 0.0, 0.0]
+        j: int | None = i
+        while j is not None:
+            for k, v in enumerate(nodes[j].get("translation", [0.0, 0.0, 0.0])):
+                t[k] += v
+            j = parent.get(j)
+        out.append(t)
+    return out
+
+
+def component_nodes(gltf: dict) -> set[str]:
+    """Names of nodes that can be components: a mesh node, or a group with meshes below it."""
+    nodes = gltf.get("nodes", [])
+
+    def has_mesh(i: int) -> bool:
+        return "mesh" in nodes[i] or any(has_mesh(c) for c in nodes[i].get("children", []))
+
+    return {n["name"] for i, n in enumerate(nodes) if n.get("name") and has_mesh(i)}
+
+
 def mesh_parts(gltf: dict, binary: bytes):
     """Yield (node_name, positions, triangles, rgba) for every mesh node.
 
-    Applies node translations only (the convention for registry assets: no rotation/scale baked
-    into component nodes).
+    Applies node translations only, parents' included (the convention for registry assets: no
+    rotation/scale baked into nodes; animation clips move child nodes at runtime).
     """
-    for node in gltf.get("nodes", []):
+    offsets = node_offsets(gltf)
+    for i, node in enumerate(gltf.get("nodes", [])):
         if "mesh" not in node:
             continue
-        offset = np.asarray(node.get("translation", [0, 0, 0]), float)
+        offset = np.asarray(offsets[i], float)
         for prim in gltf["meshes"][node["mesh"]]["primitives"]:
             pos = accessor_array(gltf, binary, prim["attributes"]["POSITION"]) + offset
             tri = accessor_array(gltf, binary, prim["indices"]).reshape(-1, 3)
@@ -114,11 +142,11 @@ def check(
             errors.append(f"image uses a URI ({img['uri'][:40]}); embed it in the GLB")
     if gltf.get("extensionsRequired"):
         errors.append(f"requires extensions {gltf['extensionsRequired']} (check renderer support)")
-    node_names = {n.get("name") for n in gltf.get("nodes", []) if "mesh" in n}
-    if None in node_names:
+    node_names = component_nodes(gltf)
+    if any("mesh" in n and not n.get("name") for n in gltf.get("nodes", [])):
         errors.append("a mesh node has no name; components cannot be resolved")
     for n in gltf.get("nodes", []):
-        if "mesh" in n and ("rotation" in n or "scale" in n or "matrix" in n):
+        if "rotation" in n or "scale" in n or "matrix" in n:
             errors.append(f"{n.get('name')}: apply rotation/scale before export (keep translation)")
     tris = sum(len(t) for _, _, t, _ in mesh_parts(gltf, binary))
     if tris > MAX_TRIANGLES:
@@ -144,6 +172,12 @@ def check(
         errors.append(f"metadata lists components missing from GLB: {missing}")
     if meta["license"].get("spdx") in (None, "", "UNKNOWN"):
         errors.append("license is missing")
+    # baked clips must move nodes inside a component: the viewer positions component nodes itself
+    clips = {a.get("name") for a in gltf.get("animations", [])}
+    for a in gltf.get("animations", []):
+        moved = {gltf["nodes"][c["target"]["node"]].get("name") for c in a["channels"]}
+        if clash := sorted(moved & listed):
+            errors.append(f"clip '{a.get('name')}' animates component nodes {clash}; animate their children")
 
     # --- scenes and animations against the canonical contracts
     from app.modules.three_d.contracts import (
@@ -172,6 +206,8 @@ def check(
         for st in anim.steps:
             if (pid := getattr(st, "path_id", None)) and pid not in meta.get("paths", {}):
                 errors.append(f"{ap.name}: step {st.step} path_id '{pid}' not in asset metadata")
+            if st.action == "play_clip" and st.clip not in clips:
+                errors.append(f"{ap.name}: step {st.step} clip '{st.clip}' is not in the GLB")
 
     if preview:
         render_preview(gltf, binary, preview, meta.get("paths", {}) if show_paths else {})

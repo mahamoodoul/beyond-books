@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "engine_four_stroke_01",
+  "title": "The four strokes",
+  "steps": [
+    {
+      "step": 1,
+      "action": "play_clip",
+      "clip": "four_stroke_cycle",
+      "loop": true,
+      "speed": 0.5,
+      "duration_ms": 4000,
+      "explanation": "The engine is running. The crankshaft turns, the four pistons move in turn, and the camshafts open each valve at the right moment. Each piston is at a different stroke."
+    },
+    {
+      "step": 2,
+      "action": "highlight_component",
+      "target_component": "intake_manifold",
+      "duration_ms": 3000,
+      "explanation": "1. Intake: the piston moves down and the intake valves open, drawing in air from the intake manifold."
+    },
+    {
+      "step": 3,
+      "action": "highlight_component",
+      "target_component": "fuel_injectors",
+      "duration_ms": 2600,
+      "explanation": "The injectors spray petrol into the air as it flows in."
+    },
+    {
+      "step": 4,
+      "action": "highlight_component",
+      "target_component": "pistons",
+      "duration_ms": 3000,
+      "explanation": "2. Compression: both valves close and the piston rises, squeezing the fuel-air mixture."
+    },
+    {
+      "step": 5,
+      "action": "highlight_component",
+      "target_component": "spark_plugs",
+      "duration_ms": 3000,
+      "explanation": "3. Power: the spark plug ignites the mixture. The hot gas expands and drives the piston down."
+    },
+    {
+      "step": 6,
+      "action": "highlight_component",
+      "target_component": "crankshaft",
+      "duration_ms": 3000,
+      "explanation": "The connecting rod turns that push into rotation of the crankshaft."
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "exhaust_manifold",
+      "duration_ms": 3000,
+      "explanation": "4. Exhaust: the exhaust valves open and the rising piston pushes the burnt gas out."
+    },
+    {
+      "step": 8,
+      "action": "highlight_component",
+      "target_component": "camshafts",
+      "duration_ms": 3000,
+      "explanation": "The camshafts, driven by the timing belt, open each valve at the right moment, once every two turns of the crank."
+    }
+  ]
+}

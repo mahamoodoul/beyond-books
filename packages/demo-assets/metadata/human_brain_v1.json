@@ -1,0 +1,140 @@
+{
+  "asset_id": "human_brain_v1",
+  "version": 1,
+  "name": "Human brain (detailed)",
+  "description": "Human brain with gyri and sulci, separated into frontal, parietal, temporal and occipital lobes, plus the cerebellum with folia and the brainstem (midbrain, pons, medulla) with the top of the spinal cord.",
+  "subject": "biology",
+  "category": "anatomy",
+  "format": "glb",
+  "object_key": "demo-assets/glb/human_brain_v1.glb",
+  "preview_key": "demo-assets/previews/human_brain_v1.png",
+  "size_bytes": 12277788,
+  "content_hash": "sha256:8fa69f6bc81b568fdc7dbc4b59fc0d6db255fef97a493629d61cbbd6a30b641d",
+  "triangle_count": 489084,
+  "units": "1 unit ≈ 5 cm",
+  "bounds": {
+    "min": [
+      -1.398,
+      -1.559,
+      -1.692
+    ],
+    "max": [
+      1.399,
+      1.418,
+      1.488
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "frontal_lobe",
+      "label": "Frontal lobe",
+      "explode_offset": [
+        -0.0,
+        1.341,
+        1.416
+      ],
+      "label_anchor": [
+        -0.696,
+        0.54,
+        0.359
+      ]
+    },
+    {
+      "mesh_name": "parietal_lobe",
+      "label": "Parietal lobe",
+      "explode_offset": [
+        0.0,
+        1.533,
+        -0.935
+      ],
+      "label_anchor": [
+        -0.696,
+        0.814,
+        -0.29
+      ]
+    },
+    {
+      "mesh_name": "temporal_lobe",
+      "label": "Temporal lobe",
+      "explode_offset": [
+        0.018,
+        -1.139,
+        0.989
+      ],
+      "label_anchor": [
+        -0.682,
+        0.167,
+        0.994
+      ]
+    },
+    {
+      "mesh_name": "occipital_lobe",
+      "label": "Occipital lobe",
+      "explode_offset": [
+        -0.0,
+        0.635,
+        -1.998
+      ],
+      "label_anchor": [
+        -0.712,
+        0.35,
+        -0.248
+      ]
+    },
+    {
+      "mesh_name": "cerebellum",
+      "label": "Cerebellum",
+      "explode_offset": [
+        -0.0,
+        -0.641,
+        -1.885
+      ],
+      "label_anchor": [
+        -0.497,
+        -0.08,
+        -0.552
+      ]
+    },
+    {
+      "mesh_name": "brainstem",
+      "label": "Brainstem",
+      "explode_offset": [
+        0.0,
+        -1.165,
+        0.15
+      ],
+      "label_anchor": [
+        -0.002,
+        -0.737,
+        -0.176
+      ]
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "packages/demo-assets/source/human_anatomy_v1.blend (Blender 5.2, glTF exporter)",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Gyri follow a procedural pattern rather than real named gyri; lobe boundaries are approximate. Needs anatomist review before student use."
+}

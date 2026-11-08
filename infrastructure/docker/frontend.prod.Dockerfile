@@ -6,6 +6,10 @@ COPY frontend/package.json frontend/package-lock.json ./
 COPY frontend/stubs ./stubs
 RUN npm ci
 COPY frontend ./
+# demo GLBs, metadata and 3D scene fixtures, bundled by the 3D Studio (../packages from /app)
+COPY packages/demo-assets/glb /packages/demo-assets/glb
+COPY packages/demo-assets/metadata /packages/demo-assets/metadata
+COPY packages/three-d-contracts/fixtures /packages/three-d-contracts/fixtures
 # Demo sign-in (login-page button + Shift+T/Shift+S) is on for this demo deployment.
 # The demo credentials are part of the public JS bundle; build with VITE_DEMO_LOGIN=false to turn it off.
 ARG VITE_DEMO_LOGIN=true

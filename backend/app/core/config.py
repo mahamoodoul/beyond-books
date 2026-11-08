@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     login_max_attempts: int = 10
     login_window_s: int = 15 * 60
     open_registration: bool = True
+    # Demo mode: no sign-in. Anyone can enter as the demo teacher or demo student (created on
+    # first use) via POST /auth/demo-login, so everything those accounts can see or change is
+    # public. Off by default; a demo deployment opts in (a warning is logged at startup).
+    demo_mode: bool = False
+    demo_teacher_email: str = "teacher@example.com"
+    demo_student_email: str = "student@example.com"
 
     # --- storage ---
     storage_backend: Literal["local", "s3"] = "local"

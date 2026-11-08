@@ -1,4 +1,4 @@
-.PHONY: up down db migrate seed seed-courses seed-students export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down db migrate seed seed-demo seed-courses seed-students export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
@@ -62,6 +62,10 @@ export-courses: ## Re-export a teacher's courses into seeds/courses: make export
 
 sqlite-to-postgres: ## Copy backend/dev.db into the (migrated, empty) Postgres of backend/.env
 	cd backend && .venv/bin/python ../scripts/sqlite_to_postgres.py $(DB)
+
+API ?= http://localhost:8000
+seed-demo:     ## Demo school, teachers, students, courses and activity via the running API (make seed-demo API=...)
+	python3 scripts/seed_demo.py --base-url $(API)
 
 frontend-install:
 	cd frontend && npm install
