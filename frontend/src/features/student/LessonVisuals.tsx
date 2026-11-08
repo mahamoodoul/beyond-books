@@ -11,6 +11,7 @@
  */
 import { Children, isValidElement, useEffect, useMemo, useState, type ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
+import { scrollBehavior } from "@/lib/motion";
 
 export interface Section {
   title: string;
@@ -191,7 +192,7 @@ export function LessonJourney({ sections, ids }: { sections: Section[]; ids: str
             aria-current={i === current ? "step" : undefined}
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(ids[i] ?? "")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              document.getElementById(ids[i] ?? "")?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
             }}
           >
             <span className="lv-journey-dot">{seen.has(i) && i !== current ? "✓" : i + 1}</span>
@@ -403,14 +404,14 @@ export function LessonPart({
   const toggle = (t: string) => {
     setActive((a) => (a === t ? null : t));
     // bring the first occurrence into view
-    requestAnimationFrame(() => document.querySelector(`#${id} .lv-term-active`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
+    requestAnimationFrame(() => document.querySelector(`#${id} .lv-term-active`)?.scrollIntoView({ behavior: scrollBehavior(), block: "center" }));
   };
   const hasMap = terms.length >= 2;
   return (
     <section id={id} aria-labelledby={`${id}-title`} className={`lesson-card panel lv-part${reading ? " ring-2 ring-[#38b2ac] ring-offset-2" : ""}`} style={{ scrollMarginTop: 150 }}>
       <div className="lv-part-head">
         <span className={`lv-part-icon lv-part-icon-${index % 4}`} aria-hidden>{PART_ICONS[index % PART_ICONS.length]}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="lv-part-title">
           <span className="lv-part-meta">Part {index + 1} · {readMinutes(section.body_markdown)} min read</span>
           <h2 id={`${id}-title`}>{section.title}</h2>
         </div>

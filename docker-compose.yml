@@ -65,7 +65,6 @@ services:
     environment:
       VITE_API_PROXY: http://api:8000
     ports: ["5173:5173"]
-    # ../packages from /app: demo GLBs, metadata and contract fixtures (vite.config fs.allow)
     volumes: ["./frontend/src:/app/src", "./packages:/packages:ro"]
     depends_on: [api]
 

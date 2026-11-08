@@ -44,6 +44,20 @@ seed-courses:   ## Load the shared courses: make seed-courses EMAIL=teacher@x.co
 
 SEED_ARGS = "$(EMAIL)" $(if $(PASSWORD),"$(PASSWORD)",) $(if $(STUDENT),--student "$(STUDENT)",) $(if $(STUDENT_PASSWORD),--student-password "$(STUDENT_PASSWORD)",)
 
+seed-demo:      ## Demo data like the Coolify deploy: shared courses for teacher@example.com, the demo student, 50 analytics students
+	@git lfs pull 2>/dev/null || echo "note: Git LFS not installed - missing PDFs/3D models are downloaded from GitHub instead"
+	@if docker compose ps --status running --services 2>/dev/null | grep -qx api; then \
+	  docker compose run --rm --no-deps -e SEED_ROOT=/seed -e EDU3D_OPEN_REGISTRATION=true \
+	    -v "$(CURDIR)/scripts:/seed/scripts:ro" -v "$(CURDIR)/seeds:/seed/seeds:ro" \
+	    -v "$(CURDIR)/sample-courses:/seed/sample-courses:ro" \
+	    api sh -c 'alembic upgrade head && python /seed/scripts/seed_deploy.py'; \
+	elif [ -x backend/.venv/bin/python ]; then \
+	  cd backend && .venv/bin/alembic upgrade head && \
+	  EDU3D_OPEN_REGISTRATION=true .venv/bin/python ../scripts/seed_deploy.py; \
+	else \
+	  echo "Start the app first: 'make up' (Docker), or 'make backend-install' for a local backend." && exit 1; \
+	fi
+
 seed-students:  ## 50 demo students in a demo school with activity for the analytics: make seed-students EMAIL=teacher@x.com [COUNT=50] [RESET=1]
 	@test -n "$(EMAIL)" || (echo "usage: make seed-students EMAIL=teacher@x.com [COUNT=50] [RESET=1]" && exit 1)
 	@if docker compose ps --status running --services 2>/dev/null | grep -qx api; then \

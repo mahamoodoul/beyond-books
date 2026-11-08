@@ -4,11 +4,12 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 COPY frontend/stubs ./stubs
 RUN npm ci
-COPY frontend ./
-# demo GLBs, metadata and 3D scene fixtures, bundled by the 3D Studio (../packages from /app)
+# Demo 3D scenes for the Studio (frontend/src/features/three-d/library/runtime/fixtureRegistry.ts
+# globs ../packages, i.e. /packages here).
 COPY packages/demo-assets/glb /packages/demo-assets/glb
 COPY packages/demo-assets/metadata /packages/demo-assets/metadata
 COPY packages/three-d-contracts/fixtures /packages/three-d-contracts/fixtures
+COPY frontend ./
 RUN npm run build
 
 FROM nginx:1.27-alpine

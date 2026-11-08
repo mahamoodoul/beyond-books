@@ -1,10 +1,10 @@
 {
  "format": 1,
- "exported_at": "2026-11-07T22:24:04.167335+00:00",
+ "exported_at": "2026-11-08T09:18:30.753170+00:00",
  "tables": {
   "courses": [
    {
-    "school_id": null,
+    "school_id": "3cc4badc-d873-4afb-8ecb-1ae1b7a36c0b",
     "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
     "title": "Biology: Cells and Energy",
     "description": "How cells are built and how they obtain energy. Source: OpenStax Concepts of Biology, ch. 3-4 (CC BY-NC-SA 4.0).",
@@ -12,25 +12,13 @@
     "grade_level": "Year 10",
     "status": "published",
     "current_version": 1,
+    "join_code": "BIOLOGY101DEMO26",
     "id": "0ea0b379-8399-41b3-954b-c7259f522887",
-    "updated_at": "2026-11-07T16:41:31.585049+00:00",
+    "updated_at": "2026-11-08T08:05:01.344973+00:00",
     "created_at": "2026-11-07T16:14:01.615461+00:00"
    },
    {
-    "school_id": null,
-    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
-    "title": "Chemistry: Atoms, Molecules and Ions",
-    "description": "Atomic structure, molecules, ions and chemical nomenclature. Source: OpenStax Chemistry 2e, ch. 2 (CC BY-NC-SA 4.0).",
-    "subject": "Chemistry",
-    "grade_level": "Year 10",
-    "status": "draft",
-    "current_version": 1,
-    "id": "eb785b62-a68e-4b00-be2a-c35bd248cfcb",
-    "updated_at": "2026-11-07T16:14:33.649983+00:00",
-    "created_at": "2026-11-07T16:14:33.649989+00:00"
-   },
-   {
-    "school_id": null,
+    "school_id": "3cc4badc-d873-4afb-8ecb-1ae1b7a36c0b",
     "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
     "title": "Mathematics: Expressions and Equations",
     "description": "Writing, solving and graphing equations. Source: OpenStax Algebra 1, unit 1 (CC BY-NC-SA 4.0).",
@@ -38,12 +26,27 @@
     "grade_level": "Year 9",
     "status": "draft",
     "current_version": 1,
+    "join_code": "MATHS101DEMO2026",
     "id": "76318f6b-bceb-4f01-91bb-a10f148cb38a",
-    "updated_at": "2026-11-07T16:14:59.122968+00:00",
+    "updated_at": "2026-11-08T08:05:01.344978+00:00",
     "created_at": "2026-11-07T16:14:59.122986+00:00"
    },
    {
-    "school_id": null,
+    "school_id": "3cc4badc-d873-4afb-8ecb-1ae1b7a36c0b",
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "title": "Chemistry: Atoms, Molecules and Ions",
+    "description": "Atomic structure, molecules, ions and chemical nomenclature. Source: OpenStax Chemistry 2e, ch. 2 (CC BY-NC-SA 4.0).",
+    "subject": "Chemistry",
+    "grade_level": "Year 10",
+    "status": "draft",
+    "current_version": 1,
+    "join_code": "CHEMISTRY101DEMO",
+    "id": "eb785b62-a68e-4b00-be2a-c35bd248cfcb",
+    "updated_at": "2026-11-08T08:05:01.344979+00:00",
+    "created_at": "2026-11-07T16:14:33.649989+00:00"
+   },
+   {
+    "school_id": "3cc4badc-d873-4afb-8ecb-1ae1b7a36c0b",
     "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
     "title": "Physics: Motion and Forces",
     "description": "Motion in one dimension, acceleration and Newton's laws. Source: OpenStax Physics, ch. 2-4 (CC BY 4.0).",
@@ -51,8 +54,9 @@
     "grade_level": "Year 10",
     "status": "published",
     "current_version": 1,
+    "join_code": "PHYSICS101DEMO26",
     "id": "fe15d89d-9e20-44ac-afca-5788f0b1ca8b",
-    "updated_at": "2026-11-07T20:29:30.896875+00:00",
+    "updated_at": "2026-11-08T08:05:01.344979+00:00",
     "created_at": "2026-11-07T16:15:18.695553+00:00"
    }
   ],
@@ -17137,6 +17141,176 @@
     "id": "8245b8ab-cc04-4e6c-b077-7900837456a2",
     "updated_at": "2026-11-07T20:51:10.322841+00:00",
     "created_at": "2026-11-07T20:51:10.322848+00:00"
+   }
+  ],
+  "circuit_labs": [
+   {
+    "course_id": null,
+    "chapter_id": null,
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "kind": "tectonics",
+    "title": "Moving plates and earthquakes",
+    "instructions": "Move the plates at different boundaries and watch what millions of years do: trenches, volcanoes, mountains, new ocean floor. Then look inside the Earth and follow earthquake waves through it.",
+    "goal": {
+     "tasks": [
+      "subduction",
+      "mountains",
+      "compare",
+      "layers",
+      "waves"
+     ]
+    },
+    "palette": {
+     "boundaries": [
+      "subduction",
+      "collision",
+      "divergent",
+      "transform"
+     ]
+    },
+    "status": "published",
+    "id": "252c8cd0-0939-4519-b335-b5f7ee0a2a28",
+    "updated_at": "2026-11-08T01:18:24.850488+00:00",
+    "created_at": "2026-11-08T01:18:15.471922+00:00"
+   },
+   {
+    "course_id": "0ea0b379-8399-41b3-954b-c7259f522887",
+    "chapter_id": null,
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "kind": "respiration",
+    "title": "How do we breathe?",
+    "instructions": "Breathe in and out and watch the diaphragm, ribs and lungs. Then go for a run: change how fast and how deep you breathe to keep your blood oxygen up. Finally zoom into an alveolus and follow oxygen into the blood.",
+    "goal": {
+     "tasks": [
+      "inhale",
+      "exhale",
+      "rate",
+      "exercise",
+      "trace"
+     ]
+    },
+    "palette": {
+     "activities": [
+      "rest",
+      "walk",
+      "run"
+     ]
+    },
+    "status": "published",
+    "id": "74bd2b1a-6910-4e7a-b653-ff0b1ae13c26",
+    "updated_at": "2026-11-08T01:22:12.750024+00:00",
+    "created_at": "2026-11-08T01:22:12.742371+00:00"
+   },
+   {
+    "course_id": "fe15d89d-9e20-44ac-afca-5788f0b1ca8b",
+    "chapter_id": "c805ebd6-0297-4cea-ba0a-83d81e7c4259",
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "kind": "circuit",
+    "title": "Light the bulb",
+    "instructions": "Connect the battery to the bulb with wires so the bulb lights up. Then add the switch to the loop and use it to turn the bulb on and off. Try two bulbs in a row: what happens to the brightness?",
+    "goal": {
+     "min_lit": 1,
+     "require_switch": true
+    },
+    "palette": {
+     "bulb": 2,
+     "switch": 1,
+     "battery": 1
+    },
+    "status": "published",
+    "id": "0f1d4017-c52b-4d20-9290-8f3bd02b82cd",
+    "updated_at": "2026-11-08T00:43:03.673653+00:00",
+    "created_at": "2026-11-07T23:52:59.712677+00:00"
+   },
+   {
+    "course_id": "fe15d89d-9e20-44ac-afca-5788f0b1ca8b",
+    "chapter_id": "c805ebd6-0297-4cea-ba0a-83d81e7c4259",
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "kind": "buoyancy",
+    "title": "Float or sink?",
+    "instructions": "Drop different objects into the tank and change the liquid. Watch the forces, then drag the pressure probe down and see how pressure grows with depth.",
+    "goal": {
+     "tasks": [
+      "float",
+      "sink",
+      "salt",
+      "pressure"
+     ]
+    },
+    "palette": {
+     "liquids": [
+      "fresh water",
+      "salt water",
+      "oil",
+      "honey"
+     ],
+     "materials": [
+      "wood",
+      "ice",
+      "plastic",
+      "wax",
+      "rubber",
+      "glass",
+      "aluminium",
+      "steel"
+     ],
+     "allow_custom_density": true
+    },
+    "status": "published",
+    "id": "fcf73f21-5310-423f-a424-df9920c2a6b6",
+    "updated_at": "2026-11-08T00:47:00.076936+00:00",
+    "created_at": "2026-11-08T00:47:00.073615+00:00"
+   },
+   {
+    "course_id": null,
+    "chapter_id": null,
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "kind": "orbits",
+    "title": "Planets, eclipses and seasons",
+    "instructions": "Run time and compare how long each planet's year is. Line up the Sun, Earth and Moon to make a solar and a lunar eclipse. Then tilt Earth and find out what really causes the seasons.",
+    "goal": {
+     "tasks": [
+      "solar_eclipse",
+      "lunar_eclipse",
+      "periods",
+      "seasons",
+      "no_tilt"
+     ]
+    },
+    "palette": {
+     "allow_tilt": true
+    },
+    "status": "published",
+    "id": "c52301bf-ab4d-4744-bb3a-0cd44d1a0898",
+    "updated_at": "2026-11-08T01:22:12.756306+00:00",
+    "created_at": "2026-11-08T01:22:12.754373+00:00"
+   },
+   {
+    "course_id": "eb785b62-a68e-4b00-be2a-c35bd248cfcb",
+    "chapter_id": "2e80a463-2777-4137-94d0-89c3ca21bf19",
+    "created_by": "c3febf5e-a5ef-4c27-ad9b-18d4060a8656",
+    "kind": "molecules",
+    "title": "Build water, carbon dioxide and methane",
+    "instructions": "Drag atoms onto the board and bond them. Every atom must have exactly the bonds it wants: H one, O two, C four. Look at the shape of each finished molecule.",
+    "goal": {
+     "targets": [
+      "H2O",
+      "CO2",
+      "CH4"
+     ]
+    },
+    "palette": {
+     "C": 3,
+     "H": 8,
+     "N": 2,
+     "O": 4,
+     "S": 0,
+     "Cl": 2
+    },
+    "status": "published",
+    "id": "b736a427-db9e-44d9-b6ed-0706d2df9e72",
+    "updated_at": "2026-11-08T00:52:01.748035+00:00",
+    "created_at": "2026-11-08T00:47:00.061009+00:00"
    }
   ]
  }

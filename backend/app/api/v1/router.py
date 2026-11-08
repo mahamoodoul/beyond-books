@@ -12,6 +12,7 @@ from app.modules.chapters.api import router as chapters_router
 from app.modules.classrooms.api import router as classrooms_router
 from app.modules.courses.api import router as courses_router
 from app.modules.documents.api import router as documents_router
+from app.modules.join_codes.api import router as join_codes_router
 from app.modules.labs.api import router as labs_router
 from app.modules.lessons.api import router as lessons_router
 from app.modules.operations.api import router as jobs_router
@@ -42,5 +43,6 @@ for r in (
     analytics_router,
     speech_router,
     labs_router,
+    join_codes_router,
 ):
     api_router.include_router(r)

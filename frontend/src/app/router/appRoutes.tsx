@@ -1,7 +1,8 @@
 import { lazy, Suspense, type ComponentType, type ReactNode } from "react";
-import { Navigate, useParams, type RouteObject } from "react-router";
+import { Navigate, Outlet, ScrollRestoration, useParams, type RouteObject } from "react-router";
 
 import { AppLayout } from "@/app/layouts/AppLayout";
+import { RouteAnnouncer, SkipLink } from "@/app/router/RouteAnnouncer";
 import { RouteError } from "@/app/router/RouteError";
 import { Loading } from "@/components/feedback";
 import { DemoEnter, RequireAuth } from "@/features/auth/auth";
@@ -31,12 +32,26 @@ function LegacyViewerRedirect() {
   return <Navigate to={assetId ? `/studio/library/${assetId}` : `/studio/${sceneId ?? ""}`} replace />;
 }
 
+/** Root of every route: skip link, page titles and announcements, and scroll handling (new pages
+ *  open at the top, back/forward restores the old position). */
+function RootLayout() {
+  return (
+    <>
+      <SkipLink />
+      <ScrollRestoration />
+      <RouteAnnouncer />
+      <Outlet />
+    </>
+  );
+}
+
 const teacher = (el: ReactNode) => <RequireAuth role="teacher">{el}</RequireAuth>;
 const student = (el: ReactNode) => <RequireAuth role="student">{el}</RequireAuth>;
 const anyUser = (el: ReactNode) => <RequireAuth>{el}</RequireAuth>;
 
 export const appRoutes: RouteObject[] = [
   {
+    element: <RootLayout />,
     errorElement: <RouteError />,
     children: [
       { path: "/", element: <LandingPage /> },

@@ -59,6 +59,7 @@ from app.modules.classrooms.service import add_member as add_classroom_member  #
 from app.modules.classrooms.service import create_classroom  # noqa: E402
 from app.modules.courses.models import Course, CourseEnrollment, CourseStatus  # noqa: E402
 from app.modules.courses.service import enroll  # noqa: E402
+from app.modules.join_codes.service import new_code  # noqa: E402
 from app.modules.lessons.models import Lesson  # noqa: E402
 from app.modules.organizations.models import School, SchoolMembership, SchoolRole  # noqa: E402
 from app.modules.organizations.service import add_member as add_school_member  # noqa: E402
@@ -203,9 +204,13 @@ def _school(db: Session, teacher: User) -> School:
     school = db.scalar(select(School).where(School.slug == SCHOOL_SLUG))
     if school is None:
         school, _ = create_school(db, teacher, SCHOOL_NAME, SCHOOL_SLUG)
+        school.join_code = "DEMOSCHOOLNORWAY"
         db.commit()
-        print(f"created school {SCHOOL_NAME!r}")
+        print(f"created school {SCHOOL_NAME!r} (join code DEMOSCHOOLNORWAY)")
         return school
+    if school.join_code != "DEMOSCHOOLNORWAY":
+        school.join_code = "DEMOSCHOOLNORWAY"
+        db.commit()
     role = db.scalar(
         select(SchoolMembership.role).where(
             SchoolMembership.school_id == school.id, SchoolMembership.user_id == teacher.id
@@ -669,11 +674,44 @@ def run(
     )
 
     linked = 0
+    assigned: set[str] = set()
     for course in courses:
         if course.school_id is None:
             course.school_id = school.id
             linked += 1
+        # memorable demo codes: BIO101, CHEM101, MATH101, PHYS101: one course per code, the
+        # first of each subject; the others keep their random code
+        subject = (course.subject or "").lower()
+        wanted = {
+            "biology": "BIOLOGY101DEMO26",
+            "chemistry": "CHEMISTRY101DEMO",
+            "mathematics": "MATHS101DEMO2026",
+            "physics": "PHYSICS101DEMO26",
+        }.get(subject)
+        if course.join_code in assigned:
+            course.join_code = new_code(db)
+        if wanted and wanted not in assigned and course.join_code != wanted:
+            clash = db.scalar(
+                select(Course).where(Course.join_code == wanted, Course.id != course.id)
+            )
+            if clash is not None and clash in courses:
+                clash.join_code = new_code(db)
+                db.flush()
+                clash = None
+            if clash is None:
+                course.join_code = wanted
+        if course.join_code in {
+            "BIOLOGY101DEMO26",
+            "CHEMISTRY101DEMO",
+            "MATHS101DEMO2026",
+            "PHYSICS101DEMO26",
+        }:
+            assigned.add(course.join_code)
     db.commit()
+    print(
+        "join codes: school DEMOSCHOOLNORWAY; courses "
+        + ", ".join(f"{c.title.split(':')[0]}={c.join_code}" for c in courses)
+    )
     enrolled = 0
     for course in courses:
         enrolled += enroll(db, teacher, course.id, None, room.id)[0]

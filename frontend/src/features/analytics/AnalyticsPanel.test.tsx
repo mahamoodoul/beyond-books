@@ -61,9 +61,9 @@ const DATA = {
   ],
 };
 
-function render() {
+function render(data: object = DATA) {
   const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity } } });
-  client.setQueryData(["analytics", "c1"], DATA);
+  client.setQueryData(["analytics", "c1"], data);
   return renderToStaticMarkup(
     <QueryClientProvider client={client}><MemoryRouter><AnalyticsPanel courseId="c1" /></MemoryRouter></QueryClientProvider>,
   );
@@ -72,7 +72,7 @@ function render() {
 describe("AnalyticsPanel", () => {
   it("shows the four numbers and the to-do list in brief", () => {
     const html = render();
-    expect(html).toContain("9 not started");
+    expect(html).toContain("2 yet to complete a lesson"); // counted from the students, not parsed from text
     expect(html).toContain(">8<"); // answers to review
     expect(html).toContain("Needs your attention");
     expect(html).toContain("9 students have not completed any lesson.");
@@ -80,6 +80,12 @@ describe("AnalyticsPanel", () => {
     expect(html).toContain("3 objectives below 50% mastery");
     expect(html).toContain("and 1 more");
     expect(html).not.toContain("including direction."); // long concept is clipped
+  });
+
+  it("does not claim students have started when there are no lessons", () => {
+    const html = render({ ...DATA, total_lessons: 0, lessons: [], attention: [], insights: [] });
+    expect(html).toContain("no published lessons yet");
+    expect(html).not.toContain("all have");
   });
 
   it("previews the hardest questions, weakest objectives and students first, with show-all toggles", () => {

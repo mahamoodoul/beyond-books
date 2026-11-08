@@ -80,6 +80,7 @@ export function useRegister() {
       password: string;
       display_name: string;
       account_type: "teacher" | "student";
+      join_code?: string | null;
     }) => api.post<UserOut>("/auth/register", body),
   });
 }

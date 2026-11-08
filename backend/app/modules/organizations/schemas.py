@@ -20,6 +20,7 @@ class SchoolOut(BaseModel):
     slug: str
     created_at: datetime
     my_role: SchoolRole | None = None
+    join_code: str | None = None  # shown to admins and teachers of the school only
 
 
 class SchoolMemberAdd(BaseModel):

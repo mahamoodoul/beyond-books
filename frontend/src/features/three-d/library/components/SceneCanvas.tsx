@@ -15,6 +15,7 @@ import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/libr
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
 
+import { CooperativeWheel } from "./CooperativeWheel";
 import {
   PostEffects,
   QualityMonitor,
@@ -85,6 +86,7 @@ export function SceneCanvas(props: SceneCanvasProps) {
         enabled={monitoring && !!props.onQualityDecline}
         onDecline={() => props.onQualityDecline?.()}
       />
+      <CooperativeWheel />
     </Canvas>
   );
 }
@@ -541,7 +543,6 @@ function Labels({
       button.addEventListener("click", () => {
         if (latest.current.canSelect(id)) latest.current.onSelect(id);
       });
-      // colour on a span: the app's unlayered `button { color: inherit }` beats utilities
       const text = document.createElement("span");
       text.className = "text-slate-900 group-data-[state=on]:text-navy-950";
       text.textContent = c.label;
@@ -567,6 +568,9 @@ function Labels({
     };
   }, [gl, signature, invalidate]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Label sizes (they don't change), measured once each, for placement and the overlap check.
+  const sizes = useRef<Record<string, { w: number; h: number }>>({});
+
   useFrame(() => {
     const rt = runtime.current;
     const anim = rt.frame;
@@ -574,6 +578,7 @@ function Labels({
     const mid = explodedBounds(rt.bounds, rt.offsets, rt.explode).center;
     tmp.set(...mid).project(camera);
     const centre = { x: (tmp.x * 0.5 + 0.5) * size.width, y: (-tmp.y * 0.5 + 0.5) * size.height };
+    const placed: { id: string; el: HTMLDivElement; ax: number; ay: number; depth: number; emphasised: boolean }[] = [];
     for (const c of registered) {
       const id = c.componentId;
       const el = els.current[id];
@@ -585,45 +590,56 @@ function Labels({
         rt.registry.isVisible(id) &&
         (anim.components[id]?.opacity ?? 1) > 0.15 &&
         (!rt.isolated || rt.isolated === id); // focus mode: only the focused part's label
-      let visible = show;
-      if (pos && show) {
-        pos.project(camera);
-        visible = pos.z < 1; // not behind the camera
-        if (visible) placeLabel(el, (pos.x * 0.5 + 0.5) * size.width, (-pos.y * 0.5 + 0.5) * size.height, centre, size);
-      }
-      const display = visible ? "" : "none";
-      if (el.style.display !== display) el.style.display = display;
       const emphasised =
         rt.selected === id || anim.highlight === id || anim.annotation?.target === id;
       const state = emphasised ? "on" : "off";
       if (el.dataset.state !== state) el.dataset.state = state;
-      const button = el.firstElementChild as HTMLButtonElement | null;
+      const button = el.lastElementChild as HTMLButtonElement | null;
       const tab = latest.current.canSelect(id) ? 0 : -1;
       if (button && button.tabIndex !== tab) button.tabIndex = tab;
+      if (pos && show) {
+        pos.project(camera);
+        if (pos.z < 1) {
+          // not behind the camera
+          const ax = (pos.x * 0.5 + 0.5) * size.width;
+          const ay = (-pos.y * 0.5 + 0.5) * size.height;
+          placed.push({ id, el, ax, ay, depth: pos.z, emphasised });
+          continue;
+        }
+      }
+      if (el.style.display !== "none") el.style.display = "none";
+    }
+
+    // Overlapping labels are unreadable: keep the emphasised one, then the nearest parts, and hide
+    // a label that would cover one already shown. Hidden parts stay in the parts list, and their
+    // labels come back as the view zooms in and they spread apart.
+    placed.sort((a, b) => Number(b.emphasised) - Number(a.emphasised) || a.depth - b.depth);
+    const boxes: { l: number; r: number; t: number; b: number }[] = [];
+    for (const p of placed) {
+      let m = sizes.current[p.id];
+      if (!m) {
+        if (p.el.style.display === "none") p.el.style.display = "";
+        const button = p.el.lastElementChild as HTMLElement | null;
+        m = { w: button?.offsetWidth ?? 0, h: button?.offsetHeight ?? 0 };
+        if (m.w && m.h) sizes.current[p.id] = m;
+      }
+      const half = { w: (m.w || 80) / 2, h: (m.h || 20) / 2 };
+      const at = labelSpot(p.ax, p.ay, centre, size, half);
+      const box = { l: at.x - half.w - 2, r: at.x + half.w + 2, t: at.y - half.h - 2, b: at.y + half.h + 2 };
+      const clash = boxes.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
+      const display = clash && !p.emphasised ? "none" : "";
+      if (p.el.style.display !== display) p.el.style.display = display;
+      if (display) continue;
+      boxes.push(box);
+      placeLabel(p.el, p.ax, p.ay, at);
     }
   });
 
   return null;
 }
 
-function placeLabel(
-  el: HTMLDivElement,
-  ax: number,
-  ay: number,
-  centre: { x: number; y: number },
-  view: { width: number; height: number },
-): void {
+function placeLabel(el: HTMLDivElement, ax: number, ay: number, at: { x: number; y: number }): void {
   const [line, dot, button] = el.children as unknown as [HTMLElement, HTMLElement, HTMLElement];
-  // the label's size is measured once it is laid out (it doesn't change)
-  let w = Number(button.dataset.w);
-  let h = Number(button.dataset.h);
-  if (!w && button.offsetWidth) {
-    w = button.offsetWidth;
-    h = button.offsetHeight;
-    button.dataset.w = String(w);
-    button.dataset.h = String(h);
-  }
-  const at = labelSpot(ax, ay, centre, view, { w: (w || 80) / 2, h: (h || 20) / 2 });
   button.style.transform = `translate3d(${at.x.toFixed(1)}px,${at.y.toFixed(1)}px,0) translate(-50%,-50%)`;
   dot.style.transform = `translate3d(${ax.toFixed(1)}px,${ay.toFixed(1)}px,0) translate(-50%,-50%)`;
   const dx = at.x - ax;

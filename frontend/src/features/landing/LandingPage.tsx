@@ -40,7 +40,7 @@ export function LandingPage() {
   const { theme } = usePreferences();
   const reduced = usePrefersReducedMotion();
   return (
-    <main className="landing-page">
+    <main id="main-content" tabIndex={-1} className="landing-page">
       <header className="landing-header">
         <Link aria-label="Beyond Books home" className="brand" to="/">
           <BeyondBooksLogo showWordmark size={44} variant={theme} />

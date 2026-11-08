@@ -4,6 +4,7 @@ from fastapi import APIRouter, status
 
 from app.core.deps import DB, CurrentUser, Teacher
 from app.modules.organizations import service
+from app.modules.organizations.models import SchoolRole
 from app.modules.organizations.schemas import (
     SchoolCreate,
     SchoolMemberAdd,
@@ -17,6 +18,8 @@ router = APIRouter(prefix="/schools", tags=["schools"])
 
 def _out(school: object, role: object) -> SchoolOut:
     out = SchoolOut.model_validate(school)
+    if role not in (SchoolRole.SCHOOL_ADMIN, SchoolRole.TEACHER):
+        out = out.model_copy(update={"join_code": None})
     return out.model_copy(update={"my_role": role})
 
 

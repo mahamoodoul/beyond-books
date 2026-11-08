@@ -21,12 +21,20 @@ export function Button({
   );
 }
 
-export function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
+export function Field({
+  label, children, hint, warning, error,
+}: { label: string; children: ReactNode; hint?: string; warning?: string | null; error?: string | null }) {
   return (
-    <label className="bb-field block space-y-1">
+    <label className={`bb-field block space-y-1${error ? " bb-field-error" : warning ? " bb-field-warning" : ""}`}>
       <span className="text-sm font-medium text-slate-700">{label}</span>
       {children}
-      {hint && <span className="block text-xs text-slate-500">{hint}</span>}
+      {error ? (
+        <span role="alert" className="block text-xs font-medium text-red-700">{error}</span>
+      ) : warning ? (
+        <span role="status" className="block text-xs font-medium text-amber-700">{warning}</span>
+      ) : hint ? (
+        <span className="block text-xs text-slate-500">{hint}</span>
+      ) : null}
     </label>
   );
 }

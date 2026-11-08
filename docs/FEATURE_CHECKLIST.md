@@ -38,6 +38,8 @@ Each section names its owner area so the team can split the work. Where a note s
 - [x] Login rate limit + global per-IP rate limit
 - [x] Security headers (CSP, frame, referrer, etc.)
 - [x] Profile view/edit (`/me`), account page in the UI
+- [x] Join codes: every school and course has a short code; sign-up form previews what a code unlocks and joins it; *Join with a code* on the account page; teachers copy/regenerate codes (Schools page, course Students tab, account page); 16-character codes validated server-side; demo seed sets DEMOSCHOOLNORWAY, BIOLOGY101DEMO26, CHEMISTRY101DEMO, MATHS101DEMO2026, PHYSICS101DEMO26
+- [x] Server-side password rules (length, character mix or passphrase, no runs/repeats, common-password list, no name/email inside)
 - [x] GDPR: export my data (`/me/export`) and delete my account (`DELETE /me`)
 - [x] Production safety: refuses to start with the dev JWT secret, insecure cookies, fake AI providers or inline jobs
 - [x] Optional AWS Secrets Manager loading

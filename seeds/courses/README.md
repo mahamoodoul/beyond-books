@@ -38,3 +38,5 @@ git add seeds/courses && git commit -m "Update course seed"
 - `files/`: 3D model files (`.glb`).
 - Course PDFs are **not** copied here: they come from `sample-courses/` (see its README; OpenStax,
   CC BY / CC BY-NC-SA 4.0).
+
+The bundle also carries the teacher's **labs** (circuit, molecules, buoyancy and the other kinds) with their goals and palettes. Student lab sessions are not exported.

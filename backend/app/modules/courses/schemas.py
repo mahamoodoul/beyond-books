@@ -36,6 +36,7 @@ class CourseOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     can_manage: bool = False
+    join_code: str | None = None  # shown to managers only
 
 
 class EnrollRequest(BaseModel):

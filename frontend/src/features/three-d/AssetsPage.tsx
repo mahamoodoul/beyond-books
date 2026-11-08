@@ -13,6 +13,7 @@ import { uploadAssetFile, useAsset, useAssets } from "./api";
 import { DescriptionReview } from "./DescriptionReview";
 import { GenerationTray } from "./GenerationTray";
 import { GenerateSuggested } from "./PlanSceneButton";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 const AssetPreview = lazy(() => import("./components/AssetPreview"));
 
@@ -426,6 +427,7 @@ function Panel({ title, onClose, children }: { title: string; onClose: () => voi
 }
 
 export function AssetsPage() {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const assets = useAssets();
   const [panel, setPanel] = useState<"generate" | "upload" | null>(null);
   const [params] = useSearchParams();
@@ -471,7 +473,7 @@ export function AssetsPage() {
       <GenerationTray className="mb-5" onOpen={setOpen} />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div role="tablist" aria-label="Filter models" className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1">
+        <div role="tablist" aria-label="Filter models" ref={rovingTabs} className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1">
           {tabs.map((t) => (
             <button key={t.key} role="tab" aria-selected={filter === t.key} onClick={() => setFilter(t.key)}
               className={`rounded-md px-3 py-1 text-sm font-medium transition ${filter === t.key ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>

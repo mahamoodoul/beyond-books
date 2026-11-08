@@ -20,7 +20,10 @@ router = APIRouter(prefix="/courses", tags=["courses"])
 
 
 def _out(course: Course, can_manage: bool) -> CourseOut:
-    return CourseOut.model_validate(course).model_copy(update={"can_manage": can_manage})
+    out = CourseOut.model_validate(course)
+    return out.model_copy(
+        update={"can_manage": can_manage, "join_code": out.join_code if can_manage else None}
+    )
 
 
 @router.post("", response_model=CourseOut, status_code=status.HTTP_201_CREATED)

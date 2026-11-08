@@ -29,6 +29,15 @@ echo "[start] migrations applied" >&2
 # Idempotent: seeds the platform 3D library demo asset. Non-fatal so it never blocks the API.
 python -m app.modules.three_d.seed || echo "[start] warning: 3D demo seed failed (continuing)" >&2
 
+# Demo data: the shared courses, the demo teacher/student accounts and analytics students
+# (scripts/seed_deploy.py). On in the Coolify demo deployment; idempotent, so it runs on every
+# start and only adds what is missing. Registration is forced on for the seed only, so it also
+# works when EDU3D_OPEN_REGISTRATION=false. Non-fatal so it never blocks the API.
+if [ "${EDU3D_SEED_DEMO_DATA:-false}" = "true" ]; then
+  EDU3D_OPEN_REGISTRATION=true python "${SEED_ROOT:-/app/seed}/scripts/seed_deploy.py" \
+    || echo "[start] warning: demo data seed failed (continuing)" >&2
+fi
+
 echo "[start] starting uvicorn" >&2
 exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers "${UVICORN_WORKERS:-2}" \
   --proxy-headers --forwarded-allow-ips='*'

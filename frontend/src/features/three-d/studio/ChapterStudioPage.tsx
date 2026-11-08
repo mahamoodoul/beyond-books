@@ -9,6 +9,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 
 import { api, ApiError, errorMessage } from "@/api/client";
+import { plural } from "@/lib/plural";
 import type {
   AssessmentSummary,
   AvailablePart,
@@ -25,7 +26,7 @@ import type {
 import { AnimationsPanel } from "../AnimationsPanel";
 import { GenerationTray } from "../GenerationTray";
 import { Add3DPanel } from "./Add3DPanel";
-import { LessonsStep, QuizStep, ReviewStep, StepFooter, StepNav, type StepKey } from "./ChapterSteps";
+import { LessonsStep, QuizStep, ReviewStep, StepFooter, StepNav, STEPS, type StepKey } from "./ChapterSteps";
 import { GeneratePanel, type PendingChanges, PromptPanel, PublishStatus, SourcePanel } from "./ChapterWorkflow";
 import { Chip, panel, Ring } from "./StudioPage";
 import { useResolved } from "./useStudio";
@@ -33,6 +34,7 @@ import { useResolved } from "./useStudio";
 const StudioViewport = lazy(() => import("./StudioViewport"));
 
 const PRESETS = ["three_quarter", "front", "side", "top"] as const;
+const PRESET_LABELS: Record<(typeof PRESETS)[number], string> = { three_quarter: "Three-quarter view", front: "Front", side: "Side", top: "Top" };
 const CONTROLS = ["rotate", "zoom", "pan", "select_component"] as const;
 const btn = "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:border-[#38b2ac]/60 hover:text-slate-900 disabled:opacity-40";
 const btnPrimary = "inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#38b2ac] px-3 py-1.5 text-sm font-semibold text-[#0b0d16] hover:bg-[#4fc7c0] disabled:opacity-40";
@@ -135,10 +137,10 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
         <label className="block text-xs uppercase tracking-wide text-slate-500">Title
           <input className={`${input} mt-1`} value={draft.title} maxLength={200} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
         </label>
-        <div className="grid grid-cols-3 gap-2">
-          <label className="text-xs uppercase tracking-wide text-slate-500">Camera
+        <div className="grid grid-cols-2 gap-2">
+          <label className="col-span-2 text-xs uppercase tracking-wide text-slate-500">Camera
             <select className={`${input} mt-1`} value={cam.preset ?? "three_quarter"} onChange={(e) => setDraft({ ...draft, camera: { ...cam, preset: e.target.value as (typeof PRESETS)[number] } })}>
-              {PRESETS.map((p) => <option key={p} value={p}>{p.replace("_", " ")}</option>)}
+              {PRESETS.map((p) => <option key={p} value={p}>{PRESET_LABELS[p]}</option>)}
             </select>
           </label>
           <label className="text-xs uppercase tracking-wide text-slate-500">Min dist
@@ -251,7 +253,9 @@ export default function ChapterStudioPage() {
     quiz: quizList.length > 0,
     publish: ch.status === "published",
   };
-  const step = (params.get("step") as StepKey | null) ?? (lessonList.length ? "3d" : "source");
+  // A stale or mistyped ?step= falls back to the default step instead of an empty page.
+  const requested = params.get("step");
+  const step: StepKey = STEPS.some((s) => s.key === requested) ? (requested as StepKey) : lessonList.length ? "3d" : "source";
   const goTo = (s: StepKey) => setParams((p) => { p.set("step", s); return p; }, { replace: true });
   // Anything students don't have yet: never published, or edited since the last publish.
   const stale = (x: { published_version?: number | null; has_unpublished_changes?: boolean }) => !x.published_version || !!x.has_unpublished_changes;
@@ -262,9 +266,9 @@ export default function ChapterStudioPage() {
   };
   const checks = [
     { label: "Chapter text", ok: done.source, detail: done.source ? `${source.data?.passages.length} passages from the textbook` : "No textbook pages linked to this chapter", step: "source" as StepKey },
-    { label: "Lessons", ok: done.lessons, detail: `${lessonList.length} lesson(s), ${lessonList.filter((l) => l.published_version).length} live`, step: "lessons" as StepKey },
+    { label: "Lessons", ok: done.lessons, detail: `${plural(lessonList.length, "lesson")}, ${lessonList.filter((l) => l.published_version).length} live`, step: "lessons" as StepKey },
     { label: "3D models", ok: done["3d"], detail: `${lessonsWith}/${lessonList.length} lessons have 3D · ${totals.explained}/${totals.parts} parts explained`, step: "3d" as StepKey },
-    { label: "Quiz", ok: done.quiz, detail: quizList.length ? `${quizList.length} quiz(zes)` : "No quiz yet", step: "quiz" as StepKey },
+    { label: "Quiz", ok: done.quiz, detail: quizList.length ? plural(quizList.length, "quiz", "quizzes") : "No quiz yet", step: "quiz" as StepKey },
   ];
 
   return (
@@ -273,11 +277,12 @@ export default function ChapterStudioPage() {
       <header className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center gap-3 px-5 py-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-teal-700">Chapter Studio</p>
+            <h1 className="visually-hidden">Chapter Studio: {ch.title}</h1>
+            <p aria-hidden="true" className="text-xs font-semibold uppercase tracking-widest text-teal-700">Chapter Studio</p>
             <nav aria-label="Breadcrumb" className="mt-0.5 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
               <Link className="hover:text-slate-900" to="/teacher/courses">Courses</Link><span aria-hidden>›</span>
               {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span aria-hidden>›</span></>}
-              <span className="font-semibold text-slate-900">{ch.position}. {ch.title}</span>
+              <span aria-current="page" className="font-semibold text-slate-900">{ch.position}. {ch.title}</span>
             </nav>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -290,7 +295,8 @@ export default function ChapterStudioPage() {
         </div>
       </header>
 
-      <main className="space-y-6">
+      {/* the app layout already provides <main>; a second one would be an invalid landmark */}
+      <div className="space-y-6">
         {step === "source" && (
           <section>
             <div className="mb-4">
@@ -323,9 +329,9 @@ export default function ChapterStudioPage() {
               </div>
             </div>
             <GenerationTray className="mb-4" onOpen={(id) => window.open(`/teacher/assets?open=${id}`, "_blank", "noopener")} />
-            <div className="grid gap-4 xl:grid-cols-[1fr_26rem]">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
               <div className="space-y-4">
-                <section className="relative h-[46vh] min-h-72 overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
+                <section className="keep-light relative h-[46vh] min-h-72 overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
                   {!selected ? (
                     <div className="grid h-full place-items-center p-6 text-center text-slate-500">No 3D yet. Use “Add 3D” on a lesson below.</div>
                   ) : resolved.error ? (
@@ -368,7 +374,7 @@ export default function ChapterStudioPage() {
                           </button>
                         </div>
                         {scenes.length > 0 && (
-                          <ul className="mt-3 grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+                          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
                             {scenes.map((i) => {
                               const pct = i.parts ? Math.round((i.explained / i.parts) * 100) : 0;
                               const active = i.scene.id === selected?.scene.id;
@@ -417,7 +423,7 @@ export default function ChapterStudioPage() {
         {step === "publish" && <ReviewStep chapter={ch} course={course.data} checks={checks} pending={pending} onStep={goTo} />}
 
         <StepFooter step={step} onStep={goTo} />
-      </main>
+      </div>
     </div>
   );
 }

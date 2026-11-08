@@ -28,6 +28,8 @@ class Course(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     grade_level: Mapped[str | None] = mapped_column(String(40))
     status: Mapped[str] = mapped_column(String(20), default=CourseStatus.DRAFT)
     current_version: Mapped[int] = mapped_column(Integer, default=1)
+    # short code a teacher shares so students can enrol themselves at sign-up (see join_codes)
+    join_code: Mapped[str | None] = mapped_column(String(16), unique=True)
 
 
 class CourseEnrollment(UUIDPrimaryKeyMixin, Base):
