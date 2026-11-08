@@ -525,7 +525,6 @@ function Labels({
       button.addEventListener("click", () => {
         if (latest.current.canSelect(id)) latest.current.onSelect(id);
       });
-      // colour on a span: the app's unlayered `button { color: inherit }` beats utilities
       const text = document.createElement("span");
       text.className = "text-slate-900 group-data-[state=on]:text-navy-950";
       text.textContent = c.label;
@@ -557,9 +556,13 @@ function Labels({
     };
   }, [gl, signature, invalidate]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Label sizes (they don't change), measured once each, for the overlap check below.
+  const sizes = useRef<Record<string, { w: number; h: number; wrapH: number }>>({});
+
   useFrame(() => {
     const rt = runtime.current;
     const anim = rt.frame;
+    const placed: { id: string; el: HTMLDivElement; x: number; y: number; depth: number; emphasised: boolean }[] = [];
     for (const c of registered) {
       const id = c.componentId;
       const el = els.current[id];
@@ -571,18 +574,6 @@ function Labels({
         rt.registry.isVisible(id) &&
         (anim.components[id]?.opacity ?? 1) > 0.15 &&
         (!rt.isolated || rt.isolated === id); // focus mode: only the focused part's label
-      let visible = show;
-      if (pos && show) {
-        pos.project(camera);
-        visible = pos.z < 1; // not behind the camera
-        if (visible) {
-          const x = (pos.x * 0.5 + 0.5) * size.width;
-          const y = (-pos.y * 0.5 + 0.5) * size.height;
-          el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`;
-        }
-      }
-      const display = visible ? "" : "none";
-      if (el.style.display !== display) el.style.display = display;
       const emphasised =
         rt.selected === id || anim.highlight === id || anim.annotation?.target === id;
       const state = emphasised ? "on" : "off";
@@ -590,6 +581,40 @@ function Labels({
       const button = el.firstElementChild as HTMLButtonElement | null;
       const tab = latest.current.canSelect(id) ? 0 : -1;
       if (button && button.tabIndex !== tab) button.tabIndex = tab;
+      if (pos && show) {
+        pos.project(camera);
+        if (pos.z < 1) {
+          // not behind the camera
+          const x = (pos.x * 0.5 + 0.5) * size.width;
+          const y = (-pos.y * 0.5 + 0.5) * size.height;
+          el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`;
+          placed.push({ id, el, x, y, depth: pos.z, emphasised });
+          continue;
+        }
+      }
+      if (el.style.display !== "none") el.style.display = "none";
+    }
+
+    // Overlapping labels are unreadable: keep the emphasised one, then the nearest parts, and hide
+    // a label that would cover one already shown. Hidden parts stay in the parts list, and their
+    // labels come back as the view zooms in and they spread apart.
+    placed.sort((a, b) => Number(b.emphasised) - Number(a.emphasised) || a.depth - b.depth);
+    const boxes: { l: number; r: number; t: number; b: number }[] = [];
+    for (const p of placed) {
+      let m = sizes.current[p.id];
+      if (!m) {
+        if (p.el.style.display === "none") p.el.style.display = "";
+        const button = p.el.firstElementChild as HTMLElement | null;
+        m = { w: button?.offsetWidth ?? 0, h: button?.offsetHeight ?? 0, wrapH: p.el.offsetHeight };
+        if (m.w && m.h) sizes.current[p.id] = m;
+      }
+      // the wrapper is centred on the point and lifted 12px (-translate-y-3); the button is on top
+      const top = p.y - m.wrapH / 2 - 12;
+      const box = { l: p.x - m.w / 2 - 2, r: p.x + m.w / 2 + 2, t: top - 2, b: top + m.h + 2 };
+      const clash = boxes.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
+      const display = clash && !p.emphasised ? "none" : "";
+      if (p.el.style.display !== display) p.el.style.display = display;
+      if (!display) boxes.push(box);
     }
   });
 
