@@ -59,7 +59,8 @@ services:
     ports: ["80:80", "443:443", "443:443/udp"]
     environment:
       # a domain -> https with Let's Encrypt; an IP -> plain http on port 80
-      SITE_ADDRESS: ${DOMAIN:-:80}
+      # SITE_ADDRESS can list several addresses, e.g. the domain plus the plain-http IP
+      SITE_ADDRESS: ${SITE_ADDRESS:-${DOMAIN:-:80}}
       ACME_EMAIL: ${ACME_EMAIL:-admin@example.com}
     volumes:
       - ./infrastructure/docker/Caddyfile:/etc/caddy/Caddyfile:ro
