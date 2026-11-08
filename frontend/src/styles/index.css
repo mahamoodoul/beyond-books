@@ -2626,3 +2626,10 @@ main[tabindex="-1"]:focus { outline: none; }
 .theme-root[data-theme="dark"] .divide-slate-200:not(.keep-light, .keep-light *) > :not(:last-child) { border-color: var(--line); }
 .theme-root[data-theme="dark"] .ring-slate-200:not(.keep-light, .keep-light *) { --tw-ring-color: var(--line); }
 .theme-root[data-theme="dark"] .text-accent:not(.keep-light, .keep-light *) { color: var(--accent); }
+/* App top bar on phones: the 1200px rule's `.brand { min-width: 175px }` comes later in this file
+   than the phone rules, so it pushed "Sign out" ~11px off a 360px screen. */
+@media (max-width: 820px) { .topbar .brand { min-width: 0; } }
+@media (max-width: 350px) {
+  .topbar { padding-right: 10px; padding-left: 10px; }
+  .topbar .bb-wordmark { display: none; }
+}
