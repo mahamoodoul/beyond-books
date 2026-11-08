@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, type ReactNode, type RefObject } 
 import type { Group, Object3D } from "three";
 
 import type { ResolvedAsset, SceneComponent, SceneSpec } from "@/api/generated/schema";
+import { CooperativeWheel } from "@/features/three-d/library/components/CooperativeWheel";
 
 import { componentFor, disposeTree, isolateMaterials, setHighlight } from "../runtime/interaction";
 import { GENERATORS } from "../runtime/procedural";
@@ -124,6 +125,7 @@ export function SceneCanvas({ spec, assets, selected, onSelect, onMeshesLoaded, 
         maxDistance={maxD}
         enableDamping={!reducedMotion}
       />
+      <CooperativeWheel />
     </Canvas>
   );
 }

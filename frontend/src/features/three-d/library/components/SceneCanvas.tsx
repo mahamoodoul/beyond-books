@@ -13,6 +13,7 @@ import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/libr
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
 
+import { CooperativeWheel } from "./CooperativeWheel";
 import {
   PostEffects,
   QualityMonitor,
@@ -83,6 +84,7 @@ export function SceneCanvas(props: SceneCanvasProps) {
         enabled={monitoring && !!props.onQualityDecline}
         onDecline={() => props.onQualityDecline?.()}
       />
+      <CooperativeWheel />
     </Canvas>
   );
 }

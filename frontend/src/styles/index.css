@@ -2475,3 +2475,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .ex-panel-docked .ex-tile-hero { aspect-ratio: 16 / 8; }
   .ex-panel-docked .ex-head h2 { font-size: 26px; }
 }
+
+/* 3D viewers: "Hold Ctrl/⌘ and scroll to zoom" (features/three-d/library/components/CooperativeWheel.tsx) */
+.viewer-wheel-hint { position: absolute; left: 50%; top: 50%; z-index: 30; max-width: calc(100% - 24px); padding: 8px 12px; border-radius: 10px; background: rgb(23 23 33 / 80%); color: #fff; font-size: var(--fs-sm); text-align: center; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); transition: opacity .2s ease; }
+.viewer-wheel-hint[data-visible="true"] { opacity: 1; }
