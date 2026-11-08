@@ -80,14 +80,14 @@ export function CoursePage() {
       </header>
       <ErrorAlert error={update.error} />
 
-      <div role="tablist" className="mb-6 flex gap-1 overflow-x-auto border-b border-slate-200">
+      <div role="tablist" className="mb-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--line)]">
         {TABS.map((t) => (
           <button
             key={t}
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`-mb-px shrink-0 border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900 text-navy-950" : "border-transparent text-slate-500 hover:text-slate-800"}`}
+            className={`shrink-0 border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900 text-navy-950" : "border-transparent text-slate-500 hover:text-slate-800"}`}
           >
             {t}
           </button>

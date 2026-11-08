@@ -1375,7 +1375,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .live-workspace .text-slate-500 { color: var(--muted); }
 .live-workspace .text-slate-600, .live-workspace .text-slate-700, .live-workspace .text-slate-800 { color: var(--ink-soft); }
 .live-workspace .bg-surface { background: var(--bg); }
-.live-workspace [role="tablist"] { overflow-x: auto; }
+/* overflow-x alone would make overflow-y auto too, adding a stray vertical scrollbar */
+.live-workspace [role="tablist"] { overflow-x: auto; overflow-y: hidden; }
 .live-workspace [role="tab"] { white-space: nowrap; }
 .live-workspace .progress-panel { margin-bottom: 22px; }
 .auth-register { max-width: 520px; margin: 60px auto; padding: 28px; }
