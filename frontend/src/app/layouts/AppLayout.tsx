@@ -6,7 +6,7 @@ import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ErrorAlert, Loading } from "@/components/feedback";
-import { homeFor, useLogout, useMe } from "@/features/auth/auth";
+import { homeFor, useLogout, useMe, useDemoMode } from "@/features/auth/auth";
 import { usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
 import { useScrollFade } from "@/lib/useScrollFade";
 
@@ -29,6 +29,7 @@ const studentNavigation = [
 export function AppLayout() {
   const me = useMe();
   const logout = useLogout();
+  const demo = useDemoMode();
   const navigate = useNavigate();
   const { theme, toggleTheme } = usePreferences();
   const location = useLocation();
@@ -56,7 +57,7 @@ export function AppLayout() {
       <div className="topbar-actions">
         <button aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} className="icon-button" onClick={toggleTheme} type="button"><Icon name={theme === "light" ? "moon" : "sun"} size={18} /></button>
         <Link to="/account" className="user-avatar" aria-label={`Account: ${user?.display_name ?? "Profile"}`}>{user?.display_name.split(" ").map(p => p[0]).slice(0, 2).join("")}</Link>
-        <button className="button button-secondary" disabled={logout.isPending} onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/login", { replace: true }) })}>Sign out</button>
+        <button className="button button-secondary" disabled={logout.isPending} onClick={() => logout.mutate(undefined, { onSuccess: () => navigate(demo.enabled ? "/" : "/login", { replace: true }) })}>{demo.enabled ? "Exit" : "Sign out"}</button>
       </div>
     </header>
     <nav aria-label="Mobile navigation" className="mobile-nav"><div className="mobile-nav-scroll scroll-fade" ref={mobileNavScroller}>{navigation.map(item =>

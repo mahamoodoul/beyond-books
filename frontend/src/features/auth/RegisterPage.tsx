@@ -117,7 +117,7 @@ export function RegisterPage() {
   const generalError = register.error && Object.keys(server).length === 0 ? register.error : login.error;
 
   const demo = useDemoMode();
-  if (demo.enabled) return <Navigate to="/login" replace />; // demo mode: no accounts to create
+  if (demo.enabled) return <Navigate to="/" replace />; // demo mode: no accounts to create
 
   return (
     <main id="main-content" tabIndex={-1} data-page-title="Create an account">

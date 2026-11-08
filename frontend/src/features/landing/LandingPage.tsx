@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { usePreferences } from "@/app/providers/PreferencesProvider";
+import { useDemoMode } from "@/features/auth/auth";
 import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 
@@ -39,6 +40,10 @@ const features = [
 export function LandingPage() {
   const { theme } = usePreferences();
   const reduced = usePrefersReducedMotion();
+  // Demo mode has no sign-in: the portal pages enter as the demo teacher or student by themselves.
+  const demo = useDemoMode().enabled;
+  const teacherTo = demo ? "/teacher" : "/login?role=teacher";
+  const studentTo = demo ? "/student" : "/login?role=student";
   return (
     <main id="main-content" tabIndex={-1} className="landing-page">
       <header className="landing-header">
@@ -51,8 +56,17 @@ export function LandingPage() {
           <a href="#example">Example</a>
         </nav>
         <div className="landing-header-actions">
-          <Link className="landing-signin" to="/login">Sign in</Link>
-          <Link className="button button-primary landing-get-started" to="/register">Get started <Icon name="arrow-right" size={15} /></Link>
+          {demo ? (
+            <>
+              <Link className="landing-signin" to={studentTo}>Student</Link>
+              <Link className="button button-primary landing-get-started" to={teacherTo}>Teacher <Icon name="arrow-right" size={15} /></Link>
+            </>
+          ) : (
+            <>
+              <Link className="landing-signin" to="/login">Sign in</Link>
+              <Link className="button button-primary landing-get-started" to="/register">Get started <Icon name="arrow-right" size={15} /></Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -62,8 +76,8 @@ export function LandingPage() {
           <h1 id="landing-title">Turn textbooks into <span>interactive 3D learning.</span></h1>
           <p>Make complex ideas easier to see, explore and remember. Go from a trusted source to a whole new way of understanding.</p>
           <div className="landing-cta-row">
-            <Link className="button button-primary" to="/login?role=teacher"><Icon name="users" size={17} /> I’m a teacher <Icon name="arrow-right" size={15} /></Link>
-            <Link className="button landing-student-cta" to="/login?role=student"><Icon name="lightbulb" size={16} /> I’m a student</Link>
+            <Link className="button button-primary" to={teacherTo}><Icon name="users" size={17} /> I’m a teacher <Icon name="arrow-right" size={15} /></Link>
+            <Link className="button landing-student-cta" to={studentTo}><Icon name="lightbulb" size={16} /> I’m a student</Link>
           </div>
           <div className="landing-trust-line"><Icon name="check" size={14} /> Teacher-guided <span>·</span> Source-grounded <span>·</span> Made for understanding</div>
         </div>
@@ -138,17 +152,17 @@ export function LandingPage() {
             <li><Icon name="check" size={15} /> Interactive heart model & blood-flow animation</li>
             <li><Icon name="check" size={15} /> Helpful assessment feedback for every learner</li>
           </ul>
-          <Link className="text-link" to="/login?role=student">Open your student workspace <Icon name="arrow-right" size={16} /></Link>
+          <Link className="text-link" to={studentTo}>Open your student workspace <Icon name="arrow-right" size={16} /></Link>
         </div>
       </section>
 
       <section aria-labelledby="final-cta-title" className="landing-final-cta">
         <span className="eyebrow eyebrow-light">THE NEXT “AHA!” IS CLOSER THAN YOU THINK</span>
         <h2 id="final-cta-title">Ready to see learning differently?</h2>
-        <p>Create your account and bring your classroom to life.</p>
+        <p>{demo ? "Choose your role and jump straight in." : "Create your account and bring your classroom to life."}</p>
         <div className="landing-cta-row">
-          <Link className="button final-cta-light" to="/login?role=teacher">I’m a teacher <Icon name="arrow-right" size={15} /></Link>
-          <Link className="button final-cta-outline" to="/login?role=student">I’m a student</Link>
+          <Link className="button final-cta-light" to={teacherTo}>I’m a teacher <Icon name="arrow-right" size={15} /></Link>
+          <Link className="button final-cta-outline" to={studentTo}>I’m a student</Link>
         </div>
       </section>
       <footer className="landing-footer">

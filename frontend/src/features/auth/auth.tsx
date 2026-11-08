@@ -55,7 +55,12 @@ export function useDemoLogin() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (role: "teacher" | "student") => api.post<UserOut>("/auth/demo-login", { role }),
-    onSuccess: (user) => { qc.clear(); qc.setQueryData(ME_KEY, user); },
+    onSuccess: (user) => {
+      // Keep "me" and the demo flag: clear() would orphan them and mounted components (the
+      // header) would go on showing the previous account after a switch.
+      qc.removeQueries({ predicate: (query) => query.queryKey[0] !== ME_KEY[0] && query.queryKey[0] !== "auth-demo" });
+      qc.setQueryData(ME_KEY, user);
+    },
   });
 }
 
@@ -112,9 +117,11 @@ export function RequireAuth({
   const location = useLocation();
   if (me.isPending || (!me.data && demo.pending)) return <Loading />;
   if (me.error) return <ErrorAlert error={me.error} />;
-  // demo mode: no sign-in; enter as the account this page needs (the teacher for shared pages)
+  // demo mode: no sign-in; enter as the account this page needs. The shared layout has no role of
+  // its own, so the portal in the URL decides (the teacher for shared pages).
   if (demo.enabled && (!me.data || (role && me.data.account_type !== role))) {
-    return <DemoEnter role={role ?? "teacher"}>{children}</DemoEnter>;
+    const fallback = location.pathname.startsWith("/student") ? "student" : "teacher";
+    return <DemoEnter role={role ?? fallback}>{children}</DemoEnter>;
   }
   if (!me.data) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (role && me.data.account_type !== role) return <Navigate to={homeFor(me.data)} replace />;
