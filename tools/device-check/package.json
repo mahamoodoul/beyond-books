@@ -1,0 +1,14 @@
+{
+  "name": "device-check",
+  "private": true,
+  "type": "module",
+  "description": "Old-device usability, performance and security check for Beyond Books (local only).",
+  "scripts": {
+    "check": "node run.mjs",
+    "report": "node report.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "playwright": "^1.50.0"
+  }
+}
