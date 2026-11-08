@@ -8,6 +8,8 @@ import { OutlinePanel } from "@/features/ai/OutlinePanel";
 import { AnalyticsPanel } from "@/features/analytics/AnalyticsPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
+import { useScrollFade } from "@/lib/useScrollFade";
+
 import { useCourse, useUpdateCourse } from "./api";
 import { ChapterBoard, useChapterOverview } from "./ChapterBoard";
 import { ProgressPanel } from "./ProgressPanel";
@@ -39,6 +41,7 @@ export function CoursePage() {
   const [chosenTab, setTab] = useState<Tab | null>(null);
   // New courses start with their sources; once there are chapters, the chapter list comes first.
   const tab: Tab = chosenTab ?? (overview.data && overview.data.length === 0 ? "Sources & outline" : "Chapters");
+  const tabStrip = useScrollFade<HTMLDivElement>(tab);
 
   if (course.isPending) return <Loading />;
   if (course.error) return <ErrorAlert error={course.error} />;
@@ -81,7 +84,7 @@ export function CoursePage() {
       </header>
       <ErrorAlert error={update.error} />
 
-      <div role="tablist" className="mb-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--line)]">
+      <div role="tablist" ref={tabStrip} className="scroll-fade mb-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--line)]">
         {TABS.map((t) => (
           <button
             key={t}

@@ -469,7 +469,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .brand { min-width: unset; margin-right: auto; }
   .topbar-nav { display: none; }
   .topbar-actions { margin-left: 16px; }
-  .mobile-nav { position: sticky; z-index: 19; top: 64px; display: flex; justify-content: center; gap: 5px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(12px); }
+  .mobile-nav { position: sticky; z-index: 19; top: 64px; display: flex; justify-content: safe center; gap: 5px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(12px); }
   .mobile-nav-link { display: flex; min-height: 37px; align-items: center; gap: 7px; padding: 0 12px; border-radius: 9px; color: var(--muted); font-size: var(--fs-sm); font-weight: 600; }
   .mobile-nav-link.is-active { background: var(--accent-soft); color: var(--accent-deep); }
   .page-content, .app-footer { width: calc(100% - 42px); }
@@ -2479,3 +2479,13 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 /* 3D viewers: "Hold Ctrl/⌘ and scroll to zoom" (features/three-d/library/components/CooperativeWheel.tsx) */
 .viewer-wheel-hint { position: absolute; left: 50%; top: 50%; z-index: 30; max-width: calc(100% - 24px); padding: 8px 12px; border-radius: 10px; background: rgb(23 23 33 / 80%); color: #fff; font-size: var(--fs-sm); text-align: center; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); transition: opacity .2s ease; }
 .viewer-wheel-hint[data-visible="true"] { opacity: 1; }
+
+/* Phone nav links scroll inside the bar, so only the links fade at the edges (lib/useScrollFade). */
+.mobile-nav-scroll { display: flex; flex: 1 1 auto; min-width: 0; gap: inherit; justify-content: inherit; overflow-x: auto; scrollbar-width: none; }
+.mobile-nav-scroll::-webkit-scrollbar { display: none; }
+/* Horizontal strips (phone nav, tab bars): fade the edge that hides more items. */
+.scroll-fade { scrollbar-width: none; }
+.scroll-fade::-webkit-scrollbar { display: none; }
+.scroll-fade[data-fade-end] { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent); }
+.scroll-fade[data-fade-start] { -webkit-mask-image: linear-gradient(to right, transparent, #000 44px); mask-image: linear-gradient(to right, transparent, #000 44px); }
+.scroll-fade[data-fade-start][data-fade-end] { -webkit-mask-image: linear-gradient(to right, transparent, #000 44px, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(to right, transparent, #000 44px, #000 calc(100% - 44px), transparent); }

@@ -8,6 +8,7 @@ import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { homeFor, useLogout, useMe } from "@/features/auth/auth";
 import { usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
+import { useScrollFade } from "@/lib/useScrollFade";
 
 const teacherNavigation = [
   { to: "/teacher", label: "Overview", icon: "grid" as const, end: true },
@@ -37,6 +38,7 @@ export function AppLayout() {
     enabled: !!arLessonId,
   });
   const showScan = !!arLessonId && (arScenes.data ?? []).some(usesInteractiveHeart);
+  const mobileNavScroller = useScrollFade<HTMLDivElement>(location.pathname);
   if (me.isPending) return <Loading />;
   if (me.error) return <ErrorAlert error={me.error} />;
   const user = me.data;
@@ -55,7 +57,7 @@ export function AppLayout() {
         <button className="button button-secondary" disabled={logout.isPending} onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/login", { replace: true }) })}>Sign out</button>
       </div>
     </header>
-    <nav aria-label="Mobile navigation" className="mobile-nav">{navigation.map(item =>
+    <nav aria-label="Mobile navigation" className="mobile-nav"><div className="mobile-nav-scroll scroll-fade" ref={mobileNavScroller}>{navigation.map(item =>
       <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `mobile-nav-link${isActive ? " is-active" : ""}`}><Icon name={item.icon} size={19} /><span>{item.label}</span></NavLink>
     )}
       {showScan && (
@@ -63,7 +65,7 @@ export function AppLayout() {
           <Icon name="eye" size={19} /><span>Scan page</span>
         </Link>
       )}
-    </nav>
+    </div></nav>
     <main className="page-content live-workspace"><ErrorAlert error={logout.error} /><Outlet /></main>
     <footer className="app-footer"><BeyondBooksLogo animated={false} showWordmark size={35} variant={theme} /><span>Learning, brought to life.</span></footer>
   </div>;
