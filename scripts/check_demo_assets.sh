@@ -24,3 +24,22 @@ P=packages/demo-assets/previews
 "$PY" scripts/validate_asset.py $M/water_molecule_v1.json \
   --scene $F/scene_water_molecule_01.json --animation $F/animation_water_shape_01.json \
   --preview $P/water_molecule_v1.png
+"$PY" scripts/validate_asset.py $M/human_heart_v2.json \
+  --scene $F/scene_heart_03.json --animation $F/animation_heart_tour_01.json \
+  --preview $P/human_heart_v2.png
+"$PY" scripts/validate_asset.py $M/human_lungs_v1.json \
+  --scene $F/scene_lungs_01.json --animation $F/animation_lungs_tour_01.json \
+  --preview $P/human_lungs_v1.png
+"$PY" scripts/validate_asset.py $M/human_brain_v1.json \
+  --scene $F/scene_brain_01.json --animation $F/animation_brain_tour_01.json \
+  --preview $P/human_brain_v1.png
+"$PY" scripts/validate_asset.py $M/human_body_v1.json \
+  --scene $F/scene_body_01.json --animation $F/animation_body_tour_01.json \
+  --preview $P/human_body_v1.png
+"$PY" scripts/validate_asset.py $M/dna_replication_v1.json \
+  --scene $F/scene_dna_replication_01.json \
+  --animation $F/animation_dna_fork_in_action_01.json \
+  --preview $P/dna_replication_v1.png
+"$PY" scripts/validate_asset.py $M/car_engine_v1.json \
+  --scene $F/scene_car_engine_01.json --animation $F/animation_engine_four_stroke_01.json \
+  --preview $P/car_engine_v1.png

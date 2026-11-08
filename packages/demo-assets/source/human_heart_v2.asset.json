@@ -1,0 +1,192 @@
+{
+  "asset_id": "human_heart_v2",
+  "version": 1,
+  "name": "Human heart (detailed)",
+  "description": "External anatomy of the heart: four chambers with auricles, aorta with its arch branches, pulmonary trunk and arteries, venae cavae, four pulmonary veins, coronary arteries and cardiac veins with epicardial fat in the grooves.",
+  "subject": "biology",
+  "category": "anatomy",
+  "units": "1 unit ≈ 5 cm",
+  "components": [
+    {
+      "mesh_name": "right_atrium",
+      "label": "Right atrium",
+      "explode_offset": [
+        -1.57,
+        -0.411,
+        0.219
+      ],
+      "label_anchor": [
+        -0.561,
+        0.039,
+        -0.06
+      ]
+    },
+    {
+      "mesh_name": "right_ventricle",
+      "label": "Right ventricle",
+      "explode_offset": [
+        -0.199,
+        -1.457,
+        0.818
+      ],
+      "label_anchor": [
+        0.169,
+        -0.918,
+        0.589
+      ]
+    },
+    {
+      "mesh_name": "left_atrium",
+      "label": "Left atrium",
+      "explode_offset": [
+        1.023,
+        -0.404,
+        -0.928
+      ],
+      "label_anchor": [
+        0.603,
+        0.107,
+        -0.497
+      ]
+    },
+    {
+      "mesh_name": "left_ventricle",
+      "label": "Left ventricle",
+      "explode_offset": [
+        0.664,
+        -1.667,
+        0.189
+      ],
+      "label_anchor": [
+        0.686,
+        -0.876,
+        0.53
+      ]
+    },
+    {
+      "mesh_name": "aorta",
+      "label": "Aorta",
+      "explode_offset": [
+        0.585,
+        1.076,
+        -0.806
+      ],
+      "label_anchor": [
+        0.616,
+        1.716,
+        -0.415
+      ]
+    },
+    {
+      "mesh_name": "pulmonary_trunk",
+      "label": "Pulmonary trunk",
+      "explode_offset": [
+        0.108,
+        1.211,
+        0.801
+      ],
+      "label_anchor": [
+        0.36,
+        0.496,
+        0.107
+      ]
+    },
+    {
+      "mesh_name": "superior_vena_cava",
+      "label": "Superior vena cava",
+      "explode_offset": [
+        -1.23,
+        1.317,
+        -0.094
+      ],
+      "label_anchor": [
+        -0.127,
+        0.601,
+        -0.039
+      ]
+    },
+    {
+      "mesh_name": "inferior_vena_cava",
+      "label": "Inferior vena cava",
+      "explode_offset": [
+        -1.055,
+        -1.517,
+        -0.296
+      ],
+      "label_anchor": [
+        -0.127,
+        -0.513,
+        -0.118
+      ]
+    },
+    {
+      "mesh_name": "pulmonary_veins",
+      "label": "Pulmonary veins",
+      "explode_offset": [
+        0.457,
+        -0.168,
+        -1.57
+      ],
+      "label_anchor": [
+        1.099,
+        0.239,
+        -0.213
+      ]
+    },
+    {
+      "mesh_name": "coronary_arteries",
+      "label": "Coronary arteries",
+      "explode_offset": [
+        0.24,
+        -1.704,
+        0.241
+      ],
+      "label_anchor": [
+        0.203,
+        0.203,
+        0.9
+      ]
+    },
+    {
+      "mesh_name": "cardiac_veins",
+      "label": "Cardiac veins",
+      "explode_offset": [
+        0.287,
+        -1.787,
+        0.138
+      ],
+      "label_anchor": [
+        0.845,
+        0.604,
+        -0.663
+      ]
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "packages/demo-assets/source/human_anatomy_v1.blend (Blender 5.2, glTF exporter)",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Chamber shapes and vessel paths are simplified and coronary branching is reduced; valves and the interior are not modelled. Needs cardiologist review before student use."
+}

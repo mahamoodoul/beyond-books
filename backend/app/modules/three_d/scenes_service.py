@@ -25,6 +25,7 @@ from app.modules.three_d.models import (
     ThreeDAssetVersion,
     ThreeDScene,
 )
+from app.modules.three_d.preview import preview_url
 from app.modules.three_d.procedural import validate_procedural
 from app.modules.three_d.schemas import (
     AvailablePart,
@@ -313,6 +314,7 @@ def resolve_scene(db: Session, user: User, scene_id: uuid.UUID) -> ResolvedScene
             insights=dict((v.metadata_json or {}).get("insights") or {}),
             tour=(v.metadata_json or {}).get("tour"),
             parts=_reviewed_parts(v.metadata_json or {}),
+            preview_url=preview_url(v),
         )
         for a, v in check.assets
     ]
@@ -366,9 +368,26 @@ def student_studio_scenes(db: Session, user: User) -> list[StudioSceneOut]:
             course_id=course.id,
             course_title=course.title,
             subject=course.subject,
+            preview_url=_scene_preview(db, scene.published_spec or {}),
         )
         for scene, lesson, chapter, course in rows
     ]
+
+
+def _scene_preview(db: Session, spec: dict[str, Any]) -> str | None:
+    """Picture of a scene's first model (scenes show one main model)."""
+    refs = spec.get("asset_refs") or []
+    if not refs:
+        return None
+    v = db.scalar(
+        select(ThreeDAssetVersion)
+        .join(ThreeDAsset, ThreeDAsset.id == ThreeDAssetVersion.asset_id)
+        .where(
+            ThreeDAsset.slug == refs[0].get("asset_id"),
+            ThreeDAssetVersion.version_number == refs[0].get("version"),
+        )
+    )
+    return preview_url(v)
 
 
 def usable_assets_for_course(

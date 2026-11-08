@@ -50,6 +50,7 @@ export function CoursePage() {
   if (course.error) return <ErrorAlert error={course.error} />;
   const c = course.data;
   const published = c.status === "published";
+  const open = c.open_to_all_students ?? false;
   const style = subjectStyle(c.subject, c.title);
   const chapters = overview.data ?? [];
   const sum = (k: "lessons" | "scenes" | "quizzes") => chapters.reduce((n, ch) => n + (ch[k] ?? 0), 0);
@@ -65,8 +66,27 @@ export function CoursePage() {
             <p className="text-sm text-white/80">{[c.subject, c.grade_level].filter(Boolean).join(" · ") || "Course"}</p>
             <h1 className="text-xl font-semibold break-words sm:text-2xl">{c.title}</h1>
             {c.description && <p className="mt-1 max-w-3xl text-sm text-white/85">{c.description}</p>}
+            {open && (
+              <p className="mt-2 text-xs font-medium text-white/85">
+                {published ? "Every student can see this course in My courses." : "Every student will see this course once it is published."}
+              </p>
+            )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={open}
+              disabled={update.isPending}
+              onClick={() => update.mutate({ open_to_all_students: !open })}
+              title="Open: every student is added to this course automatically. Off: only students you enroll."
+              className="inline-flex items-center gap-2 rounded-md bg-white/15 px-3 py-1.5 text-sm font-medium text-white hover:bg-white/25 disabled:opacity-60"
+            >
+              <span aria-hidden className={`relative inline-block h-4 w-7 rounded-full transition-colors ${open ? "bg-emerald-400" : "bg-white/35"}`}>
+                <span className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-all ${open ? "left-3.5" : "left-0.5"}`} />
+              </span>
+              Open to all students
+            </button>
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${published ? "bg-white text-emerald-800" : "bg-white/20 text-white"}`}>{published ? "Published" : "Draft"}</span>
             <button
               type="button"

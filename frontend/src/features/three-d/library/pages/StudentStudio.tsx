@@ -5,7 +5,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
-import { Link, Navigate, NavLink, useParams } from "react-router";
+import { Link, Navigate, useNavigate, useParams } from "react-router";
 
 import { api } from "@/api/client";
 import type { ResolvedScene, StudioSceneOut } from "@/api/generated/schema";
@@ -19,9 +19,6 @@ interface TourMeta {
   intro: string;
   steps: { part: string; connection: string }[];
 }
-
-const pill = (active: boolean) =>
-  `rounded-full px-3 py-1 text-sm ${active ? "bg-navy-700" : "bg-white shadow-sm hover:bg-slate-50"}`;
 
 function useStudioScenes() {
   return useQuery({ queryKey: ["studio-scenes"], queryFn: () => api.get<StudioSceneOut[]>("/studio/scenes") });
@@ -41,13 +38,13 @@ function registryFor(data: ResolvedScene): AssetRegistry {
         components: a.node_names.map((n) => ({ mesh_name: n, label: labels.get(n) ?? n.replace(/_/g, " ") })),
         review_status: "approved",
       };
-      return [`${a.asset_id}@${a.version}`, { meta, url: a.url }];
+      return [`${a.asset_id}@${a.version}`, { meta, url: a.url, previewUrl: a.preview_url }];
     }),
   );
   return {
     resolve: (ref) => {
       const hit = metas.get(`${ref.asset_id}@${ref.version}`);
-      return hit ? { ref, meta: hit.meta, url: hit.url } : null;
+      return hit ? { ref, meta: hit.meta, url: hit.url, previewUrl: hit.previewUrl } : null;
     },
   };
 }
@@ -148,6 +145,7 @@ export function SceneStudio({ sceneId, onEvent }: { sceneId: string; onEvent?: (
 /** /studio and /studio/scene/:studioSceneId for students. */
 export function StudentStudio() {
   const { studioSceneId } = useParams();
+  const navigate = useNavigate();
   const scenes = useStudioScenes();
   const list = scenes.data ?? [];
   const current = list.find((s) => s.scene_id === studioSceneId);
@@ -179,21 +177,25 @@ export function StudentStudio() {
               : "3D models from your courses appear here once your teacher publishes them."}
           </p>
         </div>
-        {courses.map((c) => (
-          <nav key={c.title} aria-label={`3D models: ${c.title}`} className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{c.title}</span>
-            {c.items.map((s) => (
-              <NavLink key={s.scene_id} to={`/studio/scene/${s.scene_id}`} className={() => pill(s.scene_id === studioSceneId)}>
-                {/* colour on a span: the app's unlayered `a { color: inherit }` beats utilities */}
-                <span className={s.scene_id === studioSceneId ? "text-white" : "text-slate-700"}>{s.title}</span>
-              </NavLink>
-            ))}
-          </nav>
-        ))}
-        {current && (
-          <Link to={`/student/lessons/${current.lesson_id}`} className="inline-block text-sm text-accent hover:underline">
-            Open the lesson →
-          </Link>
+        {list.length > 0 && (
+          <div className="studio-picker">
+            <label className="studio-picker-field">
+              <span>Your 3D models ({list.length})</span>
+              <select onChange={(e) => e.target.value && navigate(`/studio/scene/${e.target.value}`)} value={current?.scene_id ?? ""}>
+                <option disabled value="">Choose a 3D model…</option>
+                {courses.length > 1
+                  ? courses.map((c) => (
+                      <optgroup key={c.title} label={c.title}>
+                        {c.items.map((sc) => <option key={sc.scene_id} value={sc.scene_id}>{sc.title}</option>)}
+                      </optgroup>
+                    ))
+                  : list.map((sc) => <option key={sc.scene_id} value={sc.scene_id}>{sc.title}</option>)}
+              </select>
+            </label>
+            {current && (
+              <Link className="studio-picker-link" to={`/student/lessons/${current.lesson_id}`}>Open the lesson →</Link>
+            )}
+          </div>
         )}
       </div>
       {current ? (

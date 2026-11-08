@@ -1896,6 +1896,10 @@ main[tabindex="-1"]:focus { outline: none; }
 .lesson-contents-link .path-status-half { width: 9px; height: 9px; }
 .lesson-complete { display: grid; gap: 8px; }
 .lesson-complete .button { display: flex; width: 100%; min-height: 46px; justify-content: center; gap: 8px; }
+.lesson-labs { display: grid; gap: 8px; }
+.lesson-labs .button { display: flex; width: 100%; min-height: 50px; align-items: center; justify-content: center; gap: 10px; text-align: left; }
+.lesson-labs .button > span { display: grid; min-width: 0; gap: 1px; }
+.lesson-labs .button small { overflow: hidden; font-size: var(--fs-sm); font-weight: 500; opacity: .85; text-overflow: ellipsis; white-space: nowrap; }
 .lesson-complete-done { display: flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; margin: 0; border-radius: 12px; background: var(--mint-soft); color: var(--mint); font-size: var(--fs-md); font-weight: 650; }
 
 .lesson-pager { display: flex; justify-content: space-between; gap: 12px; padding-top: 18px; border-top: 1px solid var(--line); }
@@ -2633,3 +2637,22 @@ main[tabindex="-1"]:focus { outline: none; }
   .topbar { padding-right: 10px; padding-left: 10px; }
   .topbar .bb-wordmark { display: none; }
 }
+.lesson-visual-placeholder { aspect-ratio: 3 / 4; max-height: 520px; border-radius: 12px; background: linear-gradient(100deg, var(--surface-soft) 30%, var(--surface) 50%, var(--surface-soft) 70%); background-size: 200% 100%; animation: catalog-shimmer 1.4s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .lesson-visual-placeholder { animation: none; } }
+/* Student lesson visual for 3D scenes (picture + "View in 3D" dialog) */
+.lesson-visual-slot { display: grid; align-content: start; gap: 14px; }
+.lesson-visual-buttons { display: grid; gap: 8px; }
+.lesson-visual-empty { display: grid; min-height: 200px; place-items: center; align-content: center; gap: 10px; border: 1px dashed var(--line-strong); border-radius: 12px; background: var(--surface-soft); color: var(--accent-deep); font-size: var(--fs-md); font-weight: 600; }
+.scene-3d-dialog { width: min(1200px, 100%); grid-template-rows: auto minmax(0, 1fr); }
+.scene-3d-body { min-height: min(72vh, 720px); overflow: auto; padding: 12px; background: var(--surface); }
+@media (max-width: 640px) { .scene-3d-dialog { height: 100%; } .scene-3d-body { min-height: 0; padding: 6px; } }
+/* Teacher 3D Studio: model + demo scene pickers */
+.studio-picker { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; }
+.studio-picker-field { display: grid; flex: 1 1 260px; max-width: 420px; gap: 4px; }
+.studio-picker-field > span { color: var(--muted); font-size: var(--fs-xs); font-weight: 650; letter-spacing: .05em; text-transform: uppercase; }
+.studio-picker-field select { width: 100%; min-height: 42px; padding: 0 36px 0 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6880' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; color: var(--ink); font: 500 var(--fs-md) var(--body); appearance: none; cursor: pointer; }
+.studio-picker-field select:focus-visible { border-color: var(--accent); outline: 3px solid var(--accent-soft); outline-offset: 1px; }
+.studio-picker-field select:disabled { cursor: not-allowed; opacity: .7; }
+.studio-picker-link { min-height: 42px; display: inline-flex; align-items: center; color: var(--accent-deep); font-size: var(--fs-md); font-weight: 650; text-decoration: none; }
+.studio-picker-link:hover { text-decoration: underline; }
+@media (max-width: 640px) { .studio-picker-field { flex-basis: 100%; max-width: none; } }

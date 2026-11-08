@@ -5,11 +5,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.errors import ConflictError, PermissionDeniedError, UnauthenticatedError
+from app.core.errors import (
+    ConflictError,
+    NotFoundError,
+    PermissionDeniedError,
+    UnauthenticatedError,
+)
 from app.core.security import create_access_token, hash_token, new_opaque_token
 from app.modules.authentication.identity import get_identity_provider
 from app.modules.authentication.models import AuthSession
 from app.modules.authentication.schemas import RegisterRequest
+from app.modules.courses.service import enroll_in_open_courses
 from app.modules.operations import audit
 from app.modules.users.models import User
 from app.modules.users.repository import get_by_email, normalize_email
@@ -27,6 +33,10 @@ def register(db: Session, body: RegisterRequest) -> User:
         raise PermissionDeniedError("Registration is by invitation only.")
     if get_by_email(db, body.email):
         raise ConflictError("An account with this email already exists.")
+    from app.modules.join_codes import service as join_codes
+
+    code = (body.join_code or "").strip()
+    target = join_codes.lookup(db, code) if code else None  # 404 before the account exists
     user = User(
         email=normalize_email(body.email),
         display_name=body.display_name,
@@ -38,6 +48,9 @@ def register(db: Session, body: RegisterRequest) -> User:
     audit.record(
         db, action="user.register", resource_type="user", resource_id=user.id, actor_user_id=user.id
     )
+    if target is not None:
+        join_codes.apply(db, user, target)
+    enroll_in_open_courses(db, user)
     db.commit()
     return user
 
@@ -64,6 +77,43 @@ def login(db: Session, email: str, password: str, user_agent: str | None) -> Iss
     tokens = _issue(db, user, user_agent)
     audit.record(
         db, action="auth.login", resource_type="user", resource_id=user.id, actor_user_id=user.id
+    )
+    enroll_in_open_courses(db, user)  # picks up courses opened since the last sign-in
+    db.commit()
+    return tokens
+
+
+def demo_login(db: Session, role: str, user_agent: str | None) -> IssuedTokens:
+    """Demo mode: sign in as the demo teacher or student, creating the account on first use."""
+    s = get_settings()
+    if not s.demo_mode:
+        raise NotFoundError("Demo mode is off.")
+    email = s.demo_teacher_email if role == "teacher" else s.demo_student_email
+    user = get_by_email(db, email)
+    if user is None:
+        user = User(
+            email=normalize_email(email),
+            display_name="Demo teacher" if role == "teacher" else "Demo student",
+            account_type=role,
+        )
+        db.add(user)
+        db.flush()
+        audit.record(
+            db,
+            action="user.register",
+            resource_type="user",
+            resource_id=user.id,
+            actor_user_id=user.id,
+        )
+    elif user.account_type != role or not user.is_active:
+        raise ConflictError(f"The demo {role} account ({email}) is not an active {role} account.")
+    tokens = _issue(db, user, user_agent)
+    audit.record(
+        db,
+        action="auth.demo_login",
+        resource_type="user",
+        resource_id=user.id,
+        actor_user_id=user.id,
     )
     db.commit()
     return tokens

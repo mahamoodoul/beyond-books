@@ -20,6 +20,7 @@ export const SUPPORTED_ACTIONS = [
   "camera_focus",
   "show_annotation",
   "wait",
+  "play_clip",
 ] as const satisfies readonly AnimationStep["action"][];
 
 const SUPPORTED: ReadonlySet<string> = new Set(SUPPORTED_ACTIONS);
@@ -59,6 +60,11 @@ export function validateAnimation(
     }
     if (s.action === "rotate_component" && !(Math.abs(s.degrees) <= 720)) {
       problems.push(`${where}: degrees must be -720..720`);
+    }
+    if (s.action === "play_clip") {
+      if (!/^[a-z][a-z0-9_]{0,63}$/.test(s.clip ?? "")) problems.push(`${where}: invalid clip name`);
+      const speed = s.speed ?? 1;
+      if (!(speed >= 0.1 && speed <= 4)) problems.push(`${where}: speed must be 0.1..4`);
     }
   });
   return problems;
@@ -203,6 +209,8 @@ export interface AnimationFrame {
   /** Latest camera_focus target; `key` changes each time a new focus is issued. */
   focus: { target: string; key: number } | null;
   annotation: { text: string; target: string | null } | null;
+  /** A clip baked into the model, at `time` seconds of clip time (see play_clip). */
+  clip: { name: string; time: number; loop: boolean } | null;
   explanation: string | null;
   stepNumber: number | null;
 }
@@ -214,6 +222,7 @@ export const EMPTY_FRAME: AnimationFrame = {
   flow: null,
   focus: null,
   annotation: null,
+  clip: null,
   explanation: null,
   stepNumber: null,
 };
@@ -283,6 +292,21 @@ export function deriveFrame(
 
   const current = finished ? null : (steps[last] ?? null);
   const progress = position.progress;
+
+  // play_clip: the latest clip keeps running through the later steps. Its time follows the
+  // timeline (not the wall clock), so pause, step and restart stay exact. Reduced motion: no clip.
+  let clip: AnimationFrame["clip"] = null;
+  if (!finished && !reducedMotion) {
+    for (let c = last; c >= 0; c--) {
+      const s = steps[c]!;
+      if (s.action !== "play_clip") continue;
+      let ms = 0;
+      for (let i = c; i < last; i++) ms += steps[i]!.duration_ms;
+      ms += steps[last]!.duration_ms * position.progress;
+      clip = { name: s.clip, time: (ms / 1000) * (s.speed ?? 1), loop: s.loop ?? true };
+      break;
+    }
+  }
   return {
     active: true,
     components,
@@ -297,6 +321,7 @@ export function deriveFrame(
       current && current.action === "show_annotation"
         ? { text: current.explanation, target: current.target_component ?? null }
         : null,
+    clip,
     explanation: current?.explanation ?? null,
     stepNumber: current?.step ?? null,
   };

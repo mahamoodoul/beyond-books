@@ -20,6 +20,8 @@ class School(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(200))
     slug: Mapped[str] = mapped_column(String(80), unique=True)
     status: Mapped[str] = mapped_column(String(20), default="active")
+    # short code teachers share so colleagues and students can join at sign-up (see join_codes)
+    join_code: Mapped[str | None] = mapped_column(String(16), unique=True)
 
 
 class SchoolMembership(UUIDPrimaryKeyMixin, Base):

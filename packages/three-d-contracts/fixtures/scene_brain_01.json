@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_brain_01",
+  "title": "The Human Brain",
+  "learning_objective_ids": [
+    "lo_brain_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "human_brain_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "three_quarter",
+    "min_distance": 2,
+    "max_distance": 24
+  },
+  "components": [
+    {
+      "component_id": "frontal_lobe",
+      "mesh_name": "frontal_lobe",
+      "label": "Frontal lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_frontal_lobe"
+    },
+    {
+      "component_id": "parietal_lobe",
+      "mesh_name": "parietal_lobe",
+      "label": "Parietal lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_parietal_lobe"
+    },
+    {
+      "component_id": "temporal_lobe",
+      "mesh_name": "temporal_lobe",
+      "label": "Temporal lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_temporal_lobe"
+    },
+    {
+      "component_id": "occipital_lobe",
+      "mesh_name": "occipital_lobe",
+      "label": "Occipital lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_occipital_lobe"
+    },
+    {
+      "component_id": "cerebellum",
+      "mesh_name": "cerebellum",
+      "label": "Cerebellum",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_cerebellum"
+    },
+    {
+      "component_id": "brainstem",
+      "mesh_name": "brainstem",
+      "label": "Brainstem",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_brainstem"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "brain_tour_01"
+  ],
+  "explanations": {
+    "explanation_frontal_lobe": "The frontal lobe plans and controls voluntary movement, makes decisions, solves problems and helps produce speech.",
+    "explanation_parietal_lobe": "The parietal lobe processes touch, temperature, pain and body position, and helps us judge size, shape and distance.",
+    "explanation_temporal_lobe": "The temporal lobes process hearing, help us understand language and play a key part in forming memories.",
+    "explanation_occipital_lobe": "The occipital lobe at the back of the brain is the main centre for processing what we see.",
+    "explanation_cerebellum": "The cerebellum coordinates movement, balance and posture so that actions are smooth and accurate.",
+    "explanation_brainstem": "The brainstem links the brain to the spinal cord and controls automatic functions such as breathing, heart rate and swallowing."
+  }
+}

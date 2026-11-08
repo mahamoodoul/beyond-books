@@ -49,6 +49,8 @@ class AssetOut(BaseModel):
     created_at: datetime
     can_manage: bool = False
     versions: list[AssetVersionOut] = []
+    # 2D picture of the latest version (thumbnail / poster / fallback on weak devices)
+    preview_url: str | None = None
 
 
 class AssetVersionUploadRequest(BaseModel):
@@ -110,6 +112,8 @@ class ResolvedAsset(BaseModel):
     tour: dict[str, Any] | None = None
     # part names, labels and teacher-reviewed descriptions (unreviewed AI drafts are left out)
     parts: list[dict[str, str]] = []
+    # 2D picture of this model version: poster while the 3D loads, fallback on weak devices
+    preview_url: str | None = None
 
 
 class StudioSceneOut(BaseModel):
@@ -123,6 +127,7 @@ class StudioSceneOut(BaseModel):
     course_id: uuid.UUID
     course_title: str
     subject: str | None
+    preview_url: str | None = None  # picture of the scene's model
 
 
 class ResolvedScene(BaseModel):

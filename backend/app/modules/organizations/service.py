@@ -14,7 +14,9 @@ from app.modules.users.repository import get_by_email
 def create_school(db: Session, user: User, name: str, slug: str) -> tuple[School, SchoolRole]:
     if db.scalar(select(School.id).where(School.slug == slug)):
         raise ConflictError("A school with this slug already exists.")
-    school = School(name=name, slug=slug)
+    from app.modules.join_codes.service import new_code
+
+    school = School(name=name, slug=slug, join_code=new_code(db))
     db.add(school)
     db.flush()
     db.add(SchoolMembership(school_id=school.id, user_id=user.id, role=SchoolRole.SCHOOL_ADMIN))

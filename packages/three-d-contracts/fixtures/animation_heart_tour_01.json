@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "heart_tour_01",
+  "title": "The path of blood through the heart",
+  "steps": [
+    {
+      "step": 1,
+      "action": "highlight_component",
+      "target_component": "superior_vena_cava",
+      "duration_ms": 2600,
+      "explanation": "Deoxygenated blood from the body returns through the venae cavae."
+    },
+    {
+      "step": 2,
+      "action": "highlight_component",
+      "target_component": "right_atrium",
+      "duration_ms": 2600,
+      "explanation": "It collects in the right atrium."
+    },
+    {
+      "step": 3,
+      "action": "highlight_component",
+      "target_component": "right_ventricle",
+      "duration_ms": 2600,
+      "explanation": "The right ventricle pumps it to the lungs..."
+    },
+    {
+      "step": 4,
+      "action": "highlight_component",
+      "target_component": "pulmonary_trunk",
+      "duration_ms": 2600,
+      "explanation": "...through the pulmonary trunk and pulmonary arteries."
+    },
+    {
+      "step": 5,
+      "action": "highlight_component",
+      "target_component": "pulmonary_veins",
+      "duration_ms": 2600,
+      "explanation": "Oxygenated blood comes back from the lungs in the pulmonary veins."
+    },
+    {
+      "step": 6,
+      "action": "highlight_component",
+      "target_component": "left_atrium",
+      "duration_ms": 2600,
+      "explanation": "It enters the left atrium."
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "left_ventricle",
+      "duration_ms": 2600,
+      "explanation": "The powerful left ventricle pumps it out..."
+    },
+    {
+      "step": 8,
+      "action": "highlight_component",
+      "target_component": "aorta",
+      "duration_ms": 2600,
+      "explanation": "...through the aorta to the rest of the body."
+    },
+    {
+      "step": 9,
+      "action": "highlight_component",
+      "target_component": "coronary_arteries",
+      "duration_ms": 2600,
+      "explanation": "The heart muscle gets its own blood supply from the coronary arteries."
+    }
+  ]
+}

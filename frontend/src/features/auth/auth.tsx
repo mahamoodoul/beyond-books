@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 
 import { api, ApiError } from "@/api/client";
@@ -40,6 +40,39 @@ export function useLogin() {
   });
 }
 
+/** Demo mode (local demos): no sign-in, the app enters as the demo teacher or student. */
+export function useDemoMode() {
+  const q = useQuery({
+    queryKey: ["auth-demo"],
+    queryFn: () => api.get<{ enabled: boolean }>("/auth/demo"),
+    staleTime: Infinity,
+    retry: false,
+  });
+  return { enabled: q.data?.enabled ?? false, pending: q.isPending };
+}
+
+export function useDemoLogin() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (role: "teacher" | "student") => api.post<UserOut>("/auth/demo-login", { role }),
+    onSuccess: (user) => { qc.clear(); qc.setQueryData(ME_KEY, user); },
+  });
+}
+
+/** Demo mode: signs in as `role` (switching account if needed), then shows `children`. */
+export function DemoEnter({ role, children }: { role: "teacher" | "student"; children?: ReactNode }) {
+  const me = useMe();
+  const demo = useDemoLogin();
+  const ready = me.data?.account_type === role;
+  const { mutate, isIdle } = demo;
+  useEffect(() => {
+    if (!me.isPending && !ready && isIdle) mutate(role);
+  }, [me.isPending, ready, isIdle, mutate, role]);
+  if (demo.error) return <ErrorAlert error={demo.error} />;
+  if (!ready) return <Loading />;
+  return <>{children}</>;
+}
+
 export function useRegister() {
   return useMutation({
     mutationFn: (body: {
@@ -47,6 +80,7 @@ export function useRegister() {
       password: string;
       display_name: string;
       account_type: "teacher" | "student";
+      join_code?: string | null;
     }) => api.post<UserOut>("/auth/register", body),
   });
 }
@@ -74,9 +108,14 @@ export function RequireAuth({
   children: ReactNode;
 }) {
   const me = useMe();
+  const demo = useDemoMode();
   const location = useLocation();
-  if (me.isPending) return <Loading />;
+  if (me.isPending || (!me.data && demo.pending)) return <Loading />;
   if (me.error) return <ErrorAlert error={me.error} />;
+  // demo mode: no sign-in; enter as the account this page needs (the teacher for shared pages)
+  if (demo.enabled && (!me.data || (role && me.data.account_type !== role))) {
+    return <DemoEnter role={role ?? "teacher"}>{children}</DemoEnter>;
+  }
   if (!me.data) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (role && me.data.account_type !== role) return <Navigate to={homeFor(me.data)} replace />;
   return <>{children}</>;

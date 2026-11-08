@@ -24,6 +24,7 @@ export function useUpdateCourse(id: string) {
     onSuccess: (c) => {
       qc.setQueryData(["course", id], c);
       void qc.invalidateQueries({ queryKey: ["courses"] });
+      void qc.invalidateQueries({ queryKey: ["students", id] }); // opening a course enrolls students
     },
   });
 }

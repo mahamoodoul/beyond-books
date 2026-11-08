@@ -5,7 +5,7 @@ import { AppLayout } from "@/app/layouts/AppLayout";
 import { RouteAnnouncer, SkipLink } from "@/app/router/RouteAnnouncer";
 import { RouteError } from "@/app/router/RouteError";
 import { Loading } from "@/components/feedback";
-import { RequireAuth } from "@/features/auth/auth";
+import { DemoEnter, RequireAuth } from "@/features/auth/auth";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RegisterPage } from "@/features/auth/RegisterPage";
 import { LandingPage } from "@/features/landing/LandingPage";
@@ -18,6 +18,12 @@ function page<T extends Record<string, unknown>>(load: () => Promise<T>, name: k
       <C />
     </Suspense>
   );
+}
+
+/** Direct demo link into the 3D Studio: /demo/studio[/<scene>] enters as the demo teacher. */
+function DemoStudioLink() {
+  const { sceneId } = useParams();
+  return <DemoEnter role="teacher"><Navigate to={sceneId ? `/studio/${sceneId}` : "/studio"} replace /></DemoEnter>;
 }
 
 /** /viewer/... → /studio/... (the 3D viewer is now the 3D Studio). */
@@ -51,6 +57,8 @@ export const appRoutes: RouteObject[] = [
       { path: "/", element: <LandingPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
+      { path: "/demo/studio", element: <DemoStudioLink /> },
+      { path: "/demo/studio/:sceneId", element: <DemoStudioLink /> },
       // Full-screen teacher 3D Studio (own dark layout, outside the standard app chrome).
       { path: "/teacher/lessons/:lessonId/studio", element: teacher(page(() => import("@/features/three-d/studio/StudioPage"), "default")) },
       // Full-screen AR scan of a lesson's interactive heart (teachers previewing and students).

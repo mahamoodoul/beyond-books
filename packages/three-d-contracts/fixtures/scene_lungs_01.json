@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_lungs_01",
+  "title": "The Human Lungs",
+  "learning_objective_ids": [
+    "lo_lungs_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "human_lungs_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "front",
+    "min_distance": 3,
+    "max_distance": 50
+  },
+  "components": [
+    {
+      "component_id": "trachea",
+      "mesh_name": "trachea",
+      "label": "Trachea",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_trachea"
+    },
+    {
+      "component_id": "bronchi",
+      "mesh_name": "bronchi",
+      "label": "Bronchi",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_bronchi"
+    },
+    {
+      "component_id": "right_upper_lobe",
+      "mesh_name": "right_upper_lobe",
+      "label": "Right upper lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_right_upper_lobe"
+    },
+    {
+      "component_id": "right_middle_lobe",
+      "mesh_name": "right_middle_lobe",
+      "label": "Right middle lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_right_middle_lobe"
+    },
+    {
+      "component_id": "right_lower_lobe",
+      "mesh_name": "right_lower_lobe",
+      "label": "Right lower lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_right_lower_lobe"
+    },
+    {
+      "component_id": "left_upper_lobe",
+      "mesh_name": "left_upper_lobe",
+      "label": "Left upper lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_left_upper_lobe"
+    },
+    {
+      "component_id": "left_lower_lobe",
+      "mesh_name": "left_lower_lobe",
+      "label": "Left lower lobe",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_left_lower_lobe"
+    },
+    {
+      "component_id": "diaphragm",
+      "mesh_name": "diaphragm",
+      "label": "Diaphragm",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_diaphragm"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "lungs_tour_01"
+  ],
+  "explanations": {
+    "explanation_trachea": "The trachea (windpipe) carries air between the larynx and the lungs. C-shaped rings of cartilage hold it open.",
+    "explanation_bronchi": "The trachea divides into the left and right bronchi, which branch again and again into bronchioles that end in tiny air sacs called alveoli.",
+    "explanation_right_upper_lobe": "The right lung has three lobes. The upper lobe is separated from the middle lobe by the horizontal fissure.",
+    "explanation_right_middle_lobe": "The middle lobe is found only in the right lung, between the horizontal and oblique fissures.",
+    "explanation_right_lower_lobe": "The lower lobes rest on the diaphragm. The oblique fissure separates them from the lobes above.",
+    "explanation_left_upper_lobe": "The left lung has only two lobes, leaving room for the heart. The cardiac notch is cut into its front edge.",
+    "explanation_left_lower_lobe": "In the alveoli of every lobe, oxygen passes into the blood and carbon dioxide passes out to be breathed away.",
+    "explanation_diaphragm": "The diaphragm is a dome-shaped sheet of muscle under the lungs. When it contracts and flattens, air is drawn into the lungs."
+  }
+}

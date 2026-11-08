@@ -135,6 +135,12 @@ Built by `scripts/build_demo_assets.py`, checked by `scripts/check_demo_assets.s
 | `plant_cell_v2` | 12 parts incl. ER, Golgi, ribosomes, peroxisomes, cytoskeleton; authored explode offsets + label anchors. Modelled in Blender (`source/plant_cell_v2.blend`), metadata from `scripts/write_asset_metadata.py` | 495.0k | `scene_plant_cell_02` + `plant_cell_tour_01` |
 | `plant_cell_v3` | Same model as v2 at high detail (export profile `v3` in the .blend's `export_web.py`), 58.7 MB uncompressed, stored in Git LFS | 2.53M | `scene_plant_cell_03` + `plant_cell_tour_01` |
 | `water_molecule_v1` | O, 2×H, 2 bonds (O–H 0.958 Å, 104.45°) | 4.2k | `scene_water_molecule_01` + `water_shape_01` |
+| `human_brain_v1` | Frontal, parietal, temporal and occipital lobes (gyri/sulci), cerebellum (folia), brainstem. Modelled in Blender (`source/human_anatomy_v1.blend`, `build_brain.py`) | 447.0k | `scene_brain_01` + `brain_tour_01` |
+| `human_lungs_v1` | 5 lobes (right 3, left 2 with cardiac notch), trachea with cartilage rings, bronchial tree, diaphragm (`build_lungs.py`) | 401.3k | `scene_lungs_01` + `lungs_tour_01` |
+| `human_heart_v2` | Same part names as v1 plus coronary arteries and cardiac veins; arch branches, epicardial fat (`build_heart.py`) | 374.3k | `scene_heart_03` + `heart_tour_01` |
+| `human_body_v1` | See-through figure (metres, 1.75 m) with reduced-detail copies of the brain, lungs and heart as `brain`, `lungs`, `heart` (`build_body.py`) | 441.8k | `scene_body_01` + `body_tour_01` |
+
+The four anatomy assets share one .blend: each model is a collection (`Brain`, `Lungs`, `Heart`, `Body`) rebuilt by its `build_*.py` text block, and `export_web.py` → `export_all()` writes all four GLBs. Rebuild a standalone organ before the body, since the body copies them.
 
 They are **schematic placeholders** (`review_status: draft_unreviewed`,
 `allowed_use: development_and_demo_only`) for the Phase 4 viewer and resolver. The heart and cell

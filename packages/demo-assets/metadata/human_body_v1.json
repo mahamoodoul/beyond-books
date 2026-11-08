@@ -1,0 +1,112 @@
+{
+  "asset_id": "human_body_v1",
+  "version": 1,
+  "name": "Human body with organs",
+  "description": "See-through human figure (about 1.75 m) containing miniature copies of the detailed brain, lungs (with trachea and diaphragm) and heart models, placed in the skull and chest.",
+  "subject": "biology",
+  "category": "anatomy",
+  "format": "glb",
+  "object_key": "demo-assets/glb/human_body_v1.glb",
+  "preview_key": "demo-assets/previews/human_body_v1.png",
+  "size_bytes": 10494372,
+  "content_hash": "sha256:eb811db5e98c55686d1470743ac820ade15735d9ee0032132fea8290db81844b",
+  "triangle_count": 451056,
+  "units": "metres (figure ≈ 1.75 m tall)",
+  "bounds": {
+    "min": [
+      -0.367,
+      0.001,
+      -0.124
+    ],
+    "max": [
+      0.367,
+      1.751,
+      0.161
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "body_skin",
+      "label": "Skin",
+      "explode_offset": [
+        0,
+        0,
+        0
+      ],
+      "label_anchor": [
+        -0.003,
+        0.875,
+        -0.022
+      ]
+    },
+    {
+      "mesh_name": "brain",
+      "label": "Brain",
+      "explode_offset": [
+        0,
+        0.27,
+        0
+      ],
+      "label_anchor": [
+        -0.033,
+        0.066,
+        0.031
+      ]
+    },
+    {
+      "mesh_name": "lungs",
+      "label": "Lungs",
+      "explode_offset": [
+        -0.45,
+        0.0,
+        0.05
+      ],
+      "label_anchor": [
+        -0.136,
+        -0.008,
+        0.013
+      ]
+    },
+    {
+      "mesh_name": "heart",
+      "label": "Heart",
+      "explode_offset": [
+        0.45,
+        0.0,
+        0.2
+      ],
+      "label_anchor": [
+        0.054,
+        -0.093,
+        0.034
+      ]
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "packages/demo-assets/source/human_anatomy_v1.blend (Blender 5.2, glTF exporter)",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Stylised figure; organ sizes and positions are approximate. The organs are reduced-detail copies of the standalone brain, lungs and heart models. Needs review before student use."
+}

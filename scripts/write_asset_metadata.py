@@ -57,15 +57,43 @@ def read_gltf_json(data: bytes) -> dict:
     return json.loads(data[20 : 20 + jlen])
 
 
+def node_offsets(gltf: dict) -> list[list[float]]:
+    """Rest translation of every node in world space (parents' translations added): moving parts
+    are child meshes under their component's node."""
+    nodes = gltf.get("nodes", [])
+    parent = {c: i for i, n in enumerate(nodes) for c in n.get("children", [])}
+    out = []
+    for i in range(len(nodes)):
+        t = [0.0, 0.0, 0.0]
+        j: int | None = i
+        while j is not None:
+            for k, v in enumerate(nodes[j].get("translation", [0.0, 0.0, 0.0])):
+                t[k] += v
+            j = parent.get(j)
+        out.append(t)
+    return out
+
+
+def component_nodes(gltf: dict) -> set[str]:
+    """Names of nodes that can be components: a mesh node, or a group with meshes below it."""
+    nodes = gltf.get("nodes", [])
+
+    def has_mesh(i: int) -> bool:
+        return "mesh" in nodes[i] or any(has_mesh(c) for c in nodes[i].get("children", []))
+
+    return {n["name"] for i, n in enumerate(nodes) if n.get("name") and has_mesh(i)}
+
+
 def stats(gltf: dict) -> tuple[int, list[float], list[float]]:
     """Triangle count and world bounds (node translations only, per the asset convention)."""
     tris = 0
     lo = [float("inf")] * 3
     hi = [float("-inf")] * 3
-    for node in gltf.get("nodes", []):
+    offsets = node_offsets(gltf)
+    for i, node in enumerate(gltf.get("nodes", [])):
         if "mesh" not in node:
             continue
-        t = node.get("translation", [0.0, 0.0, 0.0])
+        t = offsets[i]
         for prim in gltf["meshes"][node["mesh"]]["primitives"]:
             if prim.get("mode", 4) != 4:
                 continue
@@ -88,7 +116,7 @@ def main() -> int:
     gltf = read_gltf_json(raw)
     tris, lo, hi = stats(gltf)
 
-    nodes = {n.get("name") for n in gltf.get("nodes", []) if "mesh" in n}
+    nodes = component_nodes(gltf)
     missing = [c["mesh_name"] for c in spec["components"] if c["mesh_name"] not in nodes]
     if missing:
         print(f"components missing from {glb.name}: {missing}", file=sys.stderr)

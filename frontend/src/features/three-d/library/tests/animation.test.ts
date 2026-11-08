@@ -145,3 +145,29 @@ describe("deriveFrame", () => {
     expect(deriveFrame(steps, { status: "idle", index: 0, progress: 0 }, {}).active).toBe(false);
   });
 });
+
+describe("play_clip", () => {
+  const clipSteps: AnimationStep[] = [
+    { step: 1, action: "highlight_component", target_component: "a", duration_ms: 1000 },
+    { step: 2, action: "play_clip", clip: "cycle", loop: true, speed: 2, duration_ms: 0 },
+    { step: 3, action: "highlight_component", target_component: "a", duration_ms: 2000 },
+  ];
+
+  it("validates clip name and speed", () => {
+    expect(validateAnimation({ animation_id: "x", title: "x", steps: clipSteps } as AnimationSpec, new Set(["a"]), {})).toEqual([]);
+    const bad: AnimationStep[] = [{ step: 1, action: "play_clip", clip: "Bad Name", speed: 9, duration_ms: 0 }];
+    expect(validateAnimation({ animation_id: "x", title: "x", steps: bad } as AnimationSpec, new Set(), {})).toHaveLength(2);
+  });
+
+  it("keeps the clip running through later steps, on the timeline's clock", () => {
+    expect(deriveFrame(clipSteps, { status: "playing", index: 0, progress: 0.5 }, {}).clip).toBeNull();
+    const f = deriveFrame(clipSteps, { status: "playing", index: 2, progress: 0.5 }, {});
+    expect(f.clip).toEqual({ name: "cycle", time: 2, loop: true }); // 1000 ms x speed 2
+    expect(f.highlight).toBe("a");
+  });
+
+  it("stops at the end and under reduced motion", () => {
+    expect(deriveFrame(clipSteps, { status: "finished", index: 2, progress: 1 }, {}).clip).toBeNull();
+    expect(deriveFrame(clipSteps, { status: "playing", index: 2, progress: 0.5 }, {}, true).clip).toBeNull();
+  });
+});

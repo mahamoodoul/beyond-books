@@ -44,6 +44,131 @@
         "title": "AccountType",
         "type": "string"
       },
+      "AffiliationCourse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
+          "role": {
+            "enum": [
+              "teacher",
+              "student"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "school_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Name"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "role",
+          "status"
+        ],
+        "title": "AffiliationCourse",
+        "type": "object"
+      },
+      "AffiliationSchool": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role"
+        ],
+        "title": "AffiliationSchool",
+        "type": "object"
+      },
+      "Affiliations": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/AffiliationCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "schools": {
+            "items": {
+              "$ref": "#/components/schemas/AffiliationSchool"
+            },
+            "title": "Schools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schools",
+          "courses"
+        ],
+        "title": "Affiliations",
+        "type": "object"
+      },
       "AnimationCreate": {
         "properties": {
           "spec": {
@@ -124,6 +249,7 @@
                   "camera_focus": "#/components/schemas/CameraFocusStep",
                   "highlight_component": "#/components/schemas/HighlightStep",
                   "move_along_path": "#/components/schemas/MoveAlongPathStep",
+                  "play_clip": "#/components/schemas/PlayClipStep",
                   "rotate_component": "#/components/schemas/RotateComponentStep",
                   "set_opacity": "#/components/schemas/SetOpacityStep",
                   "set_visibility": "#/components/schemas/SetVisibilityStep",
@@ -160,6 +286,9 @@
                 },
                 {
                   "$ref": "#/components/schemas/WaitStep"
+                },
+                {
+                  "$ref": "#/components/schemas/PlayClipStep"
                 }
               ]
             },
@@ -919,6 +1048,17 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
           },
           "provider": {
             "title": "Provider",
@@ -2217,6 +2357,11 @@
             ],
             "title": "Grade Level"
           },
+          "open_to_all_students": {
+            "default": false,
+            "title": "Open To All Students",
+            "type": "boolean"
+          },
           "school_id": {
             "anyOf": [
               {
@@ -2285,6 +2430,22 @@
             "format": "uuid",
             "title": "Id",
             "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
+          "open_to_all_students": {
+            "default": false,
+            "title": "Open To All Students",
+            "type": "boolean"
           },
           "school_id": {
             "anyOf": [
@@ -2481,6 +2642,17 @@
             ],
             "title": "Grade Level"
           },
+          "open_to_all_students": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open To All Students"
+          },
           "status": {
             "anyOf": [
               {
@@ -2556,6 +2728,36 @@
           "password"
         ],
         "title": "DeleteAccountRequest",
+        "type": "object"
+      },
+      "DemoLoginRequest": {
+        "properties": {
+          "role": {
+            "enum": [
+              "teacher",
+              "student"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "DemoLoginRequest",
+        "type": "object"
+      },
+      "DemoStatus": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "DemoStatus",
         "type": "object"
       },
       "DocumentJobResponse": {
@@ -3441,6 +3643,139 @@
         "title": "JobOut",
         "type": "object"
       },
+      "JoinPreview": {
+        "description": "What a code unlocks, shown before an account is created or a code is applied.",
+        "properties": {
+          "as_student": {
+            "title": "As Student",
+            "type": "string"
+          },
+          "as_teacher": {
+            "title": "As Teacher",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "grade_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade Level"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "school",
+              "course"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "school_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Name"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "teacher_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Name"
+          }
+        },
+        "required": [
+          "code",
+          "kind",
+          "id",
+          "name",
+          "as_teacher",
+          "as_student"
+        ],
+        "title": "JoinPreview",
+        "type": "object"
+      },
+      "JoinRequest": {
+        "properties": {
+          "code": {
+            "maxLength": 24,
+            "minLength": 16,
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "JoinRequest",
+        "type": "object"
+      },
+      "JoinResult": {
+        "properties": {
+          "joined": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Joined",
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "school",
+              "course"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "joined"
+        ],
+        "title": "JoinResult",
+        "type": "object"
+      },
       "LabCreate": {
         "properties": {
           "chapter_id": {
@@ -3917,6 +4252,148 @@
           "title"
         ],
         "title": "LessonCreate",
+        "type": "object"
+      },
+      "LessonMediaCreate": {
+        "properties": {
+          "alt_text": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Alt Text",
+            "type": "string"
+          },
+          "content_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp",
+              "application/octet-stream"
+            ],
+            "title": "Content Type",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "image",
+              "ar_target"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "title": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "LessonMediaCreate",
+        "type": "object"
+      },
+      "LessonMediaOut": {
+        "properties": {
+          "alt_text": {
+            "title": "Alt Text",
+            "type": "string"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "file_size_bytes": {
+            "title": "File Size Bytes",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "lesson_id",
+          "kind",
+          "title",
+          "alt_text",
+          "position",
+          "content_type",
+          "file_size_bytes",
+          "status"
+        ],
+        "title": "LessonMediaOut",
+        "type": "object"
+      },
+      "LessonMediaUpload": {
+        "properties": {
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Headers",
+            "type": "object"
+          },
+          "media": {
+            "$ref": "#/components/schemas/LessonMediaOut"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "media",
+          "url",
+          "method",
+          "headers"
+        ],
+        "title": "LessonMediaUpload",
         "type": "object"
       },
       "LessonOut": {
@@ -4852,6 +5329,66 @@
         "title": "PartUpdate",
         "type": "object"
       },
+      "PlayClipStep": {
+        "additionalProperties": false,
+        "description": "Play an animation clip baked into the model (e.g. an engine cycle). The clip keeps\nrunning through the following steps until the animation ends or another clip starts, so\nlater steps can explain what is moving. Clip names are checked by the viewer, which skips\na clip the model does not have.",
+        "properties": {
+          "action": {
+            "const": "play_clip",
+            "title": "Action",
+            "type": "string"
+          },
+          "clip": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Clip",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "loop": {
+            "default": true,
+            "title": "Loop",
+            "type": "boolean"
+          },
+          "speed": {
+            "default": 1.0,
+            "maximum": 4.0,
+            "minimum": 0.1,
+            "title": "Speed",
+            "type": "number"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "clip"
+        ],
+        "title": "PlayClipStep",
+        "type": "object"
+      },
       "ProceduralSource": {
         "additionalProperties": false,
         "description": "A trusted, prebuilt procedural generator in the renderer (design \u00a77.1-A).\n\n`generator` must exist in the renderer's allowlisted registry; params are flat scalars only.",
@@ -5579,6 +6116,18 @@
             "title": "Email",
             "type": "string"
           },
+          "join_code": {
+            "anyOf": [
+              {
+                "maxLength": 24,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
           "password": {
             "maxLength": 256,
             "minLength": 12,
@@ -5636,6 +6185,17 @@
             },
             "title": "Parts",
             "type": "array"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
           },
           "source_url": {
             "anyOf": [
@@ -6293,6 +6853,17 @@
             "format": "uuid",
             "title": "Id",
             "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
           },
           "my_role": {
             "anyOf": [
@@ -7146,6 +7717,17 @@
           "lesson_title": {
             "title": "Lesson Title",
             "type": "string"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
           },
           "scene_id": {
             "format": "uuid",
@@ -9162,6 +9744,69 @@
         ]
       }
     },
+    "/api/v1/auth/demo": {
+      "get": {
+        "description": "Whether demo mode is on (the app then skips sign-in).",
+        "operationId": "demo_status_api_v1_auth_demo_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Status",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/demo-login": {
+      "post": {
+        "operationId": "demo_login_api_v1_auth_demo_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Demo Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "login_api_v1_auth_login_post",
@@ -10905,6 +11550,54 @@
         ]
       }
     },
+    "/api/v1/courses/{course_id}/join-code": {
+      "post": {
+        "description": "Replace the course's code (the old one stops working).",
+        "operationId": "regenerate_course_code_api_v1_courses__course_id__join_code_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Regenerate Course Code Api V1 Courses  Course Id  Join Code Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Regenerate Course Code",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/courses/{course_id}/labs": {
       "post": {
         "description": "Create a lab in a course you manage (draft until published).",
@@ -11558,6 +12251,51 @@
         ]
       }
     },
+    "/api/v1/join-codes": {
+      "get": {
+        "description": "What a school or course code unlocks. Public, so the sign-up form can show it before\nthe account exists; rate limited per IP.",
+        "operationId": "preview_code_api_v1_join_codes_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "maxLength": 24,
+              "minLength": 16,
+              "title": "Code",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview Code",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/labs": {
       "get": {
         "description": "Teachers: labs in their courses. Students: published labs in their courses.",
@@ -11921,6 +12659,85 @@
         ]
       }
     },
+    "/api/v1/lesson-media/{media_id}": {
+      "delete": {
+        "operationId": "delete_lesson_media_api_v1_lesson_media__media_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "media_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Media Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Lesson Media",
+        "tags": [
+          "lessons"
+        ]
+      }
+    },
+    "/api/v1/lesson-media/{media_id}/complete": {
+      "post": {
+        "operationId": "complete_media_upload_api_v1_lesson_media__media_id__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "media_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Media Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonMediaOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Media Upload",
+        "tags": [
+          "lessons"
+        ]
+      }
+    },
     "/api/v1/lessons/{lesson_id}": {
       "delete": {
         "operationId": "delete_lesson_api_v1_lessons__lesson_id__delete",
@@ -12205,6 +13022,105 @@
         "summary": "Regenerate Section",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/media": {
+      "get": {
+        "operationId": "list_lesson_media_api_v1_lessons__lesson_id__media_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LessonMediaOut"
+                  },
+                  "title": "Response List Lesson Media Api V1 Lessons  Lesson Id  Media Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Lesson Media",
+        "tags": [
+          "lessons"
+        ]
+      },
+      "post": {
+        "description": "Add a picture or AR target to a lesson: returns where to PUT the file, then call /complete.",
+        "operationId": "start_media_upload_api_v1_lessons__lesson_id__media_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonMediaCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonMediaUpload"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Media Upload",
+        "tags": [
+          "lessons"
         ]
       }
     },
@@ -13196,6 +14112,54 @@
         ]
       }
     },
+    "/api/v1/schools/{school_id}/join-code": {
+      "post": {
+        "description": "Replace the school's code (the old one stops working).",
+        "operationId": "regenerate_school_code_api_v1_schools__school_id__join_code_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "school_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "School Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Regenerate School Code Api V1 Schools  School Id  Join Code Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Regenerate School Code",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/schools/{school_id}/members": {
       "get": {
         "operationId": "list_members_api_v1_schools__school_id__members_get",
@@ -13772,6 +14736,28 @@
         ]
       }
     },
+    "/api/v1/users/me/affiliations": {
+      "get": {
+        "description": "The caller's schools (with role) and courses (teaching or enrolled), with the codes the\ncaller may share.",
+        "operationId": "my_affiliations_api_v1_users_me_affiliations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Affiliations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Affiliations",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/users/me/export": {
       "get": {
         "description": "Machine-readable copy of the caller's personal data (GDPR art. 15/20).",
@@ -13793,6 +14779,48 @@
         "summary": "Export My Data",
         "tags": [
           "users"
+        ]
+      }
+    },
+    "/api/v1/users/me/join": {
+      "post": {
+        "description": "Join the school or course behind a code with the signed-in account.",
+        "operationId": "join_with_code_api_v1_users_me_join_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Join With Code",
+        "tags": [
+          "join-codes"
         ]
       }
     }

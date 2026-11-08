@@ -1,7 +1,7 @@
 import uuid
 from typing import Any
 
-from sqlalchemy import ForeignKey, Index, Integer, String, UniqueConstraint
+from sqlalchemy import BigInteger, ForeignKey, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base, CreatedAtMixin, JSONType, TimestampMixin, UUIDPrimaryKeyMixin
@@ -36,3 +36,33 @@ class LessonVersion(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         ForeignKey("users.id", ondelete="SET NULL")
     )
     change_source: Mapped[str] = mapped_column(String(30), default="manual")
+
+
+class LessonMediaKind:
+    IMAGE = "image"  # a picture shown with the lesson (e.g. the textbook page)
+    AR_TARGET = "ar_target"  # compiled MindAR target (.mind) for scanning that page with the camera
+
+
+class LessonMedia(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
+    """A file that belongs to a lesson (picture, AR scan target), kept in file storage.
+
+    Uploaded like 3D models: create (get an upload URL) -> PUT the file -> complete (checked).
+    Students see `ready` media of published lessons they can open; teachers manage it.
+    """
+
+    __tablename__ = "lesson_media"
+
+    lesson_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("lessons.id", ondelete="CASCADE"), index=True
+    )
+    kind: Mapped[str] = mapped_column(String(20))
+    title: Mapped[str] = mapped_column(String(200), default="")
+    alt_text: Mapped[str] = mapped_column(Text, default="")
+    position: Mapped[int] = mapped_column(Integer, default=0)
+    storage_key: Mapped[str] = mapped_column(String(500))
+    content_type: Mapped[str] = mapped_column(String(100))
+    file_size_bytes: Mapped[int] = mapped_column(BigInteger)
+    status: Mapped[str] = mapped_column(String(20), default="pending_upload")  # -> ready
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )

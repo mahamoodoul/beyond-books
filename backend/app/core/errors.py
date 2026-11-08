@@ -75,6 +75,19 @@ def _envelope(status: int, code: str, message: str, details: list[dict[str, Any]
     return JSONResponse(status_code=status, content=body.model_dump())
 
 
+def _describe(details: list[dict[str, Any]]) -> str:
+    """'The request is invalid: password: Weak password: …; join_code: …' so forms can show
+    the reason without digging into the details list."""
+    parts = []
+    for d in details[:4]:
+        loc = [str(x) for x in d.get("loc", []) if x not in ("body", "query", "path")]
+        msg = (
+            str(d.get("msg") or "").removeprefix("Value error, ").removeprefix("Assertion failed, ")
+        )
+        parts.append(f"{'.'.join(loc)}: {msg}" if loc else msg)
+    return "The request is invalid" + (": " + "; ".join(parts) if parts else ".")
+
+
 def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(_: Request, exc: AppError) -> JSONResponse:
@@ -86,7 +99,7 @@ def register_error_handlers(app: FastAPI) -> None:
             {"loc": list(e.get("loc", [])), "msg": e.get("msg"), "type": e.get("type")}
             for e in exc.errors()
         ]
-        return _envelope(422, "VALIDATION_ERROR", "The request is invalid.", details)
+        return _envelope(422, "VALIDATION_ERROR", _describe(details), details)
 
     @app.exception_handler(StarletteHTTPException)
     async def _http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:

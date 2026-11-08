@@ -7,10 +7,31 @@ import type { ChapterDetail, SceneOut } from "@/api/generated/schema";
 import { ErrorAlert, Loading } from "@/components/feedback";
 import { Icon } from "@/components/ui/Icon";
 import { useChapterAssessments } from "@/features/assessments/api";
+import { useChapterLabs } from "@/features/labs/api";
 import { useLesson } from "@/features/lessons/api";
 
 import { trackEvent, useOutline, useSetProgress } from "./api";
 import { LessonArticle, LessonContents } from "./LessonArticle";
+
+/** Sidebar button(s) for the labs linked to this lesson's chapter (e.g. "Light the bulb"). */
+function LessonLabs({ chapterId }: { chapterId: string }) {
+  const labs = useChapterLabs(chapterId);
+  if (!labs.data?.length) return null;
+  return (
+    <section aria-label="Lab" className="lesson-labs">
+      {labs.data.map((lab) => {
+        const done = lab.session_status === "completed";
+        const label = done ? "Open the lab again" : lab.session_status ? "Continue the lab" : "Do the lab";
+        return (
+          <Link className={`button ${done ? "button-secondary" : "button-primary"}`} key={lab.id} to={`/student/labs/${lab.id}`}>
+            <Icon name="bolt" size={16} />
+            <span>{label}<small>{lab.title}{done ? " · goal reached" : ""}</small></span>
+          </Link>
+        );
+      })}
+    </section>
+  );
+}
 
 export function LessonViewerPage() {
   const { lessonId = "" } = useParams();
@@ -62,9 +83,11 @@ export function LessonViewerPage() {
         quizzes={quizzes.data ?? []}
         quizHref={(id) => `/student/assessments/${id}`}
         onSceneEvent={(e, sceneId) => trackEvent({ ...e, lesson_id: lessonId, scene_id: sceneId })}
+        scenesAsPictures
         sidebar={
           <>
             {o && <LessonContents outline={o} currentLessonId={lessonId} lessonHref={(id) => `/student/lessons/${id}`} courseHref={`/student/courses/${o.course_id}`} />}
+            <LessonLabs chapterId={l.chapter_id} />
             <div className="lesson-complete">
               {completed ? (
                 <p className="lesson-complete-done"><Icon name="check" size={16} /> Lesson complete</p>

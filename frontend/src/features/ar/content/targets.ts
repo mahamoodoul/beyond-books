@@ -5,8 +5,6 @@ export interface ARTarget {
   id: string;
   title: string;
   chapter: string;
-  pageUrl: string;
-  modelUrl: string;
   parts: typeof HEART_PARTS;
   heartbeat: boolean;
   surfaceParts: string[];
@@ -21,17 +19,13 @@ export interface ARTarget {
   lift: number;
 }
 
-const base = import.meta.env.BASE_URL;
-
-export const TARGETS_MIND_URL = `${base}targets/pages.mind`;
-
+// Display settings only. The files (3D model, AR scan target, page picture) are course data and
+// come from the backend: see features/lessons/heartMedia.ts.
 export const TARGETS: ARTarget[] = [
   {
     id: "heart",
     title: "The Human Heart",
     chapter: "The Circulatory System",
-    pageUrl: `${base}targets/heart-page.png`,
-    modelUrl: `${base}models/heart.glb`,
     parts: HEART_PARTS,
     heartbeat: true,
     surfaceParts: ["CoronaryArteries", "CardiacVeins"],

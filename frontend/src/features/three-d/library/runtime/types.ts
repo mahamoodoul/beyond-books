@@ -46,6 +46,8 @@ export interface ResolvedAsset {
   meta: AssetMetadata;
   /** URL from the trusted registry, never from scene JSON. */
   url: string;
+  /** 2D picture of the model, rendered by the server: poster while the 3D loads. */
+  previewUrl?: string | null;
 }
 
 /** Looks up approved assets by ID + version. Swap the fixture registry for an API one later. */

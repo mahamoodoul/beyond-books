@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "dna_fork_in_action_01",
+  "title": "Replication in action",
+  "steps": [
+    {
+      "step": 1,
+      "action": "play_clip",
+      "clip": "replication_fork",
+      "loop": true,
+      "speed": 1.0,
+      "duration_ms": 4000,
+      "explanation": "Replication in action: the helicase ring spins as it unzips the DNA, and the two DNA polymerases pull in new nucleotides one at a time."
+    },
+    {
+      "step": 2,
+      "action": "highlight_component",
+      "target_component": "topoisomerase",
+      "duration_ms": 3500,
+      "explanation": "Ahead of the fork, topoisomerase opens its gate to cut and rejoin the DNA, relieving the twisting built up by unwinding."
+    },
+    {
+      "step": 3,
+      "action": "highlight_component",
+      "target_component": "helicase",
+      "duration_ms": 3500,
+      "explanation": "Helicase uses energy from ATP to move along the template, breaking the hydrogen bonds between the base pairs."
+    },
+    {
+      "step": 4,
+      "action": "highlight_component",
+      "target_component": "ssb_proteins",
+      "duration_ms": 3000,
+      "explanation": "Single-strand binding proteins hold the separated strands apart so they don't pair up again."
+    },
+    {
+      "step": 5,
+      "action": "highlight_component",
+      "target_component": "primase",
+      "duration_ms": 3000,
+      "explanation": "Primase lays down a short RNA primer, giving DNA polymerase a place to start."
+    },
+    {
+      "step": 6,
+      "action": "highlight_component",
+      "target_component": "dna_polymerase",
+      "duration_ms": 4000,
+      "explanation": "DNA polymerase adds matching nucleotides (A with T, G with C), building each new strand in the 5' to 3' direction."
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "leading_strand",
+      "duration_ms": 3500,
+      "explanation": "On the leading strand, the new DNA is built continuously, towards the fork."
+    },
+    {
+      "step": 8,
+      "action": "highlight_component",
+      "target_component": "okazaki_fragments",
+      "duration_ms": 4000,
+      "explanation": "On the lagging strand, it is built in short Okazaki fragments, each starting from its own primer."
+    }
+  ]
+}

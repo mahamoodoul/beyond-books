@@ -37,6 +37,12 @@ class SlidingWindowLimiter:
 login_limiter = SlidingWindowLimiter()
 
 
+def check_join_lookup_rate(ip: str) -> None:
+    """Code previews are public: cap guesses per IP (codes have ~10^9 combinations)."""
+    s = get_settings()
+    login_limiter.hit(f"join-lookup:{ip}", s.login_max_attempts * 3, s.login_window_s)
+
+
 def check_login_rate(ip: str, email: str) -> None:
     s = get_settings()
     login_limiter.hit(f"login:{ip}:{email}", s.login_max_attempts, s.login_window_s)

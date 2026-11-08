@@ -1,6 +1,8 @@
 # Shared course seed
 
-The four sample courses (Biology, Chemistry, Mathematics, Physics) with everything built so far:
+The four sample courses (Biology, Chemistry, Mathematics, Physics) and **The Circulatory System**
+(the heart course: five chapters, the interactive 3D heart with slice view and AR, and a quiz),
+with everything built so far:
 chapters, learning objectives, the extracted textbook text, lessons, quizzes, 3D scenes, the 3D
 models they use (`files/`, Git LFS) and the saved AI prompts. Importing makes **no AI calls**.
 
@@ -38,3 +40,5 @@ git add seeds/courses && git commit -m "Update course seed"
 - `files/`: 3D model files (`.glb`).
 - Course PDFs are **not** copied here: they come from `sample-courses/` (see its README; OpenStax,
   CC BY / CC BY-NC-SA 4.0).
+
+The bundle also carries the teacher's **labs** (circuit, molecules, buoyancy and the other kinds) with their goals and palettes. Student lab sessions are not exported.

@@ -193,6 +193,10 @@ def register_version_bytes(asset: ThreeDAsset, v: ThreeDAssetVersion, data: byte
     v.status = "ready"
     v.error_message = None
     asset.latest_version = v.version_number
+    # A 2D picture of the model: thumbnail, poster while 3D loads, fallback on weak devices.
+    from app.modules.three_d.preview import store_preview
+
+    store_preview(v, data)
     # Every new version needs a fresh review before it can be used in scenes.
     asset.review_status = ReviewStatus.PENDING
     asset.reviewed_at = None

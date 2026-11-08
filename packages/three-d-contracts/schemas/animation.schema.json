@@ -252,6 +252,67 @@
       "title": "MoveAlongPathStep",
       "type": "object"
     },
+    "PlayClipStep": {
+      "additionalProperties": false,
+      "description": "Play an animation clip baked into the model (e.g. an engine cycle). The clip keeps\nrunning through the following steps until the animation ends or another clip starts, so\nlater steps can explain what is moving. Clip names are checked by the viewer, which skips\na clip the model does not have.",
+      "properties": {
+        "action": {
+          "const": "play_clip",
+          "title": "Action",
+          "type": "string"
+        },
+        "clip": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Clip",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "loop": {
+          "default": true,
+          "title": "Loop",
+          "type": "boolean"
+        },
+        "speed": {
+          "default": 1.0,
+          "maximum": 4.0,
+          "minimum": 0.1,
+          "title": "Speed",
+          "type": "number"
+        },
+        "step": {
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "step",
+        "duration_ms",
+        "action",
+        "clip"
+      ],
+      "title": "PlayClipStep",
+      "type": "object"
+    },
     "RotateComponentStep": {
       "additionalProperties": false,
       "properties": {
@@ -489,6 +550,7 @@
             "camera_focus": "#/$defs/CameraFocusStep",
             "highlight_component": "#/$defs/HighlightStep",
             "move_along_path": "#/$defs/MoveAlongPathStep",
+            "play_clip": "#/$defs/PlayClipStep",
             "rotate_component": "#/$defs/RotateComponentStep",
             "set_opacity": "#/$defs/SetOpacityStep",
             "set_visibility": "#/$defs/SetVisibilityStep",
@@ -525,6 +587,9 @@
           },
           {
             "$ref": "#/$defs/WaitStep"
+          },
+          {
+            "$ref": "#/$defs/PlayClipStep"
           }
         ]
       },

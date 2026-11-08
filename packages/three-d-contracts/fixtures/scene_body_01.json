@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_body_01",
+  "title": "Organs of the Human Body",
+  "learning_objective_ids": [
+    "lo_body_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "human_body_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "front",
+    "min_distance": 0.4,
+    "max_distance": 8
+  },
+  "components": [
+    {
+      "component_id": "body_skin",
+      "mesh_name": "body_skin",
+      "label": "Skin",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_body_skin"
+    },
+    {
+      "component_id": "brain",
+      "mesh_name": "brain",
+      "label": "Brain",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_brain"
+    },
+    {
+      "component_id": "lungs",
+      "mesh_name": "lungs",
+      "label": "Lungs",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_lungs"
+    },
+    {
+      "component_id": "heart",
+      "mesh_name": "heart",
+      "label": "Heart",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_heart"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "body_tour_01"
+  ],
+  "explanations": {
+    "explanation_body_skin": "Skin covers and protects the body. It is shown see-through so you can see some of the major organs inside.",
+    "explanation_brain": "The brain, protected by the skull, is the control centre of the body. It processes the senses, controls movement and stores memories.",
+    "explanation_lungs": "The two lungs fill most of the chest. They take in oxygen and remove carbon dioxide. The diaphragm sits underneath them.",
+    "explanation_heart": "The heart sits between the lungs, slightly to the left. It pumps blood around the body about 100,000 times a day."
+  }
+}

@@ -275,8 +275,12 @@ function AssetCard({ a, onOpen, active }: { a: AssetOut; onOpen: () => void; act
   return (
     <li>
       <button onClick={onOpen} aria-pressed={active} className={`group flex h-full w-full flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${active ? "border-navy-900 ring-2 ring-navy-900/20" : "border-slate-200"}`}>
-        <div className={`relative grid h-32 place-items-center ${empty ? "bg-slate-100" : "bg-gradient-to-br from-navy-900 to-navy-700"}`}>
-          <Icon name={empty ? "clock" : "layers"} size={36} className={empty ? "text-slate-400" : "text-white/80 transition group-hover:scale-110"} />
+        <div className={`relative grid h-32 place-items-center overflow-hidden ${empty ? "bg-slate-100" : a.preview_url ? "bg-gradient-to-b from-slate-50 to-slate-200" : "bg-gradient-to-br from-navy-900 to-navy-700"}`}>
+          {a.preview_url ? (
+            <img src={a.preview_url} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-contain p-2 transition group-hover:scale-105" />
+          ) : (
+            <Icon name={empty ? "clock" : "layers"} size={36} className={empty ? "text-slate-400" : "text-white/80 transition group-hover:scale-110"} />
+          )}
           <span className="absolute right-2 top-2"><Badge tone={st.tone}>{st.label}</Badge></span>
         </div>
         <div className="flex flex-1 flex-col gap-1 p-3">
