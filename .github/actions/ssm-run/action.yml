@@ -7,6 +7,9 @@ inputs:
   command: { description: Shell command to run as root, required: true }
   timeout-seconds: { description: Max run time, default: "1800" }
   comment: { description: Shown in the SSM console, default: "github-actions" }
+  start-if-stopped:
+    description: Start the instance when it is stopped. Default "false" so a budget stop is not undone by a deploy.
+    default: "false"
 outputs:
   stdout: { description: Last 2000 chars of standard output, value: "${{ steps.wait.outputs.stdout }}" }
   status: { description: SSM status (Success, Failed, TimedOut, ...), value: "${{ steps.wait.outputs.status }}" }
@@ -15,12 +18,16 @@ runs:
   steps:
     - name: Wait until the instance is managed by SSM
       shell: bash
-      env: { INSTANCE: "${{ inputs.instance-id }}" }
+      env: { INSTANCE: "${{ inputs.instance-id }}", START: "${{ inputs.start-if-stopped }}" }
       run: |
         for _ in $(seq 1 60); do
           state=$(aws ec2 describe-instances --instance-ids "$INSTANCE" --query 'Reservations[0].Instances[0].State.Name' --output text)
           if [ "$state" = stopped ] || [ "$state" = stopping ]; then
-            echo "instance is $state: starting it"; aws ec2 start-instances --instance-ids "$INSTANCE" >/dev/null
+            if [ "$START" = "true" ]; then
+              echo "instance is $state: starting it"; aws ec2 start-instances --instance-ids "$INSTANCE" >/dev/null
+            else
+              echo "::error::instance is $state (budget stop or manual stop). Re-run with start_instance=true or start it: aws ec2 start-instances --instance-ids $INSTANCE"; exit 1
+            fi
           fi
           ping=$(aws ssm describe-instance-information --filters "Key=InstanceIds,Values=$INSTANCE" --query 'InstanceInformationList[0].PingStatus' --output text 2>/dev/null || true)
           [ "$ping" = Online ] && { echo "instance online"; exit 0; }

@@ -25,6 +25,10 @@ on:
         description: Skip the CI checks (emergency only)
         type: boolean
         default: false
+      start_instance:
+        description: Start the instance if it is stopped (it may have been stopped by the budget guard)
+        type: boolean
+        default: false
 
 concurrency: { group: deploy-aws, cancel-in-progress: false }
 
@@ -73,6 +77,7 @@ jobs:
           instance-id: ${{ vars.AWS_INSTANCE_ID }}
           command: beyond-books deploy ${{ steps.sha.outputs.sha }}
           timeout-seconds: "1800"
+          start-if-stopped: ${{ inputs.start_instance && 'true' || 'false' }}
           comment: deploy ${{ steps.sha.outputs.sha }} (${{ github.actor }})
       - name: Smoke test from the outside
         if: ${{ vars.PUBLIC_URL != '' }}

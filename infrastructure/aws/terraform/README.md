@@ -23,6 +23,16 @@ browser ──80/443──▶ Caddy ──▶ nginx (SPA, /api proxy) ──▶ 
 | Elastic IP | | 0 while attached to a running instance, ~3.6 USD/month while stopped | |
 | S3, Secrets Manager, alarms, budget | | < 1 USD | |
 
+**Cost guard (automatic).** Two AWS Budgets watch the account: *net* (what you pay after credits)
+and *gross* (what the usage costs before credits). You get e-mails (to `budget_alert_email`) at 25 %, 50 % and 80 % forecast (low, medium, high)
+and 100 % actual of `monthly_budget_usd` for both. When the **net** cost passes 100 %, that is when the
+credits are finished and real money is being spent, AWS Budgets **stops the instance** by itself
+(`stop_instance_at_budget = true`) and mails you. Budgets refresh a few times a day, so expect the
+stop within hours, not minutes; the gross e-mails are the early warning. A stopped instance keeps
+its disk, data and IP; start it again with the command from `terraform output stop_start` (the
+deploy pipeline refuses to start a stopped instance unless you tick *start_instance*). Raise the
+cap with `monthly_budget_usd` and `terraform apply`.
+
 On the credit-based free tier (100 to 200 USD, 6 months) a t3.xlarge used 8 hours a day lasts
 for months. Set `budget_alert_email` and you get mail at 50 / 80 / 100 % of `monthly_budget_usd`.
 
@@ -60,6 +70,7 @@ demo and wrong for real users.
 
 | Task | How |
 |---|---|
+| Budget reached, instance stopped | Read the e-mail, decide: start it (`terraform output stop_start`) or leave it. Nothing is lost. |
 | Stop paying while idle | `terraform output stop_start`, run the stop command; start again before the demo. Data and IP stay. |
 | Deploy a new commit | push to `aws-dev` (pipeline), or SSM shell + `sudo beyond-books deploy [sha]`. See CI/CD below. |
 | Logs | `cd /opt/beyond-books && sudo docker compose --env-file .env.aws -f docker-compose.aws.yml logs -f api` |

@@ -140,9 +140,15 @@ variable "budget_alert_email" {
 }
 
 variable "monthly_budget_usd" {
-  description = "Alert thresholds at 50/80/100% of this. Credits cover it; the alert tells you when they are going."
+  description = "Monthly cap in USD. E-mails at 25/50/80% forecast (low, medium, high) and 100% actual; with stop_instance_at_budget the instance is stopped when what you PAY (after credits) passes 100%."
   type        = number
   default     = 20
+}
+
+variable "stop_instance_at_budget" {
+  description = "Stop the instance automatically when the net monthly cost reaches monthly_budget_usd (AWS Budgets action)."
+  type        = bool
+  default     = true
 }
 
 variable "backup_retention_days" {
