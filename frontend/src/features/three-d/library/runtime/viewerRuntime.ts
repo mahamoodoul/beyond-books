@@ -41,6 +41,8 @@ export interface ViewerRuntime {
   loadedRoots: readonly THREE.Object3D[] | null;
   /** Request a frame. The canvas renders on demand, so UI changes must call this. */
   invalidate: () => void;
+  /** Starts an immersive VR session; null until the model is on stage. Call it from a user gesture. */
+  enterVr: (() => Promise<void>) | null;
 }
 
 /** What the camera and shadows have to cover at this explode amount. */
@@ -71,5 +73,6 @@ export function createViewerRuntime(paths: Record<string, Vec3[]>): ViewerRuntim
     ownView: null,
     loadedRoots: null,
     invalidate: () => {},
+    enterVr: null,
   };
 }

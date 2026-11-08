@@ -1,4 +1,5 @@
 import type { QualitySetting, QualityTier } from "@/features/three-d/library/runtime/quality";
+import type { VrAvailability } from "@/features/three-d/library/vr/useVrAvailability";
 
 export interface SceneToolbarProps {
   quality: QualitySetting;
@@ -16,6 +17,8 @@ export interface SceneToolbarProps {
   onRun?: () => void;
   onResetView: () => void;
   onFullscreen?: () => void;
+  vr?: VrAvailability;
+  onEnterVr?: () => void;
   /** Studio tools (optional): X-ray and a guided tour through the parts. */
   xray?: boolean;
   onXray?: (v: boolean) => void;
@@ -27,6 +30,17 @@ export interface SceneToolbarProps {
   speaking?: boolean;
   voiceUnavailable?: boolean;
 }
+
+export const VR_HINT: Record<Exclude<VrAvailability, "checking" | "ready">, { label: string; title: string }> = {
+  "no-headset": {
+    label: "VR: no headset",
+    title: "Open this page in the browser of a VR headset, or connect a PC VR headset, to view the model in VR",
+  },
+  "needs-https": {
+    label: "VR needs HTTPS",
+    title: "VR headsets only work on secure pages: open this site at its https:// address",
+  },
+};
 
 const btn =
   "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-accent";
@@ -42,6 +56,8 @@ export function SceneToolbar({
   onRun,
   onResetView,
   onFullscreen,
+  vr,
+  onEnterVr,
   quality,
   effectiveTier,
   onQuality,
@@ -167,6 +183,22 @@ export function SceneToolbar({
         <button type="button" className={btn} onClick={onResetView}>
           Reset view
         </button>
+        {vr === "ready" && (
+          <button
+            type="button"
+            className={`${btn} border-[#38b2ac]`}
+            style={{ color: "#0b0d16", background: "#38b2ac" }}
+            title="View the model at real size in your VR headset"
+            onClick={onEnterVr}
+          >
+            Enter VR
+          </button>
+        )}
+        {(vr === "no-headset" || vr === "needs-https") && (
+          <button type="button" className={`${btn} opacity-60`} disabled title={VR_HINT[vr].title}>
+            {VR_HINT[vr].label}
+          </button>
+        )}
         {onFullscreen && (
           <button type="button" className={btn} onClick={onFullscreen}>
             Fullscreen

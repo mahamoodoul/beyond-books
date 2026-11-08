@@ -25,12 +25,15 @@ import type {
   ViewerEvent,
 } from "@/features/three-d/library/runtime/types";
 import { createViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
+import { useVrAvailability, type VrAvailability } from "@/features/three-d/library/vr/useVrAvailability";
+import type { VrUi } from "@/features/three-d/library/vr/VrExperience";
+import type { VrButton } from "@/features/three-d/library/vr/vrPanel";
 
 import { AnimationTimeline } from "./AnimationTimeline";
 import { ExplanationPanel } from "./ExplanationPanel";
 import { SceneCanvas, type CameraCommand } from "./SceneCanvas";
 import { useNarrator, useSpeechEnabled } from "../speech/useNarrator";
-import { SceneToolbar } from "./SceneToolbar";
+import { SceneToolbar, VR_HINT } from "./SceneToolbar";
 
 export interface SceneViewerProps {
   scene: SceneSpec;
@@ -295,6 +298,15 @@ function ViewerBody({
       t ? { ...t, playing: !t.playing } : { index: Math.max(0, selected ? order.indexOf(selected) : 0), playing: true },
     );
   };
+  const vrAvailability = useVrAvailability();
+  const [vrActive, setVrActive] = useState(false);
+  const [vrError, setVrError] = useState<string | null>(null);
+  const vrActiveRef = useRef(false);
+  vrActiveRef.current = vrActive;
+  const enterVr = () => {
+    setVrError(null);
+    void runtime.current.enterVr?.();
+  };
   const [isFullscreen, setIsFullscreen] = useState(false);
   const fullscreenRef = useRef(false);
   useEffect(() => {
@@ -341,7 +353,7 @@ function ViewerBody({
       }
       // Fullscreen is a listening mode: after a part has been read, continue with the next one
       // unless the learner paused the tour themselves. Stepping with Prev/Next keeps going.
-      if (ok && !t && fullscreenRef.current) {
+      if (ok && !t && fullscreenRef.current && !vrActiveRef.current) {
         const nextId = order[order.indexOf(selected) + 1];
         if (nextId) select(nextId);
       }
@@ -408,6 +420,55 @@ function ViewerBody({
   };
   const runLabel = motion?.loop === "run" ? "Run" : "Play";
   const toggleRun = () => setRunning((r) => !r);
+
+  const vrUi: VrUi | null = vrActive
+    ? (() => {
+        const part = selectedComponent;
+        const explanation = part?.explanationRef ? explanations?.[part.explanationRef] : undefined;
+        const note = noteOf(part);
+        const buttons: VrButton[] = [];
+        if (order.length > 1) {
+          buttons.push({ id: "prev", label: "‹ Prev", run: () => { setTour(null); step(-1); } });
+          buttons.push({
+            id: "tour",
+            label: tour?.playing ? "❚❚ Pause" : tour ? "▶ Resume" : "▶ Tour",
+            active: !!tour?.playing,
+            run: toggleTour,
+          });
+          buttons.push({ id: "next", label: "Next ›", run: () => { setTour(null); step(1); } });
+        }
+        if (speechEnabled) buttons.push({ id: "voice", label: voice ? "Voice on" : "Voice off", active: voice, run: () => setVoice(!voice) });
+        if (explodable) {
+          buttons.push({
+            id: "explode",
+            label: explode > 0.5 ? "Assemble" : "Explode",
+            active: explode > 0.5,
+            run: () => {
+              changeExplode(explode > 0.5 ? 0 : 1);
+              commitExplode();
+            },
+          });
+        }
+        if (motion?.loop) buttons.push({ id: "run", label: running ? "■ Stop" : `▶ ${runLabel}`, active: running, run: toggleRun });
+        buttons.push({ id: "xray", label: "X-ray", active: xray, run: () => setXray(!xray) });
+        if (selected) buttons.push({ id: "focus", label: focused ? "Show all" : "Focus", active: !!focused, run: () => (focused ? showAll() : focus(selected)) });
+        return {
+          kicker: [tour ? "GUIDED TOUR" : "BEYOND BOOKS VR", narration?.topic].filter(Boolean).join(" · "),
+          counter: selected && order.includes(selected) ? `${order.indexOf(selected) + 1} / ${order.length}` : "",
+          title: part ? labelOf(part) : spec.title,
+          body: part
+            ? explanation || "No description yet."
+            : (narration?.intro ?? "Point at a part and pull the trigger to learn about it. Squeeze the grip to hold the model; use both hands to zoom and turn it."),
+          note: note ? `Connection to ${narration?.topic ?? "the topic"}: ${note}` : undefined,
+          buttons,
+          partLabel: (id) => {
+            const c = byId.get(id);
+            return c ? labelOf(c) : "";
+          },
+        };
+      })()
+    : null;
+
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       <SceneToolbar
@@ -424,6 +485,8 @@ function ViewerBody({
         effectiveTier={tier}
         onQuality={setQuality}
         onFullscreen={() => void container.current?.requestFullscreen?.()}
+        vr={vrAvailability}
+        onEnterVr={loaded && !loadError ? enterVr : undefined}
         voice={speechEnabled ? voice : undefined}
         onVoice={speechEnabled ? setVoice : undefined}
         speaking={narrator.speaking}
@@ -463,6 +526,12 @@ function ViewerBody({
               if (c || scene.components.length > MANY_PARTS) setShowLabels(false);
             }}
             onError={setLoadError}
+            vrUi={vrUi}
+            onVrActiveChange={(active) => {
+              setVrActive(active);
+              if (!active) fit(); // back on the screen: frame whatever the model looks like now
+            }}
+            onVrError={setVrError}
           />
           {/* 2D picture of the model (rendered by the server): shown at once while the 3D loads,
               then fades out; stays as a fallback if the 3D cannot be shown on this device */}
@@ -524,6 +593,16 @@ function ViewerBody({
               )}
             </div>
           )}
+          {vrActive && (
+            <div className="absolute inset-0 z-30 grid place-items-center bg-slate-950/70 p-6 text-center">
+              <p className="rounded-md bg-white px-4 py-3 text-sm font-medium text-slate-800 shadow-lg">Viewing in your VR headset…</p>
+            </div>
+          )}
+          {vrError && (
+            <p role="alert" className="absolute inset-x-4 top-4 z-30 mx-auto max-w-md rounded-md bg-white px-4 py-2 text-center text-sm text-red-800 shadow">
+              VR could not start: {vrError}
+            </p>
+          )}
           {isFullscreen && (
             <FullscreenTourCard
               part={selectedComponent ? labelOf(selectedComponent) : null}
@@ -541,6 +620,8 @@ function ViewerBody({
               onVoice={speechEnabled ? setVoice : undefined}
               speaking={narrator.speaking}
               onExit={() => void document.exitFullscreen?.()}
+              vr={vrAvailability}
+              onEnterVr={loaded && !loadError ? enterVr : undefined}
             />
           )}
           {uiFrame.annotation && (
@@ -613,6 +694,8 @@ function FullscreenTourCard({
   onVoice,
   speaking,
   onExit,
+  vr,
+  onEnterVr,
 }: {
   part: string | null;
   explanation?: string;
@@ -627,6 +710,8 @@ function FullscreenTourCard({
   onVoice?: (v: boolean) => void;
   speaking?: boolean;
   onExit: () => void;
+  vr: VrAvailability;
+  onEnterVr?: () => void;
 }) {
   const btn = "rounded-md px-3 py-1.5 text-sm font-medium";
   return (
@@ -671,6 +756,16 @@ function FullscreenTourCard({
             title="Read each part aloud"
           >
             {speaking ? "🔊 Reading…" : voice ? "🔊 Voice on" : "🔇 Voice off"}
+          </button>
+        )}
+        {vr === "ready" && (
+          <button type="button" onClick={onEnterVr} className={`${btn} bg-[#38b2ac] font-semibold hover:bg-[#4fc7c0]`} style={{ color: "#0b0d16" }} title="View the model at real size in your VR headset">
+            Enter VR
+          </button>
+        )}
+        {(vr === "no-headset" || vr === "needs-https") && (
+          <button type="button" disabled className={`${btn} border border-slate-300 text-slate-500 opacity-70`} title={VR_HINT[vr].title}>
+            {VR_HINT[vr].label}
           </button>
         )}
         <button type="button" onClick={onExit} className={`${btn} ml-auto text-slate-600 hover:bg-slate-100`}>Exit fullscreen</button>
