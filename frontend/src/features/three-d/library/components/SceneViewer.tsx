@@ -92,6 +92,7 @@ function ViewerBody({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [missing, setMissing] = useState<ReadonlySet<string>>(new Set());
   const [loaded, setLoaded] = useState(false);
+  const poster = scene.assets.find((a) => a.previewUrl)?.previewUrl ?? null;
   const [quality, setQuality] = useState<QualitySetting>("auto");
   const [autoTier, setAutoTier] = useState<QualityTier>("high");
   const tier: QualityTier = quality === "auto" ? autoTier : quality;
@@ -438,9 +439,19 @@ function ViewerBody({
             }}
             onError={setLoadError}
           />
+          {/* 2D picture of the model (rendered by the server): shown at once while the 3D loads,
+              then fades out; stays as a fallback if the 3D cannot be shown on this device */}
+          {poster && (
+            <img
+              src={poster}
+              alt={loadError ? `Picture of ${spec.title}` : ""}
+              aria-hidden={loadError ? undefined : true}
+              className={`pointer-events-none absolute inset-0 h-full w-full bg-[#eef2f6] object-contain p-4 transition-opacity duration-500 ${loaded && !loadError ? "opacity-0" : "opacity-100"}`}
+            />
+          )}
           {!loaded && !loadError && (
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
+            <div className="pointer-events-none absolute inset-x-0 bottom-3 grid place-items-center">
+              <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm">
                 Loading 3D model…
               </p>
             </div>
@@ -483,9 +494,9 @@ function ViewerBody({
             </p>
           )}
           {loadError && (
-            <div role="alert" className="absolute inset-0 grid place-items-center p-6">
-              <p className="rounded-md bg-white px-4 py-3 text-sm text-red-800">
-                Couldn't load the 3D model: {loadError}
+            <div role="alert" className={`absolute inset-x-0 grid place-items-center p-6 ${poster ? "bottom-0" : "inset-y-0"}`}>
+              <p className="rounded-md bg-white px-4 py-3 text-sm text-red-800 shadow-sm">
+                {poster ? "The 3D view could not start on this device, so here is a picture of the model." : `Couldn't load the 3D model: ${loadError}`}
               </p>
             </div>
           )}

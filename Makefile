@@ -1,4 +1,4 @@
-.PHONY: up down db migrate seed seed-demo seed-courses seed-students export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
+.PHONY: up down db migrate seed seed-demo seed-courses previews seed-students export-courses sqlite-to-postgres smoke backend-install backend-test backend-lint contracts frontend-install frontend-dev check
 
 up:            ## Start the full local stack
 	docker compose up --build
@@ -25,6 +25,16 @@ migrate:       ## Apply migrations to EDU3D_DATABASE_URL
 
 seed:          ## Seed the 3D library with the schematic demo heart (idempotent)
 	cd backend && .venv/bin/python -m app.modules.three_d.seed
+
+previews:       ## Render the 2D picture of every 3D model that has none (FORCE=1 re-renders all)
+	@if docker compose ps --status running --services 2>/dev/null | grep -qx api; then \
+	  docker compose run --rm --no-deps -v "$(CURDIR)/scripts:/seed/scripts:ro" \
+	    api python /seed/scripts/render_previews.py $(if $(FORCE),--force,); \
+	elif [ -x backend/.venv/bin/python ]; then \
+	  cd backend && .venv/bin/python ../scripts/render_previews.py $(if $(FORCE),--force,); \
+	else \
+	  echo "Start the app first: 'make up' (Docker), or 'make backend-install' for a local backend." && exit 1; \
+	fi
 
 seed-courses:   ## Load the shared courses: make seed-courses EMAIL=teacher@x.com PASSWORD=12+chars [STUDENT=student@x.com STUDENT_PASSWORD=12+chars]
 	@test -n "$(EMAIL)" || (echo "usage: make seed-courses EMAIL=teacher@x.com PASSWORD=... [STUDENT=student@x.com STUDENT_PASSWORD=...]" && exit 1)

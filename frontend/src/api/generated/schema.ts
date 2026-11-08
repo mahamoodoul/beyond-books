@@ -296,6 +296,7 @@ export type Id4 = string;
 export type LatestVersion = number;
 export type LicenseName1 = string;
 export type Name2 = string;
+export type PreviewUrl = string | null;
 export type Provider = string;
 export type ReviewNotes = string | null;
 export type ReviewStatus = string;
@@ -936,6 +937,7 @@ export type NodeNames = string[];
 export type Parts2 = {
   [k: string]: string;
 }[];
+export type PreviewUrl1 = string | null;
 export type SourceUrl2 = string | null;
 export type Tour = {
   [k: string]: unknown;
@@ -1022,6 +1024,7 @@ export type CourseId11 = string;
 export type CourseTitle1 = string;
 export type LessonId11 = string;
 export type LessonTitle4 = string;
+export type PreviewUrl2 = string | null;
 export type SceneId6 = string;
 export type Subject10 = string | null;
 export type Title39 = string;
@@ -1707,6 +1710,7 @@ export interface AssetOut {
   latest_version: LatestVersion;
   license_name: LicenseName1;
   name: Name2;
+  preview_url?: PreviewUrl;
   provider: Provider;
   review_notes: ReviewNotes;
   review_status: ReviewStatus;
@@ -3000,6 +3004,7 @@ export interface ResolvedAsset {
   name: Name11;
   node_names: NodeNames;
   parts?: Parts2;
+  preview_url?: PreviewUrl1;
   source_url: SourceUrl2;
   tour?: Tour;
   url: Url2;
@@ -3210,6 +3215,7 @@ export interface StudioSceneOut {
   course_title: CourseTitle1;
   lesson_id: LessonId11;
   lesson_title: LessonTitle4;
+  preview_url?: PreviewUrl2;
   scene_id: SceneId6;
   subject: Subject10;
   title: Title39;

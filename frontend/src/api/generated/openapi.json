@@ -1049,6 +1049,17 @@
             "title": "Name",
             "type": "string"
           },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
+          },
           "provider": {
             "title": "Provider",
             "type": "string"
@@ -6012,6 +6023,17 @@
             "title": "Parts",
             "type": "array"
           },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
+          },
           "source_url": {
             "anyOf": [
               {
@@ -7532,6 +7554,17 @@
           "lesson_title": {
             "title": "Lesson Title",
             "type": "string"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
           },
           "scene_id": {
             "format": "uuid",
