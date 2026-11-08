@@ -7,6 +7,12 @@
  * passes or recompiles shaders, which is what made the view flash when "auto" stepped down.
  * Only dropping to "low" (no post-processing, no shadows) rebuilds.
  */
+/**
+ * Backdrop of every 3D viewport: near-black, like the models' Blender worlds, so bright parts,
+ * glowing labels and pale materials all stand out.
+ */
+export const STUDIO_BACKDROP = "#191c22";
+
 export type QualityTier = "low" | "medium" | "high";
 export type QualitySetting = QualityTier | "auto";
 

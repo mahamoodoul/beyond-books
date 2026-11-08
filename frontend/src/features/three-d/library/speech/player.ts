@@ -109,8 +109,12 @@ class SpeechPlayer {
         }
       } catch (e) {
         if (my !== this.token) return;
-        const status = (e as { status?: number }).status;
-        if (status === 503 || status === 429 || status === 502) this.set({ unavailable: true });
+        const { status, name } = e as { status?: number; name?: string };
+        // NotSupportedError: the browser refused the audio itself (e.g. a security policy), so
+        // retrying won't help. Say so instead of leaving "Voice on" silent.
+        if (status === 503 || status === 429 || status === 502 || name === "NotSupportedError") {
+          this.set({ unavailable: true });
+        }
         ok = false;
       }
       if (my !== this.token) return;
