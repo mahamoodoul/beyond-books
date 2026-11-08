@@ -202,9 +202,9 @@ function ChapterCard({ c, index, total, courseId, accent = PLAIN }: { c: Chapter
 
   return (
     <li className={`rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${live ? "border-slate-200" : "border-dashed border-slate-300"}`}>
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-x-4 gap-y-3">
         <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg text-sm font-semibold ${accent.soft} ${accent.text}`}>{index + 1}</span>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-52">
           <div className="flex flex-wrap items-center gap-2">
             <Link to={`/teacher/chapters/${c.id}`} className="font-semibold text-slate-900 hover:underline">{c.title}</Link>
             <Badge tone={live ? "green" : "slate"}>{live ? "Published" : "Draft"}</Badge>
@@ -224,7 +224,8 @@ function ChapterCard({ c, index, total, courseId, accent = PLAIN }: { c: Chapter
             )}
           </div>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-start">
+        {/* phones: the actions get their own row under the text instead of squeezing it */}
+        <div className="flex shrink-0 items-start gap-2 max-sm:basis-full max-sm:pl-14">
           <Link to={`/teacher/chapters/${c.id}/studio`} className="inline-flex items-center gap-1.5 rounded-md bg-navy-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-navy-700">
             <Icon name="sparkles" size={15} /> Open Studio
           </Link>
