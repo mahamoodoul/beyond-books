@@ -100,30 +100,19 @@ systemctl daemon-reload
 systemctl enable beyond-books.service
 systemctl start beyond-books.service
 
-# --- nightly database backup to S3 (03:15 UTC), encrypted at rest by the bucket -------------
-cat > /usr/local/bin/beyond-books-backup <<'BK'
-#!/bin/bash
-set -euo pipefail
-cd /opt/beyond-books
-. ./.env.aws
-f="edu3d-$(date -u +%Y%m%dT%H%M%SZ).dump"
-docker compose --env-file .env.aws -f docker-compose.aws.yml exec -T postgres \
-  pg_dump --format=custom --no-owner --no-privileges -U "$POSTGRES_USER" "$POSTGRES_DB" > "/tmp/$f"
-aws s3 cp "/tmp/$f" "s3://$EDU3D_S3_BUCKET/backups/$f" --region "$EDU3D_S3_REGION" --only-show-errors
-rm -f "/tmp/$f"
-BK
-chmod +x /usr/local/bin/beyond-books-backup
-echo "15 3 * * * root /usr/local/bin/beyond-books-backup >> /var/log/beyond-books-backup.log 2>&1" > /etc/cron.d/beyond-books-backup
+# --- operations script: deploy / rollback / backup / restore / status ----------------------
+# Source of truth is infrastructure/aws/scripts/beyond-books.sh in the repo; the first boot and
+# every successful deploy install it. The deploy branch is remembered for `beyond-books deploy`
+# without arguments; GitHub Actions passes an explicit commit.
+mkdir -p /etc/beyond-books /var/lib/beyond-books
+echo "${git_ref}" > /etc/beyond-books/branch
+install -m 0755 "$APP_DIR/infrastructure/aws/scripts/beyond-books.sh" /usr/local/bin/beyond-books
+ln -sf /usr/local/bin/beyond-books /usr/local/bin/beyond-books-deploy
+ln -sf /usr/local/bin/beyond-books /usr/local/bin/beyond-books-rollback
+printf 'sha=%s\nrevision=unknown\nat=%s\n' "$(git rev-parse HEAD)" "$(date -u +%FT%TZ)" > /var/lib/beyond-books/current
+echo "$(date -u +%FT%TZ) first-boot sha=$(git rev-parse HEAD)" >> /var/lib/beyond-books/releases.log
 
-# --- weekly redeploy helper (git pull + rebuild): run `sudo beyond-books-deploy` -------------
-cat > /usr/local/bin/beyond-books-deploy <<'DP'
-#!/bin/bash
-set -euo pipefail
-cd /opt/beyond-books
-git fetch --all --prune && git checkout -q "$(git rev-parse --abbrev-ref HEAD)" && git pull --ff-only && git lfs pull
-systemctl restart beyond-books.service
-docker image prune -f >/dev/null
-DP
-chmod +x /usr/local/bin/beyond-books-deploy
+# --- nightly database backup to S3 (03:15 UTC), encrypted at rest by the bucket -------------
+echo "15 3 * * * root /usr/local/bin/beyond-books backup >> /var/log/beyond-books-backup.log 2>&1" > /etc/cron.d/beyond-books-backup
 
 echo "[boot] $(date -u +%FT%TZ) done: ${public_url}"

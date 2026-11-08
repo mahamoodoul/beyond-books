@@ -57,4 +57,6 @@ Manager, SSM access, alarms and a budget: see its README for cost, steps and ope
 `docker-compose.aws.yml` (Caddy + frontend + api + worker + Postgres + Redis + optional Blender
 container, `infrastructure/docker/blender.Dockerfile`). Blender in a container needs
 `EDU3D_BLENDER_EXPORT_DIR` (a volume shared with the api/worker) and
-`EDU3D_BLENDER_ALLOW_IN_PRODUCTION=true`; both are set by Terraform.
+`EDU3D_BLENDER_ALLOW_IN_PRODUCTION=true`; both are set by Terraform. Deploys run from GitHub Actions over SSM with a pre-deploy database
+dump, health check and automatic rollback (`.github/workflows/deploy-aws.yml`,
+`rollback-aws.yml`, `infrastructure/aws/scripts/beyond-books.sh`).

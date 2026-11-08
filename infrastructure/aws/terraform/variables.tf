@@ -150,3 +150,21 @@ variable "backup_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "github_repository" {
+  description = "owner/name of the GitHub repository allowed to deploy through OIDC. Empty = no CI/CD role."
+  type        = string
+  default     = "mahamoodoul/beyond-books"
+}
+
+variable "github_deploy_branches" {
+  description = "Branches whose pushes may assume the deploy role (besides the aws-<environment> GitHub environment)."
+  type        = list(string)
+  default     = ["aws-dev"]
+}
+
+variable "github_oidc_provider_arn" {
+  description = "ARN of an existing GitHub OIDC provider in the account (one per account). Empty = create it."
+  type        = string
+  default     = ""
+}

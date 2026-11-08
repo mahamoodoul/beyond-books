@@ -61,15 +61,59 @@ demo and wrong for real users.
 | Task | How |
 |---|---|
 | Stop paying while idle | `terraform output stop_start`, run the stop command; start again before the demo. Data and IP stay. |
-| Deploy a new commit | SSM shell, then `sudo beyond-books-deploy` (git pull, rebuild, restart). |
+| Deploy a new commit | push to `aws-dev` (pipeline), or SSM shell + `sudo beyond-books deploy [sha]`. See CI/CD below. |
 | Logs | `cd /opt/beyond-books && sudo docker compose --env-file .env.aws -f docker-compose.aws.yml logs -f api` |
 | Backups | nightly `pg_dump` to `s3://<bucket>/backups/`, kept `backup_retention_days`. Restore with `scripts/restore_db.sh`. |
 | Rotate a secret | `terraform taint random_password.jwt` (or `.postgres`), `terraform apply`, then redeploy. Rotating the Postgres password needs a password change in the database too. |
 | Bigger box for a session | stop, change `instance_type`, `terraform apply`, start. The disk and data stay. |
 | Tear down | `terraform destroy` (dev: the bucket is emptied; prod: it refuses while objects exist). |
 
+## CI/CD and rollback
+
+```
+push to aws-dev ──▶ GitHub Actions: CI checks ──▶ assume IAM role (OIDC, no keys)
+                 ──▶ SSM: `beyond-books deploy <sha>` on the instance
+                        1. pg_dump to s3://<bucket>/backups/predeploy-<sha>-….dump
+                        2. git checkout <sha>, docker compose up --build
+                        3. health check: api ready + frontend + Caddy edge (up to 7 min)
+                        4. ok  → record release, prune images        → "DEPLOYED <sha>"
+                           bad → checkout previous sha, rebuild, re-check → "ROLLED BACK to <sha>"
+                 ──▶ smoke test of PUBLIC_URL/api/v1/health/ready from the runner
+```
+
+Workflows: [`deploy-aws.yml`](../../../.github/workflows/deploy-aws.yml) (push to `aws-dev`, or
+*Run workflow* with any commit) and [`rollback-aws.yml`](../../../.github/workflows/rollback-aws.yml)
+(*Run workflow*: previous release or a chosen commit, schema kept or downgraded). Both run through
+the composite action `.github/actions/ssm-run`, so the instance needs no SSH port, no deploy key
+and no GitHub runner. Deploys are serialised (`concurrency: deploy-aws`); the instance also holds
+a lock, so a manual and a pipeline deploy never overlap.
+
+One-time setup after `terraform apply`:
+
+1. `terraform output github_variables`.
+2. GitHub → Settings → Environments → **aws-dev** (create it) → add those four variables.
+   Optional: required reviewers on the environment = manual approval before every deploy.
+3. Push to `aws-dev` (or run the workflow). The role trusts only this repository, the branches in
+   `github_deploy_branches` and the environment `aws-<environment>`.
+
+Rollback options, from fastest to most thorough:
+
+| Situation | Do |
+|---|---|
+| Deploy failed its health check | Nothing: the pipeline already rolled back (job is red, summary says `ROLLED BACK to …`). |
+| Release is healthy but wrong | Actions → *Rollback AWS* → *Run workflow* (empty sha = previous release). Or from an SSM shell: `sudo beyond-books rollback`. |
+| Back to a specific commit | Same workflow with the sha, or `sudo beyond-books rollback <sha>`. |
+| The release added a migration you must undo | Workflow with db = `downgrade` (runs `alembic downgrade` to the revision that release used, with a dump first). Default keeps the schema: this repo's migrations are additive, old code runs on a newer schema. |
+| Data damaged | `sudo CONFIRM_RESTORE=yes beyond-books restore backups/predeploy-<sha>-….dump` (list with `aws s3 ls s3://<bucket>/backups/`). Stops api/worker, restores, starts them. |
+| See what runs | `sudo beyond-books status` (current/previous sha, db revision, last releases, container health). |
+
+The Terraform layer has its own rollback: state is versioned when kept in S3 (`backend.hcl.example`),
+and an infrastructure change is reverted by `git revert` + `terraform apply`. Secrets and the
+bucket are never destroyed by a deploy.
+
 ## Security notes
 
+- The deploy role GitHub assumes can only send SSM commands to this instance and start it; it holds no keys and no S3 or secret access.
 - Only 80 and 443 are open to the world. SSH (22) opens only to `admin_cidr` when you set it;
   otherwise use Session Manager, which is logged in CloudTrail.
 - Blender's MCP socket (9876) runs arbitrary Python. It is reachable only inside the Docker
