@@ -2245,7 +2245,9 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .lv-journey-bar > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--mint)); transition: width .2s linear; }
 
 .lv-part { animation: qz-in .35s ease both; }
-.lv-part-head { display: flex; align-items: center; gap: 14px; }
+.lv-part-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+/* the title keeps 12rem before the Concept map button wraps below it (was squeezed to a word per line) */
+.lv-part-title { flex: 1 1 12rem; min-width: 0; }
 .lv-part-head h2 { margin: 2px 0 0; }
 .lv-part-icon { display: grid; width: 46px; height: 46px; flex: none; place-items: center; border-radius: 14px; font-size: 22px; }
 .lv-part-icon-0 { background: var(--accent-soft); }

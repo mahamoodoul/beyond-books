@@ -410,7 +410,7 @@ export function LessonPart({
     <section id={id} aria-labelledby={`${id}-title`} className={`lesson-card panel lv-part${reading ? " ring-2 ring-[#38b2ac] ring-offset-2" : ""}`} style={{ scrollMarginTop: 150 }}>
       <div className="lv-part-head">
         <span className={`lv-part-icon lv-part-icon-${index % 4}`} aria-hidden>{PART_ICONS[index % PART_ICONS.length]}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="lv-part-title">
           <span className="lv-part-meta">Part {index + 1} · {readMinutes(section.body_markdown)} min read</span>
           <h2 id={`${id}-title`}>{section.title}</h2>
         </div>
