@@ -59,6 +59,7 @@ TABLES = [
     "three_d_scenes",
     "three_d_animations",
     "three_d_prompt_drafts",
+    "circuit_labs",  # labs (circuit, molecules, buoyancy ...) in the courses, plus standalone ones
 ]
 
 
@@ -180,6 +181,15 @@ def export(email: str) -> None:
     data["three_d_prompt_drafts"] = _rows(
         db, "three_d_prompt_drafts", t("three_d_prompt_drafts").c.user_id == user_id
     )
+    # labs: those inside the exported courses, and the teacher's standalone ones (no course).
+    # Student sessions are personal data and stay out of the bundle.
+    labs = t("circuit_labs")
+    data["circuit_labs"] = _rows(
+        db,
+        "circuit_labs",
+        labs.c.course_id.in_(courses)
+        | (labs.c.course_id.is_(None) & (labs.c.created_by == user_id)),
+    )
 
     # model files (GLB) into files/, same paths as in storage
     storage = get_storage()
@@ -287,15 +297,20 @@ def _ensure_account(db: Any, email: str, password: str | None, kind: str) -> uui
     from app.modules.authentication.schemas import RegisterRequest
     from app.modules.authentication.service import register
 
-    user = register(
-        db,
-        RegisterRequest(
+    try:
+        body = RegisterRequest(
             email=email,
             password=password,
             display_name=email.split("@")[0].replace(".", " ").title(),
             account_type=kind,
-        ),
-    )
+        )
+    except ValueError as exc:  # pydantic: weak password etc.
+        reasons = "; ".join(
+            str(e.get("msg", "")).removeprefix("Value error, ")
+            for e in getattr(exc, "errors", lambda: [])()
+        )
+        raise SystemExit(f"Cannot create {email!r}: {reasons or exc}") from None
+    user = register(db, body)
     print(f"created {kind} account {user.email}")
     return user.id
 
