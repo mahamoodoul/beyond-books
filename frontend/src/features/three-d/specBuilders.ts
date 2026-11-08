@@ -52,7 +52,8 @@ export function specFromAsset(asset: AssetOut): SceneSpec {
     scene_id: sceneId(),
     title: `Explore: ${asset.name}`,
     asset_refs: [{ asset_id: asset.slug, version: asset.latest_version }],
-    camera: { preset: "three_quarter", min_distance: 2, max_distance: 12 },
+    // close enough for a detail of a small model: the first view is fitted to the model anyway
+    camera: { preset: "three_quarter", min_distance: 0.3, max_distance: 12 },
     components,
     controls: ["rotate", "zoom", "select_component"],
     explanations,

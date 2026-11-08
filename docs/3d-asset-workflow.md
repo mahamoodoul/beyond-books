@@ -83,6 +83,34 @@ load systems lazily (design §7.7).
 **Storage:** all `.glb` files are tracked with Git LFS (`.gitattributes`). After cloning, run
 `git lfs install && git lfs pull`; CI checks out with `lfs: true`.
 
+**Animated models.** A GLB can bring its own motion, and the Studio plays it the way a Blender
+panel drives the same rig. It looks for clips by name:
+
+| Clip | In the Studio |
+|---|---|
+| `explode` | follows the Explode button and slider, at the clip's own speed |
+| `run` (or any other clip) | loops; the Run button (Play for other names) starts and stops it |
+
+With both, `explode` is layered on `run`, so the model can run or stop assembled or exploded. A
+camera in the GLB sets the first view and its field of view. Floating labels start off, because
+such a model usually carries its own.
+
+Blender bakes the whole timeline into one animation. Split it without re-exporting:
+
+```bash
+python scripts/split_glb_clips.py engine.glb engine_studio.glb \
+  --run 0.0417:2.0417 --run-duration 1.333 \
+  --explode 2.0417:4.0 --explode-duration 1.6 \
+  --annotations "^(Label|Sub|Leader|Dot) " \
+  --view=-0.569,0.319,0.758 --view-fov 20
+```
+
+`--run` is a whole number of cycles while assembled and `--explode` is the move from assembled to
+exploded (seconds on the baked timeline, frame / fps). The rig must be additive, location = base +
+explode + motion; the script refuses anything else. `--annotations` keeps text and leader lines
+visible but out of the parts list, and `--view` is the direction from the model towards the Blender
+camera in glTF axes (Blender x, y, z is glTF x, z, -y).
+
 ### 5. Validate
 
 ```bash
