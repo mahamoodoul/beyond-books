@@ -7,8 +7,14 @@ import {
   validateAnimation,
   type RunnerSnapshot,
 } from "@/features/three-d/library/runtime/animation";
+import type { MotionSupport } from "@/features/three-d/library/runtime/modelMotion";
 import { proceduralCatalog } from "@/features/three-d/library/runtime/procedural";
-import { lowerTier, type QualitySetting, type QualityTier } from "@/features/three-d/library/runtime/quality";
+import {
+  lowerTier,
+  STUDIO_BACKDROP,
+  type QualitySetting,
+  type QualityTier,
+} from "@/features/three-d/library/runtime/quality";
 import { resolveScene } from "@/features/three-d/library/runtime/sceneResolver";
 import type {
   AnimationSpec,
@@ -58,6 +64,8 @@ export interface TourNarration {
 const IDLE: RunnerSnapshot = { status: "idle", index: 0, progress: 0 };
 /** How long the guided tour stays on each part. */
 const TOUR_STEP_MS = 7000;
+/** Above this many parts, floating labels start switched off. */
+const MANY_PARTS = 40;
 const noopSubscribe = () => () => {};
 
 /**
@@ -103,6 +111,8 @@ function ViewerBody({
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [showLabels, setShowLabels] = useState(true);
   const [explode, setExplode] = useState(0);
+  const [motion, setMotion] = useState<MotionSupport | null>(null);
+  const [running, setRunning] = useState(false);
   // Voice narration: offered when the server has a voice; the learner's choice is remembered.
   const speechEnabled = useSpeechEnabled();
   const [voice, setVoiceState] = useState(() => typeof localStorage === "undefined" || localStorage.getItem("studio.voice") !== "off");
@@ -159,9 +169,10 @@ function ViewerBody({
     rt.hidden = new Set(hidden);
     rt.showLabels = showLabels;
     rt.explodeTarget = explode;
+    rt.running = running;
     rt.reducedMotion = reducedMotion;
     rt.invalidate();
-  }, [runner, selected, focused, xray, hidden, showLabels, explode, reducedMotion, snapshot]);
+  }, [runner, selected, focused, xray, hidden, showLabels, explode, running, reducedMotion, snapshot]);
 
   // learning events
   const lastEvent = useRef<string>("");
@@ -382,22 +393,32 @@ function ViewerBody({
     );
   }
 
-  const explodable = scene.assets.length > 0;
+  // a model whose motion has no explode can't be pulled apart: that motion owns its transforms
+  const explodable = scene.assets.length > 0 && (!motion || motion.explode);
+  const changeExplode = (v: number, scrub?: boolean) => {
+    setExplode(v);
+    runtime.current.explodeTarget = v;
+    if (scrub && motion?.explode) runtime.current.explode = v;
+    runtime.current.invalidate();
+  };
+  const commitExplode = () => {
+    // a model with its own motion stays in the view the learner chose; only the framing adapts
+    setCamera((c) => ({ kind: motion ? "frame" : "fit", key: c.key + 1 }));
+    onEvent?.({ type: "explode_changed", amount: runtime.current.explodeTarget });
+  };
+  const runLabel = motion?.loop === "run" ? "Run" : "Play";
+  const toggleRun = () => setRunning((r) => !r);
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       <SceneToolbar
         showLabels={showLabels}
         onShowLabels={setShowLabels}
         explode={explodable ? explode : null}
-        onExplode={(v) => {
-          setExplode(v);
-          runtime.current.explodeTarget = v;
-          runtime.current.invalidate();
-        }}
-        onExplodeCommit={() => {
-          fit();
-          onEvent?.({ type: "explode_changed", amount: runtime.current.explodeTarget });
-        }}
+        onExplode={changeExplode}
+        onExplodeCommit={commitExplode}
+        runLabel={runLabel}
+        running={running}
+        onRun={motion?.loop ? toggleRun : undefined}
         onResetView={fit}
         quality={quality}
         effectiveTier={tier}
@@ -419,7 +440,8 @@ function ViewerBody({
           role="group"
           aria-label={`3D model: ${spec.title}`}
           aria-describedby={viewerHint}
-          className="keep-light relative aspect-[4/3] min-h-72 w-full overflow-hidden rounded-lg border border-slate-200 bg-[#eef2f6] sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
+          style={{ background: STUDIO_BACKDROP }}
+          className="keep-light relative aspect-[4/3] min-h-72 w-full overflow-hidden rounded-lg border border-slate-200 sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
         >
           <span id={viewerHint} className="visually-hidden">
             Drag to rotate; hold Ctrl or Command and scroll, or pinch, to zoom. With a keyboard, use
@@ -433,9 +455,12 @@ function ViewerBody({
             onSelect={manualSelect}
             quality={tier}
             onQualityDecline={quality === "auto" ? () => setAutoTier(lowerTier) : undefined}
-            onReady={({ missing: m }) => {
+            onReady={({ missing: m, motion: c }) => {
               setLoaded(true);
               setMissing(new Set(m));
+              setMotion(c);
+              // the model carries its own labels, or has too many parts for floating ones to read
+              if (c || scene.components.length > MANY_PARTS) setShowLabels(false);
             }}
             onError={setLoadError}
           />
@@ -446,7 +471,8 @@ function ViewerBody({
               src={poster}
               alt={loadError ? `Picture of ${spec.title}` : ""}
               aria-hidden={loadError ? undefined : true}
-              className={`pointer-events-none absolute inset-0 h-full w-full bg-[#eef2f6] object-contain p-4 transition-opacity duration-500 ${loaded && !loadError ? "opacity-0" : "opacity-100"}`}
+              style={{ background: STUDIO_BACKDROP }}
+              className={`pointer-events-none absolute inset-0 h-full w-full object-contain p-4 transition-opacity duration-500 ${loaded && !loadError ? "opacity-0" : "opacity-100"}`}
             />
           )}
           {!loaded && !loadError && (
@@ -467,6 +493,35 @@ function ViewerBody({
               >
                 <span style={{ color: "#0b0d16" }}>Show all <span className="opacity-60">Esc</span></span>
               </button>
+            </div>
+          )}
+          {isFullscreen && motion && (
+            // the toolbar stays outside the fullscreen element, so the motion controls come along
+            <div className="absolute right-4 top-4 flex gap-2 rounded-xl bg-white/95 p-2 shadow-2xl backdrop-blur" role="group" aria-label="Model motion">
+              {motion.explode && (
+                <button
+                  type="button"
+                  aria-pressed={explode > 0.5}
+                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  onClick={() => {
+                    changeExplode(explode > 0.5 ? 0 : 1);
+                    commitExplode();
+                  }}
+                >
+                  {explode > 0.5 ? "Assemble" : "Explode"}
+                </button>
+              )}
+              {motion.loop && (
+                <button
+                  type="button"
+                  aria-pressed={running}
+                  className="rounded-md bg-[#38b2ac] px-3 py-1.5 text-sm font-semibold hover:bg-[#4fc7c0]"
+                  style={{ color: "#0b0d16" }}
+                  onClick={toggleRun}
+                >
+                  {running ? "■ Stop" : `▶ ${runLabel}`}
+                </button>
+              )}
             </div>
           )}
           {isFullscreen && (

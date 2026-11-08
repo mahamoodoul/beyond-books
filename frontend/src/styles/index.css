@@ -2526,8 +2526,8 @@ main[tabindex="-1"]:focus { outline: none; }
 /* ---------------------------------------------------------------------------------------------
    Dark theme for Tailwind's light palette. Pages use bg-white / text-slate-900 / bg-*-50 etc.,
    which stayed light in dark mode: white cards with light text and dark headings on dark
-   backgrounds (contrast down to 1:1). These map them onto the theme variables. Light 3D
-   viewports (.keep-light) keep their light styling, since the canvas itself stays light.
+   backgrounds (contrast down to 1:1). These map them onto the theme variables. The controls over
+   3D viewports (.keep-light) keep their light styling in either theme.
    --------------------------------------------------------------------------------------------- */
 .theme-root[data-theme="dark"] { --muted-light: #9a97ab; }
 .theme-root[data-theme="dark"] .keep-light {
