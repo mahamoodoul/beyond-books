@@ -162,7 +162,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .status-pill { display: inline-flex; min-height: 20px; align-items: center; padding: 0 7px; border-radius: 6px; font-size: var(--fs-xs); font-weight: 650; }
 .status-published { background: var(--mint-soft); color: var(--mint); }
 .status-in-review { background: var(--amber-soft); color: var(--amber); }
-.status-draft { background: var(--surface-quiet); color: var(--muted); }
+.status-draft { background: var(--surface-quiet); color: var(--ink-soft); } /* var(--muted) was 4.3:1 */
 .progress-label { display: flex; justify-content: space-between; gap: 5px; margin: 9px 0 5px; color: var(--muted-light); font-size: var(--fs-xs); }
 .progress-label strong { color: var(--ink-soft); font-size: var(--fs-xs); }
 .progress-track { height: 5px; overflow: hidden; border-radius: 9px; background: var(--surface-quiet); }
@@ -1381,6 +1381,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .live-workspace input:not([type="radio"]):not([type="checkbox"]), .live-workspace textarea, .live-workspace select { color: var(--ink); border-color: var(--line-strong); background-color: var(--surface); }
 .live-workspace .text-navy-950 { color: var(--ink); }
 .live-workspace .text-slate-500 { color: var(--muted); }
+/* slate-400 (2.6:1 on white) is used for small meta text such as page ranges: keep it readable (AA) */
+.live-workspace .text-slate-400 { color: var(--muted-light); }
 .live-workspace .text-slate-600, .live-workspace .text-slate-700, .live-workspace .text-slate-800 { color: var(--ink-soft); }
 .live-workspace .bg-surface { background: var(--bg); }
 /* overflow-x alone would make overflow-y auto too, adding a stray vertical scrollbar */
