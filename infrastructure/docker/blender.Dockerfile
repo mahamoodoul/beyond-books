@@ -12,6 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
       xvfb xauth ca-certificates curl xz-utils python3 python3-venv \
       libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libxkbcommon0 libsm6 libice6 libx11-6 \
+      libgl1-mesa-dri libglx-mesa0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Blender (official Linux build)
@@ -34,6 +35,7 @@ EXPOSE 9876
 HEALTHCHECK --interval=15s --timeout=3s --start-period=40s --retries=5 \
   CMD python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('127.0.0.1', 9876))==0 else 1)"
 
-# Not `blender -b`: the add-on serves requests from Blender's UI timer, which needs a window
-# loop. xvfb provides a virtual display. --python runs the start script, then Blender keeps running.
-CMD ["xvfb-run", "-a", "-s", "-screen 0 1280x720x24", "blender", "--factory-startup", "--python", "/opt/blender-start.py"]
+# Not `blender -b`: the add-on serves requests from Blender's UI timer, which needs a window loop.
+# Xvfb is started directly: xvfb-run hangs when it is the container's PID 1. Mesa renders in software.
+ENV LIBGL_ALWAYS_SOFTWARE=1 DISPLAY=:99
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x720x24 +extension GLX -nolisten tcp & sleep 3; exec blender --factory-startup --python /opt/blender-start.py"]

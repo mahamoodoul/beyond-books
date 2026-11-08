@@ -11,8 +11,12 @@ inputs:
     description: Start the instance when it is stopped. Default "false" so a budget stop is not undone by a deploy.
     default: "false"
 outputs:
-  stdout: { description: Last 2000 chars of standard output, value: "${{ steps.wait.outputs.stdout }}" }
-  status: { description: SSM status (Success, Failed, TimedOut, ...), value: "${{ steps.wait.outputs.status }}" }
+  stdout:
+    description: Last 2000 chars of standard output
+    value: ${{ steps.wait.outputs.stdout }}
+  status:
+    description: "SSM status: Success, Failed, TimedOut or similar"
+    value: ${{ steps.wait.outputs.status }}
 runs:
   using: composite
   steps:

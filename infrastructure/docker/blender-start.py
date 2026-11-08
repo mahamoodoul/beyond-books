@@ -19,14 +19,17 @@ bpy.ops.wm.save_userpref()
 prefs = bpy.context.preferences.addons.get("blender_mcp")
 if prefs is not None and hasattr(prefs.preferences, "bind_address"):
     prefs.preferences.bind_address = "0.0.0.0"
+    # The add-on refuses non-loopback binds without this. Port 9876 stays on the private Docker
+    # network (docker-compose.aws.yml never publishes it).
+    prefs.preferences.allow_remote_connections = True
 for scene in bpy.data.scenes:
     scene.blendermcp_port = PORT
     scene.blendermcp_auto_start_server = True
 
-# Nudge the add-on's own auto-start (it also fires on load_post); then Blender's event loop
-# (under xvfb) keeps serving. Prints go to the container log.
+# Start the server now; the add-on's auto-start also fires on load. Blender's event loop keeps
+# serving. Prints go to the container log; the Docker health check is what proves the port is open.
 try:
     bpy.ops.blendermcp.start_server()
+    print(f"[blender-start] MCP for Blender starting on 0.0.0.0:{PORT}", flush=True)
 except Exception as exc:  # the auto-start timer will retry
-    print(f"[blender-start] start_server operator not used ({exc}); relying on auto-start")
-print(f"[blender-start] MCP for Blender ready on 0.0.0.0:{PORT}", flush=True)
+    print(f"[blender-start] start_server failed ({exc}); relying on auto-start", flush=True)
