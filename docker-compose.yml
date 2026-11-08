@@ -63,7 +63,7 @@ services:
     environment:
       VITE_API_PROXY: http://api:8000
     ports: ["5173:5173"]
-    volumes: ["./frontend/src:/app/src"]
+    volumes: ["./frontend/src:/app/src", "./packages:/packages:ro"]
     depends_on: [api]
 
 volumes:

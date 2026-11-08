@@ -10,7 +10,8 @@ export function TeacherAnalyticsPage() {
   if (courses.isPending) return <Loading />;
   if (courses.error) return <ErrorAlert error={courses.error} />;
   const list = courses.data.filter((c) => c.can_manage);
-  const id = list.find((c) => c.id === selected)?.id ?? list[0]?.id;
+  // Open on a published course: drafts have no student activity to show yet.
+  const id = list.find((c) => c.id === selected)?.id ?? (list.find((c) => c.status === "published") ?? list[0])?.id;
   return (
     <div className="dashboard-page teacher-analytics-page">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
@@ -20,10 +21,10 @@ export function TeacherAnalyticsPage() {
           <p className="text-sm text-slate-600">What to do next, how far the class is, and who needs a hand.</p>
         </div>
         {list.length > 0 && (
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex w-full min-w-0 items-center gap-2 text-sm text-slate-700 sm:w-auto">
             Course
             <select
-              className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900"
+              className="min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 sm:max-w-sm sm:flex-none"
               value={id}
               onChange={(e) => setSelected(e.target.value)}
             >

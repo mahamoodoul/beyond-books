@@ -8,6 +8,7 @@ import { Badge, Button, Card, Field, Input, Textarea } from "@/components/ui";
 import { useJob } from "@/features/jobs/useJob";
 
 import { uploadSource } from "@/lib/api";
+import { plural } from "@/lib/plural";
 
 const statusTone = { ready: "green", failed: "red", processing: "blue", uploaded: "blue", pending_upload: "slate" } as const;
 
@@ -90,7 +91,7 @@ export function SourcesPanel({ courseId }: { courseId: string }) {
                 <p className="font-medium">{d.title}</p>
                 <p className="text-xs text-slate-500">
                   {d.page_count ? `${d.page_count} pages` : d.mime_type}
-                  {d.pages_needing_ocr > 0 && ` · ${d.pages_needing_ocr} page(s) need OCR`}
+                  {d.pages_needing_ocr > 0 && ` · ${plural(d.pages_needing_ocr, "page")} ${d.pages_needing_ocr === 1 ? "needs" : "need"} OCR`}
                 </p>
                 {d.error_message && <p className="text-sm text-red-700">{d.error_message}</p>}
               </div>

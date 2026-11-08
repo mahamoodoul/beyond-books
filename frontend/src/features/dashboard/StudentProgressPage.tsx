@@ -13,6 +13,7 @@ import { ErrorAlert, Loading } from "@/components/feedback";
 import { useMyProgress } from "@/features/student/api";
 
 import { timeAgo } from "./format";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 type Skill = "mastered" | "developing" | "gap";
 const SKILLS: { key: Skill; label: string; color: string }[] = [
@@ -155,6 +156,7 @@ function Skills({ insights }: { insights: StudentInsights | undefined }) {
 }
 
 export function StudentProgressPage() {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const q = useMyProgress();
   const courses = useMemo(() => q.data ?? [], [q.data]);
   const outlines = useQueries({
@@ -174,7 +176,7 @@ export function StudentProgressPage() {
 
   if (!courses.length) {
     return (
-      <div className="pg">
+      <div className="pg" data-page-title="My progress">
         <section className="pg-hero" style={{ gridTemplateColumns: "1fr" }}>
           <div>
             <span className="pg-eyebrow">Your learning journey</span>
@@ -199,10 +201,10 @@ export function StudentProgressPage() {
   const outline = outlines[index]?.data;
   const insight = insights[index]?.data;
   const coursePct = current ? pct(current.completed_lessons, current.total_lessons) : 0;
-  const heading = pct(done, total) >= 100 ? "Everything complete. Brilliant! 🏆" : done === 0 ? "Let's get started! 🚀" : pct(done, total) >= 50 ? "Over halfway there! 💪" : "Look how far you've come. 🌱";
+  const heading = pct(done, total) >= 100 ? "Everything complete. Brilliant! 🏆" : done === 0 ? "Let's get started! 🚀" : pct(done, total) > 50 ? "Over halfway there! 💪" : pct(done, total) === 50 ? "Halfway there! 💪" : "Look how far you've come. 🌱";
 
   return (
-    <div className="pg">
+    <div className="pg" data-page-title="My progress">
       <section className="pg-hero">
         <Ring value={pct(done, total)} size={132} label="lessons" />
         <div style={{ position: "relative", zIndex: 1 }}>
@@ -210,10 +212,10 @@ export function StudentProgressPage() {
           <h1>{heading}</h1>
           <p>{done} of {total} lessons complete across {courses.length} course{courses.length === 1 ? "" : "s"}.</p>
           <div className="pg-stats">
-            <div className="pg-stat"><strong>{done}</strong><span>lessons done</span></div>
-            <div className="pg-stat"><strong>{quizzes}</strong><span>quiz attempts</span></div>
+            <div className="pg-stat"><strong>{done}</strong><span>{done === 1 ? "lesson done" : "lessons done"}</span></div>
+            <div className="pg-stat"><strong>{quizzes}</strong><span>{quizzes === 1 ? "quiz attempt" : "quiz attempts"}</span></div>
             <div className="pg-stat"><strong>{avg != null ? `${avg}%` : "–"}</strong><span>average score</span></div>
-            <div className="pg-stat"><strong>{mastered}</strong><span>skills mastered</span></div>
+            <div className="pg-stat"><strong>{mastered}</strong><span>{mastered === 1 ? "skill mastered" : "skills mastered"}</span></div>
           </div>
         </div>
       </section>
@@ -230,7 +232,7 @@ export function StudentProgressPage() {
       )}
 
       {courses.length > 1 && (
-        <div className="pg-tabs" role="tablist" aria-label="Your courses">
+        <div className="pg-tabs" role="tablist" aria-label="Your courses" ref={rovingTabs}>
           {courses.map((c) => {
             const p = pct(c.completed_lessons, c.total_lessons);
             return (

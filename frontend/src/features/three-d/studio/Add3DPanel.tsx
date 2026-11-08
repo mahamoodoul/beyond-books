@@ -17,6 +17,7 @@ import { useAsset, useAssets } from "../api";
 import { GeneratePanel } from "../AssetsPage";
 import { DescriptionReview } from "../DescriptionReview";
 import { specFromAsset } from "../specBuilders";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 type Tab = "ai" | "library" | "generate";
 interface Plan {
@@ -145,6 +146,7 @@ function AIChoose({ lessonId, onAdded, onGenerate }: { lessonId: string; onAdded
 }
 
 export function Add3DPanel({ lessonId, lessonTitle, onAdded, onClose }: { lessonId: string; lessonTitle: string; onAdded: (sceneId: string) => void; onClose: () => void }) {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const [tab, setTab] = useState<Tab>("ai");
   const [reviewId, setReviewId] = useState<string | null>(null);
   const [seed, setSeed] = useState<Plan | null>(null);
@@ -162,7 +164,7 @@ export function Add3DPanel({ lessonId, lessonTitle, onAdded, onClose }: { lesson
         </div>
         <button type="button" onClick={onClose} aria-label="Close" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900">✕</button>
       </header>
-      <div role="tablist" className="grid grid-cols-3 gap-1 border-b border-slate-200 bg-slate-50 p-1.5">
+      <div role="tablist" aria-label="Ways to add a 3D model" ref={rovingTabs} className="grid grid-cols-3 gap-1 border-b border-slate-200 bg-slate-50 p-1.5">
         {tabs.map((t) => {
           const on = tab === t.key && !reviewId;
           return (

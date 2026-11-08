@@ -258,9 +258,38 @@ a mix of strong, steady, struggling and inactive students. No AI calls are made.
 Safe to repeat: existing students keep their activity; `RESET=1` wipes the demo students'
 activity and generates it again. Publish a draft course first if you want activity in it.
 
+### Everything at once: the demo data (what the Coolify deployment loads)
+
+```bash
+make seed-demo
+```
+
+Loads the shared courses for the demo teacher `teacher@example.com` (password `teacher-demo-123`),
+creates the demo student `student@example.com` (`student-demo-123`) enrolled in them, and adds the
+50 analytics students. These are the accounts behind the login page's **Use the demo account**
+buttons (Shift+T / Shift+S). Safe to repeat. Missing PDFs or 3D models (Git LFS placeholders) are
+downloaded from GitHub.
+
+**Coolify:** the api runs the same seed (`scripts/seed_deploy.py`) on every start, so a fresh
+deployment has the courses and demo accounts without a manual step, and re-deploys only add what is
+missing. Settings (Coolify → Environment Variables):
+
+| Variable | Default |
+|---|---|
+| `EDU3D_SEED_DEMO_DATA` | `true` (`false` turns the seed off) |
+| `SEED_TEACHER_EMAIL` / `SEED_TEACHER_PASSWORD` | `teacher@example.com` / `teacher-demo-123` |
+| `SEED_STUDENT_EMAIL` / `SEED_STUDENT_PASSWORD` | `student@example.com` / `student-demo-123` (`none`: no demo student) |
+| `SEED_DEMO_STUDENTS` | `50` analytics students (`0`: none) |
+
+Passwords need 12+ characters and only apply when the account is created. If you change the demo
+accounts, set `VITE_DEMO_TEACHER` / `VITE_DEMO_STUDENT` to the same `email:password` so the login
+buttons match.
+
 ## 5. Accounts: teacher and student
 
-There are no built-in demo logins. Create accounts in the app:
+The login page's **Use the demo account** buttons (and Shift+T / Shift+S) sign in as
+`teacher@example.com` / `student@example.com` once `make seed-demo` has run; the Coolify deployment
+creates them automatically (section 4). Your own accounts:
 
 | Who | How |
 |---|---|
@@ -399,6 +428,7 @@ restart. `EDU3D_THREE_D_EFFORT` sets the reasoning effort for 3D builds only. De
 | `make migrate` | Apply database migrations |
 | `make seed` | Demo heart model in the 3D library |
 | `make seed-courses EMAIL=… PASSWORD=…` | Load the shared courses (section 4) |
+| `make seed-demo` | Demo accounts + shared courses + analytics students, like the Coolify deployment |
 | `make export-courses EMAIL=…` | Save a teacher's courses as the shared seed |
 | `make frontend-dev` | Frontend dev server on :5173 |
 | `make backend-test` / `make backend-lint` | Backend tests / lint and types |
@@ -453,6 +483,7 @@ docs/                    guides, ADRs, runbooks
 | 3D asset workflow / Blender | [docs/3d-asset-workflow.md](docs/3d-asset-workflow.md), [docs/BLENDER_MCP.md](docs/BLENDER_MCP.md) |
 | Quiz builder | [docs/quiz-builder.md](docs/quiz-builder.md) |
 | Testing | [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) |
+| Accessibility (guidelines, `__a11yAudit()`) | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
 | Deployment | [docs/INFRASTRUCTURE_AND_DEPLOYMENT.md](docs/INFRASTRUCTURE_AND_DEPLOYMENT.md) |
 | Security | [docs/SECURITY_REVIEW.md](docs/SECURITY_REVIEW.md) |
 | Runbooks | [docs/RUNBOOKS.md](docs/RUNBOOKS.md) |

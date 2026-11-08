@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { api, errorMessage } from "@/api/client";
+import { plural } from "@/lib/plural";
 import type {
   AssessmentSummary,
   ChapterDetail,
@@ -188,7 +189,7 @@ export function GeneratePanel({ chapter }: { chapter: ChapterDetail }) {
         const skipped = r.items.filter((i) => !i.job_id).length;
         set("scenes", {
           state: failed && !made ? "failed" : "done",
-          note: [made && `${made} planned`, failed && `${failed} failed`, skipped && `${skipped} lesson(s) skipped`].filter(Boolean).join(" · ") || "Nothing to plan",
+          note: [made && `${made} planned`, failed && `${failed} failed`, skipped && `${plural(skipped, "lesson")} skipped`].filter(Boolean).join(" · ") || "Nothing to plan",
         });
       } catch (e) {
         set("scenes", { state: "failed", note: errorMessage(e) });
@@ -296,7 +297,7 @@ export function PublishPanel({ chapter, course, ready, pending }: { chapter: Cha
           <div className="min-w-0 flex-1">
             <p className="text-base font-semibold text-slate-900">Chapter published</p>
             <p className="mt-0.5 text-sm text-slate-600">
-              {result.lessons_published} lesson(s) · {result.scenes_published} 3D scene(s) · {result.assessments_published} quiz(zes) are now live
+              {plural(result.lessons_published, "lesson")} · {plural(result.scenes_published, "3D scene")} · {plural(result.assessments_published, "quiz", "quizzes")} now live
               {result.course_status === "published" ? <> for students enrolled in <b className="text-slate-800">{course?.title}</b>.</> : "."}
             </p>
             {result.course_status !== "published" && <p className="mt-2 text-sm text-amber-700">The course itself is still a draft, so students can't open it yet. Publish the course from its page.</p>}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { useReducedMotion } from "@/features/three-d/library/hooks/useReducedMotion";
 import {
@@ -83,6 +83,7 @@ function ViewerBody({
   onTourStart,
 }: Omit<SceneViewerProps, "scene"> & { scene: ResolvedScene }) {
   const spec = scene.spec;
+  const viewerHint = useId();
   const [initialRuntime] = useState(() => createViewerRuntime(scene.paths));
   const runtime = useRef(initialRuntime);
   const reducedMotion = useReducedMotion();
@@ -411,11 +412,18 @@ function ViewerBody({
         onTour={order.length > 1 ? toggleTour : undefined}
       />
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           ref={container}
-          className="relative aspect-[4/3] min-h-72 overflow-hidden rounded-lg border border-slate-200 bg-[#eef2f6] sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
+          role="group"
+          aria-label={`3D model: ${spec.title}`}
+          aria-describedby={viewerHint}
+          className="keep-light relative aspect-[4/3] min-h-72 w-full overflow-hidden rounded-lg border border-slate-200 bg-[#eef2f6] sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
         >
+          <span id={viewerHint} className="visually-hidden">
+            Drag to rotate; hold Ctrl or Command and scroll, or pinch, to zoom. With a keyboard, use
+            the part labels or the parts list to explore each part.
+          </span>
           <SceneCanvas
             scene={scene}
             runtime={runtime}

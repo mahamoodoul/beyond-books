@@ -29,7 +29,7 @@ export function DemoTeacherDashboard() {
     { label: "Lessons completed", value: pending ? "…" : String(completed), icon: "check" as const, tone: "mint" },
     { label: "Lesson completion", value: pending ? "…" : total ? pct(completed / total) : "No activity yet", icon: "activity" as const, tone: "amber" },
   ];
-  return <div className="dashboard-page">
+  return <div className="dashboard-page" data-page-title="Overview">
     <header className="page-heading"><div><div className="eyebrow"><span className="eyebrow-dot" /> YOUR TEACHER SPACE</div><h1>Welcome back, {firstName(me.data?.display_name)} <span className="heading-wave">✳</span></h1><p>Your courses, learners, and latest classroom activity.</p></div><NewCourseButton className="button button-primary"><Icon name="plus" size={18} /> Create a course</NewCourseButton></header>
     <ErrorAlert error={progress.find(q => q.error)?.error ?? analytics.find(q => q.error)?.error} />
     <section aria-label="Classroom overview" className="metric-grid">{stats.map(stat => <article className={`metric-card metric-card-${stat.tone}`} key={stat.label}><div className="metric-top"><span>{stat.label}</span><span className={`metric-icon metric-icon-${stat.tone}`}><Icon name={stat.icon} size={18} /></span></div><div className="metric-value">{stat.value}</div><div className="metric-note">Across your managed courses</div></article>)}</section>

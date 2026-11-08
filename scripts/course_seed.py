@@ -212,12 +212,57 @@ def export(email: str) -> None:
 
 # ------------------------------------------------------------------------- import
 LFS_POINTER = b"version https://git-lfs"
+# Where to fetch Git LFS files that were checked out as placeholders (e.g. a deploy that cloned
+# without LFS). The repository is public, so no credentials are needed; empty disables it.
+LFS_REPO = os.environ.get("SEED_LFS_REPO", "https://github.com/mahamoodoul/beyond-books.git")
 
 
 def _real_file(path: Path) -> bool:
     """False for a Git LFS placeholder (run `git lfs pull` to get the real file)."""
     with path.open("rb") as f:
         return not f.read(len(LFS_POINTER)).startswith(LFS_POINTER)
+
+
+def _download_lfs(pointer: str) -> bytes | None:
+    """The real file for a Git LFS placeholder, from the repository's LFS server (verified)."""
+    import hashlib
+    import urllib.request
+
+    oid = re.search(r"^oid sha256:([0-9a-f]{64})$", pointer, re.M)
+    size = re.search(r"^size (\d+)$", pointer, re.M)
+    if not (LFS_REPO and oid and size):
+        return None
+    batch = json.dumps(
+        {
+            "operation": "download",
+            "transfers": ["basic"],
+            "objects": [{"oid": oid.group(1), "size": int(size.group(1))}],
+        }
+    ).encode()
+    headers = {
+        "Accept": "application/vnd.git-lfs+json",
+        "Content-Type": "application/vnd.git-lfs+json",
+    }
+    try:
+        req = urllib.request.Request(  # noqa: S310  https URL from SEED_LFS_REPO
+            LFS_REPO.rstrip("/") + "/info/lfs/objects/batch", data=batch, headers=headers
+        )
+        with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310  fixed https URL
+            action = json.load(r)["objects"][0]["actions"]["download"]
+        dl = urllib.request.Request(action["href"], headers=action.get("header") or {})  # noqa: S310
+        with urllib.request.urlopen(dl, timeout=180) as r:  # noqa: S310  URL from the LFS server
+            data = r.read()
+    except (OSError, ValueError, KeyError, IndexError) as exc:
+        print(f"  could not download {oid.group(1)[:12]} from Git LFS: {exc}")
+        return None
+    return data if hashlib.sha256(data).hexdigest() == oid.group(1) else None
+
+
+def _file_bytes(path: Path) -> bytes | None:
+    """The file's content; for a Git LFS placeholder, the real file downloaded from LFS."""
+    if _real_file(path):
+        return path.read_bytes()
+    return _download_lfs(path.read_text(errors="replace"))
 
 
 def _ensure_account(db: Any, email: str, password: str | None, kind: str) -> uuid.UUID:
@@ -358,10 +403,11 @@ def load(
             if src is None or (not is_new and storage.head(raw["storage_key"]) is not None):
                 continue
             path, content_type = src
-            if path is None or not _real_file(path):
+            data = _file_bytes(path) if path is not None else None
+            if data is None:
                 missing += 1
                 continue
-            storage.put_bytes(raw["storage_key"], path.read_bytes(), content_type)
+            storage.put_bytes(raw["storage_key"], data, content_type)
             files += 1
             restored += 0 if is_new else 1
     db.commit()

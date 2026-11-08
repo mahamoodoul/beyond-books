@@ -97,7 +97,8 @@ function QuizRow({ a, enrolled }: { a: AssessmentStat; enrolled: number }) {
   return (
     <li className="py-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <Link to={`/teacher/assessments/${a.assessment_id}`} className="min-w-0 flex-1 truncate font-medium text-slate-900 hover:underline">{a.title}</Link>
+        {/* basis-48: on narrow screens the numbers wrap below instead of cutting the title to "Ho…" */}
+        <Link to={`/teacher/assessments/${a.assessment_id}`} title={a.title} className="min-w-0 flex-1 basis-48 truncate font-medium text-slate-900 hover:underline">{a.title}</Link>
         <span className="text-xs text-slate-500">{a.students_attempted}/{enrolled} attempted</span>
         <span className="text-sm tabular-nums text-slate-800" title="Average score of graded attempts">avg {pct(a.avg_score_rate)}</span>
         <span className="text-sm tabular-nums text-slate-800" title="Share of graded attempts above the pass mark">pass {pct(a.pass_rate)}</span>
@@ -238,22 +239,26 @@ function Students({ rows, courseId, totalLessons }: { rows: StudentAttention[]; 
       <table className="w-full text-sm">
         <thead className="text-left text-xs text-slate-500">
           <tr>
-            <th className="pb-1 font-medium">Student</th>
-            <th className="pb-1 font-medium">Lessons</th>
-            <th className="pb-1 font-medium">Gaps</th>
-            <th className="pb-1 font-medium">Why</th>
+            <th className="pb-1 pr-3 font-medium">Student</th>
+            <th className="pb-1 pr-3 font-medium">Lessons</th>
+            <th className="pb-1 pr-3 font-medium">Gaps</th>
+            <th className="hidden pb-1 pr-3 font-medium sm:table-cell">Why</th>
             <th />
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
           {shown.map((s) => (
             <tr key={s.student_id} className={student === s.student_id ? "bg-slate-50" : ""}>
-              <td className="py-1.5 font-medium text-slate-900">{s.display_name}</td>
-              <td className="py-1.5 tabular-nums text-slate-700">{s.completed_lessons}/{totalLessons}</td>
-              <td className="py-1.5 tabular-nums text-slate-700">
+              <td className="py-1.5 pr-3 font-medium text-slate-900">
+                {s.display_name}
+                {/* phones: the reason goes under the name instead of a squeezed column */}
+                <span className="block text-xs font-normal text-slate-500 sm:hidden">{reason(s.reasons[0] ?? "")}{s.reasons.length > 1 ? ` +${s.reasons.length - 1}` : ""}</span>
+              </td>
+              <td className="py-1.5 pr-3 tabular-nums text-slate-700">{s.completed_lessons}/{totalLessons}</td>
+              <td className="whitespace-nowrap py-1.5 pr-3 tabular-nums text-slate-700">
                 {s.gap_objectives > 0 ? <span><span aria-hidden style={{ color: STATUS.gap.color }}>{STATUS.gap.icon}</span> {s.gap_objectives}</span> : "—"}
               </td>
-              <td className="py-1.5 text-slate-600" title={s.reasons.join("; ")}>{reason(s.reasons[0] ?? "")}{s.reasons.length > 1 ? ` +${s.reasons.length - 1}` : ""}</td>
+              <td className="hidden py-1.5 pr-3 text-slate-600 sm:table-cell" title={s.reasons.join("; ")}>{reason(s.reasons[0] ?? "")}{s.reasons.length > 1 ? ` +${s.reasons.length - 1}` : ""}</td>
               <td className="py-1.5 text-right">
                 <button type="button" className="text-xs font-medium text-navy-700 hover:underline" onClick={() => setStudent(student === s.student_id ? null : s.student_id)}>
                   {student === s.student_id ? "Hide" : "Details"}
@@ -276,13 +281,18 @@ export function AnalyticsPanel({ courseId }: { courseId: string }) {
   if (q.error) return <ErrorAlert error={q.error} />;
   const d = q.data;
   const pending = d.assessments.reduce((a, x) => a + x.pending_reviews, 0);
-  const inactive = d.insights.find((i) => i.kind === "inactive_students");
-  const inactiveCount = inactive ? Number(/\d+/.exec(inactive.message)?.[0] ?? 0) : 0;
+  // Every student without a completed lesson is in `attention` (only counted once lessons exist).
+  const notStarted = d.attention.filter((s) => s.completed_lessons === 0).length;
+  const studentsHint =
+    d.enrolled === 0 ? "no students enrolled yet"
+    : d.total_lessons === 0 ? "no published lessons yet"
+    : notStarted ? `${notStarted} yet to complete a lesson`
+    : "all have completed a lesson";
 
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label="Students" value={String(d.enrolled)} hint={inactiveCount ? `${inactiveCount} not started` : "all have started"} />
+        <StatTile label="Students" value={String(d.enrolled)} hint={studentsHint} />
         <StatTile label="Lessons completed" value={pct(d.avg_completion_rate)} hint={`average across ${d.total_lessons} lesson${d.total_lessons === 1 ? "" : "s"}`} />
         <StatTile label="Quiz score" value={pct(d.avg_score_rate)} hint="average of graded attempts" />
         <StatTile label="To review" value={String(pending)} hint={pending ? "short answers waiting" : "nothing waiting"} />
