@@ -132,6 +132,7 @@ services:
         VITE_DEMO_LOGIN: ${VITE_DEMO_LOGIN:-true}
         VITE_DEMO_TEACHER: ${VITE_DEMO_TEACHER:-}
         VITE_DEMO_STUDENT: ${VITE_DEMO_STUDENT:-}
+        CONNECT_SRC_EXTRA: https://${EDU3D_S3_BUCKET:-unset}.s3.${EDU3D_S3_REGION:-eu-north-1}.amazonaws.com
     restart: unless-stopped
     expose: ["3939"]
     depends_on: [api]
