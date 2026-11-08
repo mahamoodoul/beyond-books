@@ -4,9 +4,12 @@ from fastapi import APIRouter, status
 from pydantic import BaseModel, Field
 
 from app.core.deps import DB, CurrentUser
-from app.modules.lessons import service
+from app.modules.lessons import media, service
 from app.modules.lessons.schemas import (
     LessonCreate,
+    LessonMediaCreate,
+    LessonMediaOut,
+    LessonMediaUpload,
     LessonOut,
     LessonSummary,
     LessonUpdate,
@@ -87,3 +90,32 @@ def explain_selection(
     from app.modules.ai_engine.selection_explain import start_selection_explain
 
     return start_selection_explain(db, user, lesson_id, body.text)
+
+
+# --------------------------------------------------------------------------- lesson media
+@router.post(
+    "/lessons/{lesson_id}/media",
+    response_model=LessonMediaUpload,
+    status_code=status.HTTP_201_CREATED,
+)
+def start_media_upload(
+    lesson_id: uuid.UUID, body: LessonMediaCreate, user: CurrentUser, db: DB
+) -> LessonMediaUpload:
+    """Add a picture or AR target to a lesson: returns where to PUT the file, then call /complete."""
+    m, url, method, headers = media.start_upload(db, user, lesson_id, body)
+    return LessonMediaUpload(media=media.to_out(m), url=url, method=method, headers=headers)
+
+
+@router.post("/lesson-media/{media_id}/complete", response_model=LessonMediaOut)
+def complete_media_upload(media_id: uuid.UUID, user: CurrentUser, db: DB) -> LessonMediaOut:
+    return media.to_out(media.complete_upload(db, user, media_id), with_url=True)
+
+
+@router.get("/lessons/{lesson_id}/media", response_model=list[LessonMediaOut])
+def list_lesson_media(lesson_id: uuid.UUID, user: CurrentUser, db: DB) -> list[LessonMediaOut]:
+    return media.list_media(db, user, lesson_id)
+
+
+@router.delete("/lesson-media/{media_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_lesson_media(media_id: uuid.UUID, user: CurrentUser, db: DB) -> None:
+    media.delete_media(db, user, media_id)

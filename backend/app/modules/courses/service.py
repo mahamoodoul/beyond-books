@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import or_, select
+from sqlalchemy import Select, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.authz import get_classroom_for, require_school_role, school_role
@@ -13,6 +13,55 @@ from app.modules.operations import audit
 from app.modules.organizations.models import SchoolMembership, SchoolRole
 from app.modules.users.models import AccountType, User
 from app.modules.users.repository import get_by_email
+
+
+def _eligible_students(course: Course) -> Select[tuple[uuid.UUID]]:
+    """Students who may see `course` when it is open: its school's students, or every student."""
+    q = select(User.id).where(User.account_type == AccountType.STUDENT)
+    if course.school_id:
+        q = q.join(SchoolMembership, SchoolMembership.user_id == User.id).where(
+            SchoolMembership.school_id == course.school_id,
+            SchoolMembership.role == SchoolRole.STUDENT,
+            SchoolMembership.status == "active",
+        )
+    return q
+
+
+def sync_open_course(db: Session, course: Course) -> int:
+    """Enroll every eligible student in a published, open course (caller commits).
+
+    Only students with no enrollment row are added, so a student a teacher removed stays removed.
+    """
+    if not (course.open_to_all_students and course.status == CourseStatus.PUBLISHED):
+        return 0
+    already = select(CourseEnrollment.student_id).where(CourseEnrollment.course_id == course.id)
+    new_ids = db.scalars(_eligible_students(course).where(User.id.not_in(already))).all()
+    for student_id in new_ids:
+        db.add(CourseEnrollment(course_id=course.id, student_id=student_id))
+    return len(new_ids)
+
+
+def enroll_in_open_courses(db: Session, student: User) -> int:
+    """Enroll a student in every published open course they are eligible for (caller commits)."""
+    if student.account_type != AccountType.STUDENT:
+        return 0
+    my_schools = select(SchoolMembership.school_id).where(
+        SchoolMembership.user_id == student.id,
+        SchoolMembership.role == SchoolRole.STUDENT,
+        SchoolMembership.status == "active",
+    )
+    already = select(CourseEnrollment.course_id).where(CourseEnrollment.student_id == student.id)
+    courses = db.scalars(
+        select(Course).where(
+            Course.open_to_all_students.is_(True),
+            Course.status == CourseStatus.PUBLISHED,
+            or_(Course.school_id.is_(None), Course.school_id.in_(my_schools)),
+            Course.id.not_in(already),
+        )
+    ).all()
+    for course in courses:
+        db.add(CourseEnrollment(course_id=course.id, student_id=student.id))
+    return len(courses)
 
 
 def create_course(db: Session, user: User, body: CourseCreate) -> Course:
@@ -31,6 +80,7 @@ def create_course(db: Session, user: User, body: CourseCreate) -> Course:
         actor_user_id=user.id,
         school_id=course.school_id,
     )
+    sync_open_course(db, course)
     db.commit()
     return course
 
@@ -76,6 +126,17 @@ def update_course(db: Session, user: User, course_id: uuid.UUID, body: CourseUpd
             actor_user_id=user.id,
             school_id=course.school_id,
         )
+    if "open_to_all_students" in changes:
+        audit.record(
+            db,
+            action=f"course.open_to_all_students.{str(changes['open_to_all_students']).lower()}",
+            resource_type="course",
+            resource_id=course.id,
+            actor_user_id=user.id,
+            school_id=course.school_id,
+        )
+    db.flush()
+    sync_open_course(db, course)
     db.commit()
     return course
 

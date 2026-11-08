@@ -10,10 +10,13 @@ import { attachGestures } from "@/features/ar/three/gestures";
 
 interface Heart3DViewProps {
   description: string;
+  /** Signed link to the heart model (from the lesson's 3D scene); read once when the viewer opens. */
+  modelUrl: string;
   onClose: () => void;
 }
 
-export function Heart3DView({ description, onClose }: Heart3DViewProps) {
+export function Heart3DView({ description, modelUrl, onClose }: Heart3DViewProps) {
+  const modelUrlRef = useRef(modelUrl);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
@@ -178,7 +181,7 @@ export function Heart3DView({ description, onClose }: Heart3DViewProps) {
     currentModel.setBeating(false);
     currentModel.setSelectListener(setSelected);
 
-    void currentModel.load(target.modelUrl, target.size).then(() => {
+    void currentModel.load(modelUrlRef.current, target.size).then(() => {
       if (disposed) {
         currentModel.dispose();
         return;

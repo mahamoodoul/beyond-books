@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import ForeignKey, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, ForeignKey, Index, Integer, String, Text, UniqueConstraint, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base, TimestampMixin, UTCDateTime, UUIDPrimaryKeyMixin, utcnow
@@ -30,6 +30,9 @@ class Course(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     current_version: Mapped[int] = mapped_column(Integer, default=1)
     # short code a teacher shares so students can enrol themselves at sign-up (see join_codes)
     join_code: Mapped[str | None] = mapped_column(String(16), unique=True)
+    # Published + open: every eligible student (the course's school, or everyone if it has no
+    # school) is enrolled automatically, so it shows up in their "My courses".
+    open_to_all_students: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
 
 
 class CourseEnrollment(UUIDPrimaryKeyMixin, Base):

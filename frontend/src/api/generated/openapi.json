@@ -2357,6 +2357,11 @@
             ],
             "title": "Grade Level"
           },
+          "open_to_all_students": {
+            "default": false,
+            "title": "Open To All Students",
+            "type": "boolean"
+          },
           "school_id": {
             "anyOf": [
               {
@@ -2436,6 +2441,11 @@
               }
             ],
             "title": "Join Code"
+          },
+          "open_to_all_students": {
+            "default": false,
+            "title": "Open To All Students",
+            "type": "boolean"
           },
           "school_id": {
             "anyOf": [
@@ -2631,6 +2641,17 @@
               }
             ],
             "title": "Grade Level"
+          },
+          "open_to_all_students": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open To All Students"
           },
           "status": {
             "anyOf": [
@@ -4231,6 +4252,148 @@
           "title"
         ],
         "title": "LessonCreate",
+        "type": "object"
+      },
+      "LessonMediaCreate": {
+        "properties": {
+          "alt_text": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Alt Text",
+            "type": "string"
+          },
+          "content_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp",
+              "application/octet-stream"
+            ],
+            "title": "Content Type",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "image",
+              "ar_target"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "title": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "LessonMediaCreate",
+        "type": "object"
+      },
+      "LessonMediaOut": {
+        "properties": {
+          "alt_text": {
+            "title": "Alt Text",
+            "type": "string"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "file_size_bytes": {
+            "title": "File Size Bytes",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "lesson_id": {
+            "format": "uuid",
+            "title": "Lesson Id",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "lesson_id",
+          "kind",
+          "title",
+          "alt_text",
+          "position",
+          "content_type",
+          "file_size_bytes",
+          "status"
+        ],
+        "title": "LessonMediaOut",
+        "type": "object"
+      },
+      "LessonMediaUpload": {
+        "properties": {
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Headers",
+            "type": "object"
+          },
+          "media": {
+            "$ref": "#/components/schemas/LessonMediaOut"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "media",
+          "url",
+          "method",
+          "headers"
+        ],
+        "title": "LessonMediaUpload",
         "type": "object"
       },
       "LessonOut": {
@@ -12496,6 +12659,85 @@
         ]
       }
     },
+    "/api/v1/lesson-media/{media_id}": {
+      "delete": {
+        "operationId": "delete_lesson_media_api_v1_lesson_media__media_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "media_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Media Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Lesson Media",
+        "tags": [
+          "lessons"
+        ]
+      }
+    },
+    "/api/v1/lesson-media/{media_id}/complete": {
+      "post": {
+        "operationId": "complete_media_upload_api_v1_lesson_media__media_id__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "media_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Media Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonMediaOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Media Upload",
+        "tags": [
+          "lessons"
+        ]
+      }
+    },
     "/api/v1/lessons/{lesson_id}": {
       "delete": {
         "operationId": "delete_lesson_api_v1_lessons__lesson_id__delete",
@@ -12780,6 +13022,105 @@
         "summary": "Regenerate Section",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/media": {
+      "get": {
+        "operationId": "list_lesson_media_api_v1_lessons__lesson_id__media_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LessonMediaOut"
+                  },
+                  "title": "Response List Lesson Media Api V1 Lessons  Lesson Id  Media Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Lesson Media",
+        "tags": [
+          "lessons"
+        ]
+      },
+      "post": {
+        "description": "Add a picture or AR target to a lesson: returns where to PUT the file, then call /complete.",
+        "operationId": "start_media_upload_api_v1_lessons__lesson_id__media_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonMediaCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonMediaUpload"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Media Upload",
+        "tags": [
+          "lessons"
         ]
       }
     },

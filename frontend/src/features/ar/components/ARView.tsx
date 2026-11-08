@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import * as THREE from 'three';
 import { MindARThree, type Anchor } from '../ar/MindARThree';
-import { TARGETS, TARGETS_MIND_URL } from '../content/targets';
+import { TARGETS } from '../content/targets';
 import { ModelExperience, addLights, createContactShadow } from '../three/ModelExperience';
 import { attachGestures } from '../three/gestures';
 import { ModelHUD } from './ModelHUD';
@@ -21,8 +21,14 @@ function targetAt(index: number) {
   return target;
 }
 
-export function ARView({ onExit }: { onExit: () => void }) {
+/**
+ * `mindUrl` (the compiled scan target) and `modelUrl` (the 3D model) come from the backend as
+ * short-lived signed links; the first ones are used for the whole AR session, so a refreshed link
+ * never restarts the camera.
+ */
+export function ARView({ onExit, mindUrl, modelUrl }: { onExit: () => void; mindUrl: string; modelUrl: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const files = useRef({ mindUrl, modelUrl });
   // One experience per target page, created lazily the first time it's seen.
   const [experiences] = useState(() => new Map<number, ModelExperience>());
   const [active, setActive] = useState<{ index: number; heart: ModelExperience } | null>(null);
@@ -38,7 +44,7 @@ export function ARView({ onExit }: { onExit: () => void }) {
     try {
       mindar = new MindARThree({
         container,
-        imageTargetSrc: TARGETS_MIND_URL,
+        imageTargetSrc: files.current.mindUrl,
         filterMinCF: 0.0001,
         filterBeta: 0.001,
       });
@@ -128,7 +134,7 @@ export function ARView({ onExit }: { onExit: () => void }) {
         const ticket = ++switching;
         try {
           const exp = getExperience(index);
-          await exp.load(target.modelUrl, target.size);
+          await exp.load(files.current.modelUrl, target.size);
           if (ticket !== switching || cancelled) return;
           if (current) stage.remove(current.heart.root);
           current = { index, heart: exp };

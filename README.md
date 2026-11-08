@@ -515,6 +515,8 @@ docs/                    guides, ADRs, runbooks
 | Decisions | [docs/adr/](docs/adr/README.md) |
 | Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
-**AR heart:** the Grade 8 circulatory-system lesson has **View 3D on the web** and **Start AR**.
-AR needs HTTPS (or `localhost`) and camera permission. The marker is in
-`frontend/public/targets/`.
+**AR heart:** the Grade 8 circulatory-system lesson ("The Circulatory System") has **View in 3D**
+under its picture and, on tablets and phones, **Scan page** for AR. AR needs HTTPS (or `localhost`)
+and camera permission. The heart model, the page picture and the AR scan target are course data:
+they live in the shared seed (`seeds/courses/files/`) and the app loads them from the backend (3D
+library asset + lesson media), like every other course.

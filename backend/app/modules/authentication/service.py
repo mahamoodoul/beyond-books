@@ -15,6 +15,7 @@ from app.core.security import create_access_token, hash_token, new_opaque_token
 from app.modules.authentication.identity import get_identity_provider
 from app.modules.authentication.models import AuthSession
 from app.modules.authentication.schemas import RegisterRequest
+from app.modules.courses.service import enroll_in_open_courses
 from app.modules.operations import audit
 from app.modules.users.models import User
 from app.modules.users.repository import get_by_email, normalize_email
@@ -49,6 +50,7 @@ def register(db: Session, body: RegisterRequest) -> User:
     )
     if target is not None:
         join_codes.apply(db, user, target)
+    enroll_in_open_courses(db, user)
     db.commit()
     return user
 
@@ -76,6 +78,7 @@ def login(db: Session, email: str, password: str, user_agent: str | None) -> Iss
     audit.record(
         db, action="auth.login", resource_type="user", resource_id=user.id, actor_user_id=user.id
     )
+    enroll_in_open_courses(db, user)  # picks up courses opened since the last sign-in
     db.commit()
     return tokens
 

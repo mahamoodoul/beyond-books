@@ -73,6 +73,13 @@ def world(login: Login, db: Session) -> dict[str, str]:
         },
     ).json()["id"]
     t.post(f"/api/v1/lessons/{lid}/publish")
+    png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 32
+    up = t.post(
+        f"/api/v1/lessons/{lid}/media",
+        json={"kind": "image", "content_type": "image/png", "size_bytes": len(png)},
+    ).json()
+    t.put(up["url"], content=png, headers=up["headers"])
+    ids["media_id"] = t.post(f"/api/v1/lesson-media/{up['media']['id']}/complete").json()["id"]
     t.patch(f"/api/v1/courses/{cid}", json={"status": "published"})
     t.post(f"/api/v1/courses/{cid}/enrollments", json={"student_email": "pupil@example.com"})
     ids["student_id"] = s.get("/api/v1/users/me").json()["id"]
@@ -185,6 +192,11 @@ BODIES: dict[tuple[str, str], Any] = {
         "action": "simplify",
     },
     ("post", "/api/v1/courses/{course_id}/labs"): {"title": "x"},
+    ("post", "/api/v1/lessons/{lesson_id}/media"): {
+        "kind": "image",
+        "content_type": "image/png",
+        "size_bytes": 10,
+    },
     ("patch", "/api/v1/labs/{lab_id}"): {"title": "x"},
     ("put", "/api/v1/labs/{lab_id}/session"): {"state": {"parts": [], "wires": []}},
 }

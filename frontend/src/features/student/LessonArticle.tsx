@@ -9,6 +9,7 @@ import { Link } from "react-router";
 import type { AssessmentSummary, ChapterDetail, CourseOutline, LessonOut, SceneOut } from "@/api/generated/schema";
 import { Icon } from "@/components/ui/Icon";
 import { InteractiveHeartPanel, usesInteractiveHeart } from "@/features/lessons/InteractiveHeartPanel";
+import { ScenePicturePanel } from "@/features/lessons/ScenePicturePanel";
 import type { SceneEvent } from "@/features/three-d/components/SceneViewer";
 import { LazySceneStudio } from "@/features/three-d/LazySceneStudio";
 import { chunk } from "@/features/three-d/library/speech/chunk";
@@ -42,6 +43,7 @@ export function LessonArticle({
   badge,
   onSceneEvent,
   sidebar,
+  scenesAsPictures = false,
 }: {
   lesson: LessonOut;
   chapter?: ChapterDetail;
@@ -55,9 +57,17 @@ export function LessonArticle({
   badge?: (item: { published_version?: number | null; has_unpublished_changes?: boolean }) => ReactNode;
   onSceneEvent?: (e: SceneEvent, sceneId: string) => void;
   sidebar?: ReactNode;
+  /**
+   * Students: show each 3D scene as the lesson's 2D picture with a "View in 3D" button (the viewer
+   * opens in a dialog), like the heart lesson. Off (teacher preview): scenes render in the page.
+   */
+  scenesAsPictures?: boolean;
 }) {
-  const heartScene = scenes.some(usesInteractiveHeart);
+  const heartScene = scenes.find(usesInteractiveHeart);
   const otherScenes = scenes.filter((s) => !usesInteractiveHeart(s));
+  const inlineScenes = scenesAsPictures ? [] : otherScenes;
+  const pictureScenes = scenesAsPictures ? otherScenes : [];
+  const hasVisual = !!heartScene || pictureScenes.length > 0;
   const objectives = chapter?.objectives ?? [];
   const sections = lesson.content.sections ?? [];
   const summary = lesson.content.summary ?? [];
@@ -125,14 +135,14 @@ export function LessonArticle({
         )}
       </header>
 
-      {otherScenes.map((s) => (
+      {inlineScenes.map((s) => (
         <section aria-label={`3D: ${s.title}`} className="lesson-scene studio-wide" key={s.id}>
           {badge && <div className="mb-2 flex items-center gap-2 text-sm text-slate-600"><span className="font-medium">3D · {s.title}</span>{badge(s)}</div>}
           <LazySceneStudio sceneId={s.id} onEvent={onSceneEvent ? (e) => onSceneEvent(e, s.id) : undefined} />
         </section>
       ))}
 
-      <div className={`lesson-layout${heartScene ? " lesson-layout-has-visual" : ""}`}>
+      <div className={`lesson-layout${hasVisual ? " lesson-layout-has-visual" : ""}`}>
         <article className="lesson-content">
           {objectives.length > 0 && (
             <section aria-labelledby="lesson-objectives" className="lesson-card panel">
@@ -182,9 +192,12 @@ export function LessonArticle({
           ))}
         </article>
 
-        {heartScene && (
+        {hasVisual && (
           <div className="lesson-visual-slot">
-            <InteractiveHeartPanel lessonId={lesson.id} />
+            {heartScene && <InteractiveHeartPanel lessonId={lesson.id} sceneId={heartScene.id} />}
+            {pictureScenes.length > 0 && (
+              <ScenePicturePanel lessonId={lesson.id} onSceneEvent={onSceneEvent} scenes={pictureScenes} />
+            )}
           </div>
         )}
 
