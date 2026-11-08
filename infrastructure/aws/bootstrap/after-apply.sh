@@ -18,8 +18,13 @@ echo "== GitHub environment $ENV_NAME in $REPO"
 gh api -X PUT "repos/$REPO/environments/$ENV_NAME" >/dev/null
 for key in AWS_DEPLOY_ROLE_ARN AWS_REGION AWS_INSTANCE_ID PUBLIC_URL; do
   val=$($TF output -json github_variables | python3 -c "import json,sys; print(json.load(sys.stdin).get('$key',''))")
-  gh variable set "$key" --env "$ENV_NAME" --repo "$REPO" --body "$val"
-  echo "  var $key = $val"
+  if [ -n "$val" ]; then
+    printf '%s' "$val" | gh variable set "$key" --env "$ENV_NAME" --repo "$REPO"
+    echo "  var $key = $val"
+  else
+    gh variable delete "$key" --env "$ENV_NAME" --repo "$REPO" >/dev/null 2>&1 || true
+    echo "  var $key unset (empty)"
+  fi
 done
 if $TF output -json github_secrets 2>/dev/null | grep -q AWS_ACCESS_KEY_ID; then
   for key in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
