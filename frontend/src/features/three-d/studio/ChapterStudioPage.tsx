@@ -25,7 +25,7 @@ import type {
 import { AnimationsPanel } from "../AnimationsPanel";
 import { GenerationTray } from "../GenerationTray";
 import { Add3DPanel } from "./Add3DPanel";
-import { LessonsStep, QuizStep, ReviewStep, StepFooter, StepNav, type StepKey } from "./ChapterSteps";
+import { LessonsStep, QuizStep, ReviewStep, StepFooter, StepNav, STEPS, type StepKey } from "./ChapterSteps";
 import { GeneratePanel, type PendingChanges, PromptPanel, PublishStatus, SourcePanel } from "./ChapterWorkflow";
 import { Chip, panel, Ring } from "./StudioPage";
 import { useResolved } from "./useStudio";
@@ -252,7 +252,9 @@ export default function ChapterStudioPage() {
     quiz: quizList.length > 0,
     publish: ch.status === "published",
   };
-  const step = (params.get("step") as StepKey | null) ?? (lessonList.length ? "3d" : "source");
+  // A stale or mistyped ?step= falls back to the default step instead of an empty page.
+  const requested = params.get("step");
+  const step: StepKey = STEPS.some((s) => s.key === requested) ? (requested as StepKey) : lessonList.length ? "3d" : "source";
   const goTo = (s: StepKey) => setParams((p) => { p.set("step", s); return p; }, { replace: true });
   // Anything students don't have yet: never published, or edited since the last publish.
   const stale = (x: { published_version?: number | null; has_unpublished_changes?: boolean }) => !x.published_version || !!x.has_unpublished_changes;
