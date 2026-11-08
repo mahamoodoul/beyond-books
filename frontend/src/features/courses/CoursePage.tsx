@@ -51,12 +51,13 @@ export function CoursePage() {
   return (
     <>
       <Link to="/teacher/courses" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900">← My courses</Link>
-      <header className={`mb-6 overflow-hidden rounded-2xl bg-gradient-to-r ${style.banner} p-6 text-white shadow-sm`}>
+      <header className={`mb-6 overflow-hidden rounded-2xl bg-gradient-to-r ${style.banner} p-4 text-white shadow-sm sm:p-6`}>
         <div className="flex flex-wrap items-start gap-4">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-white/15"><Icon name={style.icon} size={28} /></span>
-          <div className="min-w-0 flex-1">
+          {/* basis-52: on narrow screens the status/publish controls wrap below instead of squeezing the title */}
+          <div className="min-w-0 flex-1 basis-52">
             <p className="text-sm text-white/80">{[c.subject, c.grade_level].filter(Boolean).join(" · ") || "Course"}</p>
-            <h1 className="text-2xl font-semibold">{c.title}</h1>
+            <h1 className="text-xl font-semibold break-words sm:text-2xl">{c.title}</h1>
             {c.description && <p className="mt-1 max-w-3xl text-sm text-white/85">{c.description}</p>}
           </div>
           <div className="flex items-center gap-2">
@@ -71,7 +72,7 @@ export function CoursePage() {
             </button>
           </div>
         </div>
-        <div className="mt-5 grid max-w-xl grid-cols-4 gap-2">
+        <div className="mt-5 grid max-w-xl grid-cols-2 gap-2 sm:grid-cols-4">
           <Number_ value={chapters.length} label="chapters" />
           <Number_ value={sum("lessons")} label="lessons" />
           <Number_ value={sum("scenes")} label="3D scenes" />
