@@ -483,6 +483,7 @@ docs/                    guides, ADRs, runbooks
 | 3D asset workflow / Blender | [docs/3d-asset-workflow.md](docs/3d-asset-workflow.md), [docs/BLENDER_MCP.md](docs/BLENDER_MCP.md) |
 | Quiz builder | [docs/quiz-builder.md](docs/quiz-builder.md) |
 | Testing | [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) |
+| Accessibility (guidelines, `__a11yAudit()`) | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
 | Deployment | [docs/INFRASTRUCTURE_AND_DEPLOYMENT.md](docs/INFRASTRUCTURE_AND_DEPLOYMENT.md) |
 | Security | [docs/SECURITY_REVIEW.md](docs/SECURITY_REVIEW.md) |
 | Runbooks | [docs/RUNBOOKS.md](docs/RUNBOOKS.md) |
