@@ -63,7 +63,7 @@ export function LoginPage() {
     setDemoAttempt(null);
     login.mutate({ email, password, role }, { onSuccess: user => navigate(from?.startsWith("/") && !from.startsWith("//") ? from : homeFor(user), { replace: true }) });
   }
-  return <main className="login-page">
+  return <main id="main-content" tabIndex={-1} data-page-title="Sign in" className="login-page">
     <div className="login-topbar"><Link aria-label="Beyond Books home" className="brand" to="/"><BeyondBooksLogo showWordmark size={72} variant={theme} /></Link>
       <button className="icon-button" aria-label="Toggle colour theme" onClick={toggleTheme}><Icon name={theme === "light" ? "moon" : "sun"} size={18} /></button>
     </div>

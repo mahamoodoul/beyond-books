@@ -2,6 +2,7 @@ import { lazy, Suspense, type ComponentType, type ReactNode } from "react";
 import { Navigate, Outlet, ScrollRestoration, useParams, type RouteObject } from "react-router";
 
 import { AppLayout } from "@/app/layouts/AppLayout";
+import { RouteAnnouncer, SkipLink } from "@/app/router/RouteAnnouncer";
 import { RouteError } from "@/app/router/RouteError";
 import { Loading } from "@/components/feedback";
 import { RequireAuth } from "@/features/auth/auth";
@@ -25,11 +26,14 @@ function LegacyViewerRedirect() {
   return <Navigate to={assetId ? `/studio/library/${assetId}` : `/studio/${sceneId ?? ""}`} replace />;
 }
 
-/** Root of every route: new pages open at the top, back/forward restores the old position. */
+/** Root of every route: skip link, page titles and announcements, and scroll handling (new pages
+ *  open at the top, back/forward restores the old position). */
 function RootLayout() {
   return (
     <>
+      <SkipLink />
       <ScrollRestoration />
+      <RouteAnnouncer />
       <Outlet />
     </>
   );

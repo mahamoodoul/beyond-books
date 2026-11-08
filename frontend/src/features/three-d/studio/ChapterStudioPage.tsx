@@ -277,11 +277,12 @@ export default function ChapterStudioPage() {
       <header className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center gap-3 px-5 py-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-teal-700">Chapter Studio</p>
+            <h1 className="visually-hidden">Chapter Studio: {ch.title}</h1>
+            <p aria-hidden="true" className="text-xs font-semibold uppercase tracking-widest text-teal-700">Chapter Studio</p>
             <nav aria-label="Breadcrumb" className="mt-0.5 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
               <Link className="hover:text-slate-900" to="/teacher/courses">Courses</Link><span aria-hidden>›</span>
               {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span aria-hidden>›</span></>}
-              <span className="font-semibold text-slate-900">{ch.position}. {ch.title}</span>
+              <span aria-current="page" className="font-semibold text-slate-900">{ch.position}. {ch.title}</span>
             </nav>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -294,7 +295,8 @@ export default function ChapterStudioPage() {
         </div>
       </header>
 
-      <main className="space-y-6">
+      {/* the app layout already provides <main>; a second one would be an invalid landmark */}
+      <div className="space-y-6">
         {step === "source" && (
           <section>
             <div className="mb-4">
@@ -421,7 +423,7 @@ export default function ChapterStudioPage() {
         {step === "publish" && <ReviewStep chapter={ch} course={course.data} checks={checks} pending={pending} onStep={goTo} />}
 
         <StepFooter step={step} onStep={goTo} />
-      </main>
+      </div>
     </div>
   );
 }

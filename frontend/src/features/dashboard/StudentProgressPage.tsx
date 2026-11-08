@@ -174,7 +174,7 @@ export function StudentProgressPage() {
 
   if (!courses.length) {
     return (
-      <div className="pg">
+      <div className="pg" data-page-title="My progress">
         <section className="pg-hero" style={{ gridTemplateColumns: "1fr" }}>
           <div>
             <span className="pg-eyebrow">Your learning journey</span>
@@ -202,7 +202,7 @@ export function StudentProgressPage() {
   const heading = pct(done, total) >= 100 ? "Everything complete. Brilliant! 🏆" : done === 0 ? "Let's get started! 🚀" : pct(done, total) > 50 ? "Over halfway there! 💪" : pct(done, total) === 50 ? "Halfway there! 💪" : "Look how far you've come. 🌱";
 
   return (
-    <div className="pg">
+    <div className="pg" data-page-title="My progress">
       <section className="pg-hero">
         <Ring value={pct(done, total)} size={132} label="lessons" />
         <div style={{ position: "relative", zIndex: 1 }}>

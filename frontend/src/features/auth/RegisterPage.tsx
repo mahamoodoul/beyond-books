@@ -30,6 +30,7 @@ export function RegisterPage() {
   const busy = register.isPending || login.isPending;
 
   return (
+    <main id="main-content" tabIndex={-1} data-page-title="Create an account">
     <Card className="auth-register">
       <h1 className="mb-4 text-xl font-semibold">Create account</h1>
       <form onSubmit={submit} className="space-y-4">
@@ -65,5 +66,6 @@ export function RegisterPage() {
         </Link>
       </p>
     </Card>
+    </main>
   );
 }

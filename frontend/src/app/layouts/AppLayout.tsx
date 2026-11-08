@@ -66,7 +66,7 @@ export function AppLayout() {
         </Link>
       )}
     </div></nav>
-    <main className="page-content live-workspace"><ErrorAlert error={logout.error} /><Outlet /></main>
+    <main id="main-content" tabIndex={-1} className="page-content live-workspace"><ErrorAlert error={logout.error} /><Outlet /></main>
     <footer className="app-footer"><BeyondBooksLogo animated={false} showWordmark size={35} variant={theme} /><span>Learning, brought to life.</span></footer>
   </div>;
 }

@@ -86,6 +86,12 @@ button, a, input { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #8479ed; outline-offset: 3px; }
 ::selection { color: #24233a; background: #d9d3ff; }
 .theme-root { min-height: 100vh; background: var(--bg); color: var(--ink); }
+/* Skip link: hidden until keyboard focus, then the first thing on the page. */
+.skip-link { position: fixed; top: 10px; left: 10px; z-index: 1000; padding: 10px 16px; border-radius: 10px; background: var(--accent); color: #fff; font-size: var(--fs-md); font-weight: 650; box-shadow: var(--shadow-card); transform: translateY(-160%); transition: transform .15s ease; }
+.skip-link:focus { transform: translateY(0); }
+.theme-root[data-theme="dark"] .skip-link { color: #171721; }
+/* main is focused programmatically (skip link, route changes); it is not a control, so no ring */
+main[tabindex="-1"]:focus { outline: none; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 .app-shell { display: flex; min-height: 100vh; flex-direction: column; }

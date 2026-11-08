@@ -263,7 +263,7 @@ export default function StudioPage() {
         </aside>
 
         {/* centre: viewport */}
-        <main className="relative min-h-[70vh] overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
+        <main id="main-content" tabIndex={-1} aria-label="3D viewport" className="relative min-h-[70vh] overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
           {!scene ? (
             <div className="grid h-full min-h-[70vh] place-items-center p-8 text-center">
               <div className="max-w-sm space-y-3">
