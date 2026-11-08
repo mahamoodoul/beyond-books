@@ -105,9 +105,17 @@ class S3Storage:
 
     def __init__(self, bucket: str, region: str) -> None:
         import boto3
+        from botocore.config import Config
 
         self.bucket = bucket
-        self.client = boto3.client("s3", region_name=region)
+        # Regional endpoint: boto3's default global host answers a new bucket outside us-east-1
+        # with a 307 that has no CORS headers, so browser fetches of presigned URLs fail.
+        self.client = boto3.client(
+            "s3",
+            region_name=region,
+            endpoint_url=f"https://s3.{region}.amazonaws.com",
+            config=Config(signature_version="s3v4", s3={"addressing_style": "virtual"}),
+        )
 
     def presigned_upload(
         self, *, key: str, content_type: str, max_bytes: int, expires_in_s: int

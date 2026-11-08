@@ -1,0 +1,59 @@
+# Manual rollback of the AWS instance to the previous release (or a chosen commit).
+# Runs `beyond-books rollback` on the instance over SSM: switches the code back, rebuilds,
+# health-checks. The database schema is kept by default (newer migrations in this repo are
+# additive); choose "downgrade" to run `alembic downgrade` to the revision that release ran with.
+name: Rollback AWS
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Commit to roll back to (empty = the release before the current one)
+        default: ""
+      db:
+        description: Database schema
+        type: choice
+        options: [keep, downgrade]
+        default: keep
+
+concurrency: { group: deploy-aws, cancel-in-progress: false }
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment:
+      name: aws-dev
+      url: ${{ vars.PUBLIC_URL }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      # OIDC role when AWS_DEPLOY_ROLE_ARN is set; otherwise the access key from the environment secrets.
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN == '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Roll back on the instance
+        uses: ./.github/actions/ssm-run
+        with:
+          instance-id: ${{ vars.AWS_INSTANCE_ID }}
+          command: beyond-books rollback ${{ inputs.sha }} --db ${{ inputs.db }}
+          timeout-seconds: "1800"
+          comment: rollback ${{ inputs.sha || 'previous' }} (${{ github.actor }})
+      - name: Smoke test from the outside
+        if: ${{ vars.PUBLIC_URL != '' }}
+        env: { URL: "${{ vars.PUBLIC_URL }}" }
+        run: |
+          for _ in $(seq 1 12); do curl -fsS --max-time 10 "$URL/api/v1/health/ready" && exit 0; sleep 10; done
+          echo "::error::$URL/api/v1/health/ready did not answer"; exit 1
