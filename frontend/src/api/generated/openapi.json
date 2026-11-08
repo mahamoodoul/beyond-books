@@ -13072,7 +13072,7 @@
         ]
       },
       "post": {
-        "description": "Add a picture or AR target to a lesson: returns where to PUT the file, then call /complete.",
+        "description": "Add a picture or AR target to a lesson: returns where to PUT the file; then /complete.",
         "operationId": "start_media_upload_api_v1_lessons__lesson_id__media_post",
         "parameters": [
           {

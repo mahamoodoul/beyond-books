@@ -59,7 +59,10 @@ def test_teachers_can_still_create_their_own_courses(login: Login) -> None:
     owner = login("t@example.com")
     other = login("o@example.com")
     open_cid = create_course(owner)
-    owner.patch(f"/api/v1/courses/{open_cid}", json={"status": "published", "open_to_all_students": True})
+    owner.patch(
+        f"/api/v1/courses/{open_cid}",
+        json={"status": "published", "open_to_all_students": True},
+    )
     mine = create_course(other)
     assert _my_course_ids(other) == [mine]  # open courses do not leak into other teachers' lists
     assert other.patch(f"/api/v1/courses/{open_cid}", json={"title": "x"}).status_code == 404

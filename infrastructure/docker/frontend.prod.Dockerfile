@@ -21,6 +21,9 @@ RUN npm run build
 
 FROM nginx:1.27-alpine
 COPY infrastructure/docker/nginx.conf /etc/nginx/conf.d/default.conf
+# Origin of the S3 bucket when files are stored there: the browser downloads and uploads directly.
+ARG CONNECT_SRC_EXTRA=""
+RUN sed -i "s|connect-src 'self'|connect-src 'self' ${CONNECT_SRC_EXTRA}|" /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 3939
 HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD wget -qO- http://127.0.0.1:3939/ >/dev/null || exit 1

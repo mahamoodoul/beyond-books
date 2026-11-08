@@ -101,7 +101,7 @@ def explain_selection(
 def start_media_upload(
     lesson_id: uuid.UUID, body: LessonMediaCreate, user: CurrentUser, db: DB
 ) -> LessonMediaUpload:
-    """Add a picture or AR target to a lesson: returns where to PUT the file, then call /complete."""
+    """Add a picture or AR target to a lesson: returns where to PUT the file; then /complete."""
     m, url, method, headers = media.start_upload(db, user, lesson_id, body)
     return LessonMediaUpload(media=media.to_out(m), url=url, method=method, headers=headers)
 

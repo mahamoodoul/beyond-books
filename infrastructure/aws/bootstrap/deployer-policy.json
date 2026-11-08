@@ -1,0 +1,42 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ProjectServices",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*", "s3:*", "secretsmanager:*", "ssm:*", "ssmmessages:*", "ec2messages:*",
+        "cloudwatch:*", "logs:*", "budgets:*", "route53:*", "sts:GetCallerIdentity",
+        "kms:Describe*", "kms:List*", "kms:GenerateDataKey", "kms:Decrypt", "kms:Encrypt",
+        "iam:CreateServiceLinkedRole"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IamRead",
+      "Effect": "Allow",
+      "Action": ["iam:Get*", "iam:List*", "iam:SimulatePrincipalPolicy"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IamProjectRolesOnly",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole", "iam:DeleteRole", "iam:UpdateRole", "iam:UpdateRoleDescription", "iam:TagRole", "iam:UntagRole",
+        "iam:UpdateAssumeRolePolicy", "iam:PutRolePolicy", "iam:DeleteRolePolicy",
+        "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:PassRole",
+        "iam:CreateInstanceProfile", "iam:DeleteInstanceProfile", "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile", "iam:TagInstanceProfile",
+        "iam:CreatePolicy", "iam:DeletePolicy", "iam:CreatePolicyVersion", "iam:DeletePolicyVersion", "iam:TagPolicy",
+        "iam:CreateOpenIDConnectProvider", "iam:DeleteOpenIDConnectProvider", "iam:TagOpenIDConnectProvider",
+        "iam:AddClientIDToOpenIDConnectProvider", "iam:UpdateOpenIDConnectProviderThumbprint"
+      ],
+      "Resource": [
+        "arn:aws:iam::*:role/beyond-books-*",
+        "arn:aws:iam::*:instance-profile/beyond-books-*",
+        "arn:aws:iam::*:policy/beyond-books-*",
+        "arn:aws:iam::*:oidc-provider/token.actions.githubusercontent.com"
+      ]
+    }
+  ]
+}

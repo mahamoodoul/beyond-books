@@ -1,0 +1,94 @@
+# Continuous deployment to the AWS instance (infrastructure/aws/terraform).
+#
+# push to aws-dev  ->  CI checks  ->  `beyond-books deploy <sha>` on the instance over SSM
+#                                      (pre-deploy DB dump, build, start, health check;
+#                                       automatic rollback to the previous release on failure)
+#                  ->  smoke test from outside.
+#
+# Needs these repository/environment variables (values from `terraform output github_variables`):
+#   AWS_DEPLOY_ROLE_ARN   IAM role GitHub assumes through OIDC (no long-lived keys); leave empty to use
+#                         the secrets AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (terraform output github_secrets)
+#   AWS_REGION            e.g. eu-north-1
+#   AWS_INSTANCE_ID       the EC2 instance
+#   PUBLIC_URL            e.g. https://app.example.com or http://<elastic ip>
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [aws-dev]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Commit or branch to deploy (default: the ref this run is started from)"
+        default: ""
+      skip_checks:
+        description: Skip the CI checks (emergency only)
+        type: boolean
+        default: false
+      start_instance:
+        description: Start the instance if it is stopped (it may have been stopped by the budget guard)
+        type: boolean
+        default: false
+
+concurrency: { group: deploy-aws, cancel-in-progress: false }
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    if: ${{ !inputs.skip_checks }}
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: [checks]
+    if: ${{ always() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: aws-dev
+      url: ${{ vars.PUBLIC_URL }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve the commit to deploy
+        id: sha
+        env: { REF: "${{ inputs.ref }}" }
+        run: |
+          if [ -n "$REF" ]; then git fetch --depth=1 origin "$REF" && sha=$(git rev-parse FETCH_HEAD); else sha=$GITHUB_SHA; fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"; echo "deploying $sha"
+      # OIDC role when AWS_DEPLOY_ROLE_ARN is set; otherwise the access key from the environment secrets.
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN == '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Deploy on the instance (with automatic rollback)
+        id: ssm
+        uses: ./.github/actions/ssm-run
+        with:
+          instance-id: ${{ vars.AWS_INSTANCE_ID }}
+          command: beyond-books deploy ${{ steps.sha.outputs.sha }}
+          timeout-seconds: "1800"
+          start-if-stopped: ${{ inputs.start_instance && 'true' || 'false' }}
+          comment: deploy ${{ steps.sha.outputs.sha }} (${{ github.actor }})
+      - name: Smoke test from the outside
+        if: ${{ vars.PUBLIC_URL != '' }}
+        env: { URL: "${{ vars.PUBLIC_URL }}" }
+        run: |
+          for _ in $(seq 1 12); do curl -fsS --max-time 10 "$URL/api/v1/health/ready" && exit 0; sleep 10; done
+          echo "::error::$URL/api/v1/health/ready did not answer"; exit 1
+      - name: Report
+        if: ${{ always() }}
+        env: { OUT: "${{ steps.ssm.outputs.stdout }}", STATUS: "${{ steps.ssm.outputs.status }}" }
+        run: |
+          last=$(printf '%s' "$OUT" | grep -E '^(DEPLOYED|ROLLED BACK|ROLLBACK FAILED)' | tail -1)
+          echo "## ${last:-no result line (SSM status: $STATUS)}" >> "$GITHUB_STEP_SUMMARY"
+          case "$last" in ROLLBACK\ FAILED*) echo "::error::$last" ;; ROLLED\ BACK*) echo "::warning::$last" ;; esac

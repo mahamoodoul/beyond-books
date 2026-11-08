@@ -37,7 +37,8 @@ def _signature_ok(kind: str, content_type: str, head: bytes) -> bool:
             "image/webp": head[:4] == b"RIFF" and head[8:12] == b"WEBP",
         }.get(content_type, False)
     # MindAR .mind: a MessagePack map ({"v": ..., "dataList": [...]})
-    return bool(head) and (0x80 <= head[0] <= 0x8F or head[0] in (0xDE, 0xDF)) and b"dataList" in head
+    is_map = bool(head) and (0x80 <= head[0] <= 0x8F or head[0] in (0xDE, 0xDF))
+    return is_map and b"dataList" in head
 
 
 def _lesson(db: Session, lesson_id: uuid.UUID) -> Lesson:
@@ -77,7 +78,8 @@ def start_upload(
             "Pictures must be PNG, JPEG or WebP; AR targets must be application/octet-stream."
         )
     if body.size_bytes > MAX_BYTES[body.kind]:
-        raise InvalidMediaError(f"This file is limited to {MAX_BYTES[body.kind] // (1024 * 1024)} MB.")
+        limit_mb = MAX_BYTES[body.kind] // (1024 * 1024)
+        raise InvalidMediaError(f"This file is limited to {limit_mb} MB.")
     media_id = uuid.uuid4()
     ext = EXTENSIONS.get(body.content_type, "mind")
     position = db.scalar(
@@ -144,11 +146,7 @@ def list_media(db: Session, user: User, lesson_id: uuid.UUID) -> list[LessonMedi
         .where(LessonMedia.lesson_id == lesson.id)
         .order_by(LessonMedia.position, LessonMedia.created_at)
     )
-    return [
-        to_out(m, with_url=True)
-        for m in rows
-        if access.can_manage or m.status == "ready"
-    ]
+    return [to_out(m, with_url=True) for m in rows if access.can_manage or m.status == "ready"]
 
 
 def delete_media(db: Session, user: User, media_id: uuid.UUID) -> None:

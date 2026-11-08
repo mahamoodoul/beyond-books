@@ -15,7 +15,7 @@ from app.modules.users.models import AccountType, User
 from app.modules.users.repository import get_by_email
 
 
-def _eligible_students(course: Course) -> Select[tuple[uuid.UUID]]:
+def _eligible_students(course: Course) -> Select[uuid.UUID]:
     """Students who may see `course` when it is open: its school's students, or every student."""
     q = select(User.id).where(User.account_type == AccountType.STUDENT)
     if course.school_id:
