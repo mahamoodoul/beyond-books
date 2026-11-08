@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { Link, NavLink, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 
 import { api } from "@/api/client";
 import type { AssetOut } from "@/api/generated/schema";
@@ -24,9 +24,63 @@ const scenes = fixtureScenes.filter((s) =>
   (s.asset_refs ?? []).every((ref) => fixtureRegistry.resolve(ref) !== null),
 );
 const SOURCE: Record<string, string> = { blender: "Claude + Blender", llm: "AI designer" };
+const sourceOf = (a: AssetOut) => SOURCE[a.provider ?? ""] ?? (a.provider === "seed" ? "Built-in" : "Uploaded");
+const GROUP_ORDER = ["Claude + Blender", "AI designer", "Uploaded", "Built-in"];
 
-const pill = (active: boolean) =>
-  `rounded-full px-3 py-1 text-sm ${active ? "bg-navy-700" : "bg-white shadow-sm hover:bg-slate-50"}`;
+/** Your models + demo scenes as two compact dropdowns (they used to be long rows of pills). */
+function StudioPicker({
+  library,
+  loading,
+  assetId,
+  sceneId,
+}: {
+  library: AssetOut[] | undefined;
+  loading: boolean;
+  assetId: string | undefined;
+  sceneId: string | undefined;
+}) {
+  const navigate = useNavigate();
+  const groups = useMemo(() => {
+    const byGroup = new Map<string, AssetOut[]>();
+    for (const a of library ?? []) byGroup.set(sourceOf(a), [...(byGroup.get(sourceOf(a)) ?? []), a]);
+    return [...byGroup].sort(([x], [y]) => GROUP_ORDER.indexOf(x) - GROUP_ORDER.indexOf(y));
+  }, [library]);
+  const count = library?.length ?? 0;
+
+  return (
+    <div className="studio-picker">
+      <label className="studio-picker-field">
+        <span>Your models{count ? ` (${count})` : ""}</span>
+        <select
+          disabled={loading || count === 0}
+          onChange={(e) => e.target.value && navigate(`/studio/library/${e.target.value}`)}
+          value={assetId ?? ""}
+        >
+          <option disabled value="">{loading ? "Loading…" : count === 0 ? "No models yet" : "Choose one of your models…"}</option>
+          {groups.length > 1
+            ? groups.map(([group, assets]) => (
+                <optgroup key={group} label={group}>
+                  {assets.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </optgroup>
+              ))
+            : (library ?? []).map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+        </select>
+      </label>
+      {scenes.length > 0 && (
+        <label className="studio-picker-field">
+          <span>Demo scenes ({scenes.length})</span>
+          <select onChange={(e) => e.target.value && navigate(`/studio/${e.target.value}`)} value={assetId ? "" : (sceneId ?? "")}>
+            <option disabled value="">Choose a demo scene…</option>
+            {scenes.map((s) => <option key={s.scene_id} value={s.scene_id}>{s.title}</option>)}
+          </select>
+        </label>
+      )}
+      <Link className="studio-picker-link" to="/teacher/assets">
+        {count === 0 && !loading ? "Generate a model in the 3D library" : "Open the 3D library"}
+      </Link>
+    </div>
+  );
+}
 
 /** Teachers' own 3D-library models (uploaded or AI-generated), newest first. */
 function useLibrary(enabled: boolean) {
@@ -156,30 +210,12 @@ function TeacherStudio() {
           <h1 className="text-2xl font-semibold text-navy-950">{title}</h1>
           <p className="text-sm text-slate-600">{subtitle}</p>
         </div>
-        {isTeacher && (
-          <nav aria-label="Your 3D library" className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Your models</span>
-            {library.isPending && <span className="text-sm text-slate-500">Loading…</span>}
-            {library.data?.length === 0 && (
-              <Link to="/teacher/assets" className="text-sm text-accent hover:underline">None yet — generate one in the 3D library</Link>
-            )}
-            {library.data?.map((a) => (
-              <NavLink key={a.id} to={`/studio/library/${a.id}`} className={() => pill(a.id === assetId)}>
-                <span className={a.id === assetId ? "text-white" : "text-slate-700"}>{a.name}</span>
-              </NavLink>
-            ))}
-          </nav>
-        )}
-        {scenes.length > 0 && (
-          <nav aria-label="Demo scenes" className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Demo scenes</span>
-            {scenes.map((s) => (
-              <NavLink key={s.scene_id} to={`/studio/${s.scene_id}`} className={() => pill(s.scene_id === scene?.scene_id)}>
-                <span className={s.scene_id === scene?.scene_id ? "text-white" : "text-slate-700"}>{s.title}</span>
-              </NavLink>
-            ))}
-          </nav>
-        )}
+        <StudioPicker
+          assetId={assetId}
+          library={library.data}
+          loading={library.isPending}
+          sceneId={scene?.scene_id}
+        />
       </div>
       <div className="studio-wide">
       {assetId ? (

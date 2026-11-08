@@ -10,9 +10,9 @@ teacher + student accounts (registered if they don't exist yet), course, five ch
 lessons and objectives, the interactive heart model uploaded to the 3D library and approved,
 a published 3D scene on the heart lesson, a quiz, and the student's enrolment.
 
-heart.glb ships meshopt-compressed for the AR/3D viewer; it is decompressed on the fly with
-scripts/decompress-glb.mjs (needs Node and `frontend/node_modules`) because the 3D library only
-accepts plain glTF buffers.
+The heart's files come from the shared course seed (seeds/courses/files, the same place the other
+courses' files live): the 3D model (Git LFS: run `git lfs pull` once), the heart page picture and
+the compiled AR scan target. The picture and AR target are uploaded as lesson media.
 
 The heart lesson's scene references the uploaded asset; the frontend recognises that asset
 (slug prefix `interactive_human_heart`) and adds the interactive 3D heart (CT scan) and AR
@@ -26,10 +26,7 @@ up to date (edited and re-published through the API, like a teacher would). Stan
 import argparse
 import json
 import re
-import struct
-import subprocess
 import sys
-import tempfile
 import urllib.error
 import urllib.request
 from http.cookiejar import CookieJar
@@ -37,6 +34,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+SEED = ROOT / "seeds" / "courses"
 COURSE_TITLE = "The Circulatory System"
 HEART_ASSET_NAME = "Interactive Human Heart"  # slug becomes interactive_human_heart_<hex>
 
@@ -400,17 +398,39 @@ def lesson_content(ch: dict[str, Any]) -> dict[str, Any]:
     return content
 
 
-def library_ready_bytes(model: Path) -> bytes:
-    """The 3D library only accepts plain glTF buffers; decompress meshopt models first."""
-    data = model.read_bytes()
-    json_len = struct.unpack("<I", data[12:16])[0]
-    required = json.loads(data[20:20 + json_len]).get("extensionsRequired", [])
-    if "EXT_meshopt_compression" not in required:
-        return data
-    with tempfile.TemporaryDirectory() as tmp:
-        out = Path(tmp) / "model.glb"
-        subprocess.run(["node", str(ROOT / "scripts/decompress-glb.mjs"), str(model), str(out)], check=True)
-        return out.read_bytes()
+def seed_file(path: Path) -> bytes:
+    """A file from the shared seed; stops with a hint if it is still a Git LFS placeholder."""
+    if not path.is_file():
+        sys.exit(f"seed file not found: {path}")
+    data = path.read_bytes()
+    if data.startswith(b"version https://git-lfs"):
+        sys.exit(f"{path} is a Git LFS placeholder. Run `git lfs install && git lfs pull` first.")
+    return data
+
+
+def heart_seed_files() -> tuple[Path, list[dict[str, Any]]]:
+    """(heart model, heart lesson media rows) as stored in the shared seed bundle."""
+    tables = json.loads((SEED / "bundle.json").read_text())["tables"]
+    asset = next(a for a in tables["three_d_assets"] if a["name"] == HEART_ASSET_NAME)
+    version = next(v for v in tables["three_d_asset_versions"] if v["asset_id"] == asset["id"])
+    lesson = next(x for x in tables["lessons"] if x["title"] == CHAPTERS[0]["lesson"])
+    media = [m for m in tables.get("lesson_media", []) if m["lesson_id"] == lesson["id"]]
+    return SEED / "files" / version["storage_key"], media
+
+
+def upload_media(t: Client, lesson_id: str, media: list[dict[str, Any]]) -> None:
+    """Upload the heart lesson's picture / AR target (lesson media) that the lesson doesn't have yet."""
+    have = {m["kind"] for m in t.call("GET", f"/lessons/{lesson_id}/media") if m["status"] == "ready"}
+    for m in media:
+        if m["kind"] in have:
+            continue
+        data = seed_file(SEED / "files" / m["storage_key"])
+        up = t.call("POST", f"/lessons/{lesson_id}/media", {
+            "kind": m["kind"], "content_type": m["content_type"], "size_bytes": len(data),
+            "title": m["title"], "alt_text": m["alt_text"]}, (201,))
+        t.put_bytes(up["url"], data, up["headers"])
+        t.call("POST", f"/lesson-media/{up['media']['id']}/complete")
+        print(f"  ok    lesson media: {m['kind']} ({len(data)} bytes)")
 
 
 def upload_heart(t: Client, model: Path) -> dict[str, Any]:
@@ -419,7 +439,7 @@ def upload_heart(t: Client, model: Path) -> dict[str, Any]:
     if ready:
         print(f"  ok    3D library asset {ready['slug']} (existing)")
         return t.call("GET", f"/assets/{ready['id']}")
-    data = library_ready_bytes(model)
+    data = seed_file(model)
     asset = mine[0] if mine else t.call("POST", "/assets", {
         "name": HEART_ASSET_NAME,
         "description": "Anatomical heart with chambers, great vessels and coronary vessels. "
@@ -466,6 +486,8 @@ def update_content(t: Client, cid: str) -> None:
         for summary in t.call("GET", f"/chapters/{chapter['id']}/lessons"):
             if summary["title"] != ch["lesson"]:
                 continue
+            if ch.get("heart_scene"):
+                upload_media(t, summary["id"], heart_seed_files()[1])
             lesson = t.call("GET", f"/lessons/{summary['id']}")
             wanted = lesson_content(ch)
             have = {k: lesson["content"].get(k) or [] for k in ("sections", "summary", "visualization_candidates")}
@@ -482,7 +504,8 @@ def main() -> None:
     ap.add_argument("--base-url", default="http://localhost:8000")
     ap.add_argument("--teacher", default="teacher@example.com:teacher-demo-123", help="email:password")
     ap.add_argument("--student", default="student@example.com:student-demo-123", help="email:password")
-    ap.add_argument("--model", type=Path, default=ROOT / "frontend/public/models/heart.glb")
+    ap.add_argument("--model", type=Path, default=None,
+                    help="heart model (default: the shared seed's copy in seeds/courses/files)")
     ap.add_argument("--update-content", action="store_true",
                     help="if the course exists, update its objectives and lesson content to match this script")
     a = ap.parse_args()
@@ -500,8 +523,8 @@ def main() -> None:
             update_content(t, existing["id"])
         return
 
-    if not a.model.is_file():
-        sys.exit(f"heart model not found: {a.model}")
+    seed_model, heart_media = heart_seed_files()
+    model = a.model or seed_model
     if existing:
         cid = existing["id"]
         print(f"  ok    resuming empty course {cid}")
@@ -511,7 +534,7 @@ def main() -> None:
             "description": "Follow blood on its journey through the heart, lungs and body."}, (201,))["id"]
         print(f"  ok    course {cid}")
 
-    heart_asset = upload_heart(t, a.model)
+    heart_asset = upload_heart(t, model)
     first_chapter = None
     for ch in CHAPTERS:
         chapter = t.call("POST", f"/courses/{cid}/chapters", {"title": ch["title"]}, (201,))
@@ -525,6 +548,7 @@ def main() -> None:
                            {"spec": heart_scene_spec(heart_asset)}, (201,))
             t.call("POST", f"/scenes/{scene['id']}/publish")
             print(f"  ok    3D scene on '{ch['lesson']}' ({len(scene['spec']['components'])} labelled parts)")
+            upload_media(t, lesson["id"], heart_media)
         t.call("PATCH", f"/chapters/{chapter['id']}", {"status": "published"})
         print(f"  ok    chapter '{ch['title']}' + lesson '{ch['lesson']}'")
 

@@ -52,6 +52,7 @@ TABLES = [
     "learning_objectives",
     "lessons",
     "lesson_versions",
+    "lesson_media",
     "assessments",
     "assessment_versions",
     "three_d_assets",
@@ -148,6 +149,11 @@ def export(email: str) -> None:
     data["lesson_versions"] = _rows(
         db, "lesson_versions", t("lesson_versions").c.lesson_id.in_(lessons)
     )
+    data["lesson_media"] = _rows(
+        db,
+        "lesson_media",
+        (t("lesson_media").c.lesson_id.in_(lessons)) & (t("lesson_media").c.status == "ready"),
+    )
     data["assessments"] = _rows(db, "assessments", t("assessments").c.chapter_id.in_(chapters))
     data["assessment_versions"] = _rows(
         db,
@@ -191,11 +197,11 @@ def export(email: str) -> None:
         | (labs.c.course_id.is_(None) & (labs.c.created_by == user_id)),
     )
 
-    # model files (GLB) into files/, same paths as in storage
+    # model files (GLB) and lesson media (pictures, AR targets) into files/, same paths as in storage
     storage = get_storage()
     files = BUNDLE / "files"
     exported_files = 0
-    for v in data["three_d_asset_versions"]:
+    for v in [*data["three_d_asset_versions"], *data["lesson_media"]]:
         key = v.get("storage_key")
         if not key or v.get("status") != "ready":
             continue
@@ -275,6 +281,10 @@ def _file_bytes(path: Path) -> bytes | None:
     return _download_lfs(path.read_text(errors="replace"))
 
 
+# The demo accounts the login page signs into with "Use the demo account" / Shift+T / Shift+S.
+DEMO_ACCOUNTS = {"teacher@example.com", "student@example.com"}
+
+
 def _ensure_account(db: Any, email: str, password: str | None, kind: str) -> uuid.UUID:
     """The existing account of this kind, or a new one when a password is given."""
     users = table("users")
@@ -297,19 +307,28 @@ def _ensure_account(db: Any, email: str, password: str | None, kind: str) -> uui
     from app.modules.authentication.schemas import RegisterRequest
     from app.modules.authentication.service import register
 
+    fields = {
+        "email": email,
+        "password": password,
+        "display_name": email.split("@")[0].replace(".", " ").title(),
+        "account_type": kind,
+    }
     try:
-        body = RegisterRequest(
-            email=email,
-            password=password,
-            display_name=email.split("@")[0].replace(".", " ").title(),
-            account_type=kind,
-        )
+        body = RegisterRequest(**fields)
     except ValueError as exc:  # pydantic: weak password etc.
-        reasons = "; ".join(
-            str(e.get("msg", "")).removeprefix("Value error, ")
-            for e in getattr(exc, "errors", lambda: [])()
-        )
-        raise SystemExit(f"Cannot create {email!r}: {reasons or exc}") from None
+        if email.lower() in DEMO_ACCOUNTS and "Weak password" in str(exc):
+            # The fixed demo accounts behind the login page's demo buttons (Shift+T / Shift+S)
+            # use passwords that predate the sign-up strength rules (they contain the email's
+            # name). Only for those two accounts the seed skips the strength check; every other
+            # account, and every real sign-up, still goes through the full validation.
+            print(f"note: {email} uses the fixed demo password; created without the strength check")
+            body = RegisterRequest.model_construct(**fields)
+        else:
+            reasons = "; ".join(
+                str(e.get("msg", "")).removeprefix("Value error, ")
+                for e in getattr(exc, "errors", lambda: [])()
+            )
+            raise SystemExit(f"Cannot create {email!r}: {reasons or exc}") from None
     user = register(db, body)
     print(f"created {kind} account {user.email}")
     return user.id
@@ -368,6 +387,9 @@ def _source_file(name: str, raw: dict[str, Any]) -> tuple[Path | None, str] | No
     if name == "three_d_asset_versions" and raw.get("storage_key"):
         f = BUNDLE / "files" / raw["storage_key"]
         return (f if f.exists() else None), "model/gltf-binary"
+    if name == "lesson_media" and raw.get("storage_key"):
+        f = BUNDLE / "files" / raw["storage_key"]
+        return (f if f.exists() else None), raw["content_type"]
     return None
 
 

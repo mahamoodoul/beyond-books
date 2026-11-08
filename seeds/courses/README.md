@@ -1,6 +1,8 @@
 # Shared course seed
 
-The four sample courses (Biology, Chemistry, Mathematics, Physics) with everything built so far:
+The four sample courses (Biology, Chemistry, Mathematics, Physics) and **The Circulatory System**
+(the heart course: five chapters, the interactive 3D heart with slice view and AR, and a quiz),
+with everything built so far:
 chapters, learning objectives, the extracted textbook text, lessons, quizzes, 3D scenes, the 3D
 models they use (`files/`, Git LFS) and the saved AI prompts. Importing makes **no AI calls**.
 

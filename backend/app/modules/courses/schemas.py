@@ -13,6 +13,7 @@ class CourseCreate(BaseModel):
     subject: str | None = Field(default=None, max_length=80)
     grade_level: str | None = Field(default=None, max_length=40)
     school_id: uuid.UUID | None = None
+    open_to_all_students: bool = False
 
 
 class CourseUpdate(BaseModel):
@@ -21,6 +22,7 @@ class CourseUpdate(BaseModel):
     subject: str | None = Field(default=None, max_length=80)
     grade_level: str | None = Field(default=None, max_length=40)
     status: CourseStatus | None = None
+    open_to_all_students: bool | None = None
 
 
 class CourseOut(BaseModel):
@@ -33,6 +35,7 @@ class CourseOut(BaseModel):
     subject: str | None
     grade_level: str | None
     status: CourseStatus
+    open_to_all_students: bool = False
     created_at: datetime
     updated_at: datetime
     can_manage: bool = False
