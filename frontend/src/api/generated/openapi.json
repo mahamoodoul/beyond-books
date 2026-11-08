@@ -1045,6 +1045,17 @@
             "title": "Name",
             "type": "string"
           },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
+          },
           "provider": {
             "title": "Provider",
             "type": "string"
@@ -3668,8 +3679,8 @@
       "JoinRequest": {
         "properties": {
           "code": {
-            "maxLength": 16,
-            "minLength": 3,
+            "maxLength": 24,
+            "minLength": 16,
             "title": "Code",
             "type": "string"
           }
@@ -5851,7 +5862,7 @@
           "join_code": {
             "anyOf": [
               {
-                "maxLength": 16,
+                "maxLength": 24,
                 "type": "string"
               },
               {
@@ -5917,6 +5928,17 @@
             },
             "title": "Parts",
             "type": "array"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
           },
           "source_url": {
             "anyOf": [
@@ -7438,6 +7460,17 @@
           "lesson_title": {
             "title": "Lesson Title",
             "type": "string"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
           },
           "scene_id": {
             "format": "uuid",
@@ -11908,8 +11941,8 @@
             "name": "code",
             "required": true,
             "schema": {
-              "maxLength": 16,
-              "minLength": 3,
+              "maxLength": 24,
+              "minLength": 16,
               "title": "Code",
               "type": "string"
             }

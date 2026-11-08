@@ -41,13 +41,13 @@ function registryFor(data: ResolvedScene): AssetRegistry {
         components: a.node_names.map((n) => ({ mesh_name: n, label: labels.get(n) ?? n.replace(/_/g, " ") })),
         review_status: "approved",
       };
-      return [`${a.asset_id}@${a.version}`, { meta, url: a.url }];
+      return [`${a.asset_id}@${a.version}`, { meta, url: a.url, previewUrl: a.preview_url }];
     }),
   );
   return {
     resolve: (ref) => {
       const hit = metas.get(`${ref.asset_id}@${ref.version}`);
-      return hit ? { ref, meta: hit.meta, url: hit.url } : null;
+      return hit ? { ref, meta: hit.meta, url: hit.url, previewUrl: hit.previewUrl } : null;
     },
   };
 }
@@ -184,6 +184,7 @@ export function StudentStudio() {
             <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{c.title}</span>
             {c.items.map((s) => (
               <NavLink key={s.scene_id} to={`/studio/scene/${s.scene_id}`} className={() => pill(s.scene_id === studioSceneId)}>
+                {s.preview_url && <img src={s.preview_url} alt="" loading="lazy" className="-my-1 -ml-1 mr-1.5 inline-block h-7 w-9 rounded-md bg-white/80 object-contain align-middle" />}
                 {/* colour on a span: the app's unlayered `a { color: inherit }` beats utilities */}
                 <span className={s.scene_id === studioSceneId ? "text-white" : "text-slate-700"}>{s.title}</span>
               </NavLink>

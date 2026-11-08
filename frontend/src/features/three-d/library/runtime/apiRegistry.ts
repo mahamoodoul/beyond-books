@@ -41,7 +41,7 @@ export function libraryModel(asset: AssetOut, url: string): LibraryModel {
   };
   const registry: AssetRegistry = {
     resolve: (ref) =>
-      ref.asset_id === asset.slug && ref.version === asset.latest_version ? { ref, meta, url } : null,
+      ref.asset_id === asset.slug && ref.version === asset.latest_version ? { ref, meta, url, previewUrl: asset.preview_url } : null,
   };
   const latest = asset.versions?.find((v) => v.version_number === asset.latest_version);
   const insights = ((latest?.metadata_json as { insights?: Record<string, unknown> } | undefined)?.insights ?? {});

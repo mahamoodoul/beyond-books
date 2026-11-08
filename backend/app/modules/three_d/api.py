@@ -10,6 +10,7 @@ from app.modules.operations.models import Job
 from app.modules.three_d import assets_service as assets
 from app.modules.three_d import scenes_service as scenes
 from app.modules.three_d.models import ThreeDAsset
+from app.modules.three_d.preview import preview_url
 from app.modules.three_d.procedural import GENERATORS
 from app.modules.three_d.schemas import (
     AssetCreate,
@@ -50,8 +51,11 @@ def _asset_out(db: DB, user: User, asset: ThreeDAsset, *, with_versions: bool) -
     out = AssetOut.model_validate(asset).model_copy(
         update={"can_manage": assets.can_manage_asset(db, user, asset)}
     )
+    all_versions = assets.versions(db, asset.id)
     if with_versions:
-        out.versions = [AssetVersionOut.model_validate(v) for v in assets.versions(db, asset.id)]
+        out.versions = [AssetVersionOut.model_validate(v) for v in all_versions]
+    latest = next((v for v in all_versions if v.version_number == asset.latest_version), None)
+    out.preview_url = preview_url(latest)
     return out
 
 

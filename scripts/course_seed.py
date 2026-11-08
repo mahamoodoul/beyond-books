@@ -438,6 +438,12 @@ def load(
             f"WARNING: {missing} PDF/3D file(s) are missing or Git LFS placeholders. Install Git "
             "LFS (brew install git-lfs), run `git lfs pull`, then run this again."
         )
+    # 2D pictures of the 3D models (thumbnails, posters, fallback on weak devices)
+    from app.modules.three_d.preview import backfill_previews
+
+    pics = backfill_previews(db)
+    if pics["rendered"] or pics["failed"]:
+        print(f"pictures: {pics['rendered']} 3D model picture(s) rendered, {pics['failed']} failed")
     if student:
         _enrol_student(
             db, [c["id"] for c in bundle["tables"].get("courses", [])], student, student_password
