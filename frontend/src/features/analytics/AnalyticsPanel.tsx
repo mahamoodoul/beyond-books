@@ -276,13 +276,18 @@ export function AnalyticsPanel({ courseId }: { courseId: string }) {
   if (q.error) return <ErrorAlert error={q.error} />;
   const d = q.data;
   const pending = d.assessments.reduce((a, x) => a + x.pending_reviews, 0);
-  const inactive = d.insights.find((i) => i.kind === "inactive_students");
-  const inactiveCount = inactive ? Number(/\d+/.exec(inactive.message)?.[0] ?? 0) : 0;
+  // Every student without a completed lesson is in `attention` (only counted once lessons exist).
+  const notStarted = d.attention.filter((s) => s.completed_lessons === 0).length;
+  const studentsHint =
+    d.enrolled === 0 ? "no students enrolled yet"
+    : d.total_lessons === 0 ? "no published lessons yet"
+    : notStarted ? `${notStarted} yet to complete a lesson`
+    : "all have completed a lesson";
 
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label="Students" value={String(d.enrolled)} hint={inactiveCount ? `${inactiveCount} not started` : "all have started"} />
+        <StatTile label="Students" value={String(d.enrolled)} hint={studentsHint} />
         <StatTile label="Lessons completed" value={pct(d.avg_completion_rate)} hint={`average across ${d.total_lessons} lesson${d.total_lessons === 1 ? "" : "s"}`} />
         <StatTile label="Quiz score" value={pct(d.avg_score_rate)} hint="average of graded attempts" />
         <StatTile label="To review" value={String(pending)} hint={pending ? "short answers waiting" : "nothing waiting"} />

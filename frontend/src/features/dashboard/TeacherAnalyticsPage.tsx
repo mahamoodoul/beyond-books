@@ -10,7 +10,8 @@ export function TeacherAnalyticsPage() {
   if (courses.isPending) return <Loading />;
   if (courses.error) return <ErrorAlert error={courses.error} />;
   const list = courses.data.filter((c) => c.can_manage);
-  const id = list.find((c) => c.id === selected)?.id ?? list[0]?.id;
+  // Open on a published course: drafts have no student activity to show yet.
+  const id = list.find((c) => c.id === selected)?.id ?? (list.find((c) => c.status === "published") ?? list[0])?.id;
   return (
     <div className="dashboard-page teacher-analytics-page">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
