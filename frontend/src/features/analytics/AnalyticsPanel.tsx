@@ -238,22 +238,22 @@ function Students({ rows, courseId, totalLessons }: { rows: StudentAttention[]; 
       <table className="w-full text-sm">
         <thead className="text-left text-xs text-slate-500">
           <tr>
-            <th className="pb-1 font-medium">Student</th>
-            <th className="pb-1 font-medium">Lessons</th>
-            <th className="pb-1 font-medium">Gaps</th>
-            <th className="pb-1 font-medium">Why</th>
+            <th className="pb-1 pr-3 font-medium">Student</th>
+            <th className="pb-1 pr-3 font-medium">Lessons</th>
+            <th className="pb-1 pr-3 font-medium">Gaps</th>
+            <th className="pb-1 pr-3 font-medium">Why</th>
             <th />
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
           {shown.map((s) => (
             <tr key={s.student_id} className={student === s.student_id ? "bg-slate-50" : ""}>
-              <td className="py-1.5 font-medium text-slate-900">{s.display_name}</td>
-              <td className="py-1.5 tabular-nums text-slate-700">{s.completed_lessons}/{totalLessons}</td>
-              <td className="py-1.5 tabular-nums text-slate-700">
+              <td className="py-1.5 pr-3 font-medium text-slate-900">{s.display_name}</td>
+              <td className="py-1.5 pr-3 tabular-nums text-slate-700">{s.completed_lessons}/{totalLessons}</td>
+              <td className="whitespace-nowrap py-1.5 pr-3 tabular-nums text-slate-700">
                 {s.gap_objectives > 0 ? <span><span aria-hidden style={{ color: STATUS.gap.color }}>{STATUS.gap.icon}</span> {s.gap_objectives}</span> : "—"}
               </td>
-              <td className="py-1.5 text-slate-600" title={s.reasons.join("; ")}>{reason(s.reasons[0] ?? "")}{s.reasons.length > 1 ? ` +${s.reasons.length - 1}` : ""}</td>
+              <td className="py-1.5 pr-3 text-slate-600" title={s.reasons.join("; ")}>{reason(s.reasons[0] ?? "")}{s.reasons.length > 1 ? ` +${s.reasons.length - 1}` : ""}</td>
               <td className="py-1.5 text-right">
                 <button type="button" className="text-xs font-medium text-navy-700 hover:underline" onClick={() => setStudent(student === s.student_id ? null : s.student_id)}>
                   {student === s.student_id ? "Hide" : "Details"}
