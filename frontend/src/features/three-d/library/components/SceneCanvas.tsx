@@ -6,6 +6,8 @@ import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { deriveFrame } from "@/features/three-d/library/runtime/animation";
 import { loadGlb } from "@/features/three-d/library/runtime/assetLoader";
+import { ClipPlayer } from "@/features/three-d/library/runtime/clipPlayer";
+import { labelSpot } from "@/features/three-d/library/runtime/labels";
 import { computeExplodeOffsets, explodedBounds } from "@/features/three-d/library/runtime/explode";
 import { buildProcedural, type ProceduralInstance } from "@/features/three-d/library/runtime/procedural";
 import { disposeObject3D } from "@/features/three-d/library/runtime/resourceDisposer";
@@ -112,6 +114,7 @@ function SceneContent({
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
 
+  const clips = useRef<ClipPlayer | null>(null);
   // ---- load assets + build procedural sources; dispose everything on unmount
   useEffect(() => {
     const ctrl = new AbortController();
@@ -142,6 +145,8 @@ function SceneContent({
         for (const c of scene.components) authored[c.componentId] = c.meta?.explode_offset;
         rt.offsets = computeExplodeOffsets(rt.bounds, authored);
         rt.animatedScene = procedural.current.some((p) => !!p.update);
+        clips.current?.dispose();
+        clips.current = new ClipPlayer(built);
         meshes.current = prepareMeshes(built, rt);
         nested.current = true;
         pendingReady.current = { missing };
@@ -154,6 +159,8 @@ function SceneContent({
     })();
     return () => {
       ctrl.abort();
+      clips.current?.dispose();
+      clips.current = null;
       built.forEach(disposeObject3D);
       runtime.current.registry.dispose();
       procedural.current = [];
@@ -220,6 +227,7 @@ function SceneContent({
       timeSeconds: time.current,
       reducedMotion: rt.reducedMotion,
     });
+    clips.current?.apply(rt.frame.clip);
     if (!rt.reducedMotion) for (const p of procedural.current) p.update?.(dt);
     // keep rendering while anything is still changing; otherwise go idle
     const busy =
@@ -514,14 +522,24 @@ function Labels({
     const made: Record<string, HTMLDivElement> = {};
     for (const c of registered) {
       const id = c.componentId;
+      // a dot on the part, a leader line, and the label pushed out to the side (see useFrame)
       const wrap = document.createElement("div");
-      wrap.className = "group flex -translate-y-3 flex-col items-center";
-      wrap.style.cssText = "position:absolute;left:0;top:0;display:none;will-change:transform;";
+      wrap.className = "group";
+      wrap.style.cssText = "position:absolute;left:0;top:0;display:none;";
       wrap.dataset.state = "off";
+      const line = document.createElement("span");
+      line.className = "absolute left-0 top-0 h-px origin-left bg-slate-600/70 group-data-[state=on]:bg-amber-500";
+      line.setAttribute("aria-hidden", "true");
+      line.style.willChange = "transform";
+      const dot = document.createElement("span");
+      dot.className = "absolute left-0 top-0 size-1.5 rounded-full border border-white bg-slate-700 group-data-[state=on]:bg-amber-500";
+      dot.setAttribute("aria-hidden", "true");
+      dot.style.willChange = "transform";
       const button = document.createElement("button");
       button.type = "button";
       button.className =
-        "pointer-events-auto whitespace-nowrap rounded-md border border-slate-300/80 bg-white/92 px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm transition-colors hover:border-[#38b2ac] hover:bg-white focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-400 group-data-[state=on]:bg-amber-400";
+        "pointer-events-auto absolute left-0 top-0 whitespace-nowrap rounded-md border border-slate-300/80 bg-white/92 px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm transition-colors hover:border-[#38b2ac] hover:bg-white focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-400 group-data-[state=on]:bg-amber-400";
+      button.style.willChange = "transform";
       button.addEventListener("click", () => {
         if (latest.current.canSelect(id)) latest.current.onSelect(id);
       });
@@ -529,13 +547,7 @@ function Labels({
       text.className = "text-slate-900 group-data-[state=on]:text-navy-950";
       text.textContent = c.label;
       button.appendChild(text);
-      const stem = document.createElement("span");
-      stem.className = "h-3 w-px bg-slate-500/70";
-      stem.setAttribute("aria-hidden", "true");
-      const dot = document.createElement("span");
-      dot.className = "size-1.5 rounded-full border border-white bg-slate-700";
-      dot.setAttribute("aria-hidden", "true");
-      wrap.append(button, stem, dot);
+      wrap.append(line, dot, button);
       layer.appendChild(wrap);
       made[id] = wrap;
     }
@@ -556,13 +568,17 @@ function Labels({
     };
   }, [gl, signature, invalidate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Label sizes (they don't change), measured once each, for the overlap check below.
-  const sizes = useRef<Record<string, { w: number; h: number; wrapH: number }>>({});
+  // Label sizes (they don't change), measured once each, for placement and the overlap check.
+  const sizes = useRef<Record<string, { w: number; h: number }>>({});
 
   useFrame(() => {
     const rt = runtime.current;
     const anim = rt.frame;
-    const placed: { id: string; el: HTMLDivElement; x: number; y: number; depth: number; emphasised: boolean }[] = [];
+    // labels are pushed away from the model's centre on screen, so they sit beside the parts
+    const mid = explodedBounds(rt.bounds, rt.offsets, rt.explode).center;
+    tmp.set(...mid).project(camera);
+    const centre = { x: (tmp.x * 0.5 + 0.5) * size.width, y: (-tmp.y * 0.5 + 0.5) * size.height };
+    const placed: { id: string; el: HTMLDivElement; ax: number; ay: number; depth: number; emphasised: boolean }[] = [];
     for (const c of registered) {
       const id = c.componentId;
       const el = els.current[id];
@@ -578,17 +594,16 @@ function Labels({
         rt.selected === id || anim.highlight === id || anim.annotation?.target === id;
       const state = emphasised ? "on" : "off";
       if (el.dataset.state !== state) el.dataset.state = state;
-      const button = el.firstElementChild as HTMLButtonElement | null;
+      const button = el.lastElementChild as HTMLButtonElement | null;
       const tab = latest.current.canSelect(id) ? 0 : -1;
       if (button && button.tabIndex !== tab) button.tabIndex = tab;
       if (pos && show) {
         pos.project(camera);
         if (pos.z < 1) {
           // not behind the camera
-          const x = (pos.x * 0.5 + 0.5) * size.width;
-          const y = (-pos.y * 0.5 + 0.5) * size.height;
-          el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`;
-          placed.push({ id, el, x, y, depth: pos.z, emphasised });
+          const ax = (pos.x * 0.5 + 0.5) * size.width;
+          const ay = (-pos.y * 0.5 + 0.5) * size.height;
+          placed.push({ id, el, ax, ay, depth: pos.z, emphasised });
           continue;
         }
       }
@@ -604,21 +619,33 @@ function Labels({
       let m = sizes.current[p.id];
       if (!m) {
         if (p.el.style.display === "none") p.el.style.display = "";
-        const button = p.el.firstElementChild as HTMLElement | null;
-        m = { w: button?.offsetWidth ?? 0, h: button?.offsetHeight ?? 0, wrapH: p.el.offsetHeight };
+        const button = p.el.lastElementChild as HTMLElement | null;
+        m = { w: button?.offsetWidth ?? 0, h: button?.offsetHeight ?? 0 };
         if (m.w && m.h) sizes.current[p.id] = m;
       }
-      // the wrapper is centred on the point and lifted 12px (-translate-y-3); the button is on top
-      const top = p.y - m.wrapH / 2 - 12;
-      const box = { l: p.x - m.w / 2 - 2, r: p.x + m.w / 2 + 2, t: top - 2, b: top + m.h + 2 };
+      const half = { w: (m.w || 80) / 2, h: (m.h || 20) / 2 };
+      const at = labelSpot(p.ax, p.ay, centre, size, half);
+      const box = { l: at.x - half.w - 2, r: at.x + half.w + 2, t: at.y - half.h - 2, b: at.y + half.h + 2 };
       const clash = boxes.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
       const display = clash && !p.emphasised ? "none" : "";
       if (p.el.style.display !== display) p.el.style.display = display;
-      if (!display) boxes.push(box);
+      if (display) continue;
+      boxes.push(box);
+      placeLabel(p.el, p.ax, p.ay, at);
     }
   });
 
   return null;
+}
+
+function placeLabel(el: HTMLDivElement, ax: number, ay: number, at: { x: number; y: number }): void {
+  const [line, dot, button] = el.children as unknown as [HTMLElement, HTMLElement, HTMLElement];
+  button.style.transform = `translate3d(${at.x.toFixed(1)}px,${at.y.toFixed(1)}px,0) translate(-50%,-50%)`;
+  dot.style.transform = `translate3d(${ax.toFixed(1)}px,${ay.toFixed(1)}px,0) translate(-50%,-50%)`;
+  const dx = at.x - ax;
+  const dy = at.y - ay;
+  line.style.width = `${Math.hypot(dx, dy).toFixed(1)}px`;
+  line.style.transform = `translate3d(${ax.toFixed(1)}px,${ay.toFixed(1)}px,0) rotate(${Math.atan2(dy, dx).toFixed(4)}rad)`;
 }
 
 // ------------------------------------------------------------------- flow particles

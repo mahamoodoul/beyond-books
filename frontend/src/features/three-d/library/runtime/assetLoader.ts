@@ -13,5 +13,7 @@ export async function loadGlb(url: string, signal?: AbortSignal): Promise<THREE.
   gltf.scene.traverse((o) => {
     if ((o as THREE.Light).isLight || (o as THREE.Camera).isCamera) o.visible = false;
   });
+  // keep the baked clips with the scene (played by ClipPlayer for play_clip steps)
+  gltf.scene.animations = gltf.animations;
   return gltf.scene;
 }

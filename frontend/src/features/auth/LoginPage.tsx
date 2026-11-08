@@ -5,7 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
 import { ApiError } from "@/api/client";
 import { ErrorAlert } from "@/components/feedback";
-import { homeFor, useLogin, useMe } from "./auth";
+import { homeFor, useDemoLogin, useDemoMode, useLogin, useMe } from "./auth";
 
 type Role = "student" | "teacher";
 
@@ -32,6 +32,7 @@ export function LoginPage() {
   const { theme, toggleTheme } = usePreferences();
   const login = useLogin();
   const me = useMe();
+  const demo = useDemoMode();
   const navigate = useNavigate();
   const from = (useLocation().state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
@@ -58,6 +59,7 @@ export function LoginPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [login, navigate]);
   if (me.data) return <Navigate to={homeFor(me.data)} replace />;
+  if (demo.enabled) return <DemoChooser />;
   function submit(event: FormEvent) {
     event.preventDefault();
     setDemoAttempt(null);
@@ -127,6 +129,51 @@ export function LoginPage() {
         <div className="art-note art-note-bottom"><Icon name="sparkles" size={15} /> See the unseen.</div>
         <div className="art-caption">From the page<br />to the possible.</div>
       </aside>
+    <div className="login-legal">© 2026 Beyond Books <span>·</span> Made for curious minds</div>
+  </main>;
+}
+
+/** Demo mode: no sign-in, just pick who to be (or jump straight into the 3D Studio). */
+function DemoChooser() {
+  const { theme, toggleTheme } = usePreferences();
+  const enter = useDemoLogin();
+  const navigate = useNavigate();
+  const go = (role: Role, to?: string) =>
+    enter.mutate(role, { onSuccess: (user) => navigate(to ?? homeFor(user), { replace: true }) });
+  return <main className="login-page">
+    <div className="login-topbar"><Link aria-label="Beyond Books home" className="brand" to="/"><BeyondBooksLogo showWordmark size={72} variant={theme} /></Link>
+      <button className="icon-button" aria-label="Toggle colour theme" onClick={toggleTheme}><Icon name={theme === "light" ? "moon" : "sun"} size={18} /></button>
+    </div>
+    <section aria-labelledby="demo-title" className="login-card">
+      <div className="login-eyebrow"><Icon name="sparkles" size={15} /> DEMO</div>
+      <h1 id="demo-title">Learning that<br /><span>clicks into place.</span></h1>
+      <p className="login-intro">No sign-in needed. Choose how you’d like to explore.</p>
+      <div className="role-options login-role-options">
+        {([
+          { id: "teacher", title: "Demo teacher", hint: "Build courses, generate 3D lessons, see class insights", icon: "users" },
+          { id: "student", title: "Demo student", hint: "Explore lessons, take quizzes, track progress", icon: "lightbulb" },
+        ] as const).map((option) => (
+          <button className="role-card" disabled={enter.isPending} key={option.id} onClick={() => go(option.id)} type="button">
+            <span className={`role-icon ${option.id}-role-icon`}><Icon name={option.icon} size={21} /></span>
+            <span className="role-copy"><strong>{option.title}</strong><small>{option.hint}</small></span>
+            <Icon name="arrow-right" size={16} />
+          </button>
+        ))}
+      </div>
+      <button className="button button-primary login-submit" disabled={enter.isPending} onClick={() => go("teacher", "/studio")} type="button">
+        {enter.isPending ? "Opening…" : "Open the 3D Studio"}<Icon name="arrow-right" size={18} />
+      </button>
+      <ErrorAlert error={enter.error} />
+    </section>
+    <aside aria-label="Learning illustration" className="login-art">
+      <div className="art-glow" />
+      <div className="art-orbit orbit-one" />
+      <div className="art-orbit orbit-two" />
+      <div className="art-sphere"><span className="sphere-core" /><span className="sphere-ring" /></div>
+      <div className="art-note art-note-top"><span className="note-dot violet-dot" /> Biology <span>•</span> 3D lesson</div>
+      <div className="art-note art-note-bottom"><Icon name="sparkles" size={15} /> See the unseen.</div>
+      <div className="art-caption">From the page<br />to the possible.</div>
+    </aside>
     <div className="login-legal">© 2026 Beyond Books <span>·</span> Made for curious minds</div>
   </main>;
 }

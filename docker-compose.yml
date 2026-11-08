@@ -29,6 +29,8 @@ services:
       EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD:-edu3d}@postgres:5432/${POSTGRES_DB:-edu3d}
       EDU3D_REDIS_URL: redis://redis:6379/0
       EDU3D_LOCAL_STORAGE_DIR: /data/storage
+      # local demos: no sign-in, enter as the demo teacher/student (EDU3D_DEMO_MODE=false to turn off)
+      EDU3D_DEMO_MODE: ${EDU3D_DEMO_MODE:-true}
       # AI providers (registry: backend/app/integrations/providers.py)
       EDU3D_LLM_PROVIDER: ${EDU3D_LLM_PROVIDER:-fake}
       EDU3D_ANTHROPIC_API_KEY: ${EDU3D_ANTHROPIC_API_KEY:-}

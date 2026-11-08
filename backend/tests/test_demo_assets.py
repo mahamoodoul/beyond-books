@@ -22,6 +22,10 @@ LFS_POINTER = b"version https://git-lfs.github.com/spec/"
 
 # asset_id -> (scene fixtures, animation fixtures)
 CASES = {
+    "human_body_v1": (["scene_body_01.json"], ["animation_body_tour_01.json"]),
+    "human_brain_v1": (["scene_brain_01.json"], ["animation_brain_tour_01.json"]),
+    "human_heart_v2": (["scene_heart_03.json"], ["animation_heart_tour_01.json"]),
+    "human_lungs_v1": (["scene_lungs_01.json"], ["animation_lungs_tour_01.json"]),
     "human_heart_v1": (
         ["scene_heart_01.json", "scene_heart_02.json"],
         ["animation_blood_flow_01.json", "animation_double_circulation_01.json"],

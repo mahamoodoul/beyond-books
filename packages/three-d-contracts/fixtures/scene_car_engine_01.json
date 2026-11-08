@@ -1,0 +1,238 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_car_engine_01",
+  "title": "The four-stroke engine (cutaway)",
+  "learning_objective_ids": [],
+  "asset_refs": [
+    {
+      "asset_id": "car_engine_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "three_quarter",
+    "min_distance": 3,
+    "max_distance": 40
+  },
+  "components": [
+    {
+      "component_id": "engine_block",
+      "mesh_name": "engine_block",
+      "label": "Engine block",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_engine_block"
+    },
+    {
+      "component_id": "pistons",
+      "mesh_name": "pistons",
+      "label": "Pistons",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_pistons"
+    },
+    {
+      "component_id": "connecting_rods",
+      "mesh_name": "connecting_rods",
+      "label": "Connecting rods",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_connecting_rods"
+    },
+    {
+      "component_id": "crankshaft",
+      "mesh_name": "crankshaft",
+      "label": "Crankshaft",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_crankshaft"
+    },
+    {
+      "component_id": "flywheel",
+      "mesh_name": "flywheel",
+      "label": "Flywheel",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_flywheel"
+    },
+    {
+      "component_id": "cylinder_head",
+      "mesh_name": "cylinder_head",
+      "label": "Cylinder head",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_cylinder_head"
+    },
+    {
+      "component_id": "valves",
+      "mesh_name": "valves",
+      "label": "Valves and springs",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_valves"
+    },
+    {
+      "component_id": "camshafts",
+      "mesh_name": "camshafts",
+      "label": "Camshafts",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_camshafts"
+    },
+    {
+      "component_id": "timing_belt",
+      "mesh_name": "timing_belt",
+      "label": "Timing belt",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_timing_belt"
+    },
+    {
+      "component_id": "intake_manifold",
+      "mesh_name": "intake_manifold",
+      "label": "Intake manifold",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_intake_manifold"
+    },
+    {
+      "component_id": "fuel_injectors",
+      "mesh_name": "fuel_injectors",
+      "label": "Fuel injectors",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_fuel_injectors"
+    },
+    {
+      "component_id": "spark_plugs",
+      "mesh_name": "spark_plugs",
+      "label": "Spark plugs",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_spark_plugs"
+    },
+    {
+      "component_id": "exhaust_manifold",
+      "mesh_name": "exhaust_manifold",
+      "label": "Exhaust manifold",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_exhaust_manifold"
+    },
+    {
+      "component_id": "oil_pan",
+      "mesh_name": "oil_pan",
+      "label": "Oil pan (sump)",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_oil_pan"
+    },
+    {
+      "component_id": "starter_motor",
+      "mesh_name": "starter_motor",
+      "label": "Starter motor",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_starter_motor"
+    },
+    {
+      "component_id": "alternator",
+      "mesh_name": "alternator",
+      "label": "Alternator",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_alternator"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "engine_four_stroke_01"
+  ],
+  "explanations": {
+    "explanation_engine_block": "The engine block is the main casting. It holds the four cylinders the pistons slide in, and passages around them carry coolant (blue in the cut) to carry heat away.",
+    "explanation_pistons": "Pistons are pushed down by the burning fuel-air mixture. The rings around each one seal the cylinder so the pressure pushes the piston rather than leaking past it.",
+    "explanation_connecting_rods": "Connecting rods link each piston to the crankshaft. They turn the piston's up-and-down motion into a push on the rotating crank.",
+    "explanation_crankshaft": "The crankshaft turns the pistons' up-and-down motion into rotation. The heavy counterweights balance it so the engine runs smoothly.",
+    "explanation_flywheel": "The heavy flywheel stores energy from each power stroke and keeps the crankshaft turning smoothly through the other three strokes.",
+    "explanation_cylinder_head": "The cylinder head closes the top of each cylinder. It contains the combustion chambers and the ports that let air in and exhaust gas out.",
+    "explanation_valves": "Each cylinder has two intake valves (blue) and two exhaust valves (orange). Springs hold them shut; they open at just the right moment in the cycle to let gases in and out.",
+    "explanation_camshafts": "The two camshafts turn at half the crankshaft's speed. Each egg-shaped lobe pushes a valve open once every two turns of the crank, which sets the timing of the four strokes.",
+    "explanation_timing_belt": "The toothed timing belt links the crankshaft to the camshafts, so the valves always open in step with the pistons. It also drives the water pump.",
+    "explanation_intake_manifold": "The intake manifold shares air out to the four cylinders. The throttle valve at its end controls how much air enters, which is what the accelerator pedal really controls.",
+    "explanation_fuel_injectors": "Fuel injectors spray a fine mist of petrol into the incoming air, so the fuel mixes well and burns completely.",
+    "explanation_spark_plugs": "The spark plug makes a spark across a tiny gap at the top of the compression stroke. This ignites the compressed fuel-air mixture and starts the power stroke.",
+    "explanation_exhaust_manifold": "The exhaust manifold collects the hot gases pushed out of each cylinder on the exhaust stroke and joins them into one pipe.",
+    "explanation_oil_pan": "The oil pan (sump) holds the engine oil. A pump draws it up through the pickup and strainer and sends it to the moving parts to reduce friction and wear.",
+    "explanation_starter_motor": "The starter motor's small gear meshes with the flywheel's ring gear to turn the engine over until it can run on its own.",
+    "explanation_alternator": "The alternator is a generator driven by a belt from the crankshaft. It turns some of the engine's kinetic energy into electrical energy to charge the battery."
+  }
+}

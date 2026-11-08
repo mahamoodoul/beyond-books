@@ -1,3 +1,4 @@
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -27,6 +28,13 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(fmt=settings.log_format)
+    if settings.demo_mode:
+        logging.getLogger("edu3d").warning(
+            "EDU3D_DEMO_MODE is on: sign-in is disabled and anyone can use the demo teacher "
+            "(%s) and demo student (%s) accounts.",
+            settings.demo_teacher_email,
+            settings.demo_student_email,
+        )
 
     docs = settings.expose_api_docs
     app = FastAPI(

@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_dna_replication_01",
+  "title": "DNA replication (detailed)",
+  "learning_objective_ids": [],
+  "asset_refs": [
+    {
+      "asset_id": "dna_replication_v1",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "three_quarter",
+    "min_distance": 3,
+    "max_distance": 40
+  },
+  "components": [
+    {
+      "component_id": "topoisomerase",
+      "mesh_name": "topoisomerase",
+      "label": "Topoisomerase",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_topoisomerase"
+    },
+    {
+      "component_id": "helicase",
+      "mesh_name": "helicase",
+      "label": "Helicase",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_helicase"
+    },
+    {
+      "component_id": "hydrogen_bonds",
+      "mesh_name": "hydrogen_bonds",
+      "label": "Hydrogen bonds",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_hydrogen_bonds"
+    },
+    {
+      "component_id": "adenine",
+      "mesh_name": "adenine",
+      "label": "Adenine (A)",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_adenine"
+    },
+    {
+      "component_id": "thymine",
+      "mesh_name": "thymine",
+      "label": "Thymine (T)",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_thymine"
+    },
+    {
+      "component_id": "guanine",
+      "mesh_name": "guanine",
+      "label": "Guanine (G)",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_guanine"
+    },
+    {
+      "component_id": "cytosine",
+      "mesh_name": "cytosine",
+      "label": "Cytosine (C)",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_cytosine"
+    },
+    {
+      "component_id": "phosphate_groups",
+      "mesh_name": "phosphate_groups",
+      "label": "Phosphate groups",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_phosphate_groups"
+    },
+    {
+      "component_id": "deoxyribose_sugars",
+      "mesh_name": "deoxyribose_sugars",
+      "label": "Deoxyribose sugars",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_deoxyribose_sugars"
+    },
+    {
+      "component_id": "ssb_proteins",
+      "mesh_name": "ssb_proteins",
+      "label": "Single-strand binding proteins",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_ssb_proteins"
+    },
+    {
+      "component_id": "primase",
+      "mesh_name": "primase",
+      "label": "Primase",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_primase"
+    },
+    {
+      "component_id": "dna_polymerase",
+      "mesh_name": "dna_polymerase",
+      "label": "DNA polymerase",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_dna_polymerase"
+    },
+    {
+      "component_id": "leading_strand",
+      "mesh_name": "leading_strand",
+      "label": "Leading strand",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_leading_strand"
+    },
+    {
+      "component_id": "okazaki_fragments",
+      "mesh_name": "okazaki_fragments",
+      "label": "Okazaki fragments (lagging strand)",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera",
+        "toggle_visibility"
+      ],
+      "explanation_ref": "explanation_okazaki_fragments"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "dna_fork_in_action_01"
+  ],
+  "explanations": {
+    "explanation_topoisomerase": "Topoisomerase works ahead of the fork. Unwinding the helix twists the DNA in front of it, and topoisomerase cuts, untwists and rejoins the strands to relieve that tension.",
+    "explanation_helicase": "Helicase is a ring of six protein subunits that unzips the double helix by breaking the hydrogen bonds between bases, using energy from ATP. It creates the replication fork.",
+    "explanation_hydrogen_bonds": "Hydrogen bonds hold the two strands together between complementary bases. They are weak on their own, so the strands can be unzipped for copying, but there are many of them.",
+    "explanation_adenine": "Adenine is a purine base, with a double ring. It always pairs with thymine, held by two hydrogen bonds.",
+    "explanation_thymine": "Thymine is a pyrimidine base, with a single ring and a methyl group. It pairs with adenine. In RNA, uracil takes its place.",
+    "explanation_guanine": "Guanine is a purine base, with a double ring. It pairs with cytosine, held by three hydrogen bonds.",
+    "explanation_cytosine": "Cytosine is a pyrimidine base, with a single ring. It pairs with guanine through three hydrogen bonds, so G\u2013C pairs are a little harder to separate than A\u2013T pairs.",
+    "explanation_phosphate_groups": "Phosphate groups link one sugar to the next, forming the sugar-phosphate backbone on the outside of the helix. Each phosphate carries a negative charge, which is why DNA is acidic.",
+    "explanation_deoxyribose_sugars": "Deoxyribose is a five-carbon sugar. Each one joins a phosphate group to a base, and together sugar, phosphate and base make one nucleotide.",
+    "explanation_ssb_proteins": "Single-strand binding proteins coat the separated template strand, stopping it from pairing back up or folding on itself before it is copied.",
+    "explanation_primase": "Primase makes a short RNA primer. DNA polymerase cannot start a strand from nothing, so it needs this primer to build on.",
+    "explanation_dna_polymerase": "DNA polymerase builds the new strand by adding free nucleotides that pair with the template, always in the 5' to 3' direction. A ring-shaped sliding clamp keeps it on the DNA.",
+    "explanation_leading_strand": "The leading strand is built continuously, towards the fork, as helicase opens the helix. Each new double helix keeps one old strand and one new one, so replication is semi-conservative.",
+    "explanation_okazaki_fragments": "The lagging strand runs the other way, so it is built in short pieces called Okazaki fragments, each starting from an RNA primer. The primers are later replaced with DNA and the pieces joined by DNA ligase."
+  }
+}

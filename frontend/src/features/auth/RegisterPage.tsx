@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 
 import { fieldErrors } from "@/api/client";
 import { ErrorAlert } from "@/components/feedback";
@@ -7,7 +7,7 @@ import { Button, Card, Field, Input } from "@/components/ui";
 import { Icon } from "@/components/ui/Icon";
 import { JoinCodeField } from "@/features/join/JoinCode";
 
-import { homeFor, useLogin, useRegister } from "./auth";
+import { homeFor, useDemoMode, useLogin, useRegister } from "./auth";
 import { generatePassword, passwordProblems, passwordStrength } from "./password";
 
 type Role = "teacher" | "student";
@@ -115,6 +115,9 @@ export function RegisterPage() {
   };
   const busy = register.isPending || login.isPending;
   const generalError = register.error && Object.keys(server).length === 0 ? register.error : login.error;
+
+  const demo = useDemoMode();
+  if (demo.enabled) return <Navigate to="/login" replace />; // demo mode: no accounts to create
 
   return (
     <main id="main-content" tabIndex={-1} data-page-title="Create an account">

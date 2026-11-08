@@ -1,0 +1,280 @@
+{
+  "asset_id": "car_engine_v1",
+  "version": 1,
+  "name": "Four-stroke car engine (cutaway)",
+  "description": "Inline four-cylinder, twin-cam petrol engine with cylinders 1 and 2 cut away: block with bores and coolant passages, pistons with rings and pins, I-beam connecting rods, crankshaft with counterweights and damper pulley, cylinder head with combustion chambers and ports, sixteen valves with springs and bucket tappets, two camshafts, spark plugs, fuel injectors on a fuel rail, intake plenum and throttle body, 4-into-1 exhaust header, toothed timing belt, flywheel with ring gear, starter motor, alternator with its drive belt, and the oil pan with oil and pickup.",
+  "subject": "physics",
+  "category": "engineering",
+  "format": "glb",
+  "object_key": "demo-assets/glb/car_engine_v1.glb",
+  "preview_key": "demo-assets/previews/car_engine_v1.png",
+  "size_bytes": 6060508,
+  "content_hash": "sha256:836e0b2e8908b27b4d20239fe7217de5434baba19afc033bba2dbf59de9639ce",
+  "triangle_count": 317122,
+  "units": "arbitrary (not to scale)",
+  "bounds": {
+    "min": [
+      -2.55,
+      -1.08,
+      -1.71
+    ],
+    "max": [
+      2.51,
+      2.73,
+      1.2
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "engine_block",
+      "label": "Engine block",
+      "explode_offset": [
+        0,
+        0,
+        0
+      ],
+      "label_anchor": [
+        -0.006,
+        0.135,
+        0.018
+      ]
+    },
+    {
+      "mesh_name": "pistons",
+      "label": "Pistons",
+      "explode_offset": [
+        0,
+        0.5,
+        1.8
+      ],
+      "label_anchor": [
+        -0.104,
+        -0.023,
+        -0.0
+      ]
+    },
+    {
+      "mesh_name": "connecting_rods",
+      "label": "Connecting rods",
+      "explode_offset": [
+        0,
+        -0.4,
+        1.8
+      ],
+      "label_anchor": [
+        0.413,
+        0.036,
+        -0.002
+      ]
+    },
+    {
+      "mesh_name": "crankshaft",
+      "label": "Crankshaft",
+      "explode_offset": [
+        0,
+        -1.5,
+        1.0
+      ],
+      "label_anchor": [
+        -0.17,
+        0.095,
+        -0.073
+      ]
+    },
+    {
+      "mesh_name": "cylinder_head",
+      "label": "Cylinder head",
+      "explode_offset": [
+        0,
+        1.8,
+        0
+      ],
+      "label_anchor": [
+        0.02,
+        0.046,
+        -0.253
+      ]
+    },
+    {
+      "mesh_name": "valves",
+      "label": "Valves and springs",
+      "explode_offset": [
+        0,
+        2.5,
+        0.6
+      ],
+      "label_anchor": [
+        0.244,
+        0.031,
+        0.196
+      ]
+    },
+    {
+      "mesh_name": "camshafts",
+      "label": "Camshafts",
+      "explode_offset": [
+        0,
+        3.2,
+        0
+      ],
+      "label_anchor": [
+        0.07,
+        0.0,
+        -0.314
+      ]
+    },
+    {
+      "mesh_name": "spark_plugs",
+      "label": "Spark plugs",
+      "explode_offset": [
+        0,
+        3.9,
+        0
+      ],
+      "label_anchor": [
+        -0.402,
+        0.069,
+        0.003
+      ]
+    },
+    {
+      "mesh_name": "fuel_injectors",
+      "label": "Fuel injectors",
+      "explode_offset": [
+        0,
+        1.4,
+        -1.6
+      ],
+      "label_anchor": [
+        0.348,
+        -0.035,
+        0.023
+      ]
+    },
+    {
+      "mesh_name": "intake_manifold",
+      "label": "Intake manifold",
+      "explode_offset": [
+        0,
+        0.8,
+        -2.4
+      ],
+      "label_anchor": [
+        -0.17,
+        -0.078,
+        -0.041
+      ]
+    },
+    {
+      "mesh_name": "exhaust_manifold",
+      "label": "Exhaust manifold",
+      "explode_offset": [
+        0,
+        0,
+        2.4
+      ],
+      "label_anchor": [
+        -0.12,
+        -0.002,
+        0.07
+      ]
+    },
+    {
+      "mesh_name": "timing_belt",
+      "label": "Timing belt",
+      "explode_offset": [
+        -1.5,
+        0.3,
+        0
+      ],
+      "label_anchor": [
+        0.065,
+        -0.124,
+        0.125
+      ]
+    },
+    {
+      "mesh_name": "flywheel",
+      "label": "Flywheel",
+      "explode_offset": [
+        1.5,
+        0,
+        0
+      ],
+      "label_anchor": [
+        0.035,
+        0.1,
+        -0.0
+      ]
+    },
+    {
+      "mesh_name": "starter_motor",
+      "label": "Starter motor",
+      "explode_offset": [
+        1.2,
+        -0.7,
+        -1.5
+      ],
+      "label_anchor": [
+        0.027,
+        0.085,
+        0.046
+      ]
+    },
+    {
+      "mesh_name": "alternator",
+      "label": "Alternator",
+      "explode_offset": [
+        -1.3,
+        0,
+        -1.5
+      ],
+      "label_anchor": [
+        -0.245,
+        0.176,
+        0.119
+      ]
+    },
+    {
+      "mesh_name": "oil_pan",
+      "label": "Oil pan (sump)",
+      "explode_offset": [
+        0,
+        -2.2,
+        0
+      ],
+      "label_anchor": [
+        -0.04,
+        -0.18,
+        -0.0
+      ]
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "packages/demo-assets/source/car_engine_v1.blend (Blender 5.2, glTF exporter)",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Schematic and not to scale; a generic inline-4 layout, not a specific engine. Proportions, valve angles and the cam timing shown are illustrative. Needs a physics or engineering teacher's review before student use."
+}

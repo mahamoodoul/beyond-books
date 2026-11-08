@@ -200,6 +200,18 @@ class WaitStep(_StepBase):
     action: Literal["wait"]
 
 
+class PlayClipStep(_StepBase):
+    """Play an animation clip baked into the model (e.g. an engine cycle). The clip keeps
+    running through the following steps until the animation ends or another clip starts, so
+    later steps can explain what is moving. Clip names are checked by the viewer, which skips
+    a clip the model does not have."""
+
+    action: Literal["play_clip"]
+    clip: Identifier
+    loop: bool = True
+    speed: float = Field(default=1.0, ge=0.1, le=4.0)
+
+
 AnimationStep = Annotated[
     HighlightStep
     | SetVisibilityStep
@@ -209,7 +221,8 @@ AnimationStep = Annotated[
     | FlowParticlesStep
     | CameraFocusStep
     | AnnotationStep
-    | WaitStep,
+    | WaitStep
+    | PlayClipStep,
     Field(discriminator="action"),
 ]
 
@@ -224,6 +237,7 @@ ALLOWED_ANIMATION_ACTIONS = frozenset(
         "camera_focus",
         "show_annotation",
         "wait",
+        "play_clip",
     }
 )
 

@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "body_tour_01",
+  "title": "Major organs of the body",
+  "steps": [
+    {
+      "step": 1,
+      "action": "set_opacity",
+      "target_component": "body_skin",
+      "opacity": 0.08,
+      "duration_ms": 700
+    },
+    {
+      "step": 2,
+      "action": "camera_focus",
+      "target_component": "brain",
+      "duration_ms": 1200
+    },
+    {
+      "step": 3,
+      "action": "highlight_component",
+      "target_component": "brain",
+      "duration_ms": 2600,
+      "explanation": "The brain sits inside the skull and controls the body."
+    },
+    {
+      "step": 4,
+      "action": "camera_focus",
+      "target_component": "lungs",
+      "duration_ms": 1200
+    },
+    {
+      "step": 5,
+      "action": "highlight_component",
+      "target_component": "lungs",
+      "duration_ms": 2600,
+      "explanation": "The lungs fill the chest and exchange oxygen and carbon dioxide."
+    },
+    {
+      "step": 6,
+      "action": "highlight_component",
+      "target_component": "heart",
+      "duration_ms": 2600,
+      "explanation": "The heart lies between the lungs and pumps blood everywhere."
+    },
+    {
+      "step": 7,
+      "action": "set_opacity",
+      "target_component": "body_skin",
+      "opacity": 1.0,
+      "duration_ms": 700
+    }
+  ]
+}

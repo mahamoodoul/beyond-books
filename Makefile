@@ -77,6 +77,10 @@ export-courses: ## Re-export a teacher's courses into seeds/courses: make export
 sqlite-to-postgres: ## Copy backend/dev.db into the (migrated, empty) Postgres of backend/.env
 	cd backend && .venv/bin/python ../scripts/sqlite_to_postgres.py $(DB)
 
+API ?= http://localhost:8000
+seed-demo:     ## Demo school, teachers, students, courses and activity via the running API (make seed-demo API=...)
+	python3 scripts/seed_demo.py --base-url $(API)
+
 frontend-install:
 	cd frontend && npm install
 frontend-dev:

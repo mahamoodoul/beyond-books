@@ -5,7 +5,12 @@ from app.core.deps import ACCESS_COOKIE, DB, REFRESH_COOKIE
 from app.core.errors import UnauthenticatedError
 from app.core.rate_limit import check_login_rate
 from app.modules.authentication import service
-from app.modules.authentication.schemas import LoginRequest, RegisterRequest
+from app.modules.authentication.schemas import (
+    DemoLoginRequest,
+    DemoStatus,
+    LoginRequest,
+    RegisterRequest,
+)
 from app.modules.users.models import User
 from app.modules.users.schemas import UserOut
 
@@ -45,6 +50,19 @@ def login(body: LoginRequest, request: Request, response: Response, db: DB) -> U
     ip = request.client.host if request.client else "unknown"
     check_login_rate(ip, body.email.lower())
     tokens = service.login(db, body.email, body.password, request.headers.get("user-agent"))
+    _set_cookies(response, tokens)
+    return tokens.user
+
+
+@router.get("/demo", response_model=DemoStatus)
+def demo_status() -> DemoStatus:
+    """Whether demo mode is on (the app then skips sign-in)."""
+    return DemoStatus(enabled=get_settings().demo_mode)
+
+
+@router.post("/demo-login", response_model=UserOut)
+def demo_login(body: DemoLoginRequest, request: Request, response: Response, db: DB) -> User:
+    tokens = service.demo_login(db, body.role, request.headers.get("user-agent"))
     _set_cookies(response, tokens)
     return tokens.user
 

@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "animation_id": "lungs_tour_01",
+  "title": "How air reaches the lungs",
+  "steps": [
+    {
+      "step": 1,
+      "action": "highlight_component",
+      "target_component": "trachea",
+      "duration_ms": 2600,
+      "explanation": "Air enters through the larynx and travels down the trachea."
+    },
+    {
+      "step": 2,
+      "action": "set_opacity",
+      "target_component": "right_upper_lobe",
+      "opacity": 0.15,
+      "duration_ms": 700
+    },
+    {
+      "step": 3,
+      "action": "set_opacity",
+      "target_component": "right_middle_lobe",
+      "opacity": 0.15,
+      "duration_ms": 700
+    },
+    {
+      "step": 4,
+      "action": "set_opacity",
+      "target_component": "right_lower_lobe",
+      "opacity": 0.15,
+      "duration_ms": 700
+    },
+    {
+      "step": 5,
+      "action": "set_opacity",
+      "target_component": "left_upper_lobe",
+      "opacity": 0.15,
+      "duration_ms": 700
+    },
+    {
+      "step": 6,
+      "action": "set_opacity",
+      "target_component": "left_lower_lobe",
+      "opacity": 0.15,
+      "duration_ms": 700
+    },
+    {
+      "step": 7,
+      "action": "highlight_component",
+      "target_component": "bronchi",
+      "duration_ms": 2600,
+      "explanation": "Inside the lungs the airways branch like an upside-down tree, carrying air to millions of alveoli."
+    },
+    {
+      "step": 8,
+      "action": "set_opacity",
+      "target_component": "right_upper_lobe",
+      "opacity": 1.0,
+      "duration_ms": 700
+    },
+    {
+      "step": 9,
+      "action": "set_opacity",
+      "target_component": "right_middle_lobe",
+      "opacity": 1.0,
+      "duration_ms": 700
+    },
+    {
+      "step": 10,
+      "action": "set_opacity",
+      "target_component": "right_lower_lobe",
+      "opacity": 1.0,
+      "duration_ms": 700
+    },
+    {
+      "step": 11,
+      "action": "set_opacity",
+      "target_component": "left_upper_lobe",
+      "opacity": 1.0,
+      "duration_ms": 700
+    },
+    {
+      "step": 12,
+      "action": "set_opacity",
+      "target_component": "left_lower_lobe",
+      "opacity": 1.0,
+      "duration_ms": 700
+    },
+    {
+      "step": 13,
+      "action": "highlight_component",
+      "target_component": "right_middle_lobe",
+      "duration_ms": 2600,
+      "explanation": "The right lung has three lobes; the left has two, making space for the heart."
+    },
+    {
+      "step": 14,
+      "action": "highlight_component",
+      "target_component": "diaphragm",
+      "duration_ms": 2600,
+      "explanation": "Breathing in: the diaphragm contracts and flattens, making the chest bigger so air flows in."
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "asset_id": "human_lungs_v1",
+  "version": 1,
+  "name": "Human lungs (detailed)",
+  "description": "Right lung (upper, middle and lower lobes) and left lung (upper and lower lobes, cardiac notch), larynx and trachea with C-shaped cartilage rings, a branching bronchial tree inside the lobes, and the diaphragm.",
+  "subject": "biology",
+  "category": "anatomy",
+  "units": "1 unit ≈ 5 cm",
+  "components": [
+    {
+      "mesh_name": "trachea",
+      "label": "Trachea",
+      "explode_offset": [
+        0.0,
+        1.414,
+        0.0
+      ],
+      "label_anchor": [
+        -0.005,
+        1.9,
+        0.174
+      ]
+    },
+    {
+      "mesh_name": "bronchi",
+      "label": "Bronchi",
+      "explode_offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "label_anchor": [
+        3.18,
+        0.403,
+        0.502
+      ]
+    },
+    {
+      "mesh_name": "right_upper_lobe",
+      "label": "Right upper lobe",
+      "explode_offset": [
+        -2.368,
+        0.986,
+        0.126
+      ],
+      "label_anchor": [
+        -0.031,
+        0.974,
+        0.017
+      ]
+    },
+    {
+      "mesh_name": "right_middle_lobe",
+      "label": "Right middle lobe",
+      "explode_offset": [
+        -2.259,
+        -1.219,
+        0.618
+      ],
+      "label_anchor": [
+        -0.176,
+        0.265,
+        1.084
+      ]
+    },
+    {
+      "mesh_name": "right_lower_lobe",
+      "label": "Right lower lobe",
+      "explode_offset": [
+        -2.388,
+        -0.881,
+        -0.339
+      ],
+      "label_anchor": [
+        -0.915,
+        -1.155,
+        -0.65
+      ]
+    },
+    {
+      "mesh_name": "left_upper_lobe",
+      "label": "Left upper lobe",
+      "explode_offset": [
+        2.504,
+        0.005,
+        0.158
+      ],
+      "label_anchor": [
+        0.204,
+        1.615,
+        0.143
+      ]
+    },
+    {
+      "mesh_name": "left_lower_lobe",
+      "label": "Left lower lobe",
+      "explode_offset": [
+        2.376,
+        -0.942,
+        -0.236
+      ],
+      "label_anchor": [
+        0.833,
+        -1.308,
+        -0.7
+      ]
+    },
+    {
+      "mesh_name": "diaphragm",
+      "label": "Diaphragm",
+      "explode_offset": [
+        0.0,
+        -1.98,
+        0.0
+      ],
+      "label_anchor": [
+        0.001,
+        -0.774,
+        -2.053
+      ]
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus",
+    "show_annotation"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "packages/demo-assets/source/human_anatomy_v1.blend (Blender 5.2, glTF exporter)",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in-repo by the Edu3D team",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Lobe shapes and fissures are simplified and the bronchial tree is procedurally generated. Needs anatomist review before student use."
+}

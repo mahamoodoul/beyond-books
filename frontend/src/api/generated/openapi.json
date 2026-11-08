@@ -249,6 +249,7 @@
                   "camera_focus": "#/components/schemas/CameraFocusStep",
                   "highlight_component": "#/components/schemas/HighlightStep",
                   "move_along_path": "#/components/schemas/MoveAlongPathStep",
+                  "play_clip": "#/components/schemas/PlayClipStep",
                   "rotate_component": "#/components/schemas/RotateComponentStep",
                   "set_opacity": "#/components/schemas/SetOpacityStep",
                   "set_visibility": "#/components/schemas/SetVisibilityStep",
@@ -285,6 +286,9 @@
                 },
                 {
                   "$ref": "#/components/schemas/WaitStep"
+                },
+                {
+                  "$ref": "#/components/schemas/PlayClipStep"
                 }
               ]
             },
@@ -2694,6 +2698,36 @@
         "title": "DeleteAccountRequest",
         "type": "object"
       },
+      "DemoLoginRequest": {
+        "properties": {
+          "role": {
+            "enum": [
+              "teacher",
+              "student"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "DemoLoginRequest",
+        "type": "object"
+      },
+      "DemoStatus": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "DemoStatus",
+        "type": "object"
+      },
       "DocumentJobResponse": {
         "properties": {
           "document": {
@@ -3668,8 +3702,8 @@
       "JoinRequest": {
         "properties": {
           "code": {
-            "maxLength": 16,
-            "minLength": 3,
+            "maxLength": 24,
+            "minLength": 16,
             "title": "Code",
             "type": "string"
           }
@@ -5121,6 +5155,66 @@
         "title": "PartUpdate",
         "type": "object"
       },
+      "PlayClipStep": {
+        "additionalProperties": false,
+        "description": "Play an animation clip baked into the model (e.g. an engine cycle). The clip keeps\nrunning through the following steps until the animation ends or another clip starts, so\nlater steps can explain what is moving. Clip names are checked by the viewer, which skips\na clip the model does not have.",
+        "properties": {
+          "action": {
+            "const": "play_clip",
+            "title": "Action",
+            "type": "string"
+          },
+          "clip": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Clip",
+            "type": "string"
+          },
+          "duration_ms": {
+            "maximum": 30000.0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "loop": {
+            "default": true,
+            "title": "Loop",
+            "type": "boolean"
+          },
+          "speed": {
+            "default": 1.0,
+            "maximum": 4.0,
+            "minimum": 0.1,
+            "title": "Speed",
+            "type": "number"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step",
+          "duration_ms",
+          "action",
+          "clip"
+        ],
+        "title": "PlayClipStep",
+        "type": "object"
+      },
       "ProceduralSource": {
         "additionalProperties": false,
         "description": "A trusted, prebuilt procedural generator in the renderer (design \u00a77.1-A).\n\n`generator` must exist in the renderer's allowlisted registry; params are flat scalars only.",
@@ -5851,7 +5945,7 @@
           "join_code": {
             "anyOf": [
               {
-                "maxLength": 16,
+                "maxLength": 24,
                 "type": "string"
               },
               {
@@ -9454,6 +9548,69 @@
         ]
       }
     },
+    "/api/v1/auth/demo": {
+      "get": {
+        "description": "Whether demo mode is on (the app then skips sign-in).",
+        "operationId": "demo_status_api_v1_auth_demo_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Status",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/demo-login": {
+      "post": {
+        "operationId": "demo_login_api_v1_auth_demo_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Demo Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "login_api_v1_auth_login_post",
@@ -11908,8 +12065,8 @@
             "name": "code",
             "required": true,
             "schema": {
-              "maxLength": 16,
-              "minLength": 3,
+              "maxLength": 24,
+              "minLength": 16,
               "title": "Code",
               "type": "string"
             }

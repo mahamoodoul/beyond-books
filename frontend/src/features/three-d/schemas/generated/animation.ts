@@ -17,6 +17,7 @@ export type Steps = [
     | CameraFocusStep
     | AnnotationStep
     | WaitStep
+    | PlayClipStep
   ),
   ...(
     | HighlightStep
@@ -28,6 +29,7 @@ export type Steps = [
     | CameraFocusStep
     | AnnotationStep
     | WaitStep
+    | PlayClipStep
   )[]
 ];
 export type Action = "highlight_component";
@@ -80,6 +82,13 @@ export type Action8 = "wait";
 export type DurationMs8 = number;
 export type Explanation8 = string | null;
 export type Step8 = number;
+export type Action9 = "play_clip";
+export type Clip = string;
+export type DurationMs9 = number;
+export type Explanation9 = string | null;
+export type Loop = boolean;
+export type Speed = number;
+export type Step9 = number;
 export type Title = string;
 
 export interface AnimationSpec {
@@ -155,4 +164,19 @@ export interface WaitStep {
   duration_ms: DurationMs8;
   explanation?: Explanation8;
   step: Step8;
+}
+/**
+ * Play an animation clip baked into the model (e.g. an engine cycle). The clip keeps
+ * running through the following steps until the animation ends or another clip starts, so
+ * later steps can explain what is moving. Clip names are checked by the viewer, which skips
+ * a clip the model does not have.
+ */
+export interface PlayClipStep {
+  action: Action9;
+  clip: Clip;
+  duration_ms: DurationMs9;
+  explanation?: Explanation9;
+  loop?: Loop;
+  speed?: Speed;
+  step: Step9;
 }

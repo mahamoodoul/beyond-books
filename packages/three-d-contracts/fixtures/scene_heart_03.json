@@ -1,0 +1,171 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "scene_heart_03",
+  "title": "The Human Heart (detailed)",
+  "learning_objective_ids": [
+    "lo_01"
+  ],
+  "asset_refs": [
+    {
+      "asset_id": "human_heart_v2",
+      "version": 1
+    }
+  ],
+  "camera": {
+    "preset": "front",
+    "min_distance": 2,
+    "max_distance": 24
+  },
+  "components": [
+    {
+      "component_id": "right_atrium",
+      "mesh_name": "right_atrium",
+      "label": "Right atrium",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_right_atrium"
+    },
+    {
+      "component_id": "right_ventricle",
+      "mesh_name": "right_ventricle",
+      "label": "Right ventricle",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_right_ventricle"
+    },
+    {
+      "component_id": "left_atrium",
+      "mesh_name": "left_atrium",
+      "label": "Left atrium",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_left_atrium"
+    },
+    {
+      "component_id": "left_ventricle",
+      "mesh_name": "left_ventricle",
+      "label": "Left ventricle",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_left_ventricle"
+    },
+    {
+      "component_id": "aorta",
+      "mesh_name": "aorta",
+      "label": "Aorta",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_aorta"
+    },
+    {
+      "component_id": "pulmonary_trunk",
+      "mesh_name": "pulmonary_trunk",
+      "label": "Pulmonary trunk",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_pulmonary_trunk"
+    },
+    {
+      "component_id": "superior_vena_cava",
+      "mesh_name": "superior_vena_cava",
+      "label": "Superior vena cava",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_superior_vena_cava"
+    },
+    {
+      "component_id": "inferior_vena_cava",
+      "mesh_name": "inferior_vena_cava",
+      "label": "Inferior vena cava",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_inferior_vena_cava"
+    },
+    {
+      "component_id": "pulmonary_veins",
+      "mesh_name": "pulmonary_veins",
+      "label": "Pulmonary veins",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_pulmonary_veins"
+    },
+    {
+      "component_id": "coronary_arteries",
+      "mesh_name": "coronary_arteries",
+      "label": "Coronary arteries",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_coronary_arteries"
+    },
+    {
+      "component_id": "cardiac_veins",
+      "mesh_name": "cardiac_veins",
+      "label": "Cardiac veins",
+      "actions": [
+        "highlight",
+        "show_explanation",
+        "toggle_visibility",
+        "focus_camera"
+      ],
+      "explanation_ref": "explanation_cardiac_veins"
+    }
+  ],
+  "controls": [
+    "rotate",
+    "zoom",
+    "pan",
+    "select_component"
+  ],
+  "animation_refs": [
+    "heart_tour_01"
+  ],
+  "explanations": {
+    "explanation_right_atrium": "The right atrium receives deoxygenated blood from the body through the superior and inferior venae cavae.",
+    "explanation_right_ventricle": "The right ventricle pumps deoxygenated blood into the pulmonary trunk and on to the lungs.",
+    "explanation_left_atrium": "The left atrium receives oxygenated blood returning from the lungs through the pulmonary veins.",
+    "explanation_left_ventricle": "The left ventricle has the thickest muscle wall. It pumps oxygenated blood into the aorta and around the whole body.",
+    "explanation_aorta": "The aorta is the largest artery. Its arch gives off branches to the head and arms before it runs down through the body.",
+    "explanation_pulmonary_trunk": "The pulmonary trunk carries deoxygenated blood from the right ventricle and splits into the left and right pulmonary arteries.",
+    "explanation_superior_vena_cava": "The superior vena cava returns deoxygenated blood from the head, neck and arms to the right atrium.",
+    "explanation_inferior_vena_cava": "The inferior vena cava returns deoxygenated blood from the lower body to the right atrium.",
+    "explanation_pulmonary_veins": "Four pulmonary veins bring oxygenated blood from the lungs to the left atrium.",
+    "explanation_coronary_arteries": "The coronary arteries branch from the base of the aorta and supply the heart muscle itself. A blockage here causes a heart attack.",
+    "explanation_cardiac_veins": "Cardiac veins drain used blood from the heart muscle into the coronary sinus, which empties into the right atrium."
+  }
+}
