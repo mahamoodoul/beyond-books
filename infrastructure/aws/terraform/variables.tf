@@ -168,3 +168,13 @@ variable "github_oidc_provider_arn" {
   type        = string
   default     = ""
 }
+
+variable "github_auth" {
+  description = "How GitHub Actions authenticates: oidc (role, preferred), access_key (IAM user + key, for accounts whose SCP forbids OIDC providers), none."
+  type        = string
+  default     = "oidc"
+  validation {
+    condition     = contains(["oidc", "access_key", "none"], var.github_auth)
+    error_message = "github_auth must be oidc, access_key or none."
+  }
+}

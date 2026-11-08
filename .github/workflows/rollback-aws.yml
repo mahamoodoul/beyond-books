@@ -32,9 +32,17 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      # OIDC role when AWS_DEPLOY_ROLE_ARN is set; otherwise the access key from the environment secrets.
       - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN == '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
       - name: Roll back on the instance
         uses: ./.github/actions/ssm-run

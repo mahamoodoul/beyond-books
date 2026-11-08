@@ -6,7 +6,8 @@
 #                  ->  smoke test from outside.
 #
 # Needs these repository/environment variables (values from `terraform output github_variables`):
-#   AWS_DEPLOY_ROLE_ARN   IAM role GitHub assumes through OIDC (no long-lived keys)
+#   AWS_DEPLOY_ROLE_ARN   IAM role GitHub assumes through OIDC (no long-lived keys); leave empty to use
+#                         the secrets AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (terraform output github_secrets)
 #   AWS_REGION            e.g. eu-north-1
 #   AWS_INSTANCE_ID       the EC2 instance
 #   PUBLIC_URL            e.g. https://app.example.com or http://<elastic ip>
@@ -53,9 +54,17 @@ jobs:
         run: |
           if [ -n "$REF" ]; then git fetch --depth=1 origin "$REF" && sha=$(git rev-parse FETCH_HEAD); else sha=$GITHUB_SHA; fi
           echo "sha=$sha" >> "$GITHUB_OUTPUT"; echo "deploying $sha"
+      # OIDC role when AWS_DEPLOY_ROLE_ARN is set; otherwise the access key from the environment secrets.
       - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ vars.AWS_DEPLOY_ROLE_ARN == '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
       - name: Deploy on the instance (with automatic rollback)
         id: ssm
