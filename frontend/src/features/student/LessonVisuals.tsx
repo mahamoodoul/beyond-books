@@ -11,6 +11,7 @@
  */
 import { Children, isValidElement, useEffect, useMemo, useState, type ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
+import { scrollBehavior } from "@/lib/motion";
 
 export interface Section {
   title: string;
@@ -191,7 +192,7 @@ export function LessonJourney({ sections, ids }: { sections: Section[]; ids: str
             aria-current={i === current ? "step" : undefined}
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(ids[i] ?? "")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              document.getElementById(ids[i] ?? "")?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
             }}
           >
             <span className="lv-journey-dot">{seen.has(i) && i !== current ? "✓" : i + 1}</span>
@@ -403,7 +404,7 @@ export function LessonPart({
   const toggle = (t: string) => {
     setActive((a) => (a === t ? null : t));
     // bring the first occurrence into view
-    requestAnimationFrame(() => document.querySelector(`#${id} .lv-term-active`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
+    requestAnimationFrame(() => document.querySelector(`#${id} .lv-term-active`)?.scrollIntoView({ behavior: scrollBehavior(), block: "center" }));
   };
   const hasMap = terms.length >= 2;
   return (

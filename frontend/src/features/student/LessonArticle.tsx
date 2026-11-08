@@ -13,6 +13,7 @@ import type { SceneEvent } from "@/features/three-d/components/SceneViewer";
 import { LazySceneStudio } from "@/features/three-d/LazySceneStudio";
 import { chunk } from "@/features/three-d/library/speech/chunk";
 import { useSpeechPlayer } from "@/features/three-d/library/speech/player";
+import { scrollBehavior } from "@/lib/motion";
 
 import { ExplainSelection } from "./ExplainSelection";
 import { ListenButton } from "./ListenButton";
@@ -95,7 +96,7 @@ export function LessonArticle({
   useEffect(() => {
     if (speech.owner !== lessonVoice || readingPart === null) return;
     const el = document.getElementById(readingPart === "summary" ? "lesson-summary" : (partIds[readingPart] ?? ""));
-    el?.closest("section")?.scrollIntoView({ block: "center", behavior: "smooth" });
+    el?.closest("section")?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
   }, [readingPart, speech.owner, lessonVoice, partIds]);
 
   return (

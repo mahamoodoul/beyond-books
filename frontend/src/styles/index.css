@@ -83,7 +83,8 @@ body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); co
   a { color: inherit; text-decoration: none; }
 }
 button, a, input { -webkit-tap-highlight-color: transparent; }
-button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #8479ed; outline-offset: 3px; }
+/* One visible focus ring for everything focusable (keyboard users must always see where they are). */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:not([tabindex="-1"]):focus-visible { outline: 3px solid #8479ed; outline-offset: 3px; }
 ::selection { color: #24233a; background: #d9d3ff; }
 .theme-root { min-height: 100vh; background: var(--bg); color: var(--ink); }
 /* Skip link: hidden until keyboard focus, then the first thing on the page. */

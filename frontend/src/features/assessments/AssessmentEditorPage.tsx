@@ -38,9 +38,11 @@ function QuestionEditor({ q, onChange, onRemove }: { q: QuestionIn; onChange: (q
         <label className="ml-auto flex items-center gap-1 text-sm">Points
           <input type="number" min={0.5} step={0.5} className={`${sel} w-20`} value={q.points} onChange={(e) => onChange({ ...q, points: Number(e.target.value) })} />
         </label>
-        <select className={sel} value={q.difficulty} onChange={(e) => onChange({ ...q, difficulty: e.target.value as QuestionIn["difficulty"] })}>
-          <option value="easy">easy</option><option value="medium">medium</option><option value="hard">hard</option>
-        </select>
+        <label className="flex items-center gap-1 text-sm">Difficulty
+          <select className={sel} value={q.difficulty} onChange={(e) => onChange({ ...q, difficulty: e.target.value as QuestionIn["difficulty"] })}>
+            <option value="easy">easy</option><option value="medium">medium</option><option value="hard">hard</option>
+          </select>
+        </label>
         <Button variant="ghost" aria-label="Remove question" onClick={onRemove}>✕</Button>
       </div>
       <Textarea rows={2} aria-label="Question text" value={q.question_text} onChange={(e) => onChange({ ...q, question_text: e.target.value })} />
