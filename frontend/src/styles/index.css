@@ -512,14 +512,18 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .section-heading h2 { font-size: 17px; }
   .count-pill { min-width: 18px; height: 18px; font-size: var(--fs-xs); }
   .text-link { gap: 4px; font-size: var(--fs-xs); }
-  .course-row { grid-template-columns: 41px minmax(0, 1fr) 27px; gap: 9px; min-height: 93px; }
+  .course-row { grid-template-columns: 41px minmax(0, 1fr) 27px; gap: 6px 9px; min-height: 93px; padding: 10px 0; }
+  .course-row > .course-art { grid-row: 1 / span 2; }
+  .course-row > .course-open { grid-column: 3; grid-row: 1 / span 2; }
   .course-art { width: 40px; height: 42px; border-radius: 10px; }
   .course-art svg { width: 23px; height: 23px; }
   .course-details h3 { margin: 4px 0 7px; font-size: var(--fs-md); }
   .course-subject { font-size: var(--fs-xs); }
   .course-meta { gap: 6px; font-size: var(--fs-xs); }
   .course-meta svg { width: 12px; height: 12px; }
-  .course-row-progress { display: none; }
+  /* status + class progress on a compact second row instead of hidden */
+  .course-row-progress { display: flex; grid-column: 2; grid-row: 2; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .course-row-progress .progress-label { justify-content: flex-start; gap: 6px; margin: 0; }
   .course-open { width: 25px; height: 25px; }
   .add-course-row { min-height: 59px; gap: 8px; }
   .add-course-icon { width: 31px; height: 31px; }
