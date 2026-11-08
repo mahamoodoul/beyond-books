@@ -32,7 +32,9 @@ class Course(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     join_code: Mapped[str | None] = mapped_column(String(16), unique=True)
     # Published + open: every eligible student (the course's school, or everyone if it has no
     # school) is enrolled automatically, so it shows up in their "My courses".
-    open_to_all_students: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
+    open_to_all_students: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=false()
+    )
 
 
 class CourseEnrollment(UUIDPrimaryKeyMixin, Base):
