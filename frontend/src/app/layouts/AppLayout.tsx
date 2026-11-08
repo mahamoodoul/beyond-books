@@ -14,6 +14,7 @@ const teacherNavigation = [
   { to: "/teacher/courses", label: "My courses", icon: "book" as const, end: false },
   { to: "/teacher/assets", label: "3D library", icon: "layers" as const, end: false },
   { to: "/studio", label: "Studio", icon: "eye" as const, end: false },
+  { to: "/teacher/labs", label: "Labs", icon: "bolt" as const, end: false },
   { to: "/teacher/insights", label: "Insights", icon: "activity" as const, end: false },
   { to: "/teacher/schools", label: "Schools", icon: "users" as const, end: false },
 ];
@@ -21,6 +22,7 @@ const studentNavigation = [
   { to: "/student", label: "My learning", icon: "grid" as const, end: true },
   { to: "/student/courses", label: "My courses", icon: "book" as const, end: false },
   { to: "/studio", label: "3D Studio", icon: "eye" as const, end: false },
+  { to: "/student/labs", label: "Labs", icon: "bolt" as const, end: false },
   { to: "/student/progress", label: "My progress", icon: "activity" as const, end: false },
 ];
 export function AppLayout() {

@@ -9,6 +9,8 @@ export type IconName =
   | "book"
   | "calendar"
   | "check"
+  | "expand"
+  | "shrink"
   | "chevron-down"
   | "chevron-left"
   | "chevron-right"
@@ -23,6 +25,7 @@ export type IconName =
   | "layers"
   | "leaf"
   | "lightbulb"
+  | "bolt"
   | "moon"
   | "more"
   | "pause"
@@ -52,6 +55,8 @@ const iconShapes: Record<IconName, React.ReactNode> = {
   "circle-help": <><circle cx="12" cy="12" r="9" /><path d="M9.6 9a2.5 2.5 0 1 1 4.7 1.2c-.8 1.1-2.3 1.2-2.3 3M12 17h.01" /></>,
   clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
   close: <path d="m18 6-12 12M6 6l12 12" />,
+  expand: <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />,
+  shrink: <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />,
   download: <><path d="M12 3v12m-5-5 5 5 5-5" /><path d="M5 17v4h14v-4" /></>,
   eye: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></>,
   file: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h8" /></>,
@@ -73,6 +78,7 @@ const iconShapes: Record<IconName, React.ReactNode> = {
   target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></>,
   users: <><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m6-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm11 10v-2a4 4 0 0 0-3-3.9m-1-12a4 4 0 0 1 0 7.8" /></>,
   volume: <><path d="M11 5 6 9H3v6h3l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13" /></>,
+  bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
 };
 
 export function Icon({

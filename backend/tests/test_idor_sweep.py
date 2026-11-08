@@ -115,6 +115,10 @@ def world(login: Login, db: Session) -> dict[str, str]:
     )
     t.post(f"/api/v1/assessments/{asm['id']}/publish")
     ids["assessment_id"] = asm["id"]
+    ids["lab_id"] = t.post(
+        f"/api/v1/courses/{cid}/labs", json={"title": "Light the bulb", "chapter_id": ch}
+    ).json()["id"]
+    t.patch(f"/api/v1/labs/{ids['lab_id']}", json={"status": "published"})
     att = s.post(f"/api/v1/assessments/{asm['id']}/attempts").json()["attempt_id"]
     res = s.post(
         f"/api/v1/attempts/{att}/submit",
@@ -180,6 +184,9 @@ BODIES: dict[tuple[str, str], Any] = {
         "component_id": "right_atrium",
         "action": "simplify",
     },
+    ("post", "/api/v1/courses/{course_id}/labs"): {"title": "x"},
+    ("patch", "/api/v1/labs/{lab_id}"): {"title": "x"},
+    ("put", "/api/v1/labs/{lab_id}/session"): {"state": {"parts": [], "wires": []}},
 }
 
 
