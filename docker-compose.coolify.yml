@@ -36,6 +36,16 @@ x-backend-env: &backend-env
   EDU3D_ANTHROPIC_MODEL: ${EDU3D_ANTHROPIC_MODEL:-claude-opus-5-5}
   EDU3D_OPENAI_API_KEY: ${EDU3D_OPENAI_API_KEY:-}
   EDU3D_OPENAI_MODEL: ${EDU3D_OPENAI_MODEL:-}
+  # Demo data, loaded by the api on every start (idempotent: only what is missing is added):
+  # the shared courses with their PDFs/3D models, the demo accounts behind the login page's
+  # "Use the demo account" buttons, and analytics students. Set EDU3D_SEED_DEMO_DATA=false to stop.
+  # Passwords (12+ characters) only apply when the account is created.
+  EDU3D_SEED_DEMO_DATA: ${EDU3D_SEED_DEMO_DATA:-true}
+  SEED_TEACHER_EMAIL: ${SEED_TEACHER_EMAIL:-teacher@example.com}
+  SEED_TEACHER_PASSWORD: ${SEED_TEACHER_PASSWORD:-teacher-demo-123}
+  SEED_STUDENT_EMAIL: ${SEED_STUDENT_EMAIL:-student@example.com}
+  SEED_STUDENT_PASSWORD: ${SEED_STUDENT_PASSWORD:-student-demo-123}
+  SEED_DEMO_STUDENTS: ${SEED_DEMO_STUDENTS:-50}
 
 services:
   postgres:
@@ -108,7 +118,8 @@ services:
       dockerfile: infrastructure/docker/frontend.prod.Dockerfile
       args:
         # Demo sign-in is on by default (set VITE_DEMO_LOGIN=false in Coolify to turn it off).
-        # Accounts default to the ones scripts/seed_demo_course.py creates ("email:password" to override).
+        # Accounts default to the ones the api seeds (SEED_TEACHER_* / SEED_STUDENT_* above);
+        # if you change those, set these to the same "email:password".
         VITE_DEMO_LOGIN: ${VITE_DEMO_LOGIN:-true}
         VITE_DEMO_TEACHER: ${VITE_DEMO_TEACHER:-}
         VITE_DEMO_STUDENT: ${VITE_DEMO_STUDENT:-}

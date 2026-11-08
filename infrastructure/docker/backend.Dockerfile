@@ -6,12 +6,19 @@ WORKDIR /app
 # "[dev]" for local/CI; Coolify passes EXTRAS="" for a lean production image.
 ARG EXTRAS="[dev]"
 
+# Shared demo data for scripts/seed_deploy.py (api-start runs it when EDU3D_SEED_DEMO_DATA=true).
+# Changes rarely, so it comes before the app code for layer caching.
+COPY sample-courses /app/seed/sample-courses
+COPY seeds /app/seed/seeds
+ENV SEED_ROOT=/app/seed
+
 COPY backend/pyproject.toml ./
 COPY backend/app ./app
 RUN pip install --no-cache-dir -e ".${EXTRAS}"
 
 COPY backend/alembic.ini ./
 COPY backend/migrations ./migrations
+COPY scripts/course_seed.py scripts/seed_students.py scripts/seed_deploy.py /app/seed/scripts/
 COPY --chmod=755 infrastructure/docker/api-start.sh /usr/local/bin/api-start
 COPY backend/tests ./tests
 
