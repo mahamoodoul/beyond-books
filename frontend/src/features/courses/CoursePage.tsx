@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
 
 import { ErrorAlert, Loading } from "@/components/feedback";
@@ -9,6 +9,7 @@ import { AnalyticsPanel } from "@/features/analytics/AnalyticsPanel";
 import { SourcesPanel } from "@/features/documents/SourcesPanel";
 
 import { useScrollFade } from "@/lib/useScrollFade";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 import { useCourse, useUpdateCourse } from "./api";
 import { ChapterBoard, useChapterOverview } from "./ChapterBoard";
@@ -42,6 +43,8 @@ export function CoursePage() {
   // New courses start with their sources; once there are chapters, the chapter list comes first.
   const tab: Tab = chosenTab ?? (overview.data && overview.data.length === 0 ? "Sources & outline" : "Chapters");
   const tabStrip = useScrollFade<HTMLDivElement>(tab);
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
+  const tabList = useCallback((node: HTMLDivElement | null) => { tabStrip(node); rovingTabs(node); }, [tabStrip, rovingTabs]);
 
   if (course.isPending) return <Loading />;
   if (course.error) return <ErrorAlert error={course.error} />;
@@ -84,12 +87,14 @@ export function CoursePage() {
       </header>
       <ErrorAlert error={update.error} />
 
-      <div role="tablist" ref={tabStrip} className="scroll-fade mb-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--line)]">
-        {TABS.map((t) => (
+      <div role="tablist" aria-label="Course sections" ref={tabList} className="scroll-fade mb-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--line)]">
+        {TABS.map((t, i) => (
           <button
             key={t}
+            id={`course-tab-${i}`}
             role="tab"
             aria-selected={tab === t}
+            aria-controls="course-tabpanel"
             onClick={() => setTab(t)}
             className={`shrink-0 border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900 text-navy-950" : "border-transparent text-slate-500 hover:text-slate-800"}`}
           >
@@ -97,7 +102,7 @@ export function CoursePage() {
           </button>
         ))}
       </div>
-      <div role="tabpanel" className="space-y-6">
+      <div role="tabpanel" id="course-tabpanel" aria-labelledby={`course-tab-${TABS.indexOf(tab)}`} className="space-y-6">
         {tab === "Chapters" && <ChapterBoard courseId={courseId} accent={style} onGoToSources={() => setTab("Sources & outline")} />}
         {tab === "Sources & outline" && (
           <>

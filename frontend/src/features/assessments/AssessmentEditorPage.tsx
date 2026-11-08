@@ -8,6 +8,7 @@ import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
 
 import { useAssessmentMutations, useAttempts, useReviewQueue, useTeacherAssessment } from "./api";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 const TABS = ["Questions", "Submissions", "Review queue"] as const;
 type Tab = (typeof TABS)[number];
@@ -118,6 +119,7 @@ function ReviewCard({ item, assessmentId }: { item: ReviewItem; assessmentId: st
 }
 
 export function AssessmentEditorPage() {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const { assessmentId = "" } = useParams();
   const a = useTeacherAssessment(assessmentId);
   const m = useAssessmentMutations(assessmentId);
@@ -156,7 +158,7 @@ export function AssessmentEditorPage() {
         {d.published_version && <Button variant="ghost" onClick={() => m.unpublish.mutate()}>Unpublish</Button>}
       </PageHeader>
       <ErrorAlert error={m.publish.error ?? m.settings.error} />
-      <div role="tablist" className="mb-4 flex gap-1 shadow-[inset_0_-1px_0_var(--line)]">
+      <div role="tablist" aria-label="Quiz editor sections" ref={rovingTabs} className="mb-4 flex gap-1 shadow-[inset_0_-1px_0_var(--line)]">
         {TABS.map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900" : "border-transparent text-slate-500"}`}>
             {t}{t === "Review queue" && queue.data?.length ? ` (${queue.data.length})` : ""}

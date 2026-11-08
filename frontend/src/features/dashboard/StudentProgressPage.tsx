@@ -13,6 +13,7 @@ import { ErrorAlert, Loading } from "@/components/feedback";
 import { useMyProgress } from "@/features/student/api";
 
 import { timeAgo } from "./format";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 type Skill = "mastered" | "developing" | "gap";
 const SKILLS: { key: Skill; label: string; color: string }[] = [
@@ -155,6 +156,7 @@ function Skills({ insights }: { insights: StudentInsights | undefined }) {
 }
 
 export function StudentProgressPage() {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const q = useMyProgress();
   const courses = useMemo(() => q.data ?? [], [q.data]);
   const outlines = useQueries({
@@ -230,7 +232,7 @@ export function StudentProgressPage() {
       )}
 
       {courses.length > 1 && (
-        <div className="pg-tabs" role="tablist" aria-label="Your courses">
+        <div className="pg-tabs" role="tablist" aria-label="Your courses" ref={rovingTabs}>
           {courses.map((c) => {
             const p = pct(c.completed_lessons, c.total_lessons);
             return (

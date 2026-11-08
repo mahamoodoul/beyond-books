@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useCourses } from "@/features/courses/api";
 import { NewCourseButton } from "@/features/courses/NewCourseButton";
 import { subjectStyle } from "@/features/courses/subjects";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 type Filter = "all" | "published" | "draft";
 
@@ -89,6 +90,7 @@ function CourseCard({ course }: { course: CourseOut }) {
 }
 
 export function TeacherCoursesPage() {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const courses = useCourses();
   const [filter, setFilter] = useState<Filter>("all");
   const [q, setQ] = useState("");
@@ -121,7 +123,7 @@ export function TeacherCoursesPage() {
       </div>
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div role="tablist" aria-label="Filter courses" className="flex gap-1 rounded-lg bg-slate-100 p-1">
+        <div role="tablist" aria-label="Filter courses" ref={rovingTabs} className="flex gap-1 rounded-lg bg-slate-100 p-1">
           {tabs.map((t) => (
             <button
               key={t.key}
