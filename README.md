@@ -287,6 +287,31 @@ buttons match.
 
 ## 5. Accounts: teacher and student
 
+### Join codes: schools and courses
+
+Every school and every course has a **join code**: 16 letters and digits, shown in groups of
+four (for example `BIOL-OGY1-01DE-MO26`); dashes, spaces and lower case are ignored when typing
+it. Teachers share it; anyone with the code can see what it unlocks and join it. Codes are
+validated on the server before any lookup, and lookups are rate limited per IP.
+
+- **At sign-up:** the register form has an optional *School or course code* field. Type a code
+  and the form shows what it unlocks before the account is created. A **school code** makes a
+  teacher a teacher of the school and a student a student of it. A **course code** enrols a
+  student (and adds them to the course's school when it has one); for a teacher it joins the
+  course's school.
+- **Later:** Account → *Schools and courses* lists where you belong and has a *Join with a code*
+  box.
+- **Teachers** find their codes on the Schools page, on a course's Students tab, and on their
+  account page, with *Copy* and *New code* (the old code stops working).
+
+The demo seed (`make seed-students`) sets memorable codes: school **DEMOSCHOOLNORWAY**,
+courses **BIOLOGY101DEMO26**, **CHEMISTRY101DEMO**, **MATHS101DEMO2026**, **PHYSICS101DEMO26**.
+
+Passwords are checked on the server too: 12 to 256 characters, at least two kinds of character
+(or a 16+ character passphrase), no repeated or sequential characters, not a very common
+password, and not containing your name or email.
+
+
 The login page's **Use the demo account** buttons (and Shift+T / Shift+S) sign in as
 `teacher@example.com` / `student@example.com` once `make seed-demo` has run; the Coolify deployment
 creates them automatically (section 4). Your own accounts:

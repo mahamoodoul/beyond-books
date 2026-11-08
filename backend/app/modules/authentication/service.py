@@ -27,6 +27,10 @@ def register(db: Session, body: RegisterRequest) -> User:
         raise PermissionDeniedError("Registration is by invitation only.")
     if get_by_email(db, body.email):
         raise ConflictError("An account with this email already exists.")
+    from app.modules.join_codes import service as join_codes
+
+    code = (body.join_code or "").strip()
+    target = join_codes.lookup(db, code) if code else None  # 404 before the account exists
     user = User(
         email=normalize_email(body.email),
         display_name=body.display_name,
@@ -38,6 +42,8 @@ def register(db: Session, body: RegisterRequest) -> User:
     audit.record(
         db, action="user.register", resource_type="user", resource_id=user.id, actor_user_id=user.id
     )
+    if target is not None:
+        join_codes.apply(db, user, target)
     db.commit()
     return user
 

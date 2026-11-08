@@ -97,6 +97,22 @@ export const api = {
   delete: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
 };
 
+/** Field name -> message for a 422, e.g. { password: "Weak password: …", join_code: "…" }. */
+export function fieldErrors(err: unknown): Record<string, string> {
+  if (!(err instanceof ApiError) || err.status !== 422) return {};
+  const out: Record<string, string> = {};
+  for (const d of err.details as { loc?: unknown[]; msg?: string }[]) {
+    const loc = (d.loc ?? []).filter((x) => x !== "body" && x !== "query" && x !== "path").map(String);
+    let field = loc[loc.length - 1] ?? "";
+    let msg = (d.msg ?? "").replace(/^Value error, /, "").replace(/^Assertion failed, /, "");
+    // model-level validators tag the field themselves: "password: Weak password. …"
+    const tagged = /^([a-z_]+): (.*)$/s.exec(msg);
+    if (!field && tagged) { field = tagged[1]!; msg = tagged[2]!; }
+    if (field && !out[field]) out[field] = msg;
+  }
+  return out;
+}
+
 export function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : "Something went wrong.";
 }

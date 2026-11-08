@@ -18,7 +18,9 @@ from app.modules.users.repository import get_by_email
 def create_course(db: Session, user: User, body: CourseCreate) -> Course:
     if body.school_id:
         require_school_role(db, user, body.school_id, SchoolRole.SCHOOL_ADMIN, SchoolRole.TEACHER)
-    course = Course(created_by=user.id, **body.model_dump())
+    from app.modules.join_codes.service import new_code
+
+    course = Course(created_by=user.id, join_code=new_code(db), **body.model_dump())
     db.add(course)
     db.flush()
     audit.record(

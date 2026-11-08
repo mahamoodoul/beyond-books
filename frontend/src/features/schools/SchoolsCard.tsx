@@ -5,6 +5,7 @@ import { api } from "@/api/client";
 import type { ClassroomMemberOut, ClassroomOut, ClassroomRole, SchoolOut } from "@/api/generated/schema";
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input } from "@/components/ui";
+import { JoinCodeBadge } from "@/features/join/JoinCode";
 
 export function useSchools() {
   return useQuery({ queryKey: ["schools"], queryFn: () => api.get<SchoolOut[]>("/schools") });
@@ -135,6 +136,7 @@ function SchoolSection({ school }: { school: SchoolOut }) {
         <h3 className="min-w-0 font-medium text-slate-900">{school.name}</h3>
         <span className="flex flex-wrap items-center gap-2">
           {school.my_role && <Badge>{school.my_role.replace("_", " ")}</Badge>}
+          {canManage && school.join_code && <JoinCodeBadge code={school.join_code} regeneratePath={`/schools/${school.id}/join-code`} invalidate={[["schools"], ["affiliations"]]} what="School" />}
           {canManage && (
             <Button variant="secondary" onClick={() => setOpen((v) => !v)}>{open ? "Cancel" : "New classroom"}</Button>
           )}

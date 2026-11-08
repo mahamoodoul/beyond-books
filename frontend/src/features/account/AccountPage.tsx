@@ -6,6 +6,7 @@ import { api, apiFetch } from "@/api/client";
 import { ErrorAlert } from "@/components/feedback";
 import { Button, Card, Field, Input, PageHeader } from "@/components/ui";
 import { useMe } from "@/features/auth/auth";
+import { AffiliationsCard } from "@/features/join/JoinCode";
 
 export function AccountPage() {
   const me = useMe();
@@ -61,6 +62,9 @@ export function AccountPage() {
           </form>
           {rename.isSuccess && <p role="status" className="mt-2 text-sm text-slate-600">Name saved.</p>}
           <ErrorAlert error={rename.error} />
+        </Card>
+        <Card className="lg:col-span-2">
+          <AffiliationsCard role={me.data?.account_type === "student" ? "student" : "teacher"} />
         </Card>
         <Card>
           <h2 className="mb-2 font-semibold">Your data</h2>

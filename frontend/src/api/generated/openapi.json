@@ -44,6 +44,131 @@
         "title": "AccountType",
         "type": "string"
       },
+      "AffiliationCourse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
+          "role": {
+            "enum": [
+              "teacher",
+              "student"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "school_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Name"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "role",
+          "status"
+        ],
+        "title": "AffiliationCourse",
+        "type": "object"
+      },
+      "AffiliationSchool": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role"
+        ],
+        "title": "AffiliationSchool",
+        "type": "object"
+      },
+      "Affiliations": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/AffiliationCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "schools": {
+            "items": {
+              "$ref": "#/components/schemas/AffiliationSchool"
+            },
+            "title": "Schools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schools",
+          "courses"
+        ],
+        "title": "Affiliations",
+        "type": "object"
+      },
       "AnimationCreate": {
         "properties": {
           "spec": {
@@ -2286,6 +2411,17 @@
             "title": "Id",
             "type": "string"
           },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
           "school_id": {
             "anyOf": [
               {
@@ -3439,6 +3575,139 @@
           "finished_at"
         ],
         "title": "JobOut",
+        "type": "object"
+      },
+      "JoinPreview": {
+        "description": "What a code unlocks, shown before an account is created or a code is applied.",
+        "properties": {
+          "as_student": {
+            "title": "As Student",
+            "type": "string"
+          },
+          "as_teacher": {
+            "title": "As Teacher",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "grade_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade Level"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "school",
+              "course"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "school_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Name"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "teacher_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Name"
+          }
+        },
+        "required": [
+          "code",
+          "kind",
+          "id",
+          "name",
+          "as_teacher",
+          "as_student"
+        ],
+        "title": "JoinPreview",
+        "type": "object"
+      },
+      "JoinRequest": {
+        "properties": {
+          "code": {
+            "maxLength": 16,
+            "minLength": 3,
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "JoinRequest",
+        "type": "object"
+      },
+      "JoinResult": {
+        "properties": {
+          "joined": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Joined",
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "school",
+              "course"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "joined"
+        ],
+        "title": "JoinResult",
         "type": "object"
       },
       "LabCreate": {
@@ -5579,6 +5848,18 @@
             "title": "Email",
             "type": "string"
           },
+          "join_code": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
           "password": {
             "maxLength": 256,
             "minLength": 12,
@@ -6293,6 +6574,17 @@
             "format": "uuid",
             "title": "Id",
             "type": "string"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
           },
           "my_role": {
             "anyOf": [
@@ -10905,6 +11197,54 @@
         ]
       }
     },
+    "/api/v1/courses/{course_id}/join-code": {
+      "post": {
+        "description": "Replace the course's code (the old one stops working).",
+        "operationId": "regenerate_course_code_api_v1_courses__course_id__join_code_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Regenerate Course Code Api V1 Courses  Course Id  Join Code Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Regenerate Course Code",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/courses/{course_id}/labs": {
       "post": {
         "description": "Create a lab in a course you manage (draft until published).",
@@ -11555,6 +11895,51 @@
         "summary": "Get Job",
         "tags": [
           "jobs"
+        ]
+      }
+    },
+    "/api/v1/join-codes": {
+      "get": {
+        "description": "What a school or course code unlocks. Public, so the sign-up form can show it before\nthe account exists; rate limited per IP.",
+        "operationId": "preview_code_api_v1_join_codes_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "maxLength": 16,
+              "minLength": 3,
+              "title": "Code",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview Code",
+        "tags": [
+          "join-codes"
         ]
       }
     },
@@ -13196,6 +13581,54 @@
         ]
       }
     },
+    "/api/v1/schools/{school_id}/join-code": {
+      "post": {
+        "description": "Replace the school's code (the old one stops working).",
+        "operationId": "regenerate_school_code_api_v1_schools__school_id__join_code_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "school_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "School Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Regenerate School Code Api V1 Schools  School Id  Join Code Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Regenerate School Code",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/schools/{school_id}/members": {
       "get": {
         "operationId": "list_members_api_v1_schools__school_id__members_get",
@@ -13772,6 +14205,28 @@
         ]
       }
     },
+    "/api/v1/users/me/affiliations": {
+      "get": {
+        "description": "The caller's schools (with role) and courses (teaching or enrolled), with the codes the\ncaller may share.",
+        "operationId": "my_affiliations_api_v1_users_me_affiliations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Affiliations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Affiliations",
+        "tags": [
+          "join-codes"
+        ]
+      }
+    },
     "/api/v1/users/me/export": {
       "get": {
         "description": "Machine-readable copy of the caller's personal data (GDPR art. 15/20).",
@@ -13793,6 +14248,48 @@
         "summary": "Export My Data",
         "tags": [
           "users"
+        ]
+      }
+    },
+    "/api/v1/users/me/join": {
+      "post": {
+        "description": "Join the school or course behind a code with the signed-in account.",
+        "operationId": "join_with_code_api_v1_users_me_join_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Join With Code",
+        "tags": [
+          "join-codes"
         ]
       }
     }

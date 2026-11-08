@@ -5,8 +5,12 @@ import { api } from "@/api/client";
 import type { EnrollmentOut, EnrollResult } from "@/api/generated/schema";
 import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Button, Card, Input } from "@/components/ui";
+import { JoinCodeBadge } from "@/features/join/JoinCode";
+
+import { useCourse } from "./api";
 
 export function StudentsPanel({ courseId }: { courseId: string }) {
+  const course = useCourse(courseId);
   const qc = useQueryClient();
   const key = ["students", courseId];
   const students = useQuery({ queryKey: key, queryFn: () => api.get<EnrollmentOut[]>(`/courses/${courseId}/students`) });
@@ -36,6 +40,12 @@ export function StudentsPanel({ courseId }: { courseId: string }) {
   return (
     <Card>
       <h2 className="mb-3 font-semibold">Students</h2>
+      {course.data?.join_code && (
+        <p className="mb-3 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          Students can enrol themselves at sign-up or on their account page with the
+          <JoinCodeBadge code={course.data.join_code} regeneratePath={`/courses/${courseId}/join-code`} invalidate={[["course", courseId], ["courses"], ["affiliations"]]} what="Course" />
+        </p>
+      )}
       <form onSubmit={submit} className="mb-4 flex gap-2">
         <Input type="email" required placeholder="student@example.com" aria-label="Student email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Button type="submit" disabled={enroll.isPending}>Enroll</Button>
