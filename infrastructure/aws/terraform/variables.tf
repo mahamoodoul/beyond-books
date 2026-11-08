@@ -184,3 +184,9 @@ variable "github_auth" {
     error_message = "github_auth must be oidc, access_key or none."
   }
 }
+
+variable "aws_profile" {
+  description = "Named AWS CLI profile to use (empty = the default credential chain / AWS_PROFILE)."
+  type        = string
+  default     = ""
+}
