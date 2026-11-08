@@ -726,8 +726,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .landing-header { height: 60px; padding: 0 15px; }
   .landing-header .brand { font-size: var(--fs-lg); }
   .landing-nav { display: none; }
-  .landing-header-actions { gap: 10px; }
-  .landing-signin { font-size: var(--fs-xs); }
+  .landing-header { gap: 10px; }
+  .landing-header-actions { flex: none; gap: 10px; }
+  /* keep "Sign in" / "Get started" on one line each (they wrapped to two on phones) */
+  .landing-signin { font-size: var(--fs-xs); white-space: nowrap; }
+  .landing-get-started { white-space: nowrap; }
   .landing-get-started { min-height: 33px; gap: 5px; padding: 0 9px; font-size: var(--fs-xs); }
   .landing-hero { min-height: auto; grid-template-columns: 1fr; gap: 0; padding: 49px 22px 52px; }
   .landing-hero-copy { padding: 0; }
@@ -2495,3 +2498,14 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .scroll-fade[data-fade-end] { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent); }
 .scroll-fade[data-fade-start] { -webkit-mask-image: linear-gradient(to right, transparent, #000 44px); mask-image: linear-gradient(to right, transparent, #000 44px); }
 .scroll-fade[data-fade-start][data-fade-end] { -webkit-mask-image: linear-gradient(to right, transparent, #000 44px, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(to right, transparent, #000 44px, #000 calc(100% - 44px), transparent); }
+
+/* Landing header on small phones: tighter spacing; the smallest show only the logo mark
+   (the brand link keeps its "Beyond Books home" label). */
+@media (max-width: 400px) {
+  .landing-header { padding: 0 12px; }
+  .landing-header-actions { gap: 8px; }
+  .landing-get-started svg { display: none; }
+}
+@media (max-width: 350px) {
+  .landing-header .bb-wordmark { display: none; }
+}
