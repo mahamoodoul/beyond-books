@@ -23,9 +23,9 @@ variable "region" {
 
 # ------------------------------------------------------------------ machine
 variable "instance_type" {
-  description = "t3.xlarge (4 vCPU, 16 GB) runs the whole stack incl. Blender. t3.large (2/8) works without Blender."
+  description = "EC2 type. Accounts on the new AWS free plan may only launch free-tier-eligible types: in eu-north-1 the largest is m7i-flex.large (2 vCPU, 8 GB), which runs the whole stack incl. Blender with swap. Paid plans: t3.xlarge (4 vCPU, 16 GB) is comfortable."
   type        = string
-  default     = "t3.xlarge"
+  default     = "m7i-flex.large"
 }
 
 variable "root_volume_gb" {

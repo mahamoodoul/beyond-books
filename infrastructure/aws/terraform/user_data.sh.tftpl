@@ -24,9 +24,9 @@ if ! command -v aws >/dev/null; then
   unzip -q /tmp/awscli.zip -d /tmp && /tmp/aws/install && rm -rf /tmp/aws /tmp/awscli.zip
 fi
 
-# --- swap: Blender builds and npm builds spike; 2 GB of swap keeps the box alive -------------
+# --- swap: Blender, image builds and the npm build spike; 4 GB of swap keeps an 8 GB box alive --
 if ! swapon --show | grep -q /swapfile; then
-  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+  fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
   echo '/swapfile none swap sw 0 0' >> /etc/fstab
 fi
 

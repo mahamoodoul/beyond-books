@@ -17,8 +17,8 @@ browser ──80/443──▶ Caddy ──▶ nginx (SPA, /api proxy) ──▶ 
 
 | Item | Per hour | Per month nonstop | Notes |
 |---|---|---|---|
-| t3.xlarge (4 vCPU, 16 GB) | 0.18 USD | ~130 USD | stop it outside demo hours |
-| t3.large (2 vCPU, 8 GB) | 0.09 USD | ~65 USD | fine without Blender |
+| m7i-flex.large (2 vCPU, 8 GB) | ~0.09 USD | ~65 USD | default: the largest type a free-plan account may launch; whole stack incl. Blender, with 4 GB swap |
+| t3.xlarge (4 vCPU, 16 GB) | 0.18 USD | ~130 USD | paid accounts: comfortable headroom for Blender |
 | 40 GB gp3 disk | | ~3.5 USD | billed while stopped too |
 | Elastic IP | | 0 while attached to a running instance, ~3.6 USD/month while stopped | |
 | S3, Secrets Manager, alarms, budget | | < 1 USD | |
@@ -35,6 +35,11 @@ cap with `monthly_budget_usd` and `terraform apply`.
 
 On the credit-based free tier (100 to 200 USD, 6 months) a t3.xlarge used 8 hours a day lasts
 for months. Set `budget_alert_email` and you get mail at 50 / 80 / 100 % of `monthly_budget_usd`.
+
+Accounts on the **new AWS free plan** (credits, 6 months) can only launch free-tier-eligible
+instance types (`aws ec2 describe-instance-types --filters Name=free-tier-eligible,Values=true`);
+anything else fails with *not eligible for Free Tier*. Upgrading the account to a paid plan lifts
+that limit while keeping the remaining credits.
 
 ## Prerequisites
 

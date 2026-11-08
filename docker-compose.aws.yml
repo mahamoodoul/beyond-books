@@ -151,7 +151,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 4g
+          memory: 3g  # 8 GB box: leaves room for Postgres, api, worker and builds
 
 volumes:
   postgres-data:

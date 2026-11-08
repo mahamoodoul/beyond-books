@@ -2,7 +2,7 @@
 
 region        = "eu-north-1"
 environment   = "dev"
-instance_type = "t3.xlarge" # 4 vCPU / 16 GB: whole stack incl. Blender. t3.large without Blender.
+instance_type = "m7i-flex.large" # free-plan accounts: largest eligible type (2 vCPU / 8 GB). Paid: t3.xlarge (4 vCPU / 16 GB).
 
 # Access: leave admin_cidr empty to use SSM Session Manager only (no SSH, no keys).
 admin_cidr     = ""   # e.g. "84.212.10.20/32"
