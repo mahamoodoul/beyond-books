@@ -1,0 +1,122 @@
+#!/bin/bash
+# First boot of the Beyond Books instance (rendered by Terraform; see compute.tf).
+# Everything is logged to /var/log/beyond-books-boot.log. Re-runs are safe.
+set -euo pipefail
+exec > >(tee -a /var/log/beyond-books-boot.log) 2>&1
+echo "[boot] $(date -u +%FT%TZ) start"
+
+export DEBIAN_FRONTEND=noninteractive
+APP_DIR=/opt/beyond-books
+REGION="${region}"
+
+# --- base packages, Docker, git-lfs, AWS CLI --------------------------------------------------
+apt-get update -y
+apt-get install -y ca-certificates curl gnupg git git-lfs unzip jq fail2ban
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+chmod a+r /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list
+apt-get update -y
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+usermod -aG docker ubuntu
+if ! command -v aws >/dev/null; then
+  curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscli.zip
+  unzip -q /tmp/awscli.zip -d /tmp && /tmp/aws/install && rm -rf /tmp/aws /tmp/awscli.zip
+fi
+
+# --- swap: Blender, image builds and the npm build spike; 4 GB of swap keeps an 8 GB box alive --
+if ! swapon --show | grep -q /swapfile; then
+  fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
+# --- unattended security updates ---------------------------------------------------------
+apt-get install -y unattended-upgrades
+dpkg-reconfigure -f noninteractive unattended-upgrades
+
+# --- code ----------------------------------------------------------------------------------
+if [ ! -d "$APP_DIR/.git" ]; then
+  git clone --branch "${git_ref}" "${git_repo}" "$APP_DIR"
+fi
+cd "$APP_DIR"
+git fetch --all --prune
+git checkout -q "${git_ref}"
+git pull -q --ff-only || true
+git lfs install && git lfs pull
+
+# --- secrets -> env file (never in the repo, root-only) --------------------------------------
+SECRET_JSON=$(aws secretsmanager get-secret-value --region "$REGION" --secret-id "${secret_id}" --query SecretString --output text)
+get() { echo "$SECRET_JSON" | jq -r --arg k "$1" '.[$k] // ""'; }
+cat > "$APP_DIR/.env.aws" <<ENV
+# Written by the first-boot script from Secrets Manager (${secret_id}). Do not commit.
+EDU3D_ENVIRONMENT=${environment == "prod" ? "production" : (environment == "staging" ? "staging" : "development")}
+PUBLIC_URL=${public_url}
+DOMAIN=${domain}
+POSTGRES_USER=edu3d
+POSTGRES_PASSWORD=$(get POSTGRES_PASSWORD)
+POSTGRES_DB=edu3d
+EDU3D_JWT_SECRET=$(get EDU3D_JWT_SECRET)
+EDU3D_COOKIE_SECURE=${domain != "" ? "true" : "false"}
+EDU3D_STORAGE_BACKEND=s3
+EDU3D_S3_BUCKET=${bucket}
+EDU3D_S3_REGION=$REGION
+EDU3D_LLM_PROVIDER=${has_anthropic_key ? "anthropic" : "fake"}
+EDU3D_THREE_D_PROVIDER=${has_anthropic_key ? "llm" : "fake"}
+EDU3D_ANTHROPIC_API_KEY=$(get EDU3D_ANTHROPIC_API_KEY)
+EDU3D_ANTHROPIC_MODEL=${anthropic_model}
+ELEVENLABS_API_KEY=$(get ELEVENLABS_API_KEY)
+EDU3D_ELEVENLABS_API_KEY=$(get ELEVENLABS_API_KEY)
+EDU3D_DEMO_MODE=${demo_mode}
+EDU3D_SEED_DEMO_DATA=${seed_demo_data}
+SEED_TEACHER_EMAIL=${seed_teacher_email}
+SEED_TEACHER_PASSWORD=$(get SEED_TEACHER_PASSWORD)
+SEED_STUDENT_EMAIL=${seed_student_email}
+SEED_STUDENT_PASSWORD=$(get SEED_STUDENT_PASSWORD)
+# Login-page demo buttons (frontend build args); the passwords must pass the password rules.
+VITE_DEMO_LOGIN=${demo_mode}
+VITE_DEMO_TEACHER=${seed_teacher_email}:$(get SEED_TEACHER_PASSWORD)
+VITE_DEMO_STUDENT=${seed_student_email}:$(get SEED_STUDENT_PASSWORD)
+EDU3D_BLENDER_ALLOW_IN_PRODUCTION=${enable_blender}
+COMPOSE_PROFILES=${enable_blender ? "blender" : ""}
+ENV
+chmod 600 "$APP_DIR/.env.aws"
+
+# --- run -----------------------------------------------------------------------------------
+cat > /etc/systemd/system/beyond-books.service <<UNIT
+[Unit]
+Description=Beyond Books (docker compose)
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=$APP_DIR
+EnvironmentFile=$APP_DIR/.env.aws
+ExecStart=/usr/bin/docker compose --env-file $APP_DIR/.env.aws -f docker-compose.aws.yml up -d --build --remove-orphans
+ExecStop=/usr/bin/docker compose --env-file $APP_DIR/.env.aws -f docker-compose.aws.yml down
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable beyond-books.service
+systemctl start beyond-books.service
+
+# --- operations script: deploy / rollback / backup / restore / status ----------------------
+# Source of truth is infrastructure/aws/scripts/beyond-books.sh in the repo; the first boot and
+# every successful deploy install it. The deploy branch is remembered for `beyond-books deploy`
+# without arguments; GitHub Actions passes an explicit commit.
+mkdir -p /etc/beyond-books /var/lib/beyond-books
+echo "${git_ref}" > /etc/beyond-books/branch
+install -m 0755 "$APP_DIR/infrastructure/aws/scripts/beyond-books.sh" /usr/local/bin/beyond-books
+ln -sf /usr/local/bin/beyond-books /usr/local/bin/beyond-books-deploy
+ln -sf /usr/local/bin/beyond-books /usr/local/bin/beyond-books-rollback
+printf 'sha=%s\nrevision=unknown\nat=%s\n' "$(git rev-parse HEAD)" "$(date -u +%FT%TZ)" > /var/lib/beyond-books/current
+echo "$(date -u +%FT%TZ) first-boot sha=$(git rev-parse HEAD)" >> /var/lib/beyond-books/releases.log
+
+# --- nightly database backup to S3 (03:15 UTC), encrypted at rest by the bucket -------------
+echo "15 3 * * * root /usr/local/bin/beyond-books backup >> /var/log/beyond-books-backup.log 2>&1" > /etc/cron.d/beyond-books-backup
+
+echo "[boot] $(date -u +%FT%TZ) done: ${public_url}"

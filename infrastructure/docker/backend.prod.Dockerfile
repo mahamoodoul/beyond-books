@@ -13,8 +13,13 @@ COPY --from=build /wheels /wheels
 RUN pip install --no-cache-dir /wheels/*.whl && rm -rf /wheels
 COPY backend/alembic.ini ./
 COPY backend/migrations ./migrations
-RUN useradd --create-home --uid 10001 appuser && mkdir -p /data && chown appuser /data
+RUN useradd --create-home --uid 10001 appuser && mkdir -p /data /exports && chown appuser /data /exports
+# uv runs the Blender MCP bridge (`uvx mcp-for-blender`); pre-fetch it so the first build is fast
+# and works without PyPI at runtime.
+RUN pip install --no-cache-dir uv
 USER appuser
+ENV UV_CACHE_DIR=/home/appuser/.cache/uv
+RUN uvx --from mcp-for-blender mcp-for-blender --help >/dev/null 2>&1 || true
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
   CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=2).status == 200 else 1)"

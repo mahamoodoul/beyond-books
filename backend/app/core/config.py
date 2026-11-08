@@ -88,6 +88,13 @@ class Settings(BaseSettings):
     blender_model: str = ""  # empty = use EDU3D_ANTHROPIC_MODEL
     blender_max_turns: int = 40  # Claude ↔ Blender tool round trips per model
     blender_timeout_s: float = 540  # whole build, must stay below the job poll window (~10 min)
+    # Blender in another container/machine: a folder both can see, for the exported GLB
+    # (empty = a temp dir on this machine, i.e. Blender runs locally). Mount the same volume at
+    # the same path in the api/worker and the blender containers.
+    blender_export_dir: str = ""
+    # The blender provider is dev-only by default (its socket runs arbitrary Python). Set true
+    # when Blender runs in a private container next to the API (see docker-compose.aws.yml).
+    blender_allow_in_production: bool = False
     # --- 3D model tuning (both "llm" and "blender" generators) ---
     # The tuning prompt (quality bar: realism, PBR materials, selectable parts, animations,
     # validation) is prepended to the generator's built-in prompt. Default text:

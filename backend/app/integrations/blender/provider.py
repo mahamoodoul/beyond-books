@@ -119,6 +119,7 @@ class BlenderMCPProvider:
         max_turns: int,
         timeout_s: float,
         system_prompt: str,
+        export_dir: str = "",
     ) -> None:
         self.api_key = api_key
         self.model = model
@@ -129,6 +130,7 @@ class BlenderMCPProvider:
         self.max_turns = max_turns
         self.timeout_s = timeout_s
         self.system_prompt = system_prompt
+        self.export_dir = export_dir  # shared with a remote Blender; empty = local temp dir
 
     # ------------------------------------------------------------------ health
     def health(self) -> tuple[bool, str]:
@@ -231,7 +233,9 @@ class BlenderMCPProvider:
             setup = await self._code(mcp, _SETUP.format(scene=scene, mark=MARK))
             try:
                 final, usage = await self._agent(mcp, tools, prompt)
-                with tempfile.TemporaryDirectory(prefix="edu3d_blender_") as tmp:
+                with tempfile.TemporaryDirectory(
+                    prefix="edu3d_blender_", dir=self.export_dir or None
+                ) as tmp:
                     path = str(Path(tmp) / "model.glb")
                     out = await self._code(mcp, _EXPORT.format(scene=scene, path=path, mark=MARK))
                     data = Path(path).read_bytes()

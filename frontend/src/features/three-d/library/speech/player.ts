@@ -21,9 +21,35 @@ export interface SpeechState {
 
 const IDLE: SpeechState = { owner: null, index: 0, total: 0, loading: false, speaking: false, unavailable: false };
 
+/** A blob URL of 50 ms of silence (WAV), built here so no binary needs to ship. */
+function silentClip(): string {
+  const samples = 400;
+  const bytes = new ArrayBuffer(44 + samples);
+  const view = new DataView(bytes);
+  const tag = (at: number, text: string) => [...text].forEach((c, i) => view.setUint8(at + i, c.charCodeAt(0)));
+  tag(0, "RIFF");
+  view.setUint32(4, 36 + samples, true);
+  tag(8, "WAVEfmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // mono
+  view.setUint32(24, 8000, true); // sample rate
+  view.setUint32(28, 8000, true); // byte rate
+  view.setUint16(32, 1, true); // block align
+  view.setUint16(34, 8, true); // bits per sample
+  tag(36, "data");
+  view.setUint32(40, samples, true);
+  new Uint8Array(bytes, 44).fill(128); // 8-bit silence
+  return URL.createObjectURL(new Blob([bytes], { type: "audio/wav" }));
+}
+
+/** How long a passing voice-service error (rate limit, vendor hiccup) disables the buttons. */
+const RETRY_AFTER_MS = 15_000;
+
 class SpeechPlayer {
   state: SpeechState = IDLE;
   private audio: HTMLAudioElement | null = null;
+  private unlocked = false;
   private urls = new Map<string, Promise<string>>();
   private token = 0;
   private listeners = new Set<() => void>();
@@ -54,6 +80,26 @@ class SpeechPlayer {
     void this.load(text).catch(() => undefined);
   }
 
+  /**
+   * Safari only lets an audio element play if play() ran during the click, and the speech arrives
+   * after a network wait. Playing silence on the shared element at click time unlocks it for good.
+   */
+  private unlock(): void {
+    if (this.unlocked) return;
+    try {
+      const a = (this.audio ??= new Audio());
+      a.src = silentClip();
+      void a.play().then(
+        () => {
+          this.unlocked = true;
+        },
+        () => undefined, // replaced by the real audio, or called outside a click: tried again next time
+      );
+    } catch {
+      // no audio support: play() below reports the failure
+    }
+  }
+
   stop(): void {
     this.token += 1;
     const a = this.audio;
@@ -78,6 +124,7 @@ class SpeechPlayer {
    */
   play(owner: string, texts: string[], cb: { onStep?: (i: number) => void; onEnd?: (ok: boolean) => void } = {}): void {
     this.stop();
+    this.unlock();
     const my = this.token;
     const list = texts.map((t) => t.trim()).filter(Boolean);
     if (list.length === 0) {
@@ -109,8 +156,13 @@ class SpeechPlayer {
         }
       } catch (e) {
         if (my !== this.token) return;
-        const status = (e as { status?: number }).status;
-        if (status === 503 || status === 429 || status === 502) this.set({ unavailable: true });
+        const { status, name } = e as { status?: number; name?: string };
+        // NotSupportedError: the browser refused the audio itself (e.g. a security policy), so
+        // retrying won't help. Say so instead of leaving "Voice on" silent.
+        if (status === 503 || status === 429 || status === 502 || name === "NotSupportedError") {
+          this.set({ unavailable: true });
+        }
+        if (status === 429 || status === 502) setTimeout(() => this.set({ unavailable: false }), RETRY_AFTER_MS);
         ok = false;
       }
       if (my !== this.token) return;
