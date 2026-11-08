@@ -1,0 +1,567 @@
+{
+  "asset_id": "human_anatomy_systems_v1",
+  "version": 1,
+  "name": "Human Anatomy (body systems)",
+  "description": "Full adult female body, 1.75 m: skeleton, nervous, cardiovascular, respiratory, digestive, urinary, endocrine and reproductive systems inside see-through skin. Explode lays the organs out around the body; Play runs the heartbeat (72 bpm) and breathing (15 breaths a minute).",
+  "subject": "biology",
+  "category": "anatomy",
+  "units": "metres (figure about 1.75 m tall)",
+  "components": [
+    {
+      "mesh_name": "skin_surface",
+      "label": "Skin",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.22
+      ],
+      "system": "Body"
+    },
+    {
+      "mesh_name": "skull",
+      "label": "Skull",
+      "explode_offset": [
+        0.0,
+        0.1,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "mandible",
+      "label": "Mandible (lower jaw)",
+      "explode_offset": [
+        0.0,
+        0.045,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "teeth",
+      "label": "Teeth",
+      "explode_offset": [
+        0.0,
+        0.07,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "vertebral_column",
+      "label": "Vertebral column (spine)",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "intervertebral_discs",
+      "label": "Intervertebral discs",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "ribs",
+      "label": "Ribs",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "costal_cartilage",
+      "label": "Costal cartilage",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "sternum",
+      "label": "Sternum (breastbone)",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "shoulder_girdle_right",
+      "label": "Right shoulder girdle",
+      "explode_offset": [
+        -0.035,
+        0.03,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "shoulder_girdle_left",
+      "label": "Left shoulder girdle",
+      "explode_offset": [
+        0.035,
+        0.03,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "pelvis",
+      "label": "Pelvis",
+      "explode_offset": [
+        0.0,
+        -0.035,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "arm_bones_right",
+      "label": "Right arm bones",
+      "explode_offset": [
+        -0.075,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "arm_bones_left",
+      "label": "Left arm bones",
+      "explode_offset": [
+        0.075,
+        0.0,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "leg_bones_right",
+      "label": "Right leg bones",
+      "explode_offset": [
+        -0.02,
+        -0.085,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "leg_bones_left",
+      "label": "Left leg bones",
+      "explode_offset": [
+        0.02,
+        -0.085,
+        -0.2
+      ],
+      "system": "Skeleton"
+    },
+    {
+      "mesh_name": "cerebrum",
+      "label": "Cerebrum",
+      "explode_offset": [
+        0.0,
+        0.3553,
+        0.1
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "cerebral_white_matter",
+      "label": "Cerebral white matter",
+      "explode_offset": [
+        -0.21,
+        0.3558,
+        0.1
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "thalamus",
+      "label": "Thalamus",
+      "explode_offset": [
+        -0.36,
+        0.377,
+        0.1
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "brainstem",
+      "label": "Brainstem",
+      "explode_offset": [
+        0.33,
+        0.4133,
+        0.1
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "cerebellum",
+      "label": "Cerebellum",
+      "explode_offset": [
+        0.1999,
+        0.4107,
+        0.1
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "spinal_cord",
+      "label": "Spinal cord",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "eyes",
+      "label": "Eyes",
+      "explode_offset": [
+        -0.5,
+        0.38,
+        0.1
+      ],
+      "system": "Nervous"
+    },
+    {
+      "mesh_name": "heart",
+      "label": "Heart",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "system": "Cardiovascular"
+    },
+    {
+      "mesh_name": "arteries",
+      "label": "Arteries",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "system": "Cardiovascular"
+    },
+    {
+      "mesh_name": "veins",
+      "label": "Veins",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "system": "Cardiovascular"
+    },
+    {
+      "mesh_name": "portal_venous_system",
+      "label": "Hepatic portal system",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "system": "Cardiovascular"
+    },
+    {
+      "mesh_name": "pulmonary_arteries",
+      "label": "Pulmonary arteries",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "system": "Cardiovascular"
+    },
+    {
+      "mesh_name": "pulmonary_veins",
+      "label": "Pulmonary veins",
+      "explode_offset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "system": "Cardiovascular"
+    },
+    {
+      "mesh_name": "lung_right",
+      "label": "Right lung",
+      "explode_offset": [
+        -0.6506,
+        -0.0329,
+        0.1
+      ],
+      "system": "Respiratory"
+    },
+    {
+      "mesh_name": "lung_left",
+      "label": "Left lung",
+      "explode_offset": [
+        0.6487,
+        -0.0317,
+        0.1
+      ],
+      "system": "Respiratory"
+    },
+    {
+      "mesh_name": "trachea_and_bronchi",
+      "label": "Trachea and bronchi",
+      "explode_offset": [
+        -0.4734,
+        -0.0455,
+        0.1
+      ],
+      "system": "Respiratory"
+    },
+    {
+      "mesh_name": "larynx",
+      "label": "Larynx (voice box)",
+      "explode_offset": [
+        -0.42,
+        0.1083,
+        0.1
+      ],
+      "system": "Respiratory"
+    },
+    {
+      "mesh_name": "diaphragm",
+      "label": "Diaphragm",
+      "explode_offset": [
+        -0.5199,
+        -0.1751,
+        0.1
+      ],
+      "system": "Respiratory"
+    },
+    {
+      "mesh_name": "tongue",
+      "label": "Tongue",
+      "explode_offset": [
+        0.42,
+        0.0773,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "esophagus",
+      "label": "Esophagus",
+      "explode_offset": [
+        0.461,
+        -0.0515,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "stomach",
+      "label": "Stomach",
+      "explode_offset": [
+        0.5598,
+        -0.1519,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "liver",
+      "label": "Liver",
+      "explode_offset": [
+        -0.7565,
+        -0.1765,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "gallbladder",
+      "label": "Gallbladder",
+      "explode_offset": [
+        -0.9342,
+        -0.1118,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "pancreas",
+      "label": "Pancreas",
+      "explode_offset": [
+        0.958,
+        -0.1283,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "spleen",
+      "label": "Spleen",
+      "explode_offset": [
+        0.7067,
+        -0.1182,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "small_intestine",
+      "label": "Small intestine",
+      "explode_offset": [
+        0.4585,
+        -0.6992,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "large_intestine",
+      "label": "Large intestine",
+      "explode_offset": [
+        -0.4605,
+        -0.6587,
+        0.1
+      ],
+      "system": "Digestive"
+    },
+    {
+      "mesh_name": "kidney_right",
+      "label": "Right kidney",
+      "explode_offset": [
+        -0.6066,
+        -0.44,
+        0.1
+      ],
+      "system": "Urinary"
+    },
+    {
+      "mesh_name": "kidney_left",
+      "label": "Left kidney",
+      "explode_offset": [
+        0.607,
+        -0.458,
+        0.1
+      ],
+      "system": "Urinary"
+    },
+    {
+      "mesh_name": "renal_pelvis_and_ureters",
+      "label": "Renal pelvis and ureters",
+      "explode_offset": [
+        -0.78,
+        -0.6636,
+        0.1
+      ],
+      "system": "Urinary"
+    },
+    {
+      "mesh_name": "bladder",
+      "label": "Bladder",
+      "explode_offset": [
+        -0.95,
+        -0.5095,
+        0.1
+      ],
+      "system": "Urinary"
+    },
+    {
+      "mesh_name": "adrenal_right",
+      "label": "Right adrenal gland",
+      "explode_offset": [
+        -0.6242,
+        -0.4104,
+        0.1
+      ],
+      "system": "Endocrine"
+    },
+    {
+      "mesh_name": "adrenal_left",
+      "label": "Left adrenal gland",
+      "explode_offset": [
+        0.624,
+        -0.4267,
+        0.1
+      ],
+      "system": "Endocrine"
+    },
+    {
+      "mesh_name": "thyroid",
+      "label": "Thyroid gland",
+      "explode_offset": [
+        -0.6,
+        0.152,
+        0.1
+      ],
+      "system": "Endocrine"
+    },
+    {
+      "mesh_name": "pituitary",
+      "label": "Pituitary gland",
+      "explode_offset": [
+        0.45,
+        0.4064,
+        0.1
+      ],
+      "system": "Endocrine"
+    },
+    {
+      "mesh_name": "uterus_and_tubes",
+      "label": "Uterus and fallopian tubes",
+      "explode_offset": [
+        0.82,
+        -0.528,
+        0.1
+      ],
+      "system": "Reproductive"
+    },
+    {
+      "mesh_name": "ovaries",
+      "label": "Ovaries",
+      "explode_offset": [
+        0.82,
+        -0.4482,
+        0.1
+      ],
+      "system": "Reproductive"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [
+    "highlight_component",
+    "set_visibility",
+    "set_opacity",
+    "camera_focus"
+  ],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "Blender 5.2 scene human_anatomy.blend, exported by scripts/export_human_anatomy.py",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in Blender for Beyond Books",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Procedurally modelled teaching figure, reduced from 4.66M to 1.22M triangles for the web. Not medically reviewed; needs review before student use."
+}

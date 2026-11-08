@@ -1,0 +1,180 @@
+{
+  "asset_id": "rutherford_gold_foil_v1",
+  "version": 1,
+  "name": "Rutherford Gold Foil Experiment",
+  "description": "The Geiger-Marsden apparatus and what it showed: most alpha particles pass through the foil and a few scatter strongly. Play runs the 12 s Blender timeline.",
+  "subject": "chemistry",
+  "format": "glb",
+  "object_key": "demo-assets/glb/rutherford_gold_foil_v1.glb",
+  "preview_key": "demo-assets/previews/rutherford_gold_foil_v1.png",
+  "size_bytes": 10485188,
+  "content_hash": "sha256:8c44191429373a3f6c14dc42fc0bb4e8f786528457f2209fdd25edcebc9fb17f",
+  "triangle_count": 287904,
+  "units": "metres",
+  "bounds": {
+    "min": [
+      -0.673,
+      -0.045,
+      -0.325
+    ],
+    "max": [
+      0.962,
+      0.908,
+      1.066
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "Alpha_beam",
+      "label": "Alpha beam"
+    },
+    {
+      "mesh_name": "Central_column_and_tube",
+      "label": "Central column and tube"
+    },
+    {
+      "mesh_name": "Diaphragm",
+      "label": "Diaphragm"
+    },
+    {
+      "mesh_name": "Alpha_theta_30",
+      "label": "Alpha (theta 30)"
+    },
+    {
+      "mesh_name": "Alpha_theta_60",
+      "label": "Alpha (theta 60)"
+    },
+    {
+      "mesh_name": "Alpha_theta_90",
+      "label": "Alpha (theta 90)"
+    },
+    {
+      "mesh_name": "Alpha_theta_120",
+      "label": "Alpha (theta 120)"
+    },
+    {
+      "mesh_name": "Alpha_theta_180",
+      "label": "Alpha (theta 180)"
+    },
+    {
+      "mesh_name": "Gold-197_nucleus",
+      "label": "Gold-197 nucleus"
+    },
+    {
+      "mesh_name": "Hyperbolic_tracks",
+      "label": "Hyperbolic tracks"
+    },
+    {
+      "mesh_name": "Foil_frame",
+      "label": "Foil frame"
+    },
+    {
+      "mesh_name": "Geiger-Marsden_data",
+      "label": "Geiger-Marsden data"
+    },
+    {
+      "mesh_name": "Gold_foil",
+      "label": "Gold foil"
+    },
+    {
+      "mesh_name": "Graduated_circle",
+      "label": "Graduated circle"
+    },
+    {
+      "mesh_name": "Microscope_now",
+      "label": "Microscope now"
+    },
+    {
+      "mesh_name": "Ride_microscope",
+      "label": "Ride microscope"
+    },
+    {
+      "mesh_name": "Chamber_wall_drawn_clear",
+      "label": "Chamber wall (drawn clear)"
+    },
+    {
+      "mesh_name": "Lid",
+      "label": "Lid"
+    },
+    {
+      "mesh_name": "Eyepiece_lens",
+      "label": "Eyepiece lens"
+    },
+    {
+      "mesh_name": "Microscope",
+      "label": "Microscope"
+    },
+    {
+      "mesh_name": "ZnS_screen",
+      "label": "ZnS screen"
+    },
+    {
+      "mesh_name": "Rotating_plate_with_pointer",
+      "label": "Rotating plate with pointer"
+    },
+    {
+      "mesh_name": "Sealed_port",
+      "label": "Sealed port"
+    },
+    {
+      "mesh_name": "Rutherford_curve",
+      "label": "Rutherford curve"
+    },
+    {
+      "mesh_name": "Scattered_paths",
+      "label": "Scattered paths"
+    },
+    {
+      "mesh_name": "Lead_block",
+      "label": "Lead block"
+    },
+    {
+      "mesh_name": "Radon_glass_tube",
+      "label": "Radon glass tube"
+    },
+    {
+      "mesh_name": "Radon_source",
+      "label": "Radon source"
+    },
+    {
+      "mesh_name": "Support_bar",
+      "label": "Support bar"
+    },
+    {
+      "mesh_name": "Stand",
+      "label": "Stand"
+    },
+    {
+      "mesh_name": "Wooden_base",
+      "label": "Wooden base"
+    },
+    {
+      "mesh_name": "Rubber_hose_to_pump",
+      "label": "Rubber hose to pump"
+    },
+    {
+      "mesh_name": "Vacuum_tap",
+      "label": "Vacuum tap"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "Blender scene, rutherford_gold_foil.glb",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in Blender for Beyond Books",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Teaching model; not reviewed by a subject expert."
+}

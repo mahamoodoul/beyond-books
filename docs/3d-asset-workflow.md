@@ -111,6 +111,18 @@ explode + motion; the script refuses anything else. `--annotations` keeps text a
 visible but out of the parts list, and `--view` is the direction from the model towards the Blender
 camera in glTF axes (Blender x, y, z is glTF x, z, -y).
 
+To put a GLB from your computer straight into the code, with no upload or database row:
+
+```bash
+python scripts/add_demo_model.py ~/Desktop/Model/model.glb --asset-id model_v1 \
+  --scene-id scene_model_01 --title "Model" --description "..." --subject biology
+```
+
+It appears under **Demo scenes** in the 3D Studio (`/studio/scene_model_01`). The human anatomy
+scene has a rig of drivers and shape keys, so it has its own exporter,
+`scripts/export_human_anatomy.py`: it reduces the 4.66M triangle source to fit the budget, carries
+the shape keys across, and writes `explode` and `physiology` clips from the rig.
+
 ### 5. Validate
 
 ```bash
@@ -166,6 +178,9 @@ Built by `scripts/build_demo_assets.py`, checked by `scripts/check_demo_assets.s
 | `human_brain_v1` | Frontal, parietal, temporal and occipital lobes (gyri/sulci), cerebellum (folia), brainstem. Modelled in Blender (`source/human_anatomy_v1.blend`, `build_brain.py`) | 447.0k | `scene_brain_01` + `brain_tour_01` |
 | `human_lungs_v1` | 5 lobes (right 3, left 2 with cardiac notch), trachea with cartilage rings, bronchial tree, diaphragm (`build_lungs.py`) | 401.3k | `scene_lungs_01` + `lungs_tour_01` |
 | `human_heart_v2` | Same part names as v1 plus coronary arteries and cardiac veins; arch branches, epicardial fat (`build_heart.py`) | 374.3k | `scene_heart_03` + `heart_tour_01` |
+| `human_anatomy_systems_v1` | Full body, 53 parts across nine systems; own `explode` and `physiology` (heartbeat, breathing) clips. Source: `human_anatomy.blend`, kept outside the repo (98 MB) | 1.22M | `scene_human_anatomy_01` |
+| `dna_double_helix_v1`, `i4_dohc_engine_exploded_v1` | Own `explode` (and `run` for the engine) clips, from `split_glb_clips.py` | 358k, 546k | `scene_dna_double_helix_01`, `scene_i4_engine_01` |
+| `atp_synthase_v1`, `cell_membrane_transport_v1`, `rutherford_gold_foil_v1`, `neutralization_heat_v1` | Blender's whole timeline as one looping clip (Play), from `add_demo_model.py` | 551k, 695k, 288k, 260k | `scene_atp_synthase_01`, `scene_cell_membrane_01`, `scene_rutherford_gold_foil_01`, `scene_neutralization_heat_01` |
 | `human_body_v1` | See-through figure (metres, 1.75 m) with reduced-detail copies of the brain, lungs and heart as `brain`, `lungs`, `heart` (`build_body.py`) | 441.8k | `scene_body_01` + `body_tour_01` |
 
 The four anatomy assets share one .blend: each model is a collection (`Brain`, `Lungs`, `Heart`, `Body`) rebuilt by its `build_*.py` text block, and `export_web.py` → `export_all()` writes all four GLBs. Rebuild a standalone organ before the body, since the body copies them.

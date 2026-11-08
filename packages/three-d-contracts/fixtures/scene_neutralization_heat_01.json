@@ -1,0 +1,497 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_neutralization_heat_01",
+ "title": "Neutralization: The Same Heat",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "neutralization_heat_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 60
+ },
+ "components": [
+  {
+   "component_id": "bench_cabinet",
+   "mesh_name": "Bench_Cabinet",
+   "label": "Bench Cabinet",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bench_top",
+   "mesh_name": "Bench_Top",
+   "label": "Bench Top",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "calorimeter_cup_1",
+   "mesh_name": "Calorimeter_Cup_1",
+   "label": "Calorimeter Cup 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "calorimeter_cup_2",
+   "mesh_name": "Calorimeter_Cup_2",
+   "label": "Calorimeter Cup 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "calorimeter_cup_3",
+   "mesh_name": "Calorimeter_Cup_3",
+   "label": "Calorimeter Cup 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "calorimeter_lid_1",
+   "mesh_name": "Calorimeter_Lid_1",
+   "label": "Calorimeter Lid 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "calorimeter_lid_2",
+   "mesh_name": "Calorimeter_Lid_2",
+   "label": "Calorimeter Lid 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "calorimeter_lid_3",
+   "mesh_name": "Calorimeter_Lid_3",
+   "label": "Calorimeter Lid 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_arrow_l_1",
+   "mesh_name": "Heat_Arrow_L_1",
+   "label": "Heat Arrow L 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_arrow_l_2",
+   "mesh_name": "Heat_Arrow_L_2",
+   "label": "Heat Arrow L 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_arrow_l_3",
+   "mesh_name": "Heat_Arrow_L_3",
+   "label": "Heat Arrow L 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_arrow_r_1",
+   "mesh_name": "Heat_Arrow_R_1",
+   "label": "Heat Arrow R 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_arrow_r_2",
+   "mesh_name": "Heat_Arrow_R_2",
+   "label": "Heat Arrow R 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_arrow_r_3",
+   "mesh_name": "Heat_Arrow_R_3",
+   "label": "Heat Arrow R 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_0_1",
+   "mesh_name": "Heat_Flash_0_1",
+   "label": "Heat Flash 0 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_0_2",
+   "mesh_name": "Heat_Flash_0_2",
+   "label": "Heat Flash 0 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_0_3",
+   "mesh_name": "Heat_Flash_0_3",
+   "label": "Heat Flash 0 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_1_1",
+   "mesh_name": "Heat_Flash_1_1",
+   "label": "Heat Flash 1 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_1_2",
+   "mesh_name": "Heat_Flash_1_2",
+   "label": "Heat Flash 1 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_1_3",
+   "mesh_name": "Heat_Flash_1_3",
+   "label": "Heat Flash 1 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_2_1",
+   "mesh_name": "Heat_Flash_2_1",
+   "label": "Heat Flash 2 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_2_2",
+   "mesh_name": "Heat_Flash_2_2",
+   "label": "Heat Flash 2 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "heat_flash_2_3",
+   "mesh_name": "Heat_Flash_2_3",
+   "label": "Heat Flash 2 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "particle_view_rim_1",
+   "mesh_name": "Particle_View_Rim_1",
+   "label": "Particle View Rim 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "particle_view_rim_2",
+   "mesh_name": "Particle_View_Rim_2",
+   "label": "Particle View Rim 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "particle_view_rim_3",
+   "mesh_name": "Particle_View_Rim_3",
+   "label": "Particle View Rim 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "particle_view_1",
+   "mesh_name": "Particle_View_1",
+   "label": "Particle View 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "particle_view_2",
+   "mesh_name": "Particle_View_2",
+   "label": "Particle View 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "particle_view_3",
+   "mesh_name": "Particle_View_3",
+   "label": "Particle View 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "solution_1",
+   "mesh_name": "Solution_1",
+   "label": "Solution 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "solution_2",
+   "mesh_name": "Solution_2",
+   "label": "Solution 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "solution_3",
+   "mesh_name": "Solution_3",
+   "label": "Solution 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "stirrer_1",
+   "mesh_name": "Stirrer_1",
+   "label": "Stirrer 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "stirrer_2",
+   "mesh_name": "Stirrer_2",
+   "label": "Stirrer 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "stirrer_3",
+   "mesh_name": "Stirrer_3",
+   "label": "Stirrer 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_bulb_1",
+   "mesh_name": "Thermometer_Bulb_1",
+   "label": "Thermometer Bulb 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_bulb_2",
+   "mesh_name": "Thermometer_Bulb_2",
+   "label": "Thermometer Bulb 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_bulb_3",
+   "mesh_name": "Thermometer_Bulb_3",
+   "label": "Thermometer Bulb 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_column_1",
+   "mesh_name": "Thermometer_Column_1",
+   "label": "Thermometer Column 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_column_2",
+   "mesh_name": "Thermometer_Column_2",
+   "label": "Thermometer Column 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_column_3",
+   "mesh_name": "Thermometer_Column_3",
+   "label": "Thermometer Column 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_scale_1",
+   "mesh_name": "Thermometer_Scale_1",
+   "label": "Thermometer Scale 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_scale_2",
+   "mesh_name": "Thermometer_Scale_2",
+   "label": "Thermometer Scale 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_scale_3",
+   "mesh_name": "Thermometer_Scale_3",
+   "label": "Thermometer Scale 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_tube_1",
+   "mesh_name": "Thermometer_Tube_1",
+   "label": "Thermometer Tube 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_tube_2",
+   "mesh_name": "Thermometer_Tube_2",
+   "label": "Thermometer Tube 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermometer_tube_3",
+   "mesh_name": "Thermometer_Tube_3",
+   "label": "Thermometer Tube 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {}
+}

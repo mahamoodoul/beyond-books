@@ -1,0 +1,720 @@
+{
+  "asset_id": "dna_double_helix_v1",
+  "version": 1,
+  "name": "DNA Double Helix",
+  "description": "Antiparallel DNA double helix with sugars, phosphates and paired bases. Explode separates the two strands and straightens them, as in the Blender scene.",
+  "subject": "biology",
+  "format": "glb",
+  "object_key": "demo-assets/glb/dna_double_helix_v1.glb",
+  "preview_key": "demo-assets/previews/dna_double_helix_v1.png",
+  "size_bytes": 14254172,
+  "content_hash": "sha256:497779bee09dd863c58d93e798425b1fbbf6078b7dd73746a0861ad08cac8d2c",
+  "triangle_count": 358019,
+  "units": "metres",
+  "bounds": {
+    "min": [
+      -1.029,
+      -0.06,
+      -0.151
+    ],
+    "max": [
+      0.814,
+      1.04,
+      0.181
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "Base_01a_C",
+      "label": "Base 01a C"
+    },
+    {
+      "mesh_name": "Base_01b_G",
+      "label": "Base 01b G"
+    },
+    {
+      "mesh_name": "Base_02a_G",
+      "label": "Base 02a G"
+    },
+    {
+      "mesh_name": "Base_02b_C",
+      "label": "Base 02b C"
+    },
+    {
+      "mesh_name": "Base_03a_A",
+      "label": "Base 03a A"
+    },
+    {
+      "mesh_name": "Base_03b_T",
+      "label": "Base 03b T"
+    },
+    {
+      "mesh_name": "Base_04a_T",
+      "label": "Base 04a T"
+    },
+    {
+      "mesh_name": "Base_04b_A",
+      "label": "Base 04b A"
+    },
+    {
+      "mesh_name": "Base_05a_G",
+      "label": "Base 05a G"
+    },
+    {
+      "mesh_name": "Base_05b_C",
+      "label": "Base 05b C"
+    },
+    {
+      "mesh_name": "Base_06a_C",
+      "label": "Base 06a C"
+    },
+    {
+      "mesh_name": "Base_06b_G",
+      "label": "Base 06b G"
+    },
+    {
+      "mesh_name": "Base_07a_A",
+      "label": "Base 07a A"
+    },
+    {
+      "mesh_name": "Base_07b_T",
+      "label": "Base 07b T"
+    },
+    {
+      "mesh_name": "Base_08a_T",
+      "label": "Base 08a T"
+    },
+    {
+      "mesh_name": "Base_08b_A",
+      "label": "Base 08b A"
+    },
+    {
+      "mesh_name": "Base_09a_T",
+      "label": "Base 09a T"
+    },
+    {
+      "mesh_name": "Base_09b_A",
+      "label": "Base 09b A"
+    },
+    {
+      "mesh_name": "Base_10a_C",
+      "label": "Base 10a C"
+    },
+    {
+      "mesh_name": "Base_10b_G",
+      "label": "Base 10b G"
+    },
+    {
+      "mesh_name": "Base_11a_G",
+      "label": "Base 11a G"
+    },
+    {
+      "mesh_name": "Base_11b_C",
+      "label": "Base 11b C"
+    },
+    {
+      "mesh_name": "Base_12a_A",
+      "label": "Base 12a A"
+    },
+    {
+      "mesh_name": "Base_12b_T",
+      "label": "Base 12b T"
+    },
+    {
+      "mesh_name": "Base_13a_G",
+      "label": "Base 13a G"
+    },
+    {
+      "mesh_name": "Base_13b_C",
+      "label": "Base 13b C"
+    },
+    {
+      "mesh_name": "Base_14a_C",
+      "label": "Base 14a C"
+    },
+    {
+      "mesh_name": "Base_14b_G",
+      "label": "Base 14b G"
+    },
+    {
+      "mesh_name": "Base_15a_T",
+      "label": "Base 15a T"
+    },
+    {
+      "mesh_name": "Base_15b_A",
+      "label": "Base 15b A"
+    },
+    {
+      "mesh_name": "Base_16a_A",
+      "label": "Base 16a A"
+    },
+    {
+      "mesh_name": "Base_16b_T",
+      "label": "Base 16b T"
+    },
+    {
+      "mesh_name": "Base_17a_A",
+      "label": "Base 17a A"
+    },
+    {
+      "mesh_name": "Base_17b_T",
+      "label": "Base 17b T"
+    },
+    {
+      "mesh_name": "Base_18a_C",
+      "label": "Base 18a C"
+    },
+    {
+      "mesh_name": "Base_18b_G",
+      "label": "Base 18b G"
+    },
+    {
+      "mesh_name": "Base_19a_G",
+      "label": "Base 19a G"
+    },
+    {
+      "mesh_name": "Base_19b_C",
+      "label": "Base 19b C"
+    },
+    {
+      "mesh_name": "Base_20a_T",
+      "label": "Base 20a T"
+    },
+    {
+      "mesh_name": "Base_20b_A",
+      "label": "Base 20b A"
+    },
+    {
+      "mesh_name": "Base_21a_G",
+      "label": "Base 21a G"
+    },
+    {
+      "mesh_name": "Base_21b_C",
+      "label": "Base 21b C"
+    },
+    {
+      "mesh_name": "Base_22a_C",
+      "label": "Base 22a C"
+    },
+    {
+      "mesh_name": "Base_22b_G",
+      "label": "Base 22b G"
+    },
+    {
+      "mesh_name": "Base_23a_A",
+      "label": "Base 23a A"
+    },
+    {
+      "mesh_name": "Base_23b_T",
+      "label": "Base 23b T"
+    },
+    {
+      "mesh_name": "Base_24a_T",
+      "label": "Base 24a T"
+    },
+    {
+      "mesh_name": "Base_24b_A",
+      "label": "Base 24b A"
+    },
+    {
+      "mesh_name": "Deoxyribose_01a",
+      "label": "Deoxyribose 01a"
+    },
+    {
+      "mesh_name": "Deoxyribose_01b",
+      "label": "Deoxyribose 01b"
+    },
+    {
+      "mesh_name": "Deoxyribose_02a",
+      "label": "Deoxyribose 02a"
+    },
+    {
+      "mesh_name": "Deoxyribose_02b",
+      "label": "Deoxyribose 02b"
+    },
+    {
+      "mesh_name": "Deoxyribose_03a",
+      "label": "Deoxyribose 03a"
+    },
+    {
+      "mesh_name": "Deoxyribose_03b",
+      "label": "Deoxyribose 03b"
+    },
+    {
+      "mesh_name": "Deoxyribose_04a",
+      "label": "Deoxyribose 04a"
+    },
+    {
+      "mesh_name": "Deoxyribose_04b",
+      "label": "Deoxyribose 04b"
+    },
+    {
+      "mesh_name": "Deoxyribose_05a",
+      "label": "Deoxyribose 05a"
+    },
+    {
+      "mesh_name": "Deoxyribose_05b",
+      "label": "Deoxyribose 05b"
+    },
+    {
+      "mesh_name": "Deoxyribose_06a",
+      "label": "Deoxyribose 06a"
+    },
+    {
+      "mesh_name": "Deoxyribose_06b",
+      "label": "Deoxyribose 06b"
+    },
+    {
+      "mesh_name": "Deoxyribose_07a",
+      "label": "Deoxyribose 07a"
+    },
+    {
+      "mesh_name": "Deoxyribose_07b",
+      "label": "Deoxyribose 07b"
+    },
+    {
+      "mesh_name": "Deoxyribose_08a",
+      "label": "Deoxyribose 08a"
+    },
+    {
+      "mesh_name": "Deoxyribose_08b",
+      "label": "Deoxyribose 08b"
+    },
+    {
+      "mesh_name": "Deoxyribose_09a",
+      "label": "Deoxyribose 09a"
+    },
+    {
+      "mesh_name": "Deoxyribose_09b",
+      "label": "Deoxyribose 09b"
+    },
+    {
+      "mesh_name": "Deoxyribose_10a",
+      "label": "Deoxyribose 10a"
+    },
+    {
+      "mesh_name": "Deoxyribose_10b",
+      "label": "Deoxyribose 10b"
+    },
+    {
+      "mesh_name": "Deoxyribose_11a",
+      "label": "Deoxyribose 11a"
+    },
+    {
+      "mesh_name": "Deoxyribose_11b",
+      "label": "Deoxyribose 11b"
+    },
+    {
+      "mesh_name": "Deoxyribose_12a",
+      "label": "Deoxyribose 12a"
+    },
+    {
+      "mesh_name": "Deoxyribose_12b",
+      "label": "Deoxyribose 12b"
+    },
+    {
+      "mesh_name": "Deoxyribose_13a",
+      "label": "Deoxyribose 13a"
+    },
+    {
+      "mesh_name": "Deoxyribose_13b",
+      "label": "Deoxyribose 13b"
+    },
+    {
+      "mesh_name": "Deoxyribose_14a",
+      "label": "Deoxyribose 14a"
+    },
+    {
+      "mesh_name": "Deoxyribose_14b",
+      "label": "Deoxyribose 14b"
+    },
+    {
+      "mesh_name": "Deoxyribose_15a",
+      "label": "Deoxyribose 15a"
+    },
+    {
+      "mesh_name": "Deoxyribose_15b",
+      "label": "Deoxyribose 15b"
+    },
+    {
+      "mesh_name": "Deoxyribose_16a",
+      "label": "Deoxyribose 16a"
+    },
+    {
+      "mesh_name": "Deoxyribose_16b",
+      "label": "Deoxyribose 16b"
+    },
+    {
+      "mesh_name": "Deoxyribose_17a",
+      "label": "Deoxyribose 17a"
+    },
+    {
+      "mesh_name": "Deoxyribose_17b",
+      "label": "Deoxyribose 17b"
+    },
+    {
+      "mesh_name": "Deoxyribose_18a",
+      "label": "Deoxyribose 18a"
+    },
+    {
+      "mesh_name": "Deoxyribose_18b",
+      "label": "Deoxyribose 18b"
+    },
+    {
+      "mesh_name": "Deoxyribose_19a",
+      "label": "Deoxyribose 19a"
+    },
+    {
+      "mesh_name": "Deoxyribose_19b",
+      "label": "Deoxyribose 19b"
+    },
+    {
+      "mesh_name": "Deoxyribose_20a",
+      "label": "Deoxyribose 20a"
+    },
+    {
+      "mesh_name": "Deoxyribose_20b",
+      "label": "Deoxyribose 20b"
+    },
+    {
+      "mesh_name": "Deoxyribose_21a",
+      "label": "Deoxyribose 21a"
+    },
+    {
+      "mesh_name": "Deoxyribose_21b",
+      "label": "Deoxyribose 21b"
+    },
+    {
+      "mesh_name": "Deoxyribose_22a",
+      "label": "Deoxyribose 22a"
+    },
+    {
+      "mesh_name": "Deoxyribose_22b",
+      "label": "Deoxyribose 22b"
+    },
+    {
+      "mesh_name": "Deoxyribose_23a",
+      "label": "Deoxyribose 23a"
+    },
+    {
+      "mesh_name": "Deoxyribose_23b",
+      "label": "Deoxyribose 23b"
+    },
+    {
+      "mesh_name": "Deoxyribose_24a",
+      "label": "Deoxyribose 24a"
+    },
+    {
+      "mesh_name": "Deoxyribose_24b",
+      "label": "Deoxyribose 24b"
+    },
+    {
+      "mesh_name": "H-bonds_01_G-C",
+      "label": "H-bonds 01 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_02_G-C",
+      "label": "H-bonds 02 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_03_A-T",
+      "label": "H-bonds 03 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_04_A-T",
+      "label": "H-bonds 04 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_05_G-C",
+      "label": "H-bonds 05 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_06_G-C",
+      "label": "H-bonds 06 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_07_A-T",
+      "label": "H-bonds 07 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_08_A-T",
+      "label": "H-bonds 08 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_09_A-T",
+      "label": "H-bonds 09 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_10_G-C",
+      "label": "H-bonds 10 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_11_G-C",
+      "label": "H-bonds 11 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_12_A-T",
+      "label": "H-bonds 12 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_13_G-C",
+      "label": "H-bonds 13 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_14_G-C",
+      "label": "H-bonds 14 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_15_A-T",
+      "label": "H-bonds 15 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_16_A-T",
+      "label": "H-bonds 16 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_17_A-T",
+      "label": "H-bonds 17 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_18_G-C",
+      "label": "H-bonds 18 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_19_G-C",
+      "label": "H-bonds 19 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_20_A-T",
+      "label": "H-bonds 20 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_21_G-C",
+      "label": "H-bonds 21 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_22_G-C",
+      "label": "H-bonds 22 G-C"
+    },
+    {
+      "mesh_name": "H-bonds_23_A-T",
+      "label": "H-bonds 23 A-T"
+    },
+    {
+      "mesh_name": "H-bonds_24_A-T",
+      "label": "H-bonds 24 A-T"
+    },
+    {
+      "mesh_name": "Phosphate_1_00",
+      "label": "Phosphate 1 00"
+    },
+    {
+      "mesh_name": "Phosphate_1_01",
+      "label": "Phosphate 1 01"
+    },
+    {
+      "mesh_name": "Phosphate_1_02",
+      "label": "Phosphate 1 02"
+    },
+    {
+      "mesh_name": "Phosphate_1_03",
+      "label": "Phosphate 1 03"
+    },
+    {
+      "mesh_name": "Phosphate_1_04",
+      "label": "Phosphate 1 04"
+    },
+    {
+      "mesh_name": "Phosphate_1_05",
+      "label": "Phosphate 1 05"
+    },
+    {
+      "mesh_name": "Phosphate_1_06",
+      "label": "Phosphate 1 06"
+    },
+    {
+      "mesh_name": "Phosphate_1_07",
+      "label": "Phosphate 1 07"
+    },
+    {
+      "mesh_name": "Phosphate_1_08",
+      "label": "Phosphate 1 08"
+    },
+    {
+      "mesh_name": "Phosphate_1_09",
+      "label": "Phosphate 1 09"
+    },
+    {
+      "mesh_name": "Phosphate_1_10",
+      "label": "Phosphate 1 10"
+    },
+    {
+      "mesh_name": "Phosphate_1_11",
+      "label": "Phosphate 1 11"
+    },
+    {
+      "mesh_name": "Phosphate_1_12",
+      "label": "Phosphate 1 12"
+    },
+    {
+      "mesh_name": "Phosphate_1_13",
+      "label": "Phosphate 1 13"
+    },
+    {
+      "mesh_name": "Phosphate_1_14",
+      "label": "Phosphate 1 14"
+    },
+    {
+      "mesh_name": "Phosphate_1_15",
+      "label": "Phosphate 1 15"
+    },
+    {
+      "mesh_name": "Phosphate_1_16",
+      "label": "Phosphate 1 16"
+    },
+    {
+      "mesh_name": "Phosphate_1_17",
+      "label": "Phosphate 1 17"
+    },
+    {
+      "mesh_name": "Phosphate_1_18",
+      "label": "Phosphate 1 18"
+    },
+    {
+      "mesh_name": "Phosphate_1_19",
+      "label": "Phosphate 1 19"
+    },
+    {
+      "mesh_name": "Phosphate_1_20",
+      "label": "Phosphate 1 20"
+    },
+    {
+      "mesh_name": "Phosphate_1_21",
+      "label": "Phosphate 1 21"
+    },
+    {
+      "mesh_name": "Phosphate_1_22",
+      "label": "Phosphate 1 22"
+    },
+    {
+      "mesh_name": "Phosphate_1_23",
+      "label": "Phosphate 1 23"
+    },
+    {
+      "mesh_name": "Phosphate_2_02",
+      "label": "Phosphate 2 02"
+    },
+    {
+      "mesh_name": "Phosphate_2_03",
+      "label": "Phosphate 2 03"
+    },
+    {
+      "mesh_name": "Phosphate_2_04",
+      "label": "Phosphate 2 04"
+    },
+    {
+      "mesh_name": "Phosphate_2_05",
+      "label": "Phosphate 2 05"
+    },
+    {
+      "mesh_name": "Phosphate_2_06",
+      "label": "Phosphate 2 06"
+    },
+    {
+      "mesh_name": "Phosphate_2_07",
+      "label": "Phosphate 2 07"
+    },
+    {
+      "mesh_name": "Phosphate_2_08",
+      "label": "Phosphate 2 08"
+    },
+    {
+      "mesh_name": "Phosphate_2_09",
+      "label": "Phosphate 2 09"
+    },
+    {
+      "mesh_name": "Phosphate_2_10",
+      "label": "Phosphate 2 10"
+    },
+    {
+      "mesh_name": "Phosphate_2_11",
+      "label": "Phosphate 2 11"
+    },
+    {
+      "mesh_name": "Phosphate_2_12",
+      "label": "Phosphate 2 12"
+    },
+    {
+      "mesh_name": "Phosphate_2_13",
+      "label": "Phosphate 2 13"
+    },
+    {
+      "mesh_name": "Phosphate_2_14",
+      "label": "Phosphate 2 14"
+    },
+    {
+      "mesh_name": "Phosphate_2_15",
+      "label": "Phosphate 2 15"
+    },
+    {
+      "mesh_name": "Phosphate_2_16",
+      "label": "Phosphate 2 16"
+    },
+    {
+      "mesh_name": "Phosphate_2_17",
+      "label": "Phosphate 2 17"
+    },
+    {
+      "mesh_name": "Phosphate_2_18",
+      "label": "Phosphate 2 18"
+    },
+    {
+      "mesh_name": "Phosphate_2_19",
+      "label": "Phosphate 2 19"
+    },
+    {
+      "mesh_name": "Phosphate_2_20",
+      "label": "Phosphate 2 20"
+    },
+    {
+      "mesh_name": "Phosphate_2_21",
+      "label": "Phosphate 2 21"
+    },
+    {
+      "mesh_name": "Phosphate_2_22",
+      "label": "Phosphate 2 22"
+    },
+    {
+      "mesh_name": "Phosphate_2_23",
+      "label": "Phosphate 2 23"
+    },
+    {
+      "mesh_name": "Phosphate_2_24",
+      "label": "Phosphate 2 24"
+    },
+    {
+      "mesh_name": "Phosphate_2_25",
+      "label": "Phosphate 2 25"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "Blender scene, dna_double_helix_studio.glb",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in Blender for Beyond Books",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Teaching model; not reviewed by a subject expert."
+}

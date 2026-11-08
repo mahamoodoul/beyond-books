@@ -1,0 +1,357 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_rutherford_gold_foil_01",
+ "title": "Rutherford Gold Foil Experiment",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "rutherford_gold_foil_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 60
+ },
+ "components": [
+  {
+   "component_id": "alpha_beam",
+   "mesh_name": "Alpha_beam",
+   "label": "Alpha beam",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "central_column_and_tube",
+   "mesh_name": "Central_column_and_tube",
+   "label": "Central column and tube",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "diaphragm",
+   "mesh_name": "Diaphragm",
+   "label": "Diaphragm",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_theta_30",
+   "mesh_name": "Alpha_theta_30",
+   "label": "Alpha (theta 30)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_theta_60",
+   "mesh_name": "Alpha_theta_60",
+   "label": "Alpha (theta 60)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_theta_90",
+   "mesh_name": "Alpha_theta_90",
+   "label": "Alpha (theta 90)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_theta_120",
+   "mesh_name": "Alpha_theta_120",
+   "label": "Alpha (theta 120)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_theta_180",
+   "mesh_name": "Alpha_theta_180",
+   "label": "Alpha (theta 180)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "gold_197_nucleus",
+   "mesh_name": "Gold-197_nucleus",
+   "label": "Gold-197 nucleus",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "hyperbolic_tracks",
+   "mesh_name": "Hyperbolic_tracks",
+   "label": "Hyperbolic tracks",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "foil_frame",
+   "mesh_name": "Foil_frame",
+   "label": "Foil frame",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "geiger_marsden_data",
+   "mesh_name": "Geiger-Marsden_data",
+   "label": "Geiger-Marsden data",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "gold_foil",
+   "mesh_name": "Gold_foil",
+   "label": "Gold foil",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "graduated_circle",
+   "mesh_name": "Graduated_circle",
+   "label": "Graduated circle",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "microscope_now",
+   "mesh_name": "Microscope_now",
+   "label": "Microscope now",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "ride_microscope",
+   "mesh_name": "Ride_microscope",
+   "label": "Ride microscope",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "chamber_wall_drawn_clear",
+   "mesh_name": "Chamber_wall_drawn_clear",
+   "label": "Chamber wall (drawn clear)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "lid",
+   "mesh_name": "Lid",
+   "label": "Lid",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "eyepiece_lens",
+   "mesh_name": "Eyepiece_lens",
+   "label": "Eyepiece lens",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "microscope",
+   "mesh_name": "Microscope",
+   "label": "Microscope",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "zns_screen",
+   "mesh_name": "ZnS_screen",
+   "label": "ZnS screen",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rotating_plate_with_pointer",
+   "mesh_name": "Rotating_plate_with_pointer",
+   "label": "Rotating plate with pointer",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "sealed_port",
+   "mesh_name": "Sealed_port",
+   "label": "Sealed port",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rutherford_curve",
+   "mesh_name": "Rutherford_curve",
+   "label": "Rutherford curve",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "scattered_paths",
+   "mesh_name": "Scattered_paths",
+   "label": "Scattered paths",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "lead_block",
+   "mesh_name": "Lead_block",
+   "label": "Lead block",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "radon_glass_tube",
+   "mesh_name": "Radon_glass_tube",
+   "label": "Radon glass tube",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "radon_source",
+   "mesh_name": "Radon_source",
+   "label": "Radon source",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "support_bar",
+   "mesh_name": "Support_bar",
+   "label": "Support bar",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "stand",
+   "mesh_name": "Stand",
+   "label": "Stand",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "wooden_base",
+   "mesh_name": "Wooden_base",
+   "label": "Wooden base",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rubber_hose_to_pump",
+   "mesh_name": "Rubber_hose_to_pump",
+   "label": "Rubber hose to pump",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "vacuum_tap",
+   "mesh_name": "Vacuum_tap",
+   "label": "Vacuum tap",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {}
+}

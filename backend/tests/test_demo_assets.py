@@ -37,6 +37,13 @@ CASES = {
         ["scene_water_molecule_01.json"],
         ["animation_water_shape_01.json"],
     ),
+    "human_anatomy_systems_v1": (["scene_human_anatomy_01.json"], []),
+    "dna_double_helix_v1": (["scene_dna_double_helix_01.json"], []),
+    "i4_dohc_engine_exploded_v1": (["scene_i4_engine_01.json"], []),
+    "atp_synthase_v1": (["scene_atp_synthase_01.json"], []),
+    "cell_membrane_transport_v1": (["scene_cell_membrane_01.json"], []),
+    "rutherford_gold_foil_v1": (["scene_rutherford_gold_foil_01.json"], []),
+    "neutralization_heat_v1": (["scene_neutralization_heat_01.json"], []),
 }
 
 
@@ -61,7 +68,8 @@ def test_demo_asset_matches_metadata_and_fixtures(asset_id: str) -> None:
 
     gltf = gltf_json(glb)
     assert all("uri" not in b for b in gltf["buffers"]), "buffers must be embedded"
-    nodes = {n["name"] for n in gltf["nodes"] if "mesh" in n}
+    # text and leader lines of a model with its own motion are unnamed: drawn, but not parts
+    nodes = {n["name"] for n in gltf["nodes"] if "mesh" in n and n.get("name")}
     assert {c["mesh_name"] for c in meta["components"]} <= nodes
 
     scene_files, anim_files = CASES[asset_id]
@@ -77,3 +85,32 @@ def test_demo_asset_matches_metadata_and_fixtures(asset_id: str) -> None:
             if (path_id := getattr(step, "path_id", None)) is not None:
                 # Paths may be defined on the scene (contract, ADR 0010) or the asset metadata.
                 assert path_id in owner.paths or path_id in meta["paths"]
+
+
+def test_human_anatomy_keeps_its_blender_motion() -> None:
+    gltf = gltf_json(ASSETS / "glb" / "human_anatomy_systems_v1.glb")
+    clips = {a["name"]: a for a in gltf["animations"]}
+    assert set(clips) == {"explode", "physiology"}
+    nodes = gltf["nodes"]
+
+    moved = {nodes[c["target"]["node"]]["name"] for c in clips["explode"]["channels"]}
+    assert {"lung_left", "stomach", "cerebrum"} <= moved
+    assert not {"heart", "arteries", "veins"} & moved  # the circulation stays in the body
+    assert {c["target"]["path"] for c in clips["explode"]["channels"]} == {"translation"}
+
+    # breathing and the heartbeat are morph weights, on exactly the parts that have targets
+    beating = {nodes[c["target"]["node"]]["name"] for c in clips["physiology"]["channels"]}
+    morphs = {
+        n["name"]
+        for n in nodes
+        if "mesh" in n and gltf["meshes"][n["mesh"]]["primitives"][0].get("targets")
+    }
+    assert beating == morphs
+    assert {"heart", "lung_left", "lung_right", "diaphragm"} <= beating
+    assert {c["target"]["path"] for c in clips["physiology"]["channels"]} == {"weights"}
+
+
+def test_human_anatomy_fits_the_upload_budget() -> None:
+    meta = json.loads((ASSETS / "metadata" / "human_anatomy_systems_v1.json").read_text())
+    assert meta["triangle_count"] <= 1_500_000  # three_d.glb.MAX_TRIANGLES
+    assert meta["size_bytes"] <= 30 * 1024 * 1024  # settings.asset_max_bytes

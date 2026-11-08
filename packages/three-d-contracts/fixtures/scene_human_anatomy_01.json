@@ -1,0 +1,717 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_human_anatomy_01",
+ "title": "Human Anatomy",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "human_anatomy_systems_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 12
+ },
+ "components": [
+  {
+   "component_id": "skin_surface",
+   "mesh_name": "skin_surface",
+   "label": "Skin",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_skin_surface"
+  },
+  {
+   "component_id": "skull",
+   "mesh_name": "skull",
+   "label": "Skull",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_skull"
+  },
+  {
+   "component_id": "mandible",
+   "mesh_name": "mandible",
+   "label": "Mandible (lower jaw)",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_mandible"
+  },
+  {
+   "component_id": "teeth",
+   "mesh_name": "teeth",
+   "label": "Teeth",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_teeth"
+  },
+  {
+   "component_id": "vertebral_column",
+   "mesh_name": "vertebral_column",
+   "label": "Vertebral column (spine)",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_vertebral_column"
+  },
+  {
+   "component_id": "intervertebral_discs",
+   "mesh_name": "intervertebral_discs",
+   "label": "Intervertebral discs",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_intervertebral_discs"
+  },
+  {
+   "component_id": "ribs",
+   "mesh_name": "ribs",
+   "label": "Ribs",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_ribs"
+  },
+  {
+   "component_id": "costal_cartilage",
+   "mesh_name": "costal_cartilage",
+   "label": "Costal cartilage",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_costal_cartilage"
+  },
+  {
+   "component_id": "sternum",
+   "mesh_name": "sternum",
+   "label": "Sternum (breastbone)",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_sternum"
+  },
+  {
+   "component_id": "shoulder_girdle_right",
+   "mesh_name": "shoulder_girdle_right",
+   "label": "Right shoulder girdle",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_shoulder_girdle_right"
+  },
+  {
+   "component_id": "shoulder_girdle_left",
+   "mesh_name": "shoulder_girdle_left",
+   "label": "Left shoulder girdle",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_shoulder_girdle_left"
+  },
+  {
+   "component_id": "pelvis",
+   "mesh_name": "pelvis",
+   "label": "Pelvis",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_pelvis"
+  },
+  {
+   "component_id": "arm_bones_right",
+   "mesh_name": "arm_bones_right",
+   "label": "Right arm bones",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_arm_bones_right"
+  },
+  {
+   "component_id": "arm_bones_left",
+   "mesh_name": "arm_bones_left",
+   "label": "Left arm bones",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_arm_bones_left"
+  },
+  {
+   "component_id": "leg_bones_right",
+   "mesh_name": "leg_bones_right",
+   "label": "Right leg bones",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_leg_bones_right"
+  },
+  {
+   "component_id": "leg_bones_left",
+   "mesh_name": "leg_bones_left",
+   "label": "Left leg bones",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_leg_bones_left"
+  },
+  {
+   "component_id": "cerebrum",
+   "mesh_name": "cerebrum",
+   "label": "Cerebrum",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_cerebrum"
+  },
+  {
+   "component_id": "cerebral_white_matter",
+   "mesh_name": "cerebral_white_matter",
+   "label": "Cerebral white matter",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_cerebral_white_matter"
+  },
+  {
+   "component_id": "thalamus",
+   "mesh_name": "thalamus",
+   "label": "Thalamus",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_thalamus"
+  },
+  {
+   "component_id": "brainstem",
+   "mesh_name": "brainstem",
+   "label": "Brainstem",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_brainstem"
+  },
+  {
+   "component_id": "cerebellum",
+   "mesh_name": "cerebellum",
+   "label": "Cerebellum",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_cerebellum"
+  },
+  {
+   "component_id": "spinal_cord",
+   "mesh_name": "spinal_cord",
+   "label": "Spinal cord",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_spinal_cord"
+  },
+  {
+   "component_id": "eyes",
+   "mesh_name": "eyes",
+   "label": "Eyes",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_eyes"
+  },
+  {
+   "component_id": "heart",
+   "mesh_name": "heart",
+   "label": "Heart",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_heart"
+  },
+  {
+   "component_id": "arteries",
+   "mesh_name": "arteries",
+   "label": "Arteries",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_arteries"
+  },
+  {
+   "component_id": "veins",
+   "mesh_name": "veins",
+   "label": "Veins",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_veins"
+  },
+  {
+   "component_id": "portal_venous_system",
+   "mesh_name": "portal_venous_system",
+   "label": "Hepatic portal system",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_portal_venous_system"
+  },
+  {
+   "component_id": "pulmonary_arteries",
+   "mesh_name": "pulmonary_arteries",
+   "label": "Pulmonary arteries",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_pulmonary_arteries"
+  },
+  {
+   "component_id": "pulmonary_veins",
+   "mesh_name": "pulmonary_veins",
+   "label": "Pulmonary veins",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_pulmonary_veins"
+  },
+  {
+   "component_id": "lung_right",
+   "mesh_name": "lung_right",
+   "label": "Right lung",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_lung_right"
+  },
+  {
+   "component_id": "lung_left",
+   "mesh_name": "lung_left",
+   "label": "Left lung",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_lung_left"
+  },
+  {
+   "component_id": "trachea_and_bronchi",
+   "mesh_name": "trachea_and_bronchi",
+   "label": "Trachea and bronchi",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_trachea_and_bronchi"
+  },
+  {
+   "component_id": "larynx",
+   "mesh_name": "larynx",
+   "label": "Larynx (voice box)",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_larynx"
+  },
+  {
+   "component_id": "diaphragm",
+   "mesh_name": "diaphragm",
+   "label": "Diaphragm",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_diaphragm"
+  },
+  {
+   "component_id": "tongue",
+   "mesh_name": "tongue",
+   "label": "Tongue",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_tongue"
+  },
+  {
+   "component_id": "esophagus",
+   "mesh_name": "esophagus",
+   "label": "Esophagus",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_esophagus"
+  },
+  {
+   "component_id": "stomach",
+   "mesh_name": "stomach",
+   "label": "Stomach",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_stomach"
+  },
+  {
+   "component_id": "liver",
+   "mesh_name": "liver",
+   "label": "Liver",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_liver"
+  },
+  {
+   "component_id": "gallbladder",
+   "mesh_name": "gallbladder",
+   "label": "Gallbladder",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_gallbladder"
+  },
+  {
+   "component_id": "pancreas",
+   "mesh_name": "pancreas",
+   "label": "Pancreas",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_pancreas"
+  },
+  {
+   "component_id": "spleen",
+   "mesh_name": "spleen",
+   "label": "Spleen",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_spleen"
+  },
+  {
+   "component_id": "small_intestine",
+   "mesh_name": "small_intestine",
+   "label": "Small intestine",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_small_intestine"
+  },
+  {
+   "component_id": "large_intestine",
+   "mesh_name": "large_intestine",
+   "label": "Large intestine",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_large_intestine"
+  },
+  {
+   "component_id": "kidney_right",
+   "mesh_name": "kidney_right",
+   "label": "Right kidney",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_kidney_right"
+  },
+  {
+   "component_id": "kidney_left",
+   "mesh_name": "kidney_left",
+   "label": "Left kidney",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_kidney_left"
+  },
+  {
+   "component_id": "renal_pelvis_and_ureters",
+   "mesh_name": "renal_pelvis_and_ureters",
+   "label": "Renal pelvis and ureters",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_renal_pelvis_and_ureters"
+  },
+  {
+   "component_id": "bladder",
+   "mesh_name": "bladder",
+   "label": "Bladder",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_bladder"
+  },
+  {
+   "component_id": "adrenal_right",
+   "mesh_name": "adrenal_right",
+   "label": "Right adrenal gland",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_adrenal_right"
+  },
+  {
+   "component_id": "adrenal_left",
+   "mesh_name": "adrenal_left",
+   "label": "Left adrenal gland",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_adrenal_left"
+  },
+  {
+   "component_id": "thyroid",
+   "mesh_name": "thyroid",
+   "label": "Thyroid gland",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_thyroid"
+  },
+  {
+   "component_id": "pituitary",
+   "mesh_name": "pituitary",
+   "label": "Pituitary gland",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_pituitary"
+  },
+  {
+   "component_id": "uterus_and_tubes",
+   "mesh_name": "uterus_and_tubes",
+   "label": "Uterus and fallopian tubes",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_uterus_and_tubes"
+  },
+  {
+   "component_id": "ovaries",
+   "mesh_name": "ovaries",
+   "label": "Ovaries",
+   "actions": [
+    "highlight",
+    "show_explanation",
+    "toggle_visibility",
+    "focus_camera"
+   ],
+   "explanation_ref": "explanation_ovaries"
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {
+  "explanation_skin_surface": "Skin covers and protects the body, helps control temperature and senses touch. It is drawn see-through here so the structures inside can be seen.",
+  "explanation_skull": "The skull protects the brain and supports the face. Most of its bones are joined by fixed joints called sutures.",
+  "explanation_mandible": "The mandible is the lower jaw, the only skull bone that moves freely. It opens and closes the mouth for chewing and speaking.",
+  "explanation_teeth": "Teeth cut, tear and grind food into smaller pieces, which starts digestion. Enamel, their outer layer, is the hardest substance in the body.",
+  "explanation_vertebral_column": "The vertebral column supports the body and protects the spinal cord. Its stacked vertebrae allow the back to bend and twist.",
+  "explanation_intervertebral_discs": "These discs of cartilage sit between the vertebrae. They cushion the spine and let it flex.",
+  "explanation_ribs": "The ribs form a cage that protects the heart and lungs. They move up and out during breathing to help enlarge the chest.",
+  "explanation_costal_cartilage": "Costal cartilage joins the ribs to the sternum. It is flexible, so the rib cage can expand with each breath.",
+  "explanation_sternum": "The sternum is the flat bone at the front of the chest. It anchors the ribs and helps protect the heart.",
+  "explanation_shoulder_girdle_right": "The shoulder girdle is made of the clavicle (collarbone) and scapula (shoulder blade). It attaches the arm to the trunk and gives the shoulder its wide range of movement.",
+  "explanation_shoulder_girdle_left": "The shoulder girdle is made of the clavicle (collarbone) and scapula (shoulder blade). It attaches the arm to the trunk and gives the shoulder its wide range of movement.",
+  "explanation_pelvis": "The pelvis connects the spine to the legs, carries the weight of the upper body and protects organs such as the bladder.",
+  "explanation_arm_bones_right": "The arm bones are the humerus, radius and ulna, with the small carpal, metacarpal and finger bones of the hand. Joints between them let the arm reach and the hand grip.",
+  "explanation_arm_bones_left": "The arm bones are the humerus, radius and ulna, with the small carpal, metacarpal and finger bones of the hand. Joints between them let the arm reach and the hand grip.",
+  "explanation_leg_bones_right": "The leg bones include the femur, the longest bone in the body, plus the patella, tibia, fibula and the bones of the foot. They carry the body's weight when standing and walking.",
+  "explanation_leg_bones_left": "The leg bones include the femur, the longest bone in the body, plus the patella, tibia, fibula and the bones of the foot. They carry the body's weight when standing and walking.",
+  "explanation_cerebrum": "The cerebrum is the largest part of the brain. Its folded outer layer of grey matter handles thought, memory, the senses and voluntary movement.",
+  "explanation_cerebral_white_matter": "White matter is made of nerve fibres that link different parts of the brain, carrying signals between them.",
+  "explanation_thalamus": "The thalamus lies deep in the brain and relays most sensory signals on their way to the cerebrum.",
+  "explanation_brainstem": "The brainstem connects the brain to the spinal cord. It controls automatic functions such as breathing and heart rate.",
+  "explanation_cerebellum": "The cerebellum, at the back of the brain, coordinates movement and balance so that actions are smooth and accurate.",
+  "explanation_spinal_cord": "The spinal cord carries nerve signals between the brain and the body, and controls fast reflexes.",
+  "explanation_eyes": "The eyes focus light onto the retina, which turns it into nerve signals that the brain interprets as vision.",
+  "explanation_heart": "The heart is a muscular pump with four chambers. The atria contract first, then the ventricles, about 72 times a minute in this model. Press Play to watch it beat.",
+  "explanation_arteries": "Arteries carry blood away from the heart under high pressure. Their thick, elastic walls absorb each heartbeat. Those shown in red carry oxygen-rich blood to the body.",
+  "explanation_veins": "Veins return blood to the heart. Their walls are thinner than those of arteries, and many have valves that stop blood flowing backwards.",
+  "explanation_portal_venous_system": "These veins carry blood from the stomach, intestines and spleen to the liver, which processes nutrients before they reach the rest of the body.",
+  "explanation_pulmonary_arteries": "The pulmonary arteries carry oxygen-poor blood from the heart to the lungs. They are arteries because they lead away from the heart, so they are drawn blue, not red.",
+  "explanation_pulmonary_veins": "The pulmonary veins bring oxygen-rich blood from the lungs back to the heart. Unlike most veins, they carry oxygen-rich blood, so they are drawn red.",
+  "explanation_lung_right": "The lungs bring air close to the blood. Oxygen passes into the blood and carbon dioxide passes out, across millions of tiny air sacs called alveoli. The right lung has three lobes and the left has two, leaving room for the heart.",
+  "explanation_lung_left": "The lungs bring air close to the blood. Oxygen passes into the blood and carbon dioxide passes out, across millions of tiny air sacs called alveoli. The right lung has three lobes and the left has two, leaving room for the heart.",
+  "explanation_trachea_and_bronchi": "The trachea (windpipe) carries air towards the lungs, then divides into two bronchi. Rings of cartilage hold these airways open.",
+  "explanation_larynx": "The larynx sits at the top of the trachea. Air passing over its vocal folds produces the voice.",
+  "explanation_diaphragm": "The diaphragm is a dome of muscle under the lungs. It contracts and flattens to draw air in, and relaxes to let air out. Press Play to watch it, about 15 breaths a minute in this model.",
+  "explanation_tongue": "The tongue is a muscular organ that moves food while chewing, helps swallowing and speech, and carries the taste buds.",
+  "explanation_esophagus": "The esophagus is the muscular tube from the throat to the stomach. Waves of contraction, called peristalsis, push food along it.",
+  "explanation_stomach": "The stomach stores food, churns it and mixes it with acid and enzymes that begin to digest protein.",
+  "explanation_liver": "The liver is the largest internal organ. It makes bile, processes nutrients and removes toxins from the blood.",
+  "explanation_gallbladder": "The gallbladder stores and concentrates bile from the liver, and releases it into the small intestine to help digest fats.",
+  "explanation_pancreas": "The pancreas makes digestive enzymes for the small intestine, and the hormones insulin and glucagon, which control blood sugar.",
+  "explanation_spleen": "The spleen filters the blood, removes old red blood cells and helps the immune system fight infection. It is not part of digestion, though it sits beside the stomach.",
+  "explanation_small_intestine": "Most digestion finishes in the small intestine, and most nutrients are absorbed into the blood through its folded lining.",
+  "explanation_large_intestine": "The large intestine absorbs water and salts from undigested material and forms faeces.",
+  "explanation_kidney_right": "The kidneys filter the blood, removing waste and extra water to make urine. They also help control blood pressure and the balance of salts in the body.",
+  "explanation_kidney_left": "The kidneys filter the blood, removing waste and extra water to make urine. They also help control blood pressure and the balance of salts in the body.",
+  "explanation_renal_pelvis_and_ureters": "Urine collects in the renal pelvis of each kidney, then flows down a ureter to the bladder.",
+  "explanation_bladder": "The bladder is a stretchy muscular bag that stores urine until it leaves the body.",
+  "explanation_adrenal_right": "The adrenal glands sit on top of the kidneys. They release hormones such as adrenaline, which prepares the body for sudden effort, and cortisol, which helps it cope with stress.",
+  "explanation_adrenal_left": "The adrenal glands sit on top of the kidneys. They release hormones such as adrenaline, which prepares the body for sudden effort, and cortisol, which helps it cope with stress.",
+  "explanation_thyroid": "The thyroid, in the front of the neck, releases hormones that control how fast the body uses energy.",
+  "explanation_pituitary": "The pituitary is a pea-sized gland at the base of the brain. Its hormones control growth and direct many other glands.",
+  "explanation_uterus_and_tubes": "An embryo develops in the uterus. The fallopian tubes carry eggs from the ovaries towards it, and are where fertilisation usually happens. This model shows a female body.",
+  "explanation_ovaries": "The ovaries release eggs and make the hormones oestrogen and progesterone."
+ }
+}

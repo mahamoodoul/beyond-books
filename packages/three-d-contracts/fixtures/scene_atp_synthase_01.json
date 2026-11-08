@@ -1,0 +1,447 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_atp_synthase_01",
+ "title": "ATP Synthase",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "atp_synthase_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 60
+ },
+ "components": [
+  {
+   "component_id": "alpha_subunit_1",
+   "mesh_name": "Alpha_subunit_1",
+   "label": "Alpha subunit 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_subunit_2",
+   "mesh_name": "Alpha_subunit_2",
+   "label": "Alpha subunit 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "alpha_subunit_3",
+   "mesh_name": "Alpha_subunit_3",
+   "label": "Alpha subunit 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "adp_site_1",
+   "mesh_name": "ADP_site_1",
+   "label": "ADP (site 1)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "atp_site_1",
+   "mesh_name": "ATP_site_1",
+   "label": "ATP (site 1)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "beta_c_domain_1_lever",
+   "mesh_name": "Beta_C-domain_1_lever",
+   "label": "Beta C-domain 1 (lever)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "beta_subunit_1",
+   "mesh_name": "Beta_subunit_1",
+   "label": "Beta subunit 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pi_site_1",
+   "mesh_name": "Pi_site_1",
+   "label": "Pi (site 1)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "adp_site_2",
+   "mesh_name": "ADP_site_2",
+   "label": "ADP (site 2)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "atp_site_2",
+   "mesh_name": "ATP_site_2",
+   "label": "ATP (site 2)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "beta_c_domain_2_lever",
+   "mesh_name": "Beta_C-domain_2_lever",
+   "label": "Beta C-domain 2 (lever)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "beta_subunit_2",
+   "mesh_name": "Beta_subunit_2",
+   "label": "Beta subunit 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pi_site_2",
+   "mesh_name": "Pi_site_2",
+   "label": "Pi (site 2)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "adp_site_3",
+   "mesh_name": "ADP_site_3",
+   "label": "ADP (site 3)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "atp_site_3",
+   "mesh_name": "ATP_site_3",
+   "label": "ATP (site 3)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "beta_c_domain_3_lever",
+   "mesh_name": "Beta_C-domain_3_lever",
+   "label": "Beta C-domain 3 (lever)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "beta_subunit_3",
+   "mesh_name": "Beta_subunit_3",
+   "label": "Beta subunit 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pi_site_3",
+   "mesh_name": "Pi_site_3",
+   "label": "Pi (site 3)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oscp",
+   "mesh_name": "OSCP",
+   "label": "OSCP",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "inner_membrane_ims_leaflet",
+   "mesh_name": "Inner_membrane_IMS_leaflet",
+   "label": "Inner membrane (IMS leaflet)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "inner_membrane_matrix_leaflet",
+   "mesh_name": "Inner_membrane_matrix_leaflet",
+   "label": "Inner membrane (matrix leaflet)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_1",
+   "mesh_name": "c_subunit_1",
+   "label": "c subunit 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_2",
+   "mesh_name": "c_subunit_2",
+   "label": "c subunit 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_3",
+   "mesh_name": "c_subunit_3",
+   "label": "c subunit 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_4",
+   "mesh_name": "c_subunit_4",
+   "label": "c subunit 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_5",
+   "mesh_name": "c_subunit_5",
+   "label": "c subunit 5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_6",
+   "mesh_name": "c_subunit_6",
+   "label": "c subunit 6",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_7",
+   "mesh_name": "c_subunit_7",
+   "label": "c subunit 7",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "c_subunit_8",
+   "mesh_name": "c_subunit_8",
+   "label": "c subunit 8",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "delta_subunit",
+   "mesh_name": "Delta_subunit",
+   "label": "Delta subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "epsilon_subunit",
+   "mesh_name": "Epsilon_subunit",
+   "label": "Epsilon subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "gamma_subunit",
+   "mesh_name": "Gamma_subunit",
+   "label": "Gamma subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "a6l",
+   "mesh_name": "A6L",
+   "label": "A6L",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "a_subunit",
+   "mesh_name": "a_subunit",
+   "label": "a subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "arg159_a_subunit",
+   "mesh_name": "Arg159_a_subunit",
+   "label": "Arg159 (a subunit)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "b_subunit",
+   "mesh_name": "b_subunit",
+   "label": "b subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "d_subunit",
+   "mesh_name": "d_subunit",
+   "label": "d subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "f6_subunit",
+   "mesh_name": "F6_subunit",
+   "label": "F6 subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_entering",
+   "mesh_name": "H_entering",
+   "label": "H+ entering",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_leaving",
+   "mesh_name": "H_leaving",
+   "label": "H+ leaving",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "inlet_half_channel_from_ims",
+   "mesh_name": "Inlet_half-channel_from_IMS",
+   "label": "Inlet half-channel (from IMS)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "outlet_half_channel_to_matrix",
+   "mesh_name": "Outlet_half-channel_to_matrix",
+   "label": "Outlet half-channel (to matrix)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {}
+}

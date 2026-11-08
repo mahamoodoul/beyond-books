@@ -1,0 +1,1737 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_i4_engine_01",
+ "title": "Inline-4 DOHC Engine",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "i4_dohc_engine_exploded_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 60
+ },
+ "components": [
+  {
+   "component_id": "belt_tensioner",
+   "mesh_name": "Belt_Tensioner",
+   "label": "Belt Tensioner",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e1a",
+   "mesh_name": "Bucket_Tappet_E1a",
+   "label": "Bucket Tappet E1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e1b",
+   "mesh_name": "Bucket_Tappet_E1b",
+   "label": "Bucket Tappet E1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e2a",
+   "mesh_name": "Bucket_Tappet_E2a",
+   "label": "Bucket Tappet E2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e2b",
+   "mesh_name": "Bucket_Tappet_E2b",
+   "label": "Bucket Tappet E2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e3a",
+   "mesh_name": "Bucket_Tappet_E3a",
+   "label": "Bucket Tappet E3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e3b",
+   "mesh_name": "Bucket_Tappet_E3b",
+   "label": "Bucket Tappet E3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e4a",
+   "mesh_name": "Bucket_Tappet_E4a",
+   "label": "Bucket Tappet E4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_e4b",
+   "mesh_name": "Bucket_Tappet_E4b",
+   "label": "Bucket Tappet E4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i1a",
+   "mesh_name": "Bucket_Tappet_I1a",
+   "label": "Bucket Tappet I1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i1b",
+   "mesh_name": "Bucket_Tappet_I1b",
+   "label": "Bucket Tappet I1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i2a",
+   "mesh_name": "Bucket_Tappet_I2a",
+   "label": "Bucket Tappet I2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i2b",
+   "mesh_name": "Bucket_Tappet_I2b",
+   "label": "Bucket Tappet I2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i3a",
+   "mesh_name": "Bucket_Tappet_I3a",
+   "label": "Bucket Tappet I3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i3b",
+   "mesh_name": "Bucket_Tappet_I3b",
+   "label": "Bucket Tappet I3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i4a",
+   "mesh_name": "Bucket_Tappet_I4a",
+   "label": "Bucket Tappet I4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "bucket_tappet_i4b",
+   "mesh_name": "Bucket_Tappet_I4b",
+   "label": "Bucket Tappet I4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_e1",
+   "mesh_name": "Cam_Bearing_Cap_E1",
+   "label": "Cam Bearing Cap E1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_e2",
+   "mesh_name": "Cam_Bearing_Cap_E2",
+   "label": "Cam Bearing Cap E2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_e3",
+   "mesh_name": "Cam_Bearing_Cap_E3",
+   "label": "Cam Bearing Cap E3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_e4",
+   "mesh_name": "Cam_Bearing_Cap_E4",
+   "label": "Cam Bearing Cap E4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_e5",
+   "mesh_name": "Cam_Bearing_Cap_E5",
+   "label": "Cam Bearing Cap E5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_i1",
+   "mesh_name": "Cam_Bearing_Cap_I1",
+   "label": "Cam Bearing Cap I1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_i2",
+   "mesh_name": "Cam_Bearing_Cap_I2",
+   "label": "Cam Bearing Cap I2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_i3",
+   "mesh_name": "Cam_Bearing_Cap_I3",
+   "label": "Cam Bearing Cap I3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_i4",
+   "mesh_name": "Cam_Bearing_Cap_I4",
+   "label": "Cam Bearing Cap I4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_bearing_cap_i5",
+   "mesh_name": "Cam_Bearing_Cap_I5",
+   "label": "Cam Bearing Cap I5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_pulley_exhaust",
+   "mesh_name": "Cam_Pulley_Exhaust",
+   "label": "Cam Pulley Exhaust",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cam_pulley_intake",
+   "mesh_name": "Cam_Pulley_Intake",
+   "label": "Cam Pulley Intake",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "camshaft_exhaust",
+   "mesh_name": "Camshaft_Exhaust",
+   "label": "Camshaft Exhaust",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "camshaft_intake",
+   "mesh_name": "Camshaft_Intake",
+   "label": "Camshaft Intake",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "connecting_rod_1",
+   "mesh_name": "Connecting_Rod_1",
+   "label": "Connecting Rod 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "connecting_rod_2",
+   "mesh_name": "Connecting_Rod_2",
+   "label": "Connecting Rod 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "connecting_rod_3",
+   "mesh_name": "Connecting_Rod_3",
+   "label": "Connecting Rod 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "connecting_rod_4",
+   "mesh_name": "Connecting_Rod_4",
+   "label": "Connecting Rod 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "crank_pulley_torsional_damper",
+   "mesh_name": "Crank_Pulley_Torsional_Damper",
+   "label": "Crank Pulley Torsional Damper",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "crank_timing_sprocket",
+   "mesh_name": "Crank_Timing_Sprocket",
+   "label": "Crank Timing Sprocket",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "crankshaft",
+   "mesh_name": "Crankshaft",
+   "label": "Crankshaft",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cylinder_block",
+   "mesh_name": "Cylinder_Block",
+   "label": "Cylinder Block",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cylinder_head",
+   "mesh_name": "Cylinder_Head",
+   "label": "Cylinder Head",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_manifold_4_1_header",
+   "mesh_name": "Exhaust_Manifold_4-1_Header",
+   "label": "Exhaust Manifold 4-1 Header",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_manifold_gasket",
+   "mesh_name": "Exhaust_Manifold_Gasket",
+   "label": "Exhaust Manifold Gasket",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_1a",
+   "mesh_name": "Exhaust_Valve_1a",
+   "label": "Exhaust Valve 1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_1b",
+   "mesh_name": "Exhaust_Valve_1b",
+   "label": "Exhaust Valve 1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_2a",
+   "mesh_name": "Exhaust_Valve_2a",
+   "label": "Exhaust Valve 2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_2b",
+   "mesh_name": "Exhaust_Valve_2b",
+   "label": "Exhaust Valve 2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_3a",
+   "mesh_name": "Exhaust_Valve_3a",
+   "label": "Exhaust Valve 3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_3b",
+   "mesh_name": "Exhaust_Valve_3b",
+   "label": "Exhaust Valve 3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_4a",
+   "mesh_name": "Exhaust_Valve_4a",
+   "label": "Exhaust Valve 4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "exhaust_valve_4b",
+   "mesh_name": "Exhaust_Valve_4b",
+   "label": "Exhaust Valve 4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "flywheel",
+   "mesh_name": "Flywheel",
+   "label": "Flywheel",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "fuel_injector_1",
+   "mesh_name": "Fuel_Injector_1",
+   "label": "Fuel Injector 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "fuel_injector_2",
+   "mesh_name": "Fuel_Injector_2",
+   "label": "Fuel Injector 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "fuel_injector_3",
+   "mesh_name": "Fuel_Injector_3",
+   "label": "Fuel Injector 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "fuel_injector_4",
+   "mesh_name": "Fuel_Injector_4",
+   "label": "Fuel Injector 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "fuel_rail",
+   "mesh_name": "Fuel_Rail",
+   "label": "Fuel Rail",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_l1",
+   "mesh_name": "Head_Bolt_L1",
+   "label": "Head Bolt L1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_l2",
+   "mesh_name": "Head_Bolt_L2",
+   "label": "Head Bolt L2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_l3",
+   "mesh_name": "Head_Bolt_L3",
+   "label": "Head Bolt L3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_l4",
+   "mesh_name": "Head_Bolt_L4",
+   "label": "Head Bolt L4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_l5",
+   "mesh_name": "Head_Bolt_L5",
+   "label": "Head Bolt L5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_r1",
+   "mesh_name": "Head_Bolt_R1",
+   "label": "Head Bolt R1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_r2",
+   "mesh_name": "Head_Bolt_R2",
+   "label": "Head Bolt R2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_r3",
+   "mesh_name": "Head_Bolt_R3",
+   "label": "Head Bolt R3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_r4",
+   "mesh_name": "Head_Bolt_R4",
+   "label": "Head Bolt R4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_bolt_r5",
+   "mesh_name": "Head_Bolt_R5",
+   "label": "Head Bolt R5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "head_gasket_mls",
+   "mesh_name": "Head_Gasket_MLS",
+   "label": "Head Gasket MLS",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "ignition_coil_1",
+   "mesh_name": "Ignition_Coil_1",
+   "label": "Ignition Coil 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "ignition_coil_2",
+   "mesh_name": "Ignition_Coil_2",
+   "label": "Ignition Coil 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "ignition_coil_3",
+   "mesh_name": "Ignition_Coil_3",
+   "label": "Ignition Coil 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "ignition_coil_4",
+   "mesh_name": "Ignition_Coil_4",
+   "label": "Ignition Coil 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_manifold",
+   "mesh_name": "Intake_Manifold",
+   "label": "Intake Manifold",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_manifold_gasket",
+   "mesh_name": "Intake_Manifold_Gasket",
+   "label": "Intake Manifold Gasket",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_1a",
+   "mesh_name": "Intake_Valve_1a",
+   "label": "Intake Valve 1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_1b",
+   "mesh_name": "Intake_Valve_1b",
+   "label": "Intake Valve 1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_2a",
+   "mesh_name": "Intake_Valve_2a",
+   "label": "Intake Valve 2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_2b",
+   "mesh_name": "Intake_Valve_2b",
+   "label": "Intake Valve 2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_3a",
+   "mesh_name": "Intake_Valve_3a",
+   "label": "Intake Valve 3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_3b",
+   "mesh_name": "Intake_Valve_3b",
+   "label": "Intake Valve 3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_4a",
+   "mesh_name": "Intake_Valve_4a",
+   "label": "Intake Valve 4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "intake_valve_4b",
+   "mesh_name": "Intake_Valve_4b",
+   "label": "Intake Valve 4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_cap_1",
+   "mesh_name": "Main_Bearing_Cap_1",
+   "label": "Main Bearing Cap 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_cap_2",
+   "mesh_name": "Main_Bearing_Cap_2",
+   "label": "Main Bearing Cap 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_cap_3",
+   "mesh_name": "Main_Bearing_Cap_3",
+   "label": "Main Bearing Cap 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_cap_4",
+   "mesh_name": "Main_Bearing_Cap_4",
+   "label": "Main Bearing Cap 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_cap_5",
+   "mesh_name": "Main_Bearing_Cap_5",
+   "label": "Main Bearing Cap 5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_shell_1",
+   "mesh_name": "Main_Bearing_Shell_1",
+   "label": "Main Bearing Shell 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_shell_2",
+   "mesh_name": "Main_Bearing_Shell_2",
+   "label": "Main Bearing Shell 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_shell_3",
+   "mesh_name": "Main_Bearing_Shell_3",
+   "label": "Main Bearing Shell 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_shell_4",
+   "mesh_name": "Main_Bearing_Shell_4",
+   "label": "Main Bearing Shell 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "main_bearing_shell_5",
+   "mesh_name": "Main_Bearing_Shell_5",
+   "label": "Main Bearing Shell 5",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_control_ring_1",
+   "mesh_name": "Oil_Control_Ring_1",
+   "label": "Oil Control Ring 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_control_ring_2",
+   "mesh_name": "Oil_Control_Ring_2",
+   "label": "Oil Control Ring 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_control_ring_3",
+   "mesh_name": "Oil_Control_Ring_3",
+   "label": "Oil Control Ring 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_control_ring_4",
+   "mesh_name": "Oil_Control_Ring_4",
+   "label": "Oil Control Ring 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_dipstick_tube",
+   "mesh_name": "Oil_Dipstick_Tube",
+   "label": "Oil Dipstick Tube",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_drain_plug",
+   "mesh_name": "Oil_Drain_Plug",
+   "label": "Oil Drain Plug",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_filler_cap",
+   "mesh_name": "Oil_Filler_Cap",
+   "label": "Oil Filler Cap",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_filter",
+   "mesh_name": "Oil_Filter",
+   "label": "Oil Filter",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_pan_sump",
+   "mesh_name": "Oil_Pan_Sump",
+   "label": "Oil Pan Sump",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_pickup_strainer",
+   "mesh_name": "Oil_Pickup_Strainer",
+   "label": "Oil Pickup Strainer",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oil_pump_gerotor",
+   "mesh_name": "Oil_Pump_Gerotor",
+   "label": "Oil Pump Gerotor",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "oxygen_lambda_sensor",
+   "mesh_name": "Oxygen_Lambda_Sensor",
+   "label": "Oxygen Lambda Sensor",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "piston_1",
+   "mesh_name": "Piston_1",
+   "label": "Piston 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "piston_2",
+   "mesh_name": "Piston_2",
+   "label": "Piston 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "piston_3",
+   "mesh_name": "Piston_3",
+   "label": "Piston 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "piston_4",
+   "mesh_name": "Piston_4",
+   "label": "Piston 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_bolts_1",
+   "mesh_name": "Rod_Bolts_1",
+   "label": "Rod Bolts 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_bolts_2",
+   "mesh_name": "Rod_Bolts_2",
+   "label": "Rod Bolts 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_bolts_3",
+   "mesh_name": "Rod_Bolts_3",
+   "label": "Rod Bolts 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_bolts_4",
+   "mesh_name": "Rod_Bolts_4",
+   "label": "Rod Bolts 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_cap_1",
+   "mesh_name": "Rod_Cap_1",
+   "label": "Rod Cap 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_cap_2",
+   "mesh_name": "Rod_Cap_2",
+   "label": "Rod Cap 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_cap_3",
+   "mesh_name": "Rod_Cap_3",
+   "label": "Rod Cap 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "rod_cap_4",
+   "mesh_name": "Rod_Cap_4",
+   "label": "Rod Cap 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "second_compression_ring_1",
+   "mesh_name": "Second_Compression_Ring_1",
+   "label": "Second Compression Ring 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "second_compression_ring_2",
+   "mesh_name": "Second_Compression_Ring_2",
+   "label": "Second Compression Ring 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "second_compression_ring_3",
+   "mesh_name": "Second_Compression_Ring_3",
+   "label": "Second Compression Ring 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "second_compression_ring_4",
+   "mesh_name": "Second_Compression_Ring_4",
+   "label": "Second Compression Ring 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "spark_plug_1",
+   "mesh_name": "Spark_Plug_1",
+   "label": "Spark Plug 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "spark_plug_2",
+   "mesh_name": "Spark_Plug_2",
+   "label": "Spark Plug 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "spark_plug_3",
+   "mesh_name": "Spark_Plug_3",
+   "label": "Spark Plug 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "spark_plug_4",
+   "mesh_name": "Spark_Plug_4",
+   "label": "Spark Plug 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "starter_ring_gear",
+   "mesh_name": "Starter_Ring_Gear",
+   "label": "Starter Ring Gear",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "thermostat_housing",
+   "mesh_name": "Thermostat_Housing",
+   "label": "Thermostat Housing",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "throttle_body",
+   "mesh_name": "Throttle_Body",
+   "label": "Throttle Body",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "timing_belt",
+   "mesh_name": "Timing_Belt",
+   "label": "Timing Belt",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "timing_belt_cover",
+   "mesh_name": "Timing_Belt_Cover",
+   "label": "Timing Belt Cover",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "top_compression_ring_1",
+   "mesh_name": "Top_Compression_Ring_1",
+   "label": "Top Compression Ring 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "top_compression_ring_2",
+   "mesh_name": "Top_Compression_Ring_2",
+   "label": "Top Compression Ring 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "top_compression_ring_3",
+   "mesh_name": "Top_Compression_Ring_3",
+   "label": "Top Compression Ring 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "top_compression_ring_4",
+   "mesh_name": "Top_Compression_Ring_4",
+   "label": "Top Compression Ring 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_cover",
+   "mesh_name": "Valve_Cover",
+   "label": "Valve Cover",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_cover_gasket",
+   "mesh_name": "Valve_Cover_Gasket",
+   "label": "Valve Cover Gasket",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e1a",
+   "mesh_name": "Valve_Retainer_Keepers_E1a",
+   "label": "Valve Retainer Keepers E1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e1b",
+   "mesh_name": "Valve_Retainer_Keepers_E1b",
+   "label": "Valve Retainer Keepers E1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e2a",
+   "mesh_name": "Valve_Retainer_Keepers_E2a",
+   "label": "Valve Retainer Keepers E2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e2b",
+   "mesh_name": "Valve_Retainer_Keepers_E2b",
+   "label": "Valve Retainer Keepers E2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e3a",
+   "mesh_name": "Valve_Retainer_Keepers_E3a",
+   "label": "Valve Retainer Keepers E3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e3b",
+   "mesh_name": "Valve_Retainer_Keepers_E3b",
+   "label": "Valve Retainer Keepers E3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e4a",
+   "mesh_name": "Valve_Retainer_Keepers_E4a",
+   "label": "Valve Retainer Keepers E4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_e4b",
+   "mesh_name": "Valve_Retainer_Keepers_E4b",
+   "label": "Valve Retainer Keepers E4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i1a",
+   "mesh_name": "Valve_Retainer_Keepers_I1a",
+   "label": "Valve Retainer Keepers I1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i1b",
+   "mesh_name": "Valve_Retainer_Keepers_I1b",
+   "label": "Valve Retainer Keepers I1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i2a",
+   "mesh_name": "Valve_Retainer_Keepers_I2a",
+   "label": "Valve Retainer Keepers I2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i2b",
+   "mesh_name": "Valve_Retainer_Keepers_I2b",
+   "label": "Valve Retainer Keepers I2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i3a",
+   "mesh_name": "Valve_Retainer_Keepers_I3a",
+   "label": "Valve Retainer Keepers I3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i3b",
+   "mesh_name": "Valve_Retainer_Keepers_I3b",
+   "label": "Valve Retainer Keepers I3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i4a",
+   "mesh_name": "Valve_Retainer_Keepers_I4a",
+   "label": "Valve Retainer Keepers I4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_retainer_keepers_i4b",
+   "mesh_name": "Valve_Retainer_Keepers_I4b",
+   "label": "Valve Retainer Keepers I4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e1a",
+   "mesh_name": "Valve_Spring_E1a",
+   "label": "Valve Spring E1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e1b",
+   "mesh_name": "Valve_Spring_E1b",
+   "label": "Valve Spring E1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e2a",
+   "mesh_name": "Valve_Spring_E2a",
+   "label": "Valve Spring E2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e2b",
+   "mesh_name": "Valve_Spring_E2b",
+   "label": "Valve Spring E2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e3a",
+   "mesh_name": "Valve_Spring_E3a",
+   "label": "Valve Spring E3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e3b",
+   "mesh_name": "Valve_Spring_E3b",
+   "label": "Valve Spring E3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e4a",
+   "mesh_name": "Valve_Spring_E4a",
+   "label": "Valve Spring E4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_e4b",
+   "mesh_name": "Valve_Spring_E4b",
+   "label": "Valve Spring E4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i1a",
+   "mesh_name": "Valve_Spring_I1a",
+   "label": "Valve Spring I1a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i1b",
+   "mesh_name": "Valve_Spring_I1b",
+   "label": "Valve Spring I1b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i2a",
+   "mesh_name": "Valve_Spring_I2a",
+   "label": "Valve Spring I2a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i2b",
+   "mesh_name": "Valve_Spring_I2b",
+   "label": "Valve Spring I2b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i3a",
+   "mesh_name": "Valve_Spring_I3a",
+   "label": "Valve Spring I3a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i3b",
+   "mesh_name": "Valve_Spring_I3b",
+   "label": "Valve Spring I3b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i4a",
+   "mesh_name": "Valve_Spring_I4a",
+   "label": "Valve Spring I4a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "valve_spring_i4b",
+   "mesh_name": "Valve_Spring_I4b",
+   "label": "Valve Spring I4b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "water_pump",
+   "mesh_name": "Water_Pump",
+   "label": "Water Pump",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "wrist_pin_1",
+   "mesh_name": "Wrist_Pin_1",
+   "label": "Wrist Pin 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "wrist_pin_2",
+   "mesh_name": "Wrist_Pin_2",
+   "label": "Wrist Pin 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "wrist_pin_3",
+   "mesh_name": "Wrist_Pin_3",
+   "label": "Wrist Pin 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "wrist_pin_4",
+   "mesh_name": "Wrist_Pin_4",
+   "label": "Wrist Pin 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {}
+}

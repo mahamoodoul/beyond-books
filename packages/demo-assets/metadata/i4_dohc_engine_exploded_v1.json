@@ -1,0 +1,732 @@
+{
+  "asset_id": "i4_dohc_engine_exploded_v1",
+  "version": 1,
+  "name": "Inline-4 DOHC Engine",
+  "description": "Inline four-cylinder DOHC engine. It can run or stop whether assembled or exploded, as in the Blender scene.",
+  "subject": "physics",
+  "format": "glb",
+  "object_key": "demo-assets/glb/i4_dohc_engine_exploded_v1.glb",
+  "preview_key": "demo-assets/previews/i4_dohc_engine_exploded_v1.png",
+  "size_bytes": 19086652,
+  "content_hash": "sha256:5c346bda6151b17629211b786477967f3ee4ff50f5f89f93e8587d588a4d4ab7",
+  "triangle_count": 545922,
+  "units": "metres",
+  "bounds": {
+    "min": [
+      -1.602,
+      -0.201,
+      -0.296
+    ],
+    "max": [
+      0.492,
+      0.794,
+      1.414
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "Belt_Tensioner",
+      "label": "Belt Tensioner"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E1a",
+      "label": "Bucket Tappet E1a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E1b",
+      "label": "Bucket Tappet E1b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E2a",
+      "label": "Bucket Tappet E2a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E2b",
+      "label": "Bucket Tappet E2b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E3a",
+      "label": "Bucket Tappet E3a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E3b",
+      "label": "Bucket Tappet E3b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E4a",
+      "label": "Bucket Tappet E4a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_E4b",
+      "label": "Bucket Tappet E4b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I1a",
+      "label": "Bucket Tappet I1a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I1b",
+      "label": "Bucket Tappet I1b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I2a",
+      "label": "Bucket Tappet I2a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I2b",
+      "label": "Bucket Tappet I2b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I3a",
+      "label": "Bucket Tappet I3a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I3b",
+      "label": "Bucket Tappet I3b"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I4a",
+      "label": "Bucket Tappet I4a"
+    },
+    {
+      "mesh_name": "Bucket_Tappet_I4b",
+      "label": "Bucket Tappet I4b"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_E1",
+      "label": "Cam Bearing Cap E1"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_E2",
+      "label": "Cam Bearing Cap E2"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_E3",
+      "label": "Cam Bearing Cap E3"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_E4",
+      "label": "Cam Bearing Cap E4"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_E5",
+      "label": "Cam Bearing Cap E5"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_I1",
+      "label": "Cam Bearing Cap I1"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_I2",
+      "label": "Cam Bearing Cap I2"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_I3",
+      "label": "Cam Bearing Cap I3"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_I4",
+      "label": "Cam Bearing Cap I4"
+    },
+    {
+      "mesh_name": "Cam_Bearing_Cap_I5",
+      "label": "Cam Bearing Cap I5"
+    },
+    {
+      "mesh_name": "Cam_Pulley_Exhaust",
+      "label": "Cam Pulley Exhaust"
+    },
+    {
+      "mesh_name": "Cam_Pulley_Intake",
+      "label": "Cam Pulley Intake"
+    },
+    {
+      "mesh_name": "Camshaft_Exhaust",
+      "label": "Camshaft Exhaust"
+    },
+    {
+      "mesh_name": "Camshaft_Intake",
+      "label": "Camshaft Intake"
+    },
+    {
+      "mesh_name": "Connecting_Rod_1",
+      "label": "Connecting Rod 1"
+    },
+    {
+      "mesh_name": "Connecting_Rod_2",
+      "label": "Connecting Rod 2"
+    },
+    {
+      "mesh_name": "Connecting_Rod_3",
+      "label": "Connecting Rod 3"
+    },
+    {
+      "mesh_name": "Connecting_Rod_4",
+      "label": "Connecting Rod 4"
+    },
+    {
+      "mesh_name": "Crank_Pulley_Torsional_Damper",
+      "label": "Crank Pulley Torsional Damper"
+    },
+    {
+      "mesh_name": "Crank_Timing_Sprocket",
+      "label": "Crank Timing Sprocket"
+    },
+    {
+      "mesh_name": "Crankshaft",
+      "label": "Crankshaft"
+    },
+    {
+      "mesh_name": "Cylinder_Block",
+      "label": "Cylinder Block"
+    },
+    {
+      "mesh_name": "Cylinder_Head",
+      "label": "Cylinder Head"
+    },
+    {
+      "mesh_name": "Exhaust_Manifold_4-1_Header",
+      "label": "Exhaust Manifold 4-1 Header"
+    },
+    {
+      "mesh_name": "Exhaust_Manifold_Gasket",
+      "label": "Exhaust Manifold Gasket"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_1a",
+      "label": "Exhaust Valve 1a"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_1b",
+      "label": "Exhaust Valve 1b"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_2a",
+      "label": "Exhaust Valve 2a"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_2b",
+      "label": "Exhaust Valve 2b"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_3a",
+      "label": "Exhaust Valve 3a"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_3b",
+      "label": "Exhaust Valve 3b"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_4a",
+      "label": "Exhaust Valve 4a"
+    },
+    {
+      "mesh_name": "Exhaust_Valve_4b",
+      "label": "Exhaust Valve 4b"
+    },
+    {
+      "mesh_name": "Flywheel",
+      "label": "Flywheel"
+    },
+    {
+      "mesh_name": "Fuel_Injector_1",
+      "label": "Fuel Injector 1"
+    },
+    {
+      "mesh_name": "Fuel_Injector_2",
+      "label": "Fuel Injector 2"
+    },
+    {
+      "mesh_name": "Fuel_Injector_3",
+      "label": "Fuel Injector 3"
+    },
+    {
+      "mesh_name": "Fuel_Injector_4",
+      "label": "Fuel Injector 4"
+    },
+    {
+      "mesh_name": "Fuel_Rail",
+      "label": "Fuel Rail"
+    },
+    {
+      "mesh_name": "Head_Bolt_L1",
+      "label": "Head Bolt L1"
+    },
+    {
+      "mesh_name": "Head_Bolt_L2",
+      "label": "Head Bolt L2"
+    },
+    {
+      "mesh_name": "Head_Bolt_L3",
+      "label": "Head Bolt L3"
+    },
+    {
+      "mesh_name": "Head_Bolt_L4",
+      "label": "Head Bolt L4"
+    },
+    {
+      "mesh_name": "Head_Bolt_L5",
+      "label": "Head Bolt L5"
+    },
+    {
+      "mesh_name": "Head_Bolt_R1",
+      "label": "Head Bolt R1"
+    },
+    {
+      "mesh_name": "Head_Bolt_R2",
+      "label": "Head Bolt R2"
+    },
+    {
+      "mesh_name": "Head_Bolt_R3",
+      "label": "Head Bolt R3"
+    },
+    {
+      "mesh_name": "Head_Bolt_R4",
+      "label": "Head Bolt R4"
+    },
+    {
+      "mesh_name": "Head_Bolt_R5",
+      "label": "Head Bolt R5"
+    },
+    {
+      "mesh_name": "Head_Gasket_MLS",
+      "label": "Head Gasket MLS"
+    },
+    {
+      "mesh_name": "Ignition_Coil_1",
+      "label": "Ignition Coil 1"
+    },
+    {
+      "mesh_name": "Ignition_Coil_2",
+      "label": "Ignition Coil 2"
+    },
+    {
+      "mesh_name": "Ignition_Coil_3",
+      "label": "Ignition Coil 3"
+    },
+    {
+      "mesh_name": "Ignition_Coil_4",
+      "label": "Ignition Coil 4"
+    },
+    {
+      "mesh_name": "Intake_Manifold",
+      "label": "Intake Manifold"
+    },
+    {
+      "mesh_name": "Intake_Manifold_Gasket",
+      "label": "Intake Manifold Gasket"
+    },
+    {
+      "mesh_name": "Intake_Valve_1a",
+      "label": "Intake Valve 1a"
+    },
+    {
+      "mesh_name": "Intake_Valve_1b",
+      "label": "Intake Valve 1b"
+    },
+    {
+      "mesh_name": "Intake_Valve_2a",
+      "label": "Intake Valve 2a"
+    },
+    {
+      "mesh_name": "Intake_Valve_2b",
+      "label": "Intake Valve 2b"
+    },
+    {
+      "mesh_name": "Intake_Valve_3a",
+      "label": "Intake Valve 3a"
+    },
+    {
+      "mesh_name": "Intake_Valve_3b",
+      "label": "Intake Valve 3b"
+    },
+    {
+      "mesh_name": "Intake_Valve_4a",
+      "label": "Intake Valve 4a"
+    },
+    {
+      "mesh_name": "Intake_Valve_4b",
+      "label": "Intake Valve 4b"
+    },
+    {
+      "mesh_name": "Main_Bearing_Cap_1",
+      "label": "Main Bearing Cap 1"
+    },
+    {
+      "mesh_name": "Main_Bearing_Cap_2",
+      "label": "Main Bearing Cap 2"
+    },
+    {
+      "mesh_name": "Main_Bearing_Cap_3",
+      "label": "Main Bearing Cap 3"
+    },
+    {
+      "mesh_name": "Main_Bearing_Cap_4",
+      "label": "Main Bearing Cap 4"
+    },
+    {
+      "mesh_name": "Main_Bearing_Cap_5",
+      "label": "Main Bearing Cap 5"
+    },
+    {
+      "mesh_name": "Main_Bearing_Shell_1",
+      "label": "Main Bearing Shell 1"
+    },
+    {
+      "mesh_name": "Main_Bearing_Shell_2",
+      "label": "Main Bearing Shell 2"
+    },
+    {
+      "mesh_name": "Main_Bearing_Shell_3",
+      "label": "Main Bearing Shell 3"
+    },
+    {
+      "mesh_name": "Main_Bearing_Shell_4",
+      "label": "Main Bearing Shell 4"
+    },
+    {
+      "mesh_name": "Main_Bearing_Shell_5",
+      "label": "Main Bearing Shell 5"
+    },
+    {
+      "mesh_name": "Oil_Control_Ring_1",
+      "label": "Oil Control Ring 1"
+    },
+    {
+      "mesh_name": "Oil_Control_Ring_2",
+      "label": "Oil Control Ring 2"
+    },
+    {
+      "mesh_name": "Oil_Control_Ring_3",
+      "label": "Oil Control Ring 3"
+    },
+    {
+      "mesh_name": "Oil_Control_Ring_4",
+      "label": "Oil Control Ring 4"
+    },
+    {
+      "mesh_name": "Oil_Dipstick_Tube",
+      "label": "Oil Dipstick Tube"
+    },
+    {
+      "mesh_name": "Oil_Drain_Plug",
+      "label": "Oil Drain Plug"
+    },
+    {
+      "mesh_name": "Oil_Filler_Cap",
+      "label": "Oil Filler Cap"
+    },
+    {
+      "mesh_name": "Oil_Filter",
+      "label": "Oil Filter"
+    },
+    {
+      "mesh_name": "Oil_Pan_Sump",
+      "label": "Oil Pan Sump"
+    },
+    {
+      "mesh_name": "Oil_Pickup_Strainer",
+      "label": "Oil Pickup Strainer"
+    },
+    {
+      "mesh_name": "Oil_Pump_Gerotor",
+      "label": "Oil Pump Gerotor"
+    },
+    {
+      "mesh_name": "Oxygen_Lambda_Sensor",
+      "label": "Oxygen Lambda Sensor"
+    },
+    {
+      "mesh_name": "Piston_1",
+      "label": "Piston 1"
+    },
+    {
+      "mesh_name": "Piston_2",
+      "label": "Piston 2"
+    },
+    {
+      "mesh_name": "Piston_3",
+      "label": "Piston 3"
+    },
+    {
+      "mesh_name": "Piston_4",
+      "label": "Piston 4"
+    },
+    {
+      "mesh_name": "Rod_Bolts_1",
+      "label": "Rod Bolts 1"
+    },
+    {
+      "mesh_name": "Rod_Bolts_2",
+      "label": "Rod Bolts 2"
+    },
+    {
+      "mesh_name": "Rod_Bolts_3",
+      "label": "Rod Bolts 3"
+    },
+    {
+      "mesh_name": "Rod_Bolts_4",
+      "label": "Rod Bolts 4"
+    },
+    {
+      "mesh_name": "Rod_Cap_1",
+      "label": "Rod Cap 1"
+    },
+    {
+      "mesh_name": "Rod_Cap_2",
+      "label": "Rod Cap 2"
+    },
+    {
+      "mesh_name": "Rod_Cap_3",
+      "label": "Rod Cap 3"
+    },
+    {
+      "mesh_name": "Rod_Cap_4",
+      "label": "Rod Cap 4"
+    },
+    {
+      "mesh_name": "Second_Compression_Ring_1",
+      "label": "Second Compression Ring 1"
+    },
+    {
+      "mesh_name": "Second_Compression_Ring_2",
+      "label": "Second Compression Ring 2"
+    },
+    {
+      "mesh_name": "Second_Compression_Ring_3",
+      "label": "Second Compression Ring 3"
+    },
+    {
+      "mesh_name": "Second_Compression_Ring_4",
+      "label": "Second Compression Ring 4"
+    },
+    {
+      "mesh_name": "Spark_Plug_1",
+      "label": "Spark Plug 1"
+    },
+    {
+      "mesh_name": "Spark_Plug_2",
+      "label": "Spark Plug 2"
+    },
+    {
+      "mesh_name": "Spark_Plug_3",
+      "label": "Spark Plug 3"
+    },
+    {
+      "mesh_name": "Spark_Plug_4",
+      "label": "Spark Plug 4"
+    },
+    {
+      "mesh_name": "Starter_Ring_Gear",
+      "label": "Starter Ring Gear"
+    },
+    {
+      "mesh_name": "Thermostat_Housing",
+      "label": "Thermostat Housing"
+    },
+    {
+      "mesh_name": "Throttle_Body",
+      "label": "Throttle Body"
+    },
+    {
+      "mesh_name": "Timing_Belt",
+      "label": "Timing Belt"
+    },
+    {
+      "mesh_name": "Timing_Belt_Cover",
+      "label": "Timing Belt Cover"
+    },
+    {
+      "mesh_name": "Top_Compression_Ring_1",
+      "label": "Top Compression Ring 1"
+    },
+    {
+      "mesh_name": "Top_Compression_Ring_2",
+      "label": "Top Compression Ring 2"
+    },
+    {
+      "mesh_name": "Top_Compression_Ring_3",
+      "label": "Top Compression Ring 3"
+    },
+    {
+      "mesh_name": "Top_Compression_Ring_4",
+      "label": "Top Compression Ring 4"
+    },
+    {
+      "mesh_name": "Valve_Cover",
+      "label": "Valve Cover"
+    },
+    {
+      "mesh_name": "Valve_Cover_Gasket",
+      "label": "Valve Cover Gasket"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E1a",
+      "label": "Valve Retainer Keepers E1a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E1b",
+      "label": "Valve Retainer Keepers E1b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E2a",
+      "label": "Valve Retainer Keepers E2a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E2b",
+      "label": "Valve Retainer Keepers E2b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E3a",
+      "label": "Valve Retainer Keepers E3a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E3b",
+      "label": "Valve Retainer Keepers E3b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E4a",
+      "label": "Valve Retainer Keepers E4a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_E4b",
+      "label": "Valve Retainer Keepers E4b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I1a",
+      "label": "Valve Retainer Keepers I1a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I1b",
+      "label": "Valve Retainer Keepers I1b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I2a",
+      "label": "Valve Retainer Keepers I2a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I2b",
+      "label": "Valve Retainer Keepers I2b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I3a",
+      "label": "Valve Retainer Keepers I3a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I3b",
+      "label": "Valve Retainer Keepers I3b"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I4a",
+      "label": "Valve Retainer Keepers I4a"
+    },
+    {
+      "mesh_name": "Valve_Retainer_Keepers_I4b",
+      "label": "Valve Retainer Keepers I4b"
+    },
+    {
+      "mesh_name": "Valve_Spring_E1a",
+      "label": "Valve Spring E1a"
+    },
+    {
+      "mesh_name": "Valve_Spring_E1b",
+      "label": "Valve Spring E1b"
+    },
+    {
+      "mesh_name": "Valve_Spring_E2a",
+      "label": "Valve Spring E2a"
+    },
+    {
+      "mesh_name": "Valve_Spring_E2b",
+      "label": "Valve Spring E2b"
+    },
+    {
+      "mesh_name": "Valve_Spring_E3a",
+      "label": "Valve Spring E3a"
+    },
+    {
+      "mesh_name": "Valve_Spring_E3b",
+      "label": "Valve Spring E3b"
+    },
+    {
+      "mesh_name": "Valve_Spring_E4a",
+      "label": "Valve Spring E4a"
+    },
+    {
+      "mesh_name": "Valve_Spring_E4b",
+      "label": "Valve Spring E4b"
+    },
+    {
+      "mesh_name": "Valve_Spring_I1a",
+      "label": "Valve Spring I1a"
+    },
+    {
+      "mesh_name": "Valve_Spring_I1b",
+      "label": "Valve Spring I1b"
+    },
+    {
+      "mesh_name": "Valve_Spring_I2a",
+      "label": "Valve Spring I2a"
+    },
+    {
+      "mesh_name": "Valve_Spring_I2b",
+      "label": "Valve Spring I2b"
+    },
+    {
+      "mesh_name": "Valve_Spring_I3a",
+      "label": "Valve Spring I3a"
+    },
+    {
+      "mesh_name": "Valve_Spring_I3b",
+      "label": "Valve Spring I3b"
+    },
+    {
+      "mesh_name": "Valve_Spring_I4a",
+      "label": "Valve Spring I4a"
+    },
+    {
+      "mesh_name": "Valve_Spring_I4b",
+      "label": "Valve Spring I4b"
+    },
+    {
+      "mesh_name": "Water_Pump",
+      "label": "Water Pump"
+    },
+    {
+      "mesh_name": "Wrist_Pin_1",
+      "label": "Wrist Pin 1"
+    },
+    {
+      "mesh_name": "Wrist_Pin_2",
+      "label": "Wrist Pin 2"
+    },
+    {
+      "mesh_name": "Wrist_Pin_3",
+      "label": "Wrist Pin 3"
+    },
+    {
+      "mesh_name": "Wrist_Pin_4",
+      "label": "Wrist Pin 4"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "Blender scene, I4_DOHC_Engine_Studio.glb",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in Blender for Beyond Books",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Teaching model; not reviewed by a subject expert."
+}

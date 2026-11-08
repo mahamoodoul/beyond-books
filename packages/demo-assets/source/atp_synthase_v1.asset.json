@@ -1,0 +1,198 @@
+{
+  "asset_id": "atp_synthase_v1",
+  "version": 1,
+  "name": "ATP Synthase",
+  "description": "ATP synthase in the inner mitochondrial membrane: protons turn the c-ring, the ring turns the gamma shaft, and each beta subunit makes ATP. Play runs the 12 s Blender timeline.",
+  "subject": "biology",
+  "units": "metres",
+  "components": [
+    {
+      "mesh_name": "Alpha_subunit_1",
+      "label": "Alpha subunit 1"
+    },
+    {
+      "mesh_name": "Alpha_subunit_2",
+      "label": "Alpha subunit 2"
+    },
+    {
+      "mesh_name": "Alpha_subunit_3",
+      "label": "Alpha subunit 3"
+    },
+    {
+      "mesh_name": "ADP_site_1",
+      "label": "ADP (site 1)"
+    },
+    {
+      "mesh_name": "ATP_site_1",
+      "label": "ATP (site 1)"
+    },
+    {
+      "mesh_name": "Beta_C-domain_1_lever",
+      "label": "Beta C-domain 1 (lever)"
+    },
+    {
+      "mesh_name": "Beta_subunit_1",
+      "label": "Beta subunit 1"
+    },
+    {
+      "mesh_name": "Pi_site_1",
+      "label": "Pi (site 1)"
+    },
+    {
+      "mesh_name": "ADP_site_2",
+      "label": "ADP (site 2)"
+    },
+    {
+      "mesh_name": "ATP_site_2",
+      "label": "ATP (site 2)"
+    },
+    {
+      "mesh_name": "Beta_C-domain_2_lever",
+      "label": "Beta C-domain 2 (lever)"
+    },
+    {
+      "mesh_name": "Beta_subunit_2",
+      "label": "Beta subunit 2"
+    },
+    {
+      "mesh_name": "Pi_site_2",
+      "label": "Pi (site 2)"
+    },
+    {
+      "mesh_name": "ADP_site_3",
+      "label": "ADP (site 3)"
+    },
+    {
+      "mesh_name": "ATP_site_3",
+      "label": "ATP (site 3)"
+    },
+    {
+      "mesh_name": "Beta_C-domain_3_lever",
+      "label": "Beta C-domain 3 (lever)"
+    },
+    {
+      "mesh_name": "Beta_subunit_3",
+      "label": "Beta subunit 3"
+    },
+    {
+      "mesh_name": "Pi_site_3",
+      "label": "Pi (site 3)"
+    },
+    {
+      "mesh_name": "OSCP",
+      "label": "OSCP"
+    },
+    {
+      "mesh_name": "Inner_membrane_IMS_leaflet",
+      "label": "Inner membrane (IMS leaflet)"
+    },
+    {
+      "mesh_name": "Inner_membrane_matrix_leaflet",
+      "label": "Inner membrane (matrix leaflet)"
+    },
+    {
+      "mesh_name": "c_subunit_1",
+      "label": "c subunit 1"
+    },
+    {
+      "mesh_name": "c_subunit_2",
+      "label": "c subunit 2"
+    },
+    {
+      "mesh_name": "c_subunit_3",
+      "label": "c subunit 3"
+    },
+    {
+      "mesh_name": "c_subunit_4",
+      "label": "c subunit 4"
+    },
+    {
+      "mesh_name": "c_subunit_5",
+      "label": "c subunit 5"
+    },
+    {
+      "mesh_name": "c_subunit_6",
+      "label": "c subunit 6"
+    },
+    {
+      "mesh_name": "c_subunit_7",
+      "label": "c subunit 7"
+    },
+    {
+      "mesh_name": "c_subunit_8",
+      "label": "c subunit 8"
+    },
+    {
+      "mesh_name": "Delta_subunit",
+      "label": "Delta subunit"
+    },
+    {
+      "mesh_name": "Epsilon_subunit",
+      "label": "Epsilon subunit"
+    },
+    {
+      "mesh_name": "Gamma_subunit",
+      "label": "Gamma subunit"
+    },
+    {
+      "mesh_name": "A6L",
+      "label": "A6L"
+    },
+    {
+      "mesh_name": "a_subunit",
+      "label": "a subunit"
+    },
+    {
+      "mesh_name": "Arg159_a_subunit",
+      "label": "Arg159 (a subunit)"
+    },
+    {
+      "mesh_name": "b_subunit",
+      "label": "b subunit"
+    },
+    {
+      "mesh_name": "d_subunit",
+      "label": "d subunit"
+    },
+    {
+      "mesh_name": "F6_subunit",
+      "label": "F6 subunit"
+    },
+    {
+      "mesh_name": "H_entering",
+      "label": "H+ entering"
+    },
+    {
+      "mesh_name": "H_leaving",
+      "label": "H+ leaving"
+    },
+    {
+      "mesh_name": "Inlet_half-channel_from_IMS",
+      "label": "Inlet half-channel (from IMS)"
+    },
+    {
+      "mesh_name": "Outlet_half-channel_to_matrix",
+      "label": "Outlet half-channel (to matrix)"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "Blender scene, atp_synthase.glb",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in Blender for Beyond Books",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Teaching model; not reviewed by a subject expert."
+}

@@ -142,11 +142,16 @@ def check(
             errors.append(f"image uses a URI ({img['uri'][:40]}); embed it in the GLB")
     if gltf.get("extensionsRequired"):
         errors.append(f"requires extensions {gltf['extensionsRequired']} (check renderer support)")
+    # A model that brings its own motion (no guided animation plays its clips) is driven by the
+    # viewer's ModelMotion, which leaves position and rotation to the clips, so Blender's
+    # transforms stay as they are, and its text and leader lines stay unnamed so they aren't parts.
+    # See docs/3d-asset-workflow.md, "Animated models".
+    has_own_motion = bool(gltf.get("animations")) and not animations
     node_names = component_nodes(gltf)
-    if any("mesh" in n and not n.get("name") for n in gltf.get("nodes", [])):
+    if not has_own_motion and any("mesh" in n and not n.get("name") for n in gltf.get("nodes", [])):
         errors.append("a mesh node has no name; components cannot be resolved")
     for n in gltf.get("nodes", []):
-        if "rotation" in n or "scale" in n or "matrix" in n:
+        if not has_own_motion and ("rotation" in n or "scale" in n or "matrix" in n):
             errors.append(f"{n.get('name')}: apply rotation/scale before export (keep translation)")
     tris = sum(len(t) for _, _, t, _ in mesh_parts(gltf, binary))
     if tris > MAX_TRIANGLES:
@@ -174,7 +179,7 @@ def check(
         errors.append("license is missing")
     # baked clips must move nodes inside a component: the viewer positions component nodes itself
     clips = {a.get("name") for a in gltf.get("animations", [])}
-    for a in gltf.get("animations", []):
+    for a in [] if has_own_motion else gltf.get("animations", []):
         moved = {gltf["nodes"][c["target"]["node"]].get("name") for c in a["channels"]}
         if clash := sorted(moved & listed):
             errors.append(f"clip '{a.get('name')}' animates component nodes {clash}; animate their children")

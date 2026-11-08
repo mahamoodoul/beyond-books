@@ -1,0 +1,232 @@
+{
+  "asset_id": "cell_membrane_transport_v1",
+  "version": 1,
+  "name": "Cell Membrane Transport",
+  "description": "A patch of cell membrane showing simple diffusion, osmosis, facilitated diffusion and active transport. Play runs the 12 s Blender timeline.",
+  "subject": "biology",
+  "format": "glb",
+  "object_key": "demo-assets/glb/cell_membrane_transport_v1.glb",
+  "preview_key": "demo-assets/previews/cell_membrane_transport_v1.png",
+  "size_bytes": 20205876,
+  "content_hash": "sha256:40042c6f130afbd94ccf04bc7df04cdb0e86651aaf6f5e1be1a4171d45f79d57",
+  "triangle_count": 695488,
+  "units": "metres",
+  "bounds": {
+    "min": [
+      -0.994,
+      0.142,
+      -0.205
+    ],
+    "max": [
+      0.846,
+      1.071,
+      0.518
+    ]
+  },
+  "components": [
+    {
+      "mesh_name": "Actin_filaments_cytoskeleton",
+      "label": "Actin filaments (cytoskeleton)"
+    },
+    {
+      "mesh_name": "Aquaporin_monomer_1",
+      "label": "Aquaporin monomer 1"
+    },
+    {
+      "mesh_name": "Aquaporin_monomer_2",
+      "label": "Aquaporin monomer 2"
+    },
+    {
+      "mesh_name": "Aquaporin_monomer_3",
+      "label": "Aquaporin monomer 3"
+    },
+    {
+      "mesh_name": "Aquaporin_monomer_4",
+      "label": "Aquaporin monomer 4"
+    },
+    {
+      "mesh_name": "Cholesterol_inner_leaflet",
+      "label": "Cholesterol (inner leaflet)"
+    },
+    {
+      "mesh_name": "Cholesterol_outer_leaflet",
+      "label": "Cholesterol (outer leaflet)"
+    },
+    {
+      "mesh_name": "CO2_molecule_1",
+      "label": "CO2 molecule 1"
+    },
+    {
+      "mesh_name": "CO2_molecule_2",
+      "label": "CO2 molecule 2"
+    },
+    {
+      "mesh_name": "Glucose_cytosol_1",
+      "label": "Glucose (cytosol) 1"
+    },
+    {
+      "mesh_name": "Glucose_outside_1",
+      "label": "Glucose (outside) 1"
+    },
+    {
+      "mesh_name": "Glucose_outside_2",
+      "label": "Glucose (outside) 2"
+    },
+    {
+      "mesh_name": "Glucose_outside_3",
+      "label": "Glucose (outside) 3"
+    },
+    {
+      "mesh_name": "Glucose_GLUT1",
+      "label": "Glucose (GLUT1)"
+    },
+    {
+      "mesh_name": "GLUT1_C-domain",
+      "label": "GLUT1 C-domain"
+    },
+    {
+      "mesh_name": "GLUT1_N-domain",
+      "label": "GLUT1 N-domain"
+    },
+    {
+      "mesh_name": "Glycolipid_sugar_chains",
+      "label": "Glycolipid sugar chains"
+    },
+    {
+      "mesh_name": "Glycoprotein_sugar_chains",
+      "label": "Glycoprotein sugar chains"
+    },
+    {
+      "mesh_name": "Glycoprotein_001",
+      "label": "Glycoprotein 1"
+    },
+    {
+      "mesh_name": "K_channel_subunit_1",
+      "label": "K+ channel subunit 1"
+    },
+    {
+      "mesh_name": "K_channel_subunit_2",
+      "label": "K+ channel subunit 2"
+    },
+    {
+      "mesh_name": "K_channel_subunit_3",
+      "label": "K+ channel subunit 3"
+    },
+    {
+      "mesh_name": "K_channel_subunit_4",
+      "label": "K+ channel subunit 4"
+    },
+    {
+      "mesh_name": "K_ion_channel_1",
+      "label": "K+ ion (channel) 1"
+    },
+    {
+      "mesh_name": "K_ion_channel_2",
+      "label": "K+ ion (channel) 2"
+    },
+    {
+      "mesh_name": "K_ion_channel_3",
+      "label": "K+ ion (channel) 3"
+    },
+    {
+      "mesh_name": "K_ion_channel_4",
+      "label": "K+ ion (channel) 4"
+    },
+    {
+      "mesh_name": "K_ion_pump_1",
+      "label": "K+ ion (pump) 1"
+    },
+    {
+      "mesh_name": "K_ion_pump_2",
+      "label": "K+ ion (pump) 2"
+    },
+    {
+      "mesh_name": "Na_ion_pump_1",
+      "label": "Na+ ion (pump) 1"
+    },
+    {
+      "mesh_name": "Na_ion_pump_2",
+      "label": "Na+ ion (pump) 2"
+    },
+    {
+      "mesh_name": "Na_ion_pump_3",
+      "label": "Na+ ion (pump) 3"
+    },
+    {
+      "mesh_name": "Phosphate_Pi",
+      "label": "Phosphate (Pi)"
+    },
+    {
+      "mesh_name": "Pump_A_domain_actuator",
+      "label": "Pump A domain (actuator)"
+    },
+    {
+      "mesh_name": "Pump_alpha_subunit_TM_P_domain",
+      "label": "Pump alpha subunit (TM + P domain)"
+    },
+    {
+      "mesh_name": "Pump_beta_subunit",
+      "label": "Pump beta subunit"
+    },
+    {
+      "mesh_name": "Pump_gamma_subunit_FXYD",
+      "label": "Pump gamma subunit (FXYD)"
+    },
+    {
+      "mesh_name": "ADP",
+      "label": "ADP"
+    },
+    {
+      "mesh_name": "ATP",
+      "label": "ATP"
+    },
+    {
+      "mesh_name": "Pump_N_domain_binds_ATP",
+      "label": "Pump N domain (binds ATP)"
+    },
+    {
+      "mesh_name": "O2_molecule_1",
+      "label": "O2 molecule 1"
+    },
+    {
+      "mesh_name": "O2_molecule_2",
+      "label": "O2 molecule 2"
+    },
+    {
+      "mesh_name": "O2_molecule_3",
+      "label": "O2 molecule 3"
+    },
+    {
+      "mesh_name": "Peripheral_membrane_protein",
+      "label": "Peripheral membrane protein"
+    },
+    {
+      "mesh_name": "Phospholipids_inner_leaflet",
+      "label": "Phospholipids (inner leaflet)"
+    },
+    {
+      "mesh_name": "Phospholipids_outer_leaflet",
+      "label": "Phospholipids (outer leaflet)"
+    }
+  ],
+  "supported_interactions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+  ],
+  "animation_capabilities": [],
+  "paths": {},
+  "provider": {
+    "source": "blender",
+    "generator": "Blender scene, cell_membrane_transport.glb",
+    "job_id": null
+  },
+  "license": {
+    "spdx": "CC0-1.0",
+    "source": "Modelled in Blender for Beyond Books",
+    "attribution": null,
+    "allowed_use": "development_and_demo_only"
+  },
+  "review_status": "draft_unreviewed",
+  "accuracy_note": "Teaching model; not reviewed by a subject expert."
+}

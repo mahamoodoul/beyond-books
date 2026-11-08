@@ -1,0 +1,1707 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_dna_double_helix_01",
+ "title": "DNA Double Helix",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "dna_double_helix_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 60
+ },
+ "components": [
+  {
+   "component_id": "base_01a_c",
+   "mesh_name": "Base_01a_C",
+   "label": "Base 01a C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_01b_g",
+   "mesh_name": "Base_01b_G",
+   "label": "Base 01b G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_02a_g",
+   "mesh_name": "Base_02a_G",
+   "label": "Base 02a G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_02b_c",
+   "mesh_name": "Base_02b_C",
+   "label": "Base 02b C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_03a_a",
+   "mesh_name": "Base_03a_A",
+   "label": "Base 03a A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_03b_t",
+   "mesh_name": "Base_03b_T",
+   "label": "Base 03b T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_04a_t",
+   "mesh_name": "Base_04a_T",
+   "label": "Base 04a T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_04b_a",
+   "mesh_name": "Base_04b_A",
+   "label": "Base 04b A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_05a_g",
+   "mesh_name": "Base_05a_G",
+   "label": "Base 05a G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_05b_c",
+   "mesh_name": "Base_05b_C",
+   "label": "Base 05b C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_06a_c",
+   "mesh_name": "Base_06a_C",
+   "label": "Base 06a C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_06b_g",
+   "mesh_name": "Base_06b_G",
+   "label": "Base 06b G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_07a_a",
+   "mesh_name": "Base_07a_A",
+   "label": "Base 07a A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_07b_t",
+   "mesh_name": "Base_07b_T",
+   "label": "Base 07b T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_08a_t",
+   "mesh_name": "Base_08a_T",
+   "label": "Base 08a T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_08b_a",
+   "mesh_name": "Base_08b_A",
+   "label": "Base 08b A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_09a_t",
+   "mesh_name": "Base_09a_T",
+   "label": "Base 09a T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_09b_a",
+   "mesh_name": "Base_09b_A",
+   "label": "Base 09b A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_10a_c",
+   "mesh_name": "Base_10a_C",
+   "label": "Base 10a C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_10b_g",
+   "mesh_name": "Base_10b_G",
+   "label": "Base 10b G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_11a_g",
+   "mesh_name": "Base_11a_G",
+   "label": "Base 11a G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_11b_c",
+   "mesh_name": "Base_11b_C",
+   "label": "Base 11b C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_12a_a",
+   "mesh_name": "Base_12a_A",
+   "label": "Base 12a A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_12b_t",
+   "mesh_name": "Base_12b_T",
+   "label": "Base 12b T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_13a_g",
+   "mesh_name": "Base_13a_G",
+   "label": "Base 13a G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_13b_c",
+   "mesh_name": "Base_13b_C",
+   "label": "Base 13b C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_14a_c",
+   "mesh_name": "Base_14a_C",
+   "label": "Base 14a C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_14b_g",
+   "mesh_name": "Base_14b_G",
+   "label": "Base 14b G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_15a_t",
+   "mesh_name": "Base_15a_T",
+   "label": "Base 15a T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_15b_a",
+   "mesh_name": "Base_15b_A",
+   "label": "Base 15b A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_16a_a",
+   "mesh_name": "Base_16a_A",
+   "label": "Base 16a A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_16b_t",
+   "mesh_name": "Base_16b_T",
+   "label": "Base 16b T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_17a_a",
+   "mesh_name": "Base_17a_A",
+   "label": "Base 17a A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_17b_t",
+   "mesh_name": "Base_17b_T",
+   "label": "Base 17b T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_18a_c",
+   "mesh_name": "Base_18a_C",
+   "label": "Base 18a C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_18b_g",
+   "mesh_name": "Base_18b_G",
+   "label": "Base 18b G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_19a_g",
+   "mesh_name": "Base_19a_G",
+   "label": "Base 19a G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_19b_c",
+   "mesh_name": "Base_19b_C",
+   "label": "Base 19b C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_20a_t",
+   "mesh_name": "Base_20a_T",
+   "label": "Base 20a T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_20b_a",
+   "mesh_name": "Base_20b_A",
+   "label": "Base 20b A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_21a_g",
+   "mesh_name": "Base_21a_G",
+   "label": "Base 21a G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_21b_c",
+   "mesh_name": "Base_21b_C",
+   "label": "Base 21b C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_22a_c",
+   "mesh_name": "Base_22a_C",
+   "label": "Base 22a C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_22b_g",
+   "mesh_name": "Base_22b_G",
+   "label": "Base 22b G",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_23a_a",
+   "mesh_name": "Base_23a_A",
+   "label": "Base 23a A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_23b_t",
+   "mesh_name": "Base_23b_T",
+   "label": "Base 23b T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_24a_t",
+   "mesh_name": "Base_24a_T",
+   "label": "Base 24a T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "base_24b_a",
+   "mesh_name": "Base_24b_A",
+   "label": "Base 24b A",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_01a",
+   "mesh_name": "Deoxyribose_01a",
+   "label": "Deoxyribose 01a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_01b",
+   "mesh_name": "Deoxyribose_01b",
+   "label": "Deoxyribose 01b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_02a",
+   "mesh_name": "Deoxyribose_02a",
+   "label": "Deoxyribose 02a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_02b",
+   "mesh_name": "Deoxyribose_02b",
+   "label": "Deoxyribose 02b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_03a",
+   "mesh_name": "Deoxyribose_03a",
+   "label": "Deoxyribose 03a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_03b",
+   "mesh_name": "Deoxyribose_03b",
+   "label": "Deoxyribose 03b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_04a",
+   "mesh_name": "Deoxyribose_04a",
+   "label": "Deoxyribose 04a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_04b",
+   "mesh_name": "Deoxyribose_04b",
+   "label": "Deoxyribose 04b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_05a",
+   "mesh_name": "Deoxyribose_05a",
+   "label": "Deoxyribose 05a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_05b",
+   "mesh_name": "Deoxyribose_05b",
+   "label": "Deoxyribose 05b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_06a",
+   "mesh_name": "Deoxyribose_06a",
+   "label": "Deoxyribose 06a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_06b",
+   "mesh_name": "Deoxyribose_06b",
+   "label": "Deoxyribose 06b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_07a",
+   "mesh_name": "Deoxyribose_07a",
+   "label": "Deoxyribose 07a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_07b",
+   "mesh_name": "Deoxyribose_07b",
+   "label": "Deoxyribose 07b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_08a",
+   "mesh_name": "Deoxyribose_08a",
+   "label": "Deoxyribose 08a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_08b",
+   "mesh_name": "Deoxyribose_08b",
+   "label": "Deoxyribose 08b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_09a",
+   "mesh_name": "Deoxyribose_09a",
+   "label": "Deoxyribose 09a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_09b",
+   "mesh_name": "Deoxyribose_09b",
+   "label": "Deoxyribose 09b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_10a",
+   "mesh_name": "Deoxyribose_10a",
+   "label": "Deoxyribose 10a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_10b",
+   "mesh_name": "Deoxyribose_10b",
+   "label": "Deoxyribose 10b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_11a",
+   "mesh_name": "Deoxyribose_11a",
+   "label": "Deoxyribose 11a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_11b",
+   "mesh_name": "Deoxyribose_11b",
+   "label": "Deoxyribose 11b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_12a",
+   "mesh_name": "Deoxyribose_12a",
+   "label": "Deoxyribose 12a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_12b",
+   "mesh_name": "Deoxyribose_12b",
+   "label": "Deoxyribose 12b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_13a",
+   "mesh_name": "Deoxyribose_13a",
+   "label": "Deoxyribose 13a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_13b",
+   "mesh_name": "Deoxyribose_13b",
+   "label": "Deoxyribose 13b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_14a",
+   "mesh_name": "Deoxyribose_14a",
+   "label": "Deoxyribose 14a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_14b",
+   "mesh_name": "Deoxyribose_14b",
+   "label": "Deoxyribose 14b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_15a",
+   "mesh_name": "Deoxyribose_15a",
+   "label": "Deoxyribose 15a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_15b",
+   "mesh_name": "Deoxyribose_15b",
+   "label": "Deoxyribose 15b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_16a",
+   "mesh_name": "Deoxyribose_16a",
+   "label": "Deoxyribose 16a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_16b",
+   "mesh_name": "Deoxyribose_16b",
+   "label": "Deoxyribose 16b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_17a",
+   "mesh_name": "Deoxyribose_17a",
+   "label": "Deoxyribose 17a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_17b",
+   "mesh_name": "Deoxyribose_17b",
+   "label": "Deoxyribose 17b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_18a",
+   "mesh_name": "Deoxyribose_18a",
+   "label": "Deoxyribose 18a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_18b",
+   "mesh_name": "Deoxyribose_18b",
+   "label": "Deoxyribose 18b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_19a",
+   "mesh_name": "Deoxyribose_19a",
+   "label": "Deoxyribose 19a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_19b",
+   "mesh_name": "Deoxyribose_19b",
+   "label": "Deoxyribose 19b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_20a",
+   "mesh_name": "Deoxyribose_20a",
+   "label": "Deoxyribose 20a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_20b",
+   "mesh_name": "Deoxyribose_20b",
+   "label": "Deoxyribose 20b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_21a",
+   "mesh_name": "Deoxyribose_21a",
+   "label": "Deoxyribose 21a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_21b",
+   "mesh_name": "Deoxyribose_21b",
+   "label": "Deoxyribose 21b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_22a",
+   "mesh_name": "Deoxyribose_22a",
+   "label": "Deoxyribose 22a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_22b",
+   "mesh_name": "Deoxyribose_22b",
+   "label": "Deoxyribose 22b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_23a",
+   "mesh_name": "Deoxyribose_23a",
+   "label": "Deoxyribose 23a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_23b",
+   "mesh_name": "Deoxyribose_23b",
+   "label": "Deoxyribose 23b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_24a",
+   "mesh_name": "Deoxyribose_24a",
+   "label": "Deoxyribose 24a",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "deoxyribose_24b",
+   "mesh_name": "Deoxyribose_24b",
+   "label": "Deoxyribose 24b",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_01_g_c",
+   "mesh_name": "H-bonds_01_G-C",
+   "label": "H-bonds 01 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_02_g_c",
+   "mesh_name": "H-bonds_02_G-C",
+   "label": "H-bonds 02 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_03_a_t",
+   "mesh_name": "H-bonds_03_A-T",
+   "label": "H-bonds 03 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_04_a_t",
+   "mesh_name": "H-bonds_04_A-T",
+   "label": "H-bonds 04 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_05_g_c",
+   "mesh_name": "H-bonds_05_G-C",
+   "label": "H-bonds 05 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_06_g_c",
+   "mesh_name": "H-bonds_06_G-C",
+   "label": "H-bonds 06 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_07_a_t",
+   "mesh_name": "H-bonds_07_A-T",
+   "label": "H-bonds 07 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_08_a_t",
+   "mesh_name": "H-bonds_08_A-T",
+   "label": "H-bonds 08 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_09_a_t",
+   "mesh_name": "H-bonds_09_A-T",
+   "label": "H-bonds 09 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_10_g_c",
+   "mesh_name": "H-bonds_10_G-C",
+   "label": "H-bonds 10 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_11_g_c",
+   "mesh_name": "H-bonds_11_G-C",
+   "label": "H-bonds 11 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_12_a_t",
+   "mesh_name": "H-bonds_12_A-T",
+   "label": "H-bonds 12 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_13_g_c",
+   "mesh_name": "H-bonds_13_G-C",
+   "label": "H-bonds 13 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_14_g_c",
+   "mesh_name": "H-bonds_14_G-C",
+   "label": "H-bonds 14 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_15_a_t",
+   "mesh_name": "H-bonds_15_A-T",
+   "label": "H-bonds 15 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_16_a_t",
+   "mesh_name": "H-bonds_16_A-T",
+   "label": "H-bonds 16 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_17_a_t",
+   "mesh_name": "H-bonds_17_A-T",
+   "label": "H-bonds 17 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_18_g_c",
+   "mesh_name": "H-bonds_18_G-C",
+   "label": "H-bonds 18 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_19_g_c",
+   "mesh_name": "H-bonds_19_G-C",
+   "label": "H-bonds 19 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_20_a_t",
+   "mesh_name": "H-bonds_20_A-T",
+   "label": "H-bonds 20 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_21_g_c",
+   "mesh_name": "H-bonds_21_G-C",
+   "label": "H-bonds 21 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_22_g_c",
+   "mesh_name": "H-bonds_22_G-C",
+   "label": "H-bonds 22 G-C",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_23_a_t",
+   "mesh_name": "H-bonds_23_A-T",
+   "label": "H-bonds 23 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "h_bonds_24_a_t",
+   "mesh_name": "H-bonds_24_A-T",
+   "label": "H-bonds 24 A-T",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_00",
+   "mesh_name": "Phosphate_1_00",
+   "label": "Phosphate 1 00",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_01",
+   "mesh_name": "Phosphate_1_01",
+   "label": "Phosphate 1 01",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_02",
+   "mesh_name": "Phosphate_1_02",
+   "label": "Phosphate 1 02",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_03",
+   "mesh_name": "Phosphate_1_03",
+   "label": "Phosphate 1 03",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_04",
+   "mesh_name": "Phosphate_1_04",
+   "label": "Phosphate 1 04",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_05",
+   "mesh_name": "Phosphate_1_05",
+   "label": "Phosphate 1 05",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_06",
+   "mesh_name": "Phosphate_1_06",
+   "label": "Phosphate 1 06",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_07",
+   "mesh_name": "Phosphate_1_07",
+   "label": "Phosphate 1 07",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_08",
+   "mesh_name": "Phosphate_1_08",
+   "label": "Phosphate 1 08",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_09",
+   "mesh_name": "Phosphate_1_09",
+   "label": "Phosphate 1 09",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_10",
+   "mesh_name": "Phosphate_1_10",
+   "label": "Phosphate 1 10",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_11",
+   "mesh_name": "Phosphate_1_11",
+   "label": "Phosphate 1 11",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_12",
+   "mesh_name": "Phosphate_1_12",
+   "label": "Phosphate 1 12",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_13",
+   "mesh_name": "Phosphate_1_13",
+   "label": "Phosphate 1 13",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_14",
+   "mesh_name": "Phosphate_1_14",
+   "label": "Phosphate 1 14",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_15",
+   "mesh_name": "Phosphate_1_15",
+   "label": "Phosphate 1 15",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_16",
+   "mesh_name": "Phosphate_1_16",
+   "label": "Phosphate 1 16",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_17",
+   "mesh_name": "Phosphate_1_17",
+   "label": "Phosphate 1 17",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_18",
+   "mesh_name": "Phosphate_1_18",
+   "label": "Phosphate 1 18",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_19",
+   "mesh_name": "Phosphate_1_19",
+   "label": "Phosphate 1 19",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_20",
+   "mesh_name": "Phosphate_1_20",
+   "label": "Phosphate 1 20",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_21",
+   "mesh_name": "Phosphate_1_21",
+   "label": "Phosphate 1 21",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_22",
+   "mesh_name": "Phosphate_1_22",
+   "label": "Phosphate 1 22",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_1_23",
+   "mesh_name": "Phosphate_1_23",
+   "label": "Phosphate 1 23",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_02",
+   "mesh_name": "Phosphate_2_02",
+   "label": "Phosphate 2 02",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_03",
+   "mesh_name": "Phosphate_2_03",
+   "label": "Phosphate 2 03",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_04",
+   "mesh_name": "Phosphate_2_04",
+   "label": "Phosphate 2 04",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_05",
+   "mesh_name": "Phosphate_2_05",
+   "label": "Phosphate 2 05",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_06",
+   "mesh_name": "Phosphate_2_06",
+   "label": "Phosphate 2 06",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_07",
+   "mesh_name": "Phosphate_2_07",
+   "label": "Phosphate 2 07",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_08",
+   "mesh_name": "Phosphate_2_08",
+   "label": "Phosphate 2 08",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_09",
+   "mesh_name": "Phosphate_2_09",
+   "label": "Phosphate 2 09",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_10",
+   "mesh_name": "Phosphate_2_10",
+   "label": "Phosphate 2 10",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_11",
+   "mesh_name": "Phosphate_2_11",
+   "label": "Phosphate 2 11",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_12",
+   "mesh_name": "Phosphate_2_12",
+   "label": "Phosphate 2 12",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_13",
+   "mesh_name": "Phosphate_2_13",
+   "label": "Phosphate 2 13",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_14",
+   "mesh_name": "Phosphate_2_14",
+   "label": "Phosphate 2 14",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_15",
+   "mesh_name": "Phosphate_2_15",
+   "label": "Phosphate 2 15",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_16",
+   "mesh_name": "Phosphate_2_16",
+   "label": "Phosphate 2 16",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_17",
+   "mesh_name": "Phosphate_2_17",
+   "label": "Phosphate 2 17",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_18",
+   "mesh_name": "Phosphate_2_18",
+   "label": "Phosphate 2 18",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_19",
+   "mesh_name": "Phosphate_2_19",
+   "label": "Phosphate 2 19",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_20",
+   "mesh_name": "Phosphate_2_20",
+   "label": "Phosphate 2 20",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_21",
+   "mesh_name": "Phosphate_2_21",
+   "label": "Phosphate 2 21",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_22",
+   "mesh_name": "Phosphate_2_22",
+   "label": "Phosphate 2 22",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_23",
+   "mesh_name": "Phosphate_2_23",
+   "label": "Phosphate 2 23",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_24",
+   "mesh_name": "Phosphate_2_24",
+   "label": "Phosphate 2 24",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_2_25",
+   "mesh_name": "Phosphate_2_25",
+   "label": "Phosphate 2 25",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {}
+}

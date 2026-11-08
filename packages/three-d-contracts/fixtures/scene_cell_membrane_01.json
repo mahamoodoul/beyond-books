@@ -1,0 +1,487 @@
+{
+ "schema_version": "1.0",
+ "scene_id": "scene_cell_membrane_01",
+ "title": "Cell Membrane Transport",
+ "learning_objective_ids": [],
+ "asset_refs": [
+  {
+   "asset_id": "cell_membrane_transport_v1",
+   "version": 1
+  }
+ ],
+ "camera": {
+  "preset": "front",
+  "min_distance": 0.1,
+  "max_distance": 60
+ },
+ "components": [
+  {
+   "component_id": "actin_filaments_cytoskeleton",
+   "mesh_name": "Actin_filaments_cytoskeleton",
+   "label": "Actin filaments (cytoskeleton)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "aquaporin_monomer_1",
+   "mesh_name": "Aquaporin_monomer_1",
+   "label": "Aquaporin monomer 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "aquaporin_monomer_2",
+   "mesh_name": "Aquaporin_monomer_2",
+   "label": "Aquaporin monomer 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "aquaporin_monomer_3",
+   "mesh_name": "Aquaporin_monomer_3",
+   "label": "Aquaporin monomer 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "aquaporin_monomer_4",
+   "mesh_name": "Aquaporin_monomer_4",
+   "label": "Aquaporin monomer 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cholesterol_inner_leaflet",
+   "mesh_name": "Cholesterol_inner_leaflet",
+   "label": "Cholesterol (inner leaflet)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "cholesterol_outer_leaflet",
+   "mesh_name": "Cholesterol_outer_leaflet",
+   "label": "Cholesterol (outer leaflet)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "co2_molecule_1",
+   "mesh_name": "CO2_molecule_1",
+   "label": "CO2 molecule 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "co2_molecule_2",
+   "mesh_name": "CO2_molecule_2",
+   "label": "CO2 molecule 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glucose_cytosol_1",
+   "mesh_name": "Glucose_cytosol_1",
+   "label": "Glucose (cytosol) 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glucose_outside_1",
+   "mesh_name": "Glucose_outside_1",
+   "label": "Glucose (outside) 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glucose_outside_2",
+   "mesh_name": "Glucose_outside_2",
+   "label": "Glucose (outside) 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glucose_outside_3",
+   "mesh_name": "Glucose_outside_3",
+   "label": "Glucose (outside) 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glucose_glut1",
+   "mesh_name": "Glucose_GLUT1",
+   "label": "Glucose (GLUT1)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glut1_c_domain",
+   "mesh_name": "GLUT1_C-domain",
+   "label": "GLUT1 C-domain",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glut1_n_domain",
+   "mesh_name": "GLUT1_N-domain",
+   "label": "GLUT1 N-domain",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glycolipid_sugar_chains",
+   "mesh_name": "Glycolipid_sugar_chains",
+   "label": "Glycolipid sugar chains",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glycoprotein_sugar_chains",
+   "mesh_name": "Glycoprotein_sugar_chains",
+   "label": "Glycoprotein sugar chains",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "glycoprotein_1",
+   "mesh_name": "Glycoprotein_001",
+   "label": "Glycoprotein 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_channel_subunit_1",
+   "mesh_name": "K_channel_subunit_1",
+   "label": "K+ channel subunit 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_channel_subunit_2",
+   "mesh_name": "K_channel_subunit_2",
+   "label": "K+ channel subunit 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_channel_subunit_3",
+   "mesh_name": "K_channel_subunit_3",
+   "label": "K+ channel subunit 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_channel_subunit_4",
+   "mesh_name": "K_channel_subunit_4",
+   "label": "K+ channel subunit 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_ion_channel_1",
+   "mesh_name": "K_ion_channel_1",
+   "label": "K+ ion (channel) 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_ion_channel_2",
+   "mesh_name": "K_ion_channel_2",
+   "label": "K+ ion (channel) 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_ion_channel_3",
+   "mesh_name": "K_ion_channel_3",
+   "label": "K+ ion (channel) 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_ion_channel_4",
+   "mesh_name": "K_ion_channel_4",
+   "label": "K+ ion (channel) 4",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_ion_pump_1",
+   "mesh_name": "K_ion_pump_1",
+   "label": "K+ ion (pump) 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "k_ion_pump_2",
+   "mesh_name": "K_ion_pump_2",
+   "label": "K+ ion (pump) 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "na_ion_pump_1",
+   "mesh_name": "Na_ion_pump_1",
+   "label": "Na+ ion (pump) 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "na_ion_pump_2",
+   "mesh_name": "Na_ion_pump_2",
+   "label": "Na+ ion (pump) 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "na_ion_pump_3",
+   "mesh_name": "Na_ion_pump_3",
+   "label": "Na+ ion (pump) 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phosphate_pi",
+   "mesh_name": "Phosphate_Pi",
+   "label": "Phosphate (Pi)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pump_a_domain_actuator",
+   "mesh_name": "Pump_A_domain_actuator",
+   "label": "Pump A domain (actuator)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pump_alpha_subunit_tm_p_domain",
+   "mesh_name": "Pump_alpha_subunit_TM_P_domain",
+   "label": "Pump alpha subunit (TM + P domain)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pump_beta_subunit",
+   "mesh_name": "Pump_beta_subunit",
+   "label": "Pump beta subunit",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pump_gamma_subunit_fxyd",
+   "mesh_name": "Pump_gamma_subunit_FXYD",
+   "label": "Pump gamma subunit (FXYD)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "adp",
+   "mesh_name": "ADP",
+   "label": "ADP",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "atp",
+   "mesh_name": "ATP",
+   "label": "ATP",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "pump_n_domain_binds_atp",
+   "mesh_name": "Pump_N_domain_binds_ATP",
+   "label": "Pump N domain (binds ATP)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "o2_molecule_1",
+   "mesh_name": "O2_molecule_1",
+   "label": "O2 molecule 1",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "o2_molecule_2",
+   "mesh_name": "O2_molecule_2",
+   "label": "O2 molecule 2",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "o2_molecule_3",
+   "mesh_name": "O2_molecule_3",
+   "label": "O2 molecule 3",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "peripheral_membrane_protein",
+   "mesh_name": "Peripheral_membrane_protein",
+   "label": "Peripheral membrane protein",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phospholipids_inner_leaflet",
+   "mesh_name": "Phospholipids_inner_leaflet",
+   "label": "Phospholipids (inner leaflet)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  },
+  {
+   "component_id": "phospholipids_outer_leaflet",
+   "mesh_name": "Phospholipids_outer_leaflet",
+   "label": "Phospholipids (outer leaflet)",
+   "actions": [
+    "highlight",
+    "toggle_visibility",
+    "focus_camera"
+   ]
+  }
+ ],
+ "controls": [
+  "rotate",
+  "zoom",
+  "pan",
+  "select_component"
+ ],
+ "animation_refs": [],
+ "explanations": {}
+}
