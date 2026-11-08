@@ -414,7 +414,7 @@ function ViewerBody({
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           ref={container}
-          className="relative aspect-[4/3] min-h-72 w-full overflow-hidden rounded-lg border border-slate-200 bg-[#eef2f6] sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
+          className="keep-light relative aspect-[4/3] min-h-72 w-full overflow-hidden rounded-lg border border-slate-200 bg-[#eef2f6] sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
         >
           <SceneCanvas
             scene={scene}

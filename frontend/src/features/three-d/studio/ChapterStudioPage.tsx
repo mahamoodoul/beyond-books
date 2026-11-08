@@ -329,7 +329,7 @@ export default function ChapterStudioPage() {
             <GenerationTray className="mb-4" onOpen={(id) => window.open(`/teacher/assets?open=${id}`, "_blank", "noopener")} />
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
               <div className="space-y-4">
-                <section className="relative h-[46vh] min-h-72 overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
+                <section className="keep-light relative h-[46vh] min-h-72 overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
                   {!selected ? (
                     <div className="grid h-full place-items-center p-6 text-center text-slate-500">No 3D yet. Use “Add 3D” on a lesson below.</div>
                   ) : resolved.error ? (
