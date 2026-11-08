@@ -26,6 +26,7 @@ import {
 } from "@/features/three-d/library/runtime/quality";
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
+import { VrExperience, type VrUi } from "@/features/three-d/library/vr/VrExperience";
 
 import { CooperativeWheel } from "./CooperativeWheel";
 import {
@@ -61,10 +62,18 @@ export interface SceneCanvasProps {
   quality: QualityTier;
   /** Set when quality is "auto": called when the frame rate drops. */
   onQualityDecline?: () => void;
+  /** What to show inside the headset; set for as long as a VR session runs. */
+  vrUi?: VrUi | null;
+  onVrActiveChange?: (active: boolean) => void;
+  onVrError?: (message: string) => void;
 }
 
 export function SceneCanvas(props: SceneCanvasProps) {
-  const q = QUALITY[props.quality];
+  const inVr = !!props.vrUi;
+  // A headset can't use the composer (it draws to its own framebuffer) and must hold its frame rate,
+  // so VR always uses the plain path: no post-processing, no shadows, tone mapping on the renderer.
+  const tier: QualityTier = inVr ? "low" : props.quality;
+  const q = QUALITY[tier];
   const [ready, setReady] = useState(false);
   // judge performance only once loading, BVH builds and shader compiles are behind us
   const [monitoring, setMonitoring] = useState(false);
@@ -78,7 +87,8 @@ export function SceneCanvas(props: SceneCanvasProps) {
       className="touch-none"
       // render only when something changes: an idle view costs nothing (GPU, battery, fans)
       frameloop="demand"
-      dpr={q.dpr}
+      // the user's setting, not the VR tier: resizing during a headset session is not allowed
+      dpr={QUALITY[props.quality].dpr}
       shadows={q.shadows ? "soft" : false}
       camera={{ fov: 40, near: 0.05, far: 2000, position: [6, 4, 6] }}
       // gl options apply once at creation; keep them fixed across tiers
@@ -93,7 +103,7 @@ export function SceneCanvas(props: SceneCanvasProps) {
       <color attach="background" args={[STUDIO_BACKDROP]} />
       <StudioEnvironment />
       <RendererToneMapping enabled={!q.postprocessing} />
-      <StudioLights runtime={props.runtime} tier={props.quality} ready={ready} />
+      <StudioLights runtime={props.runtime} tier={tier} ready={ready} />
       <SceneContent
         {...props}
         onReady={(info) => {
@@ -101,9 +111,9 @@ export function SceneCanvas(props: SceneCanvasProps) {
           props.onReady(info);
         }}
       />
-      {ready && <PostEffects runtime={props.runtime} tier={props.quality} />}
+      {ready && <PostEffects runtime={props.runtime} tier={tier} />}
       <QualityMonitor
-        enabled={monitoring && !!props.onQualityDecline}
+        enabled={monitoring && !inVr && !!props.onQualityDecline}
         onDecline={() => props.onQualityDecline?.()}
       />
       <CooperativeWheel />
@@ -120,6 +130,9 @@ function SceneContent({
   onReady,
   onError,
   onAnimationTick,
+  vrUi,
+  onVrActiveChange,
+  onVrError,
 }: SceneCanvasProps) {
   const [roots, setRoots] = useState<THREE.Object3D[] | null>(null);
   const procedural = useRef<ProceduralInstance[]>([]);
@@ -133,6 +146,10 @@ function SceneContent({
   // latest onReady without re-running effects when the parent re-renders
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
+
+  // Identity on a normal screen. In VR these place the model in the room, in metres.
+  const stage = useRef<THREE.Group>(null);
+  const pivot = useRef<THREE.Group>(null);
 
   const clips = useRef<ClipPlayer | null>(null);
   // ---- load assets + build procedural sources; dispose everything on unmount
@@ -318,16 +335,31 @@ function SceneContent({
   if (!roots) return null;
   return (
     <>
-      {roots.map((r) => (
-        <primitive
-          key={r.uuid}
-          object={r}
-          onClick={handleClick}
-          onPointerMove={handleMove}
-          onPointerOut={handleOut}
-        />
-      ))}
-      <CameraRig scene={scene} roots={roots} runtime={runtime} command={camera} />
+      <group ref={stage}>
+        <group ref={pivot}>
+          {roots.map((r) => (
+            <primitive
+              key={r.uuid}
+              object={r}
+              onClick={handleClick}
+              onPointerMove={handleMove}
+              onPointerOut={handleOut}
+            />
+          ))}
+        </group>
+      </group>
+      <VrExperience
+        roots={roots}
+        stage={stage}
+        pivot={pivot}
+        runtime={runtime}
+        ui={vrUi ?? null}
+        canSelect={canSelect}
+        onSelect={onSelect}
+        onActiveChange={(active) => onVrActiveChange?.(active)}
+        onError={(message) => onVrError?.(message)}
+      />
+      <CameraRig scene={scene} roots={roots} runtime={runtime} command={camera} inVr={!!vrUi} />
       <Labels scene={scene} runtime={runtime} canSelect={canSelect} onSelect={onSelect} />
       <FlowParticles runtime={runtime} />
     </>
@@ -407,12 +439,15 @@ function CameraRig({
   roots,
   runtime,
   command,
+  inVr,
 }: {
   scene: ResolvedScene;
   roots: THREE.Object3D[];
   runtime: RefObject<ViewerRuntime>;
   command: CameraCommand;
+  inVr: boolean;
 }) {
+  const gl = useThree((s) => s.gl);
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const cam = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const invalidate = useThree((s) => s.invalidate);
@@ -433,6 +468,7 @@ function CameraRig({
   };
 
   const moveTo = (target: THREE.Vector3, distance: number, dir?: THREE.Vector3, exact = false) => {
+    if (gl.xr.isPresenting) return; // the headset owns the camera: never move a person's view
     const c = controls.current;
     const from = c ? c.target.clone() : new THREE.Vector3();
     const d = dir ?? cam.position.clone().sub(from).normalize();
@@ -512,6 +548,10 @@ function CameraRig({
   };
 
   useFrame((_, delta) => {
+    if (gl.xr.isPresenting) {
+      tween.current = null;
+      return;
+    }
     const f = runtime.current.frame.focus;
     if (f && f.key !== lastFocusKey.current) {
       lastFocusKey.current = f.key;
@@ -541,6 +581,7 @@ function CameraRig({
     <OrbitControls
       ref={controls}
       makeDefault
+      enabled={!inVr}
       enableDamping
       enableRotate={controlsAllowed.has("rotate")}
       enableZoom={controlsAllowed.has("zoom")}
@@ -579,6 +620,7 @@ function Labels({
   const size = useThree((s) => s.size);
   const invalidate = useThree((s) => s.invalidate);
   const els = useRef<Record<string, HTMLDivElement>>({});
+  const layerRef = useRef<HTMLDivElement | null>(null);
   const tmp = useMemo(() => new THREE.Vector3(), []);
   const latest = useRef({ canSelect, onSelect });
   latest.current = { canSelect, onSelect };
@@ -622,6 +664,7 @@ function Labels({
       made[id] = wrap;
     }
     host.appendChild(layer);
+    layerRef.current = layer;
     els.current = made;
     // on-demand rendering: draw a few frames so the new labels get placed
     let frames = 0;
@@ -634,6 +677,7 @@ function Labels({
     return () => {
       cancelAnimationFrame(raf);
       layer.remove(); // safe even if the canvas wrapper is already gone
+      layerRef.current = null;
       els.current = {};
     };
   }, [gl, signature, invalidate]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -642,6 +686,11 @@ function Labels({
   const sizes = useRef<Record<string, { w: number; h: number }>>({});
 
   useFrame(() => {
+    // DOM labels can't appear in a headset; skip their layout work while one is presenting
+    const layer = layerRef.current;
+    const hidden = gl.xr.isPresenting;
+    if (layer && (layer.style.visibility === "hidden") !== hidden) layer.style.visibility = hidden ? "hidden" : "";
+    if (hidden) return;
     const rt = runtime.current;
     const anim = rt.frame;
     // labels are pushed away from the model's centre on screen, so they sit beside the parts
