@@ -327,7 +327,7 @@ export default function ChapterStudioPage() {
               </div>
             </div>
             <GenerationTray className="mb-4" onOpen={(id) => window.open(`/teacher/assets?open=${id}`, "_blank", "noopener")} />
-            <div className="grid gap-4 xl:grid-cols-[1fr_26rem]">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
               <div className="space-y-4">
                 <section className="relative h-[46vh] min-h-72 overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
                   {!selected ? (
@@ -372,7 +372,7 @@ export default function ChapterStudioPage() {
                           </button>
                         </div>
                         {scenes.length > 0 && (
-                          <ul className="mt-3 grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+                          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
                             {scenes.map((i) => {
                               const pct = i.parts ? Math.round((i.explained / i.parts) * 100) : 0;
                               const active = i.scene.id === selected?.scene.id;
