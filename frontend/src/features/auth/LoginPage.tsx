@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useNavigate, useSearchParams } from "react
 import { usePreferences } from "@/app/providers/PreferencesProvider";
 import { Icon } from "@/components/ui/Icon";
 import BeyondBooksLogo from "@/components/BeyondBooksLogo";
+import { ApiError } from "@/api/client";
 import { ErrorAlert } from "@/components/feedback";
 import { homeFor, useLogin, useMe } from "./auth";
 
@@ -37,6 +38,8 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [searchParams] = useSearchParams();
   const [role, setRole] = useState<Role>(searchParams.get("role") === "teacher" ? "teacher" : "student");
+  // Email of the demo account last tried, so a 401 can say "not set up here" instead of "wrong password".
+  const [demoAttempt, setDemoAttempt] = useState<string | null>(null);
   useEffect(() => {
     if (!DEV_QUICK_LOGIN) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -48,6 +51,7 @@ export function LoginPage() {
       if (!account || login.isPending) return;
       event.preventDefault();
       setRole(key === "T" ? "teacher" : "student");
+      setDemoAttempt(account.email);
       login.mutate(account, { onSuccess: user => navigate(homeFor(user), { replace: true }) });
     };
     window.addEventListener("keydown", onKeyDown);
@@ -56,6 +60,7 @@ export function LoginPage() {
   if (me.data) return <Navigate to={homeFor(me.data)} replace />;
   function submit(event: FormEvent) {
     event.preventDefault();
+    setDemoAttempt(null);
     login.mutate({ email, password, role }, { onSuccess: user => navigate(from?.startsWith("/") && !from.startsWith("//") ? from : homeFor(user), { replace: true }) });
   }
   return <main className="login-page">
@@ -88,7 +93,14 @@ export function LoginPage() {
         </fieldset>
         <label>Email<input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} /></label>
         <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} /></label>
-        <ErrorAlert error={login.error ?? me.error} />
+        {demoAttempt && login.error instanceof ApiError && login.error.status === 401 ? (
+          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-800">
+            The demo account {demoAttempt} isn’t set up on this server yet.{" "}
+            {import.meta.env.DEV ? <>Create it with <code>make seed-demo</code>.</> : "Sign in with your own account, or create one."}
+          </p>
+        ) : (
+          <ErrorAlert error={login.error ?? me.error} />
+        )}
         <button type="submit" className="button button-primary login-submit" disabled={login.isPending}>{login.isPending ? "Signing in…" : `Sign in as ${role}`}<Icon name="arrow-right" size={18} /></button>
       </form>
       {DEV_QUICK_LOGIN && (
@@ -96,7 +108,7 @@ export function LoginPage() {
           <button
             className="button button-secondary login-demo-button"
             disabled={login.isPending}
-            onClick={() => { const account = DEV_QUICK_LOGIN[role === "teacher" ? "T" : "S"]; if (account) login.mutate(account, { onSuccess: user => navigate(homeFor(user), { replace: true }) }); }}
+            onClick={() => { const account = DEV_QUICK_LOGIN[role === "teacher" ? "T" : "S"]; if (account) { setDemoAttempt(account.email); login.mutate(account, { onSuccess: user => navigate(homeFor(user), { replace: true }) }); } }}
             type="button"
           >
             Use the demo {role} account
