@@ -5,13 +5,25 @@ import * as THREE from "three";
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { deriveFrame } from "@/features/three-d/library/runtime/animation";
-import { loadGlb } from "@/features/three-d/library/runtime/assetLoader";
+import { loadGlb, type OwnView } from "@/features/three-d/library/runtime/assetLoader";
 import { ClipPlayer } from "@/features/three-d/library/runtime/clipPlayer";
 import { labelSpot } from "@/features/three-d/library/runtime/labels";
 import { computeExplodeOffsets, explodedBounds } from "@/features/three-d/library/runtime/explode";
+import {
+  fitFrame,
+  hasOwnMotion,
+  ModelMotion,
+  type MotionSource,
+  type MotionSupport,
+} from "@/features/three-d/library/runtime/modelMotion";
 import { buildProcedural, type ProceduralInstance } from "@/features/three-d/library/runtime/procedural";
 import { disposeObject3D } from "@/features/three-d/library/runtime/resourceDisposer";
-import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/library/runtime/quality";
+import {
+  AUTO_QUALITY,
+  QUALITY,
+  STUDIO_BACKDROP,
+  type QualityTier,
+} from "@/features/three-d/library/runtime/quality";
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
 
@@ -26,7 +38,15 @@ import {
 
 export type CameraCommand =
   | { kind: "fit"; key: number }
+  /** Re-frame the model from wherever the viewer is looking, e.g. after it exploded. */
+  | { kind: "frame"; key: number }
   | { kind: "focus"; componentId: string; key: number };
+
+export interface ReadyInfo {
+  missing: string[];
+  /** What the GLB's own Run / Explode motion can do; null when it has none. */
+  motion: MotionSupport | null;
+}
 
 export interface SceneCanvasProps {
   scene: ResolvedScene;
@@ -34,7 +54,7 @@ export interface SceneCanvasProps {
   camera: CameraCommand;
   canSelect: (componentId: string) => boolean;
   onSelect: (componentId: string | null) => void;
-  onReady: (info: { missing: string[] }) => void;
+  onReady: (info: ReadyInfo) => void;
   onError: (message: string) => void;
   /** Called on every animation step / status change detected by the render loop. */
   onAnimationTick?: () => void;
@@ -69,8 +89,8 @@ export function SceneCanvas(props: SceneCanvasProps) {
       }}
       onPointerMissed={() => props.onSelect(null)}
     >
-      {/* Same light studio backdrop as the Chapter Studio viewport, so models read the same everywhere. */}
-      <color attach="background" args={["#eef2f6"]} />
+      {/* Same backdrop as the Chapter Studio viewport, so models read the same everywhere. */}
+      <color attach="background" args={[STUDIO_BACKDROP]} />
       <StudioEnvironment />
       <RendererToneMapping enabled={!q.postprocessing} />
       <StudioLights runtime={props.runtime} tier={props.quality} ready={ready} />
@@ -107,7 +127,7 @@ function SceneContent({
   const invalidate = useThree((s) => s.invalidate);
   const threeScene = useThree((s) => s.scene);
   const threeCamera = useThree((s) => s.camera);
-  const pendingReady = useRef<{ missing: string[] } | null>(null);
+  const pendingReady = useRef<ReadyInfo | null>(null);
   const meshes = useRef<THREE.Mesh[]>([]);
   const nested = useRef(true);
   // latest onReady without re-running effects when the parent re-renders
@@ -119,12 +139,18 @@ function SceneContent({
   useEffect(() => {
     const ctrl = new AbortController();
     const built: THREE.Object3D[] = [];
+    let motion: ModelMotion | null = null;
     (async () => {
       try {
+        const guided = (scene.spec.animation_refs ?? []).length > 0;
+        const motionSources: MotionSource[] = [];
+        let ownView: OwnView | null = null;
         for (const asset of scene.assets) {
-          const root = await loadGlb(asset.url, ctrl.signal);
-          root.name = `asset:${asset.meta.asset_id}`;
-          built.push(root);
+          const glb = await loadGlb(asset.url, ctrl.signal);
+          glb.root.name = `asset:${asset.meta.asset_id}`;
+          built.push(glb.root);
+          if (hasOwnMotion(glb.clips, guided)) motionSources.push({ root: glb.root, clips: glb.clips });
+          ownView ??= glb.view;
         }
         procedural.current = [];
         for (const src of scene.spec.procedural ?? []) {
@@ -136,6 +162,9 @@ function SceneContent({
         }
         if (ctrl.signal.aborted) return;
         const rt = runtime.current;
+        motion = motionSources.length > 0 ? new ModelMotion(motionSources) : null;
+        rt.motion = motion;
+        rt.ownView = motion ? ownView : null;
         const holder = new THREE.Group();
         built.forEach((r) => holder.add(r));
         const missing = rt.registry.registerFrom(holder, scene.components);
@@ -143,13 +172,14 @@ function SceneContent({
         rt.bounds = rt.registry.bounds();
         const authored: Record<string, Vec3 | undefined> = {};
         for (const c of scene.components) authored[c.componentId] = c.meta?.explode_offset;
-        rt.offsets = computeExplodeOffsets(rt.bounds, authored);
+        rt.offsets = motion ? {} : computeExplodeOffsets(rt.bounds, authored);
         rt.animatedScene = procedural.current.some((p) => !!p.update);
         clips.current?.dispose();
         clips.current = new ClipPlayer(built);
         meshes.current = prepareMeshes(built, rt);
         nested.current = true;
-        pendingReady.current = { missing };
+        pendingReady.current = { missing, motion: motion?.support ?? null };
+        rt.loadedRoots = built;
         setRoots(built);
       } catch (err) {
         if (!ctrl.signal.aborted) {
@@ -159,8 +189,16 @@ function SceneContent({
     })();
     return () => {
       ctrl.abort();
+      const rt = runtime.current;
       clips.current?.dispose();
       clips.current = null;
+      motion?.dispose();
+      // a newer load may already have landed: only clear what this one set
+      if (rt.loadedRoots === built) rt.loadedRoots = null;
+      if (motion && rt.motion === motion) {
+        rt.motion = null;
+        rt.ownView = null;
+      }
       built.forEach(disposeObject3D);
       runtime.current.registry.dispose();
       procedural.current = [];
@@ -200,12 +238,20 @@ function SceneContent({
     const rt = runtime.current;
     // on-demand rendering: the first frame after idle has a huge delta; cap it
     const dt = Math.min(delta, 1 / 30);
+    // a model's own clips keep real time on a slow GPU, as they do in Blender
+    const clipDt = Math.min(delta, 0.1);
     time.current += dt;
     if (rt.runner && rt.runner.tick(dt * 1000)) onAnimationTick?.();
     const goal = rt.explodeTarget;
-    rt.explode = rt.reducedMotion
-      ? goal
-      : THREE.MathUtils.damp(rt.explode, goal, 5, dt);
+    if (rt.reducedMotion) {
+      rt.explode = goal;
+    } else if (rt.motion?.support.explode) {
+      // the clip has its own easing: walk through it at its own speed, so the motion can be watched
+      const step = clipDt / rt.motion.explodeSeconds;
+      rt.explode += THREE.MathUtils.clamp(goal - rt.explode, -step, step);
+    } else {
+      rt.explode = THREE.MathUtils.damp(rt.explode, goal, 5, dt);
+    }
     if (Math.abs(rt.explode - goal) < 1e-4) rt.explode = goal;
     const isNested = rt.explode < NESTED_UNTIL;
     if (isNested !== nested.current) {
@@ -215,7 +261,9 @@ function SceneContent({
     rt.frame = rt.runner
       ? deriveFrame(rt.runner.steps, rt.runner.position, rt.paths, rt.reducedMotion)
       : rt.frame;
+    rt.motion?.update(clipDt, rt.running, rt.explode);
     rt.registry.apply({
+      clipDriven: rt.motion !== null,
       explode: rt.explode,
       offsets: rt.offsets,
       frame: rt.frame,
@@ -232,6 +280,7 @@ function SceneContent({
     // keep rendering while anything is still changing; otherwise go idle
     const busy =
       rt.explode !== goal ||
+      rt.running ||
       rt.runner?.position.status === "playing" ||
       (rt.animatedScene && !rt.reducedMotion) ||
       (rt.frame.highlight !== null && !rt.reducedMotion) ||
@@ -278,7 +327,7 @@ function SceneContent({
           onPointerOut={handleOut}
         />
       ))}
-      <CameraRig scene={scene} runtime={runtime} command={camera} />
+      <CameraRig scene={scene} roots={roots} runtime={runtime} command={camera} />
       <Labels scene={scene} runtime={runtime} canSelect={canSelect} onSelect={onSelect} />
       <FlowParticles runtime={runtime} />
     </>
@@ -355,10 +404,12 @@ interface Tween {
 
 function CameraRig({
   scene,
+  roots,
   runtime,
   command,
 }: {
   scene: ResolvedScene;
+  roots: THREE.Object3D[];
   runtime: RefObject<ViewerRuntime>;
   command: CameraCommand;
 }) {
@@ -381,11 +432,11 @@ function CameraRig({
     return Math.max(0.05, Math.min(minD, reg.size.length() * 0.35));
   };
 
-  const moveTo = (target: THREE.Vector3, distance: number, dir?: THREE.Vector3) => {
+  const moveTo = (target: THREE.Vector3, distance: number, dir?: THREE.Vector3, exact = false) => {
     const c = controls.current;
     const from = c ? c.target.clone() : new THREE.Vector3();
     const d = dir ?? cam.position.clone().sub(from).normalize();
-    const dist = THREE.MathUtils.clamp(distance, nearestAllowed(), maxD);
+    const dist = exact ? distance : THREE.MathUtils.clamp(distance, nearestAllowed(), maxD);
     const toPos = target.clone().addScaledVector(d, dist);
     tween.current = {
       fromPos: cam.position.clone(),
@@ -405,32 +456,51 @@ function CameraRig({
   };
 
   /**
-   * Frame the whole scene. Assembled: the scene's camera preset. Exploded: a near-frontal view,
-   * because exploded layouts are spread out like a diagram facing the viewer (+Z).
+   * Frame the whole scene. A GLB with its own camera starts from that view. Otherwise, assembled:
+   * the scene's camera preset. Exploded: a near-frontal view, because exploded layouts are spread
+   * out like a diagram facing the viewer (+Z).
    */
-  const fit = () => {
+  const fit = (keepDirection = false) => {
     const rt = runtime.current;
-    const b = explodedBounds(rt.bounds, rt.offsets, rt.explodeTarget);
     const exploded = rt.explodeTarget >= 0.5;
     const dir = new THREE.Vector3(
-      ...(exploded
-        ? EXPLODED_DIRECTION
-        : (PRESET_DIRECTIONS[spec.preset ?? "three_quarter"] ?? [1, 0.7, 1])),
+      ...(rt.ownView?.direction ??
+        (exploded
+          ? EXPLODED_DIRECTION
+          : (PRESET_DIRECTIONS[spec.preset ?? "three_quarter"] ?? [1, 0.7, 1]))),
     ).normalize();
+    if (rt.motion) {
+      const c = controls.current;
+      const d = keepDirection && c ? cam.position.clone().sub(c.target).normalize() : dir;
+      const frame = rt.motion.frameAt(rt.explodeTarget);
+      const { center, distance } = fitFrame(frame, d, cam.fov, Math.max(cam.aspect, 0.5));
+      moveTo(center, distance, d, true);
+      return;
+    }
+    const b = explodedBounds(rt.bounds, rt.offsets, rt.explodeTarget);
     // the bounding sphere over-estimates deep exploded layouts; frame a little tighter
     moveTo(new THREE.Vector3(...b.center), fitDistance(b.radius) * (exploded ? 0.8 : 1), dir);
   };
 
-  // first fit uses the scene's camera preset and jumps there
+  // first fit uses the scene's camera preset and jumps there. It waits for roots from the current
+  // load: if a reload replaced these between setRoots and this effect, the next roots run it.
+  const fitted = useRef(false);
   useEffect(() => {
+    if (fitted.current || runtime.current.loadedRoots !== roots) return;
+    fitted.current = true;
+    const fov = runtime.current.ownView?.fov;
+    if (fov) {
+      cam.fov = fov;
+      cam.updateProjectionMatrix();
+    }
     fit();
     if (tween.current) tween.current.duration = 0;
-  }, []);
+  }, [roots]);
 
   useEffect(() => {
     if (command.key === 0) return;
-    if (command.kind === "fit") fit();
-    else focusOn(command.componentId);
+    if (command.kind === "focus") focusOn(command.componentId);
+    else fit(command.kind === "frame");
   }, [command]);
 
   const focusOn = (id: string) => {

@@ -48,6 +48,8 @@ export interface ViewState {
   hovered: string | null;
   timeSeconds: number;
   reducedMotion: boolean;
+  /** The model's own animation clips move the parts: leave position and rotation to them. */
+  clipDriven?: boolean;
 }
 
 const HIGHLIGHT = new THREE.Color("#ffb020");
@@ -173,20 +175,22 @@ export class ComponentRegistry {
       const anim = view.frame.components[id];
       const o = r.object;
 
-      // position: rest + exploded offset + animated translation
-      o.position.copy(r.basePosition);
-      const off = view.offsets[id];
-      if (off) o.position.add(this.tmpV.set(off[0], off[1], off[2]).multiplyScalar(view.explode));
-      if (anim?.translation) o.position.add(this.tmpV.set(...anim.translation));
+      if (!view.clipDriven) {
+        // position: rest + exploded offset + animated translation
+        o.position.copy(r.basePosition);
+        const off = view.offsets[id];
+        if (off) o.position.add(this.tmpV.set(off[0], off[1], off[2]).multiplyScalar(view.explode));
+        if (anim?.translation) o.position.add(this.tmpV.set(...anim.translation));
 
-      // rotation about the component's own centre
-      o.quaternion.copy(r.baseQuaternion);
-      if (anim?.rotation) {
-        this.tmpQ.setFromEuler(this.tmpE.set(...anim.rotation));
-        const c0 = this.tmpW.copy(r.localCenter).applyQuaternion(r.baseQuaternion);
-        o.quaternion.premultiply(this.tmpQ);
-        const c1 = this.tmpV.copy(r.localCenter).applyQuaternion(o.quaternion);
-        o.position.add(c0).sub(c1);
+        // rotation about the component's own centre
+        o.quaternion.copy(r.baseQuaternion);
+        if (anim?.rotation) {
+          this.tmpQ.setFromEuler(this.tmpE.set(...anim.rotation));
+          const c0 = this.tmpW.copy(r.localCenter).applyQuaternion(r.baseQuaternion);
+          o.quaternion.premultiply(this.tmpQ);
+          const c1 = this.tmpV.copy(r.localCenter).applyQuaternion(o.quaternion);
+          o.position.add(c0).sub(c1);
+        }
       }
 
       const ghost =

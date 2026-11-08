@@ -11,6 +11,7 @@ import { Box3, Mesh, Vector3, type Group, type Material, type Object3D } from "t
 import type { ResolvedScene, SceneComponent } from "@/api/generated/schema";
 
 import { SceneCanvas } from "../components/SceneCanvas";
+import { STUDIO_BACKDROP } from "../library/runtime/quality";
 import { AnimationLayer, type AnimationClock } from "../runtime/AnimationLayer";
 
 interface Props {
@@ -138,7 +139,7 @@ export default function StudioViewport(p: Props) {
       onSelect={p.onSelect}
       onMeshesLoaded={() => {}}
       reducedMotion={false}
-      background="#eef2f6"
+      background={STUDIO_BACKDROP}
       overlay={(root) => (
         <>
           <Hotspots root={root} components={components} selected={p.selected} onSelect={p.onSelect} />

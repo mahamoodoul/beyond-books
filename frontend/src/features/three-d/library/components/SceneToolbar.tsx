@@ -7,8 +7,13 @@ export interface SceneToolbarProps {
   showLabels: boolean;
   onShowLabels: (v: boolean) => void;
   explode: number | null;
-  onExplode: (v: number) => void;
+  /** `scrub`: the slider is being dragged, so follow it directly rather than animating there. */
+  onExplode: (v: number, scrub?: boolean) => void;
   onExplodeCommit: () => void;
+  /** The model's own looping animation (e.g. a running engine), when it has one. */
+  runLabel?: string;
+  running?: boolean;
+  onRun?: () => void;
   onResetView: () => void;
   onFullscreen?: () => void;
   /** Studio tools (optional): X-ray and a guided tour through the parts. */
@@ -32,6 +37,9 @@ export function SceneToolbar({
   explode,
   onExplode,
   onExplodeCommit,
+  runLabel,
+  running,
+  onRun,
   onResetView,
   onFullscreen,
   quality,
@@ -79,11 +87,23 @@ export function SceneToolbar({
             value={explode}
             aria-label="Exploded view amount"
             className="w-28 accent-accent sm:w-40"
-            onChange={(e) => onExplode(Number(e.target.value))}
+            onChange={(e) => onExplode(Number(e.target.value), true)}
             onPointerUp={onExplodeCommit}
             onKeyUp={onExplodeCommit}
           />
         </div>
+      )}
+
+      {onRun && (
+        <button
+          type="button"
+          className={`${btn} ${running ? "border-[#38b2ac] bg-[#38b2ac] hover:bg-[#4fc7c0]" : ""}`}
+          style={running ? { color: "#0b0d16" } : undefined}
+          aria-pressed={!!running}
+          onClick={onRun}
+        >
+          {running ? "■ Stop" : `▶ ${runLabel ?? "Play"}`}
+        </button>
       )}
 
       {onXray && (

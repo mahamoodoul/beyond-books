@@ -10,9 +10,8 @@ import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
-import { explodedBounds } from "@/features/three-d/library/runtime/explode";
 import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/library/runtime/quality";
-import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
+import { viewBounds, type ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
 
 /** Soft studio lighting from three's RoomEnvironment, prefiltered on the GPU. */
 export function StudioEnvironment({ intensity = 0.55 }: { intensity?: number }) {
@@ -89,7 +88,7 @@ export function StudioLights({
     const light = key.current;
     if (!light || !ready) return;
     const rt = runtime.current;
-    const b = explodedBounds(rt.bounds, rt.offsets, 1);
+    const b = viewBounds(rt, 1);
     const center = new THREE.Vector3(...b.center);
     const dir = new THREE.Vector3(0.45, 0.8, 0.55).normalize();
     light.position.copy(center).addScaledVector(dir, b.radius * 3);
@@ -115,7 +114,7 @@ export function StudioLights({
     const rt = runtime.current;
     const playing = rt.runner?.position.status === "playing";
     const sig = `${rt.explode.toFixed(4)}|${[...rt.hidden].join(",")}|${rt.frame.stepNumber ?? ""}`;
-    if (playing || rt.animatedScene || sig !== lastKey.current) {
+    if (playing || rt.animatedScene || rt.running || sig !== lastKey.current) {
       lastKey.current = sig;
       gl.shadowMap.needsUpdate = true;
     }
