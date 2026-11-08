@@ -197,6 +197,7 @@ state validation, evaluation, sub-goals), mirrored in the browser for instant fe
 - [x] Docker Compose for local, production and Coolify
 - [x] Docs: ADRs 0004–0014, testing strategy, security review, runbooks, deployment, how to add a provider
 - [ ] Deploy to the shared Coolify URL and open it from the demo device
+- [x] AWS single-instance deployment designed in Terraform (`infrastructure/aws/terraform`): VPC, EC2 with SSM, S3, Secrets Manager, alarms, budget, Caddy TLS, optional Blender container; validated, not yet applied
 - [ ] Teammate runs the README setup from a clean checkout
 - [ ] Demo reset documented: what `make seed` deletes and how to start fresh
 

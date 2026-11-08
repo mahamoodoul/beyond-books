@@ -200,6 +200,7 @@ def _blender(s: "Settings") -> Any:
         max_turns=s.blender_max_turns,
         timeout_s=s.blender_timeout_s,
         system_prompt=system,
+        export_dir=s.blender_export_dir,
     )
 
 
@@ -226,8 +227,11 @@ register(
 
 
 def _allowed(spec: ProviderSpec, settings: "Settings") -> bool:
-    """Dev-only providers (fake, blender) can never be picked in staging/production."""
-    return spec.production_ready or settings.environment not in {"staging", "production"}
+    """Dev-only providers (fake, blender) are refused in staging/production, except blender when
+    EDU3D_BLENDER_ALLOW_IN_PRODUCTION is set (Blender in a private container next to the API)."""
+    if spec.production_ready or settings.environment not in {"staging", "production"}:
+        return True
+    return spec.name == "blender" and settings.blender_allow_in_production
 
 
 def available(kind: Kind, settings: "Settings") -> list[ProviderSpec]:

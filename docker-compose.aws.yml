@@ -1,0 +1,162 @@
+# Production stack for one AWS instance (see infrastructure/aws/terraform). Started by systemd
+# with --env-file .env.aws, which the first-boot script writes from Secrets Manager.
+#
+# Traffic: browser -> caddy :80/:443 (TLS) -> frontend nginx :3939 -> /api -> api :8000
+# Private network only: postgres, redis, api, worker, blender. Uploads and 3D models live in S3.
+
+# Same image as the Coolify deployment: api-start (migrations + demo seed) and the seed data
+# are baked in; EXTRAS="" leaves the dev dependencies out.
+x-backend-build: &backend-build
+  context: .
+  dockerfile: infrastructure/docker/backend.Dockerfile
+  args:
+    EXTRAS: ""
+
+x-backend-env: &backend-env
+  EDU3D_ENVIRONMENT: ${EDU3D_ENVIRONMENT:-development}
+  EDU3D_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-edu3d}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-edu3d}
+  EDU3D_REDIS_URL: redis://redis:6379/0
+  EDU3D_PUBLIC_BASE_URL: ${PUBLIC_URL}
+  EDU3D_CORS_ORIGINS: '["${PUBLIC_URL}"]'
+  EDU3D_JWT_SECRET: ${EDU3D_JWT_SECRET}
+  EDU3D_COOKIE_SECURE: ${EDU3D_COOKIE_SECURE:-true}
+  EDU3D_OPEN_REGISTRATION: ${EDU3D_OPEN_REGISTRATION:-true}
+  EDU3D_DEMO_MODE: ${EDU3D_DEMO_MODE:-false}
+  EDU3D_DEMO_TEACHER_EMAIL: ${SEED_TEACHER_EMAIL:-teacher@example.com}
+  EDU3D_DEMO_STUDENT_EMAIL: ${SEED_STUDENT_EMAIL:-student@example.com}
+  EDU3D_JOBS_RUN_INLINE: "false"
+  EDU3D_LOG_FORMAT: json
+  # Files in S3 through the instance role (no keys in env).
+  EDU3D_STORAGE_BACKEND: ${EDU3D_STORAGE_BACKEND:-s3}
+  EDU3D_S3_BUCKET: ${EDU3D_S3_BUCKET:-}
+  EDU3D_S3_REGION: ${EDU3D_S3_REGION:-eu-north-1}
+  EDU3D_LOCAL_STORAGE_DIR: /data/storage
+  # AI
+  EDU3D_LLM_PROVIDER: ${EDU3D_LLM_PROVIDER:-fake}
+  EDU3D_THREE_D_PROVIDER: ${EDU3D_THREE_D_PROVIDER:-fake}
+  EDU3D_ANTHROPIC_API_KEY: ${EDU3D_ANTHROPIC_API_KEY:-}
+  EDU3D_ANTHROPIC_MODEL: ${EDU3D_ANTHROPIC_MODEL:-claude-opus-5-5}
+  EDU3D_OPENAI_API_KEY: ${EDU3D_OPENAI_API_KEY:-}
+  ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
+  EDU3D_ELEVENLABS_API_KEY: ${EDU3D_ELEVENLABS_API_KEY:-}
+  # Blender in the private "blender" container (compose profile "blender")
+  EDU3D_BLENDER_HOST: blender
+  EDU3D_BLENDER_PORT: "9876"
+  EDU3D_BLENDER_EXPORT_DIR: /exports
+  EDU3D_BLENDER_ALLOW_IN_PRODUCTION: ${EDU3D_BLENDER_ALLOW_IN_PRODUCTION:-false}
+  # Demo data on every start (idempotent): courses, labs, demo accounts, analytics students
+  EDU3D_SEED_DEMO_DATA: ${EDU3D_SEED_DEMO_DATA:-false}
+  SEED_TEACHER_EMAIL: ${SEED_TEACHER_EMAIL:-teacher@example.com}
+  SEED_TEACHER_PASSWORD: ${SEED_TEACHER_PASSWORD:-teacher-demo-123}
+  SEED_STUDENT_EMAIL: ${SEED_STUDENT_EMAIL:-student@example.com}
+  SEED_STUDENT_PASSWORD: ${SEED_STUDENT_PASSWORD:-student-demo-123}
+  SEED_DEMO_STUDENTS: ${SEED_DEMO_STUDENTS:-50}
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      # a domain -> https with Let's Encrypt; an IP -> plain http on port 80
+      SITE_ADDRESS: ${DOMAIN:-:80}
+      ACME_EMAIL: ${ACME_EMAIL:-admin@example.com}
+    volumes:
+      - ./infrastructure/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [frontend]
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-edu3d}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-edu3d}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: *backend-build
+    restart: unless-stopped
+    command: api-start
+    environment: *backend-env
+    volumes:
+      - storage:/data
+      - blender-exports:/exports
+    expose: ["8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    build: *backend-build
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker --loglevel=INFO --concurrency=2
+    environment: *backend-env
+    volumes:
+      - storage:/data
+      - blender-exports:/exports
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  frontend:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/frontend.prod.Dockerfile
+      args:
+        VITE_DEMO_LOGIN: ${VITE_DEMO_LOGIN:-true}
+        VITE_DEMO_TEACHER: ${VITE_DEMO_TEACHER:-}
+        VITE_DEMO_STUDENT: ${VITE_DEMO_STUDENT:-}
+    restart: unless-stopped
+    expose: ["3939"]
+    depends_on: [api]
+
+  # Claude + Blender generator. Only started with COMPOSE_PROFILES=blender (set by Terraform
+  # when enable_blender = true). Never publishes a port; the api/worker reach it by name.
+  blender:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/blender.Dockerfile
+    profiles: ["blender"]
+    restart: unless-stopped
+    environment:
+      BLENDER_MCP_PORT: "9876"
+    volumes: [blender-exports:/exports]
+    expose: ["9876"]
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+
+volumes:
+  postgres-data:
+  redisdata:
+  storage:
+  blender-exports:
+  caddy-data:
+  caddy-config:

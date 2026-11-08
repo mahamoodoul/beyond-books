@@ -1,0 +1,7 @@
+# Remote state in S3 (create the bucket once, enable versioning). Then:
+#   terraform init -backend-config=backend.hcl
+bucket       = "beyond-books-terraform-state"
+key          = "aws-dev/terraform.tfstate"
+region       = "eu-north-1"
+encrypt      = true
+use_lockfile = true

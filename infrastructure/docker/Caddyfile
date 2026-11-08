@@ -1,0 +1,22 @@
+# Caddy in front of the stack: TLS from Let's Encrypt when DOMAIN is set, plain HTTP on the IP
+# otherwise. Everything goes to the frontend's nginx, which serves the SPA and proxies /api.
+{
+	email {$ACME_EMAIL:admin@example.com}
+}
+
+{$SITE_ADDRESS}
+
+encode zstd gzip
+reverse_proxy frontend:3939
+
+header {
+	Strict-Transport-Security "max-age=31536000"
+	X-Content-Type-Options nosniff
+	Referrer-Policy strict-origin-when-cross-origin
+	-Server
+}
+
+log {
+	output stdout
+	format json
+}

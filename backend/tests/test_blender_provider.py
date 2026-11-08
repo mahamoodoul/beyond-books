@@ -707,3 +707,29 @@ def test_restart_recovery_finishes_orphaned_jobs(
     retry = t.post(f"/api/v1/assets/{asset['id']}/generation-jobs/retry")
     assert retry.status_code == 202
     assert _wait(t, retry.json()["id"])["status"] == "completed"
+
+
+def test_blender_can_be_allowed_in_production_and_uses_the_shared_export_dir() -> None:
+    from app.core.config import Settings
+    from app.integrations import providers
+
+    base = dict(
+        environment="production",
+        jwt_secret="x" * 40,
+        cookie_secure=True,
+        llm_provider="anthropic",
+        anthropic_api_key="k",
+        three_d_provider="llm",
+        jobs_run_inline=False,
+    )
+    prod = Settings(**base)  # type: ignore[arg-type]
+    assert "blender" not in {p.name for p in providers.available("three_d", prod)}
+    allowed = Settings(  # type: ignore[arg-type]
+        **base,
+        blender_allow_in_production=True,
+        blender_export_dir="/exports",
+        blender_host="blender",
+    )
+    assert "blender" in {p.name for p in providers.available("three_d", allowed)}
+    p = providers.build_three_d(allowed, "blender")
+    assert p.export_dir == "/exports" and p.host == "blender"  # type: ignore[attr-defined]

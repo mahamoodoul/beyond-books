@@ -49,3 +49,12 @@ fake AI/3D providers selected, or jobs run inline. API docs are disabled automat
 `scripts/backup_db.sh` (pg_dump custom format + checksum) and `scripts/restore_db.sh` (refuses
 without `CONFIRM_RESTORE=yes`). With RDS prefer automated snapshots + PITR, and still run a
 **monthly restore test** into a scratch database; record the result in the runbook log.
+
+## AWS, single instance (Terraform)
+
+`infrastructure/aws/terraform/` deploys the whole stack on one EC2 instance with S3, Secrets
+Manager, SSM access, alarms and a budget: see its README for cost, steps and operations. It uses
+`docker-compose.aws.yml` (Caddy + frontend + api + worker + Postgres + Redis + optional Blender
+container, `infrastructure/docker/blender.Dockerfile`). Blender in a container needs
+`EDU3D_BLENDER_EXPORT_DIR` (a volume shared with the api/worker) and
+`EDU3D_BLENDER_ALLOW_IN_PRODUCTION=true`; both are set by Terraform.
