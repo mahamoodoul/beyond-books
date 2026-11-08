@@ -44,6 +44,7 @@ services:
       EDU3D_THREE_D_PROVIDER: ${EDU3D_THREE_D_PROVIDER:-fake}
       EDU3D_TRIPO_API_KEY: ${EDU3D_TRIPO_API_KEY:-}
       EDU3D_MESHY_API_KEY: ${EDU3D_MESHY_API_KEY:-}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}  # voice narration; read by app/integrations/elevenlabs
       EDU3D_JWT_SECRET: ${EDU3D_JWT_SECRET:-dev-only-insecure-secret-change-me-0123456789}
     ports: ["8000:8000"]
     volumes: ["./backend/app:/app/app", "./backend/migrations:/app/migrations", "storage:/data"]
