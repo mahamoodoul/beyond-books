@@ -97,7 +97,7 @@ variable "seed_teacher_email" {
 variable "seed_teacher_password" {
   description = "12+ characters, must pass the app's password rules (not containing the email)."
   type        = string
-  default     = "teacher-demo-123"
+  default     = "Fjord-Lesson-Plan-26"
   sensitive   = true
 }
 
@@ -108,7 +108,7 @@ variable "seed_student_email" {
 
 variable "seed_student_password" {
   type      = string
-  default   = "student-demo-123"
+  default   = "Fjord-Class-Notes-26"
   sensitive = true
 }
 

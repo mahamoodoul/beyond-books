@@ -65,12 +65,14 @@ resource "aws_instance" "app" {
     anthropic_model    = var.anthropic_model
     has_anthropic_key  = var.anthropic_api_key != ""
   })
-  user_data_replace_on_change = true
+  user_data_replace_on_change = false
 
   tags = { Name = local.name }
 
   lifecycle {
-    ignore_changes = [ami] # a new Ubuntu AMI must not recreate the box by surprise
+    # None of these may recreate the box (Postgres lives on its disk): a new Ubuntu AMI, a changed
+    # first-boot script, or AWS reporting the Elastic IP as a public IP.
+    ignore_changes = [ami, user_data, associate_public_ip_address]
   }
 }
 

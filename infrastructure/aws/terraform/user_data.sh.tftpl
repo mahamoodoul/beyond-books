@@ -72,6 +72,10 @@ SEED_TEACHER_EMAIL=${seed_teacher_email}
 SEED_TEACHER_PASSWORD=$(get SEED_TEACHER_PASSWORD)
 SEED_STUDENT_EMAIL=${seed_student_email}
 SEED_STUDENT_PASSWORD=$(get SEED_STUDENT_PASSWORD)
+# Login-page demo buttons (frontend build args); the passwords must pass the password rules.
+VITE_DEMO_LOGIN=${demo_mode}
+VITE_DEMO_TEACHER=${seed_teacher_email}:$(get SEED_TEACHER_PASSWORD)
+VITE_DEMO_STUDENT=${seed_student_email}:$(get SEED_STUDENT_PASSWORD)
 EDU3D_BLENDER_ALLOW_IN_PRODUCTION=${enable_blender}
 COMPOSE_PROFILES=${enable_blender ? "blender" : ""}
 ENV
