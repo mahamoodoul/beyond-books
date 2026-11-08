@@ -53,7 +53,7 @@ export function AccountPage() {
         </Card>
         <Card>
           <h2 className="mb-2 font-semibold">Your data</h2>
-          <p className="mb-3 text-sm text-slate-600">Download a copy of the personal data Edu3D holds about you (JSON).</p>
+          <p className="mb-3 text-sm text-slate-600">Download a copy of the personal data Beyond Books holds about you (JSON).</p>
           <Button variant="secondary" disabled={exportData.isPending} onClick={() => exportData.mutate()}>Download my data</Button>
           <ErrorAlert error={exportData.error} />
         </Card>

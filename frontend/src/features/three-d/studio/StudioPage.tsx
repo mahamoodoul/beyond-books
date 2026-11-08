@@ -185,7 +185,7 @@ export default function StudioPage() {
     <div className="min-h-screen bg-slate-50 text-slate-700">
       {/* top bar */}
       <header className="flex flex-wrap items-center gap-3 border-b border-slate-200 px-5 py-3">
-        <Link to={`/teacher/lessons/${lessonId}`} className="text-lg font-semibold text-slate-900">Edu3D <span className="text-teal-700">Studio</span></Link>
+        <Link to={`/teacher/lessons/${lessonId}`} className="text-lg font-semibold text-slate-900">Beyond Books <span className="text-teal-700">Studio</span></Link>
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
           <Link className="hover:text-slate-900" to="/teacher">Courses</Link><span>›</span>
           {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span>›</span></>}

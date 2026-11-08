@@ -199,7 +199,7 @@ export function StudentProgressPage() {
   const outline = outlines[index]?.data;
   const insight = insights[index]?.data;
   const coursePct = current ? pct(current.completed_lessons, current.total_lessons) : 0;
-  const heading = pct(done, total) >= 100 ? "Everything complete. Brilliant! 🏆" : done === 0 ? "Let's get started! 🚀" : pct(done, total) >= 50 ? "Over halfway there! 💪" : "Look how far you've come. 🌱";
+  const heading = pct(done, total) >= 100 ? "Everything complete. Brilliant! 🏆" : done === 0 ? "Let's get started! 🚀" : pct(done, total) > 50 ? "Over halfway there! 💪" : pct(done, total) === 50 ? "Halfway there! 💪" : "Look how far you've come. 🌱";
 
   return (
     <div className="pg">
@@ -210,10 +210,10 @@ export function StudentProgressPage() {
           <h1>{heading}</h1>
           <p>{done} of {total} lessons complete across {courses.length} course{courses.length === 1 ? "" : "s"}.</p>
           <div className="pg-stats">
-            <div className="pg-stat"><strong>{done}</strong><span>lessons done</span></div>
-            <div className="pg-stat"><strong>{quizzes}</strong><span>quiz attempts</span></div>
+            <div className="pg-stat"><strong>{done}</strong><span>{done === 1 ? "lesson done" : "lessons done"}</span></div>
+            <div className="pg-stat"><strong>{quizzes}</strong><span>{quizzes === 1 ? "quiz attempt" : "quiz attempts"}</span></div>
             <div className="pg-stat"><strong>{avg != null ? `${avg}%` : "–"}</strong><span>average score</span></div>
-            <div className="pg-stat"><strong>{mastered}</strong><span>skills mastered</span></div>
+            <div className="pg-stat"><strong>{mastered}</strong><span>{mastered === 1 ? "skill mastered" : "skills mastered"}</span></div>
           </div>
         </div>
       </section>

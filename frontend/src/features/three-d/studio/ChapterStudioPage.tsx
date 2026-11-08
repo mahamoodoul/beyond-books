@@ -9,6 +9,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 
 import { api, ApiError, errorMessage } from "@/api/client";
+import { plural } from "@/lib/plural";
 import type {
   AssessmentSummary,
   AvailablePart,
@@ -265,9 +266,9 @@ export default function ChapterStudioPage() {
   };
   const checks = [
     { label: "Chapter text", ok: done.source, detail: done.source ? `${source.data?.passages.length} passages from the textbook` : "No textbook pages linked to this chapter", step: "source" as StepKey },
-    { label: "Lessons", ok: done.lessons, detail: `${lessonList.length} lesson(s), ${lessonList.filter((l) => l.published_version).length} live`, step: "lessons" as StepKey },
+    { label: "Lessons", ok: done.lessons, detail: `${plural(lessonList.length, "lesson")}, ${lessonList.filter((l) => l.published_version).length} live`, step: "lessons" as StepKey },
     { label: "3D models", ok: done["3d"], detail: `${lessonsWith}/${lessonList.length} lessons have 3D · ${totals.explained}/${totals.parts} parts explained`, step: "3d" as StepKey },
-    { label: "Quiz", ok: done.quiz, detail: quizList.length ? `${quizList.length} quiz(zes)` : "No quiz yet", step: "quiz" as StepKey },
+    { label: "Quiz", ok: done.quiz, detail: quizList.length ? plural(quizList.length, "quiz", "quizzes") : "No quiz yet", step: "quiz" as StepKey },
   ];
 
   return (
