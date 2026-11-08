@@ -72,7 +72,8 @@
 }
 
 * { box-sizing: border-box; }
-html { min-width: 320px; background: var(--bg); }
+/* Reserve the scrollbar's space so pages don't shift sideways between short and long views. */
+html { min-width: 320px; background: var(--bg); scrollbar-gutter: stable; }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: var(--fs-base); }
 /* Element defaults live in the base layer: unlayered rules would beat every Tailwind utility
    (text-*, font-*), so buttons, links and inputs ignored their own colour and size classes. */
