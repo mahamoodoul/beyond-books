@@ -33,6 +33,7 @@ import { useResolved } from "./useStudio";
 const StudioViewport = lazy(() => import("./StudioViewport"));
 
 const PRESETS = ["three_quarter", "front", "side", "top"] as const;
+const PRESET_LABELS: Record<(typeof PRESETS)[number], string> = { three_quarter: "Three-quarter view", front: "Front", side: "Side", top: "Top" };
 const CONTROLS = ["rotate", "zoom", "pan", "select_component"] as const;
 const btn = "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:border-[#38b2ac]/60 hover:text-slate-900 disabled:opacity-40";
 const btnPrimary = "inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#38b2ac] px-3 py-1.5 text-sm font-semibold text-[#0b0d16] hover:bg-[#4fc7c0] disabled:opacity-40";
@@ -135,10 +136,10 @@ function SceneEditor({ item, chapterId, onDeleted, onDuplicated }: { item: Chapt
         <label className="block text-xs uppercase tracking-wide text-slate-500">Title
           <input className={`${input} mt-1`} value={draft.title} maxLength={200} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
         </label>
-        <div className="grid grid-cols-3 gap-2">
-          <label className="text-xs uppercase tracking-wide text-slate-500">Camera
+        <div className="grid grid-cols-2 gap-2">
+          <label className="col-span-2 text-xs uppercase tracking-wide text-slate-500">Camera
             <select className={`${input} mt-1`} value={cam.preset ?? "three_quarter"} onChange={(e) => setDraft({ ...draft, camera: { ...cam, preset: e.target.value as (typeof PRESETS)[number] } })}>
-              {PRESETS.map((p) => <option key={p} value={p}>{p.replace("_", " ")}</option>)}
+              {PRESETS.map((p) => <option key={p} value={p}>{PRESET_LABELS[p]}</option>)}
             </select>
           </label>
           <label className="text-xs uppercase tracking-wide text-slate-500">Min dist
