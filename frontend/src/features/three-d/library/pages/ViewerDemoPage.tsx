@@ -144,7 +144,9 @@ function TeacherStudio() {
   const title = assetId ? (libraryAsset?.name ?? "3D model") : (scene?.title ?? "3D Studio");
   const subtitle = assetId
     ? `${libraryAsset ? (SOURCE[libraryAsset.provider ?? ""] ?? "Uploaded") + " · " : ""}Click a part to focus on it and explore it in depth.`
-    : "Demo scene. Schematic, not reviewed content. Click a part to focus on it.";
+    : scene
+      ? "Demo scene. Schematic, not reviewed content. Click a part to focus on it."
+      : "Choose one of your models to explore it here.";
 
   return (
     <section className="space-y-4">
@@ -163,20 +165,21 @@ function TeacherStudio() {
             )}
             {library.data?.map((a) => (
               <NavLink key={a.id} to={`/studio/library/${a.id}`} className={() => pill(a.id === assetId)}>
-                {/* colour on a span: the app's unlayered `a { color: inherit }` beats utilities */}
                 <span className={a.id === assetId ? "text-white" : "text-slate-700"}>{a.name}</span>
               </NavLink>
             ))}
           </nav>
         )}
-        <nav aria-label="Demo scenes" className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Demo scenes</span>
-          {scenes.map((s) => (
-            <NavLink key={s.scene_id} to={`/studio/${s.scene_id}`} className={() => pill(s.scene_id === scene?.scene_id)}>
-              <span className={s.scene_id === scene?.scene_id ? "text-white" : "text-slate-700"}>{s.title}</span>
-            </NavLink>
-          ))}
-        </nav>
+        {scenes.length > 0 && (
+          <nav aria-label="Demo scenes" className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Demo scenes</span>
+            {scenes.map((s) => (
+              <NavLink key={s.scene_id} to={`/studio/${s.scene_id}`} className={() => pill(s.scene_id === scene?.scene_id)}>
+                <span className={s.scene_id === scene?.scene_id ? "text-white" : "text-slate-700"}>{s.title}</span>
+              </NavLink>
+            ))}
+          </nav>
+        )}
       </div>
       <div className="studio-wide">
       {assetId ? (
@@ -191,7 +194,10 @@ function TeacherStudio() {
           }}
         />
       ) : (
-        <p>No scene fixtures found.</p>
+        <p className="text-sm text-slate-600">
+          Choose one of your models above to open it here, or create one in the{" "}
+          <Link to="/teacher/assets" className="font-medium text-accent hover:underline">3D library</Link>.
+        </p>
       )}
       </div>
     </section>

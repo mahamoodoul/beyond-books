@@ -39,7 +39,7 @@ export function Readiness({ parts, deepDives }: { parts: PartMeta[]; deepDives: 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2">
       <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden>
-        <circle cx="20" cy="20" r={r} fill="none" stroke="#e2e8f0" strokeWidth="5" />
+        <circle cx="20" cy="20" r={r} fill="none" style={{ stroke: "var(--line-strong)" }} strokeWidth="5" />
         <circle cx="20" cy="20" r={r} fill="none" stroke={pct === 100 ? "#16a34a" : "#d97706"} strokeWidth="5"
           strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)} strokeLinecap="round" transform="rotate(-90 20 20)" />
       </svg>

@@ -139,6 +139,7 @@ export default function BeyondBooksLogo({
     >
       {mark}
       <span
+        className="bb-wordmark"
         style={{
           fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 700,

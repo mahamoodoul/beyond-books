@@ -2854,6 +2854,21 @@
         "title": "EventResult",
         "type": "object"
       },
+      "ExplainSelectionRequest": {
+        "properties": {
+          "text": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "ExplainSelectionRequest",
+        "type": "object"
+      },
       "FlowParticlesStep": {
         "additionalProperties": false,
         "properties": {
@@ -3424,6 +3439,429 @@
           "finished_at"
         ],
         "title": "JobOut",
+        "type": "object"
+      },
+      "LabCreate": {
+        "properties": {
+          "chapter_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Id"
+          },
+          "course_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Id"
+          },
+          "goal": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal"
+          },
+          "instructions": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Instructions",
+            "type": "string"
+          },
+          "kind": {
+            "default": "circuit",
+            "maxLength": 20,
+            "title": "Kind",
+            "type": "string"
+          },
+          "palette": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Palette"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "LabCreate",
+        "type": "object"
+      },
+      "LabKindOut": {
+        "properties": {
+          "default_goal": {
+            "additionalProperties": true,
+            "title": "Default Goal",
+            "type": "object"
+          },
+          "default_palette": {
+            "additionalProperties": true,
+            "title": "Default Palette",
+            "type": "object"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "options": {
+            "additionalProperties": true,
+            "title": "Options",
+            "type": "object"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "title",
+          "description",
+          "default_goal",
+          "default_palette",
+          "options"
+        ],
+        "title": "LabKindOut",
+        "type": "object"
+      },
+      "LabOut": {
+        "properties": {
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "chapter_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Id"
+          },
+          "chapter_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Title"
+          },
+          "course_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Id"
+          },
+          "course_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Title"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "goal": {
+            "additionalProperties": true,
+            "title": "Goal",
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "instructions": {
+            "title": "Instructions",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "palette": {
+            "additionalProperties": true,
+            "title": "Palette",
+            "type": "object"
+          },
+          "session": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SessionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "students_completed": {
+            "default": 0,
+            "title": "Students Completed",
+            "type": "integer"
+          },
+          "students_started": {
+            "default": 0,
+            "title": "Students Started",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "visibility_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visibility Note"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "course_id",
+          "course_title",
+          "chapter_id",
+          "chapter_title",
+          "title",
+          "instructions",
+          "goal",
+          "palette",
+          "status",
+          "can_manage",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "LabOut",
+        "type": "object"
+      },
+      "LabSummary": {
+        "properties": {
+          "chapter_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Id"
+          },
+          "goal": {
+            "additionalProperties": true,
+            "title": "Goal",
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "session_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Status"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "chapter_id",
+          "title",
+          "status",
+          "goal"
+        ],
+        "title": "LabSummary",
+        "type": "object"
+      },
+      "LabUpdate": {
+        "properties": {
+          "chapter_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Id"
+          },
+          "clear_chapter": {
+            "default": false,
+            "title": "Clear Chapter",
+            "type": "boolean"
+          },
+          "clear_course": {
+            "default": false,
+            "title": "Clear Course",
+            "type": "boolean"
+          },
+          "course_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Id"
+          },
+          "goal": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "maxLength": 4000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructions"
+          },
+          "palette": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Palette"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "draft",
+                  "published"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "LabUpdate",
         "type": "object"
       },
       "LessonContent": {
@@ -5919,6 +6357,132 @@
         "title": "SectionRegenerateRequest",
         "type": "object"
       },
+      "SessionOut": {
+        "properties": {
+          "achieved": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Achieved",
+            "type": "array"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "interactions": {
+            "title": "Interactions",
+            "type": "integer"
+          },
+          "last_activity_at": {
+            "format": "date-time",
+            "title": "Last Activity At",
+            "type": "string"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "state": {
+            "additionalProperties": true,
+            "title": "State",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "interactions",
+          "state",
+          "result",
+          "achieved",
+          "started_at",
+          "last_activity_at",
+          "completed_at"
+        ],
+        "title": "SessionOut",
+        "type": "object"
+      },
+      "SessionPut": {
+        "properties": {
+          "state": {
+            "additionalProperties": true,
+            "title": "State",
+            "type": "object"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "SessionPut",
+        "type": "object"
+      },
+      "SessionResult": {
+        "properties": {
+          "achieved": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Achieved",
+            "type": "array"
+          },
+          "goal_met": {
+            "title": "Goal Met",
+            "type": "boolean"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          },
+          "session": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SessionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "result",
+          "message",
+          "goal_met",
+          "achieved",
+          "session"
+        ],
+        "title": "SessionResult",
+        "type": "object"
+      },
       "SetOpacityStep": {
         "additionalProperties": false,
         "properties": {
@@ -6107,6 +6671,58 @@
           "page"
         ],
         "title": "SourceRef",
+        "type": "object"
+      },
+      "SpeechIn": {
+        "description": "Text to read aloud: one tour step (part name, explanation, link to the topic).",
+        "properties": {
+          "text": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "SpeechIn",
+        "type": "object"
+      },
+      "SpeechStatus": {
+        "description": "Whether voice narration is available on this server (an ElevenLabs key is configured).",
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "voice_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voice Id"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "SpeechStatus",
         "type": "object"
       },
       "StudentAssessment": {
@@ -6418,6 +7034,92 @@
           "options"
         ],
         "title": "StudentQuestion",
+        "type": "object"
+      },
+      "StudentSessionRow": {
+        "properties": {
+          "achieved": {
+            "title": "Achieved",
+            "type": "integer"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag"
+          },
+          "goal_met": {
+            "title": "Goal Met",
+            "type": "boolean"
+          },
+          "interactions": {
+            "title": "Interactions",
+            "type": "integer"
+          },
+          "last_activity_at": {
+            "format": "date-time",
+            "title": "Last Activity At",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "student_id",
+          "display_name",
+          "status",
+          "interactions",
+          "summary",
+          "flag",
+          "achieved",
+          "total",
+          "goal_met",
+          "started_at",
+          "last_activity_at",
+          "completed_at"
+        ],
+        "title": "StudentSessionRow",
         "type": "object"
       },
       "StudioSceneOut": {
@@ -8987,6 +9689,53 @@
         ]
       }
     },
+    "/api/v1/chapters/{chapter_id}/labs": {
+      "get": {
+        "operationId": "chapter_labs_api_v1_chapters__chapter_id__labs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chapter_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Chapter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LabSummary"
+                  },
+                  "title": "Response Chapter Labs Api V1 Chapters  Chapter Id  Labs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chapter Labs",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
     "/api/v1/chapters/{chapter_id}/lessons": {
       "get": {
         "operationId": "list_lessons_api_v1_chapters__chapter_id__lessons_get",
@@ -10156,6 +10905,60 @@
         ]
       }
     },
+    "/api/v1/courses/{course_id}/labs": {
+      "post": {
+        "description": "Create a lab in a course you manage (draft until published).",
+        "operationId": "create_lab_api_v1_courses__course_id__labs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Lab",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
     "/api/v1/courses/{course_id}/my-insights": {
       "get": {
         "operationId": "my_insights_api_v1_courses__course_id__my_insights_get",
@@ -10755,6 +11558,328 @@
         ]
       }
     },
+    "/api/v1/labs": {
+      "get": {
+        "description": "Teachers: labs in their courses. Students: published labs in their courses.",
+        "operationId": "list_labs_api_v1_labs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LabOut"
+                  },
+                  "title": "Response List Labs Api V1 Labs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Labs",
+        "tags": [
+          "labs"
+        ]
+      },
+      "post": {
+        "description": "Create a lab, optionally in a course (body.course_id); without one it is standalone and,\nonce published, open to the students of your courses and schools.",
+        "operationId": "create_standalone_lab_api_v1_labs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Standalone Lab",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
+    "/api/v1/labs/kinds": {
+      "get": {
+        "description": "The kinds of lab that can be created, with their default settings and choices.",
+        "operationId": "lab_kinds_api_v1_labs_kinds_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LabKindOut"
+                  },
+                  "title": "Response Lab Kinds Api V1 Labs Kinds Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Lab Kinds",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
+    "/api/v1/labs/{lab_id}": {
+      "delete": {
+        "operationId": "delete_lab_api_v1_labs__lab_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lab_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lab Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Lab",
+        "tags": [
+          "labs"
+        ]
+      },
+      "get": {
+        "operationId": "get_lab_api_v1_labs__lab_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lab_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lab Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Lab",
+        "tags": [
+          "labs"
+        ]
+      },
+      "patch": {
+        "operationId": "update_lab_api_v1_labs__lab_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lab_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lab Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Lab",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
+    "/api/v1/labs/{lab_id}/session": {
+      "put": {
+        "description": "Save the student's current state and get its evaluation. Teachers trying the lab get\nthe evaluation back without anything being stored.",
+        "operationId": "put_session_api_v1_labs__lab_id__session_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lab_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lab Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Session",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
+    "/api/v1/labs/{lab_id}/sessions": {
+      "get": {
+        "description": "Every student's latest state for this lab, most recent activity first.",
+        "operationId": "lab_sessions_api_v1_labs__lab_id__sessions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lab_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lab Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StudentSessionRow"
+                  },
+                  "title": "Response Lab Sessions Api V1 Labs  Lab Id  Sessions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lab Sessions",
+        "tags": [
+          "labs"
+        ]
+      }
+    },
     "/api/v1/learning-events": {
       "post": {
         "operationId": "events_api_v1_learning_events_post",
@@ -10919,6 +12044,60 @@
           }
         },
         "summary": "Update Lesson",
+        "tags": [
+          "lessons"
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/ai/explain-selection": {
+      "post": {
+        "description": "Reader help: explain 1-3 selected words of the lesson in context, with images from\nWikimedia Commons. Result in the job's `result` (card + images).",
+        "operationId": "explain_selection_api_v1_lessons__lesson_id__ai_explain_selection_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Lesson Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplainSelectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Explain Selection",
         "tags": [
           "lessons"
         ]
@@ -12112,6 +13291,66 @@
         "summary": "Add Member",
         "tags": [
           "schools"
+        ]
+      }
+    },
+    "/api/v1/speech": {
+      "post": {
+        "description": "Read a tour step aloud. Identical text is synthesised once and served from the cache.",
+        "operationId": "speak_api_v1_speech_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeechIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "audio/mpeg": {}
+            },
+            "description": "MP3 audio of the text"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Speak",
+        "tags": [
+          "speech"
+        ]
+      }
+    },
+    "/api/v1/speech/status": {
+      "get": {
+        "description": "Lets the Studio show the Voice button only when narration can actually play.",
+        "operationId": "speech_status_api_v1_speech_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpeechStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Speech Status",
+        "tags": [
+          "speech"
         ]
       }
     },

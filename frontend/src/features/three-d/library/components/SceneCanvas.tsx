@@ -1,4 +1,4 @@
-import { Html, Line, OrbitControls } from "@react-three/drei";
+import { Line, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState, type ComponentRef, type RefObject } from "react";
 import * as THREE from "three";
@@ -13,6 +13,7 @@ import { AUTO_QUALITY, QUALITY, type QualityTier } from "@/features/three-d/libr
 import type { ResolvedScene, Vec3 } from "@/features/three-d/library/runtime/types";
 import type { ViewerRuntime } from "@/features/three-d/library/runtime/viewerRuntime";
 
+import { CooperativeWheel } from "./CooperativeWheel";
 import {
   PostEffects,
   QualityMonitor,
@@ -66,7 +67,8 @@ export function SceneCanvas(props: SceneCanvasProps) {
       }}
       onPointerMissed={() => props.onSelect(null)}
     >
-      <color attach="background" args={["#0b1630"]} />
+      {/* Same light studio backdrop as the Chapter Studio viewport, so models read the same everywhere. */}
+      <color attach="background" args={["#eef2f6"]} />
       <StudioEnvironment />
       <RendererToneMapping enabled={!q.postprocessing} />
       <StudioLights runtime={props.runtime} tier={props.quality} ready={ready} />
@@ -82,6 +84,7 @@ export function SceneCanvas(props: SceneCanvasProps) {
         enabled={monitoring && !!props.onQualityDecline}
         onDecline={() => props.onQualityDecline?.()}
       />
+      <CooperativeWheel />
     </Canvas>
   );
 }
@@ -236,6 +239,9 @@ function SceneContent({
     }
   };
   const handleMove = (e: ThreeEvent<PointerEvent>) => {
+    // while a button is held the pointer is orbiting or panning the view: parts sweeping under
+    // it must not light up one after another, which read as the model changing colour
+    if (e.buttons !== 0) return;
     const id = runtime.current.registry.idFor(e.object);
     const selectable = id && canSelect(id) ? id : null;
     if (runtime.current.hovered !== selectable) {
@@ -358,11 +364,20 @@ function CameraRig({
   const maxD = spec.max_distance ?? 20;
   const controlsAllowed = new Set(scene.spec.controls ?? ["rotate", "zoom"]);
 
+  /** Closest the camera may get: the scene's limit, or nearer while one part is focused so a
+   *  small part can fill the view instead of stopping far away at the whole-model limit. */
+  const nearestAllowed = () => {
+    const rt = runtime.current;
+    const reg = rt.isolated ? rt.registry.get(rt.isolated) : undefined;
+    if (!reg) return minD;
+    return Math.max(0.05, Math.min(minD, reg.size.length() * 0.35));
+  };
+
   const moveTo = (target: THREE.Vector3, distance: number, dir?: THREE.Vector3) => {
     const c = controls.current;
     const from = c ? c.target.clone() : new THREE.Vector3();
     const d = dir ?? cam.position.clone().sub(from).normalize();
-    const dist = THREE.MathUtils.clamp(distance, minD, maxD);
+    const dist = THREE.MathUtils.clamp(distance, nearestAllowed(), maxD);
     const toPos = target.clone().addScaledVector(d, dist);
     tween.current = {
       fromPos: cam.position.clone(),
@@ -415,7 +430,7 @@ function CameraRig({
     const center = rt.registry.worldCenter(id);
     const reg = rt.registry.get(id);
     if (!center || !reg) return;
-    moveTo(center, Math.max(fitDistance(reg.size.length() / 2) * 1.2, minD));
+    moveTo(center, fitDistance(reg.size.length() / 2) * 1.15);
   };
 
   useFrame((_, delta) => {
@@ -426,8 +441,12 @@ function CameraRig({
     } else if (!f) {
       lastFocusKey.current = null;
     }
-    const tw = tween.current;
     const c = controls.current;
+    if (c) {
+      const near = nearestAllowed();
+      if (c.minDistance !== near) c.minDistance = near;
+    }
+    const tw = tween.current;
     if (!tw || !c) return;
     // after an idle gap (on-demand rendering) the first delta is huge; don't skip the tween
     const dt = Math.min(delta, 1 / 30);
@@ -448,6 +467,8 @@ function CameraRig({
       enableRotate={controlsAllowed.has("rotate")}
       enableZoom={controlsAllowed.has("zoom")}
       enablePan={controlsAllowed.has("pan")}
+      // wheel zoom heads for the part under the pointer, not the orbit centre
+      zoomToCursor
       minDistance={minD}
       maxDistance={maxD * 2.5}
       onStart={() => {
@@ -470,16 +491,57 @@ function Labels({
   canSelect: (id: string) => boolean;
   onSelect: (id: string) => void;
 }) {
+  // Plain DOM labels in one overlay, positioned every frame. Not drei <Html>: that creates a
+  // separate React root per label and tears it down mid-render, which under React 19
+  // (StrictMode re-runs effects) throws "NotFoundError" / "synchronously unmount a root" and
+  // can blank the page when parts or scenes change.
   const registered = scene.components.filter((c) => runtime.current.registry.get(c.componentId));
-  const groups = useRef<Record<string, THREE.Group | null>>({});
-  const doms = useRef<Record<string, HTMLDivElement | null>>({});
-  const tmp = useMemo(() => new THREE.Vector3(), []);
+  const gl = useThree((s) => s.gl);
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
   const invalidate = useThree((s) => s.invalidate);
+  const els = useRef<Record<string, HTMLDivElement>>({});
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+  const latest = useRef({ canSelect, onSelect });
+  latest.current = { canSelect, onSelect };
+  const signature = registered.map((c) => `${c.componentId}\u0000${c.label}`).join("\u0001");
 
-  // drei <Html> mounts its DOM asynchronously and positions it in a frame callback. With
-  // on-demand rendering the scene may already be idle by then, leaving labels unplaced, so
-  // render a short burst of frames after the labels mount.
   useEffect(() => {
+    const host = gl.domElement.parentElement;
+    if (!host) return;
+    const layer = document.createElement("div");
+    layer.style.cssText = "position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:20;";
+    const made: Record<string, HTMLDivElement> = {};
+    for (const c of registered) {
+      const id = c.componentId;
+      const wrap = document.createElement("div");
+      wrap.className = "group flex -translate-y-3 flex-col items-center";
+      wrap.style.cssText = "position:absolute;left:0;top:0;display:none;will-change:transform;";
+      wrap.dataset.state = "off";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className =
+        "pointer-events-auto whitespace-nowrap rounded-md border border-slate-300/80 bg-white/92 px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm transition-colors hover:border-[#38b2ac] hover:bg-white focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-400 group-data-[state=on]:bg-amber-400";
+      button.addEventListener("click", () => {
+        if (latest.current.canSelect(id)) latest.current.onSelect(id);
+      });
+      const text = document.createElement("span");
+      text.className = "text-slate-900 group-data-[state=on]:text-navy-950";
+      text.textContent = c.label;
+      button.appendChild(text);
+      const stem = document.createElement("span");
+      stem.className = "h-3 w-px bg-slate-500/70";
+      stem.setAttribute("aria-hidden", "true");
+      const dot = document.createElement("span");
+      dot.className = "size-1.5 rounded-full border border-white bg-slate-700";
+      dot.setAttribute("aria-hidden", "true");
+      wrap.append(button, stem, dot);
+      layer.appendChild(wrap);
+      made[id] = wrap;
+    }
+    host.appendChild(layer);
+    els.current = made;
+    // on-demand rendering: draw a few frames so the new labels get placed
     let frames = 0;
     let raf = 0;
     const tick = () => {
@@ -487,67 +549,76 @@ function Labels({
       if (++frames < 30) raf = requestAnimationFrame(tick);
     };
     tick();
-    return () => cancelAnimationFrame(raf);
-  }, [invalidate, registered.length]);
+    return () => {
+      cancelAnimationFrame(raf);
+      layer.remove(); // safe even if the canvas wrapper is already gone
+      els.current = {};
+    };
+  }, [gl, signature, invalidate]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Label sizes (they don't change), measured once each, for the overlap check below.
+  const sizes = useRef<Record<string, { w: number; h: number; wrapH: number }>>({});
 
   useFrame(() => {
     const rt = runtime.current;
     const anim = rt.frame;
+    const placed: { id: string; el: HTMLDivElement; x: number; y: number; depth: number; emphasised: boolean }[] = [];
     for (const c of registered) {
       const id = c.componentId;
-      const g = groups.current[id];
-      const el = doms.current[id];
-      if (!g || !el) continue;
+      const el = els.current[id];
+      if (!el) continue;
       const pos = rt.registry.labelPosition(id, tmp);
-      if (pos) g.position.copy(pos);
       const show =
+        !!pos &&
         rt.showLabels &&
         rt.registry.isVisible(id) &&
         (anim.components[id]?.opacity ?? 1) > 0.15 &&
         (!rt.isolated || rt.isolated === id); // focus mode: only the focused part's label
-      const display = show ? "" : "none";
-      if (el.style.display !== display) el.style.display = display;
       const emphasised =
         rt.selected === id || anim.highlight === id || anim.annotation?.target === id;
       const state = emphasised ? "on" : "off";
       if (el.dataset.state !== state) el.dataset.state = state;
+      const button = el.firstElementChild as HTMLButtonElement | null;
+      const tab = latest.current.canSelect(id) ? 0 : -1;
+      if (button && button.tabIndex !== tab) button.tabIndex = tab;
+      if (pos && show) {
+        pos.project(camera);
+        if (pos.z < 1) {
+          // not behind the camera
+          const x = (pos.x * 0.5 + 0.5) * size.width;
+          const y = (-pos.y * 0.5 + 0.5) * size.height;
+          el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`;
+          placed.push({ id, el, x, y, depth: pos.z, emphasised });
+          continue;
+        }
+      }
+      if (el.style.display !== "none") el.style.display = "none";
+    }
+
+    // Overlapping labels are unreadable: keep the emphasised one, then the nearest parts, and hide
+    // a label that would cover one already shown. Hidden parts stay in the parts list, and their
+    // labels come back as the view zooms in and they spread apart.
+    placed.sort((a, b) => Number(b.emphasised) - Number(a.emphasised) || a.depth - b.depth);
+    const boxes: { l: number; r: number; t: number; b: number }[] = [];
+    for (const p of placed) {
+      let m = sizes.current[p.id];
+      if (!m) {
+        if (p.el.style.display === "none") p.el.style.display = "";
+        const button = p.el.firstElementChild as HTMLElement | null;
+        m = { w: button?.offsetWidth ?? 0, h: button?.offsetHeight ?? 0, wrapH: p.el.offsetHeight };
+        if (m.w && m.h) sizes.current[p.id] = m;
+      }
+      // the wrapper is centred on the point and lifted 12px (-translate-y-3); the button is on top
+      const top = p.y - m.wrapH / 2 - 12;
+      const box = { l: p.x - m.w / 2 - 2, r: p.x + m.w / 2 + 2, t: top - 2, b: top + m.h + 2 };
+      const clash = boxes.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
+      const display = clash && !p.emphasised ? "none" : "";
+      if (p.el.style.display !== display) p.el.style.display = display;
+      if (!display) boxes.push(box);
     }
   });
 
-  return (
-    <>
-      {registered.map((c) => (
-        <group
-          key={c.componentId}
-          ref={(g) => {
-            groups.current[c.componentId] = g;
-          }}
-        >
-          <Html center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-            <div
-              ref={(el) => {
-                doms.current[c.componentId] = el;
-              }}
-              data-state="off"
-              className="group flex -translate-y-3 flex-col items-center"
-            >
-              <button
-                type="button"
-                tabIndex={canSelect(c.componentId) ? 0 : -1}
-                onClick={() => canSelect(c.componentId) && onSelect(c.componentId)}
-                className="pointer-events-auto whitespace-nowrap rounded-md border border-white/15 bg-navy-950/80 px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm transition-colors hover:bg-navy-700 focus-visible:outline-2 focus-visible:outline-accent group-data-[state=on]:border-amber-300 group-data-[state=on]:bg-amber-400"
-              >
-                {/* colour on a span: the app's unlayered `button { color: inherit }` beats utilities */}
-                <span className="text-white group-data-[state=on]:text-navy-950">{c.label}</span>
-              </button>
-              <span className="h-3 w-px bg-white/60" aria-hidden />
-              <span className="size-1.5 rounded-full bg-white" aria-hidden />
-            </div>
-          </Html>
-        </group>
-      ))}
-    </>
-  );
+  return null;
 }
 
 // ------------------------------------------------------------------- flow particles

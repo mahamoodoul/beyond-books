@@ -10,7 +10,7 @@ import type { AssessmentSummary, ChapterDetail, CourseOut, JobOut, LessonOut, Le
 import { useJob } from "@/features/jobs/useJob";
 
 import { BuildingBadge } from "../GenerationTray";
-import { PublishBar } from "./ChapterWorkflow";
+import { type PendingChanges, PublishPanel } from "./ChapterWorkflow";
 import { Chip, panel } from "./StudioPage";
 
 export const STEPS = [
@@ -27,7 +27,7 @@ const btnPrimary = "inline-flex items-center justify-center gap-1.5 rounded-lg b
 
 export function StepNav({ step, done, onStep }: { step: StepKey; done: Record<StepKey, boolean>; onStep: (s: StepKey) => void }) {
   return (
-    <nav aria-label="Chapter steps" className="border-b border-slate-200 px-5 py-3">
+    <nav aria-label="Chapter steps" className="px-5 py-3">
       <ol className="flex flex-wrap items-center gap-2">
         {STEPS.map((s, i) => {
           const active = s.key === step;
@@ -163,17 +163,19 @@ export function ReviewStep({
   chapter,
   course,
   checks,
+  pending,
   onStep,
 }: {
   chapter: ChapterDetail;
   course?: CourseOut;
   checks: { label: string; ok: boolean; detail: string; step: StepKey }[];
+  pending: PendingChanges;
   onStep: (s: StepKey) => void;
 }) {
   const ready = checks.every((c) => c.ok);
   return (
     <section className="max-w-3xl">
-      <StepIntro title="⑤ Review & publish">Check everything, preview it as a student, then publish the chapter under “{course?.title ?? "the course"}”.</StepIntro>
+      <StepIntro title="⑤ Review & publish">Check the list, preview it as a student if you like, then publish once with the button below.</StepIntro>
       <ul className={`${panel} divide-y divide-slate-100`}>
         {checks.map((c) => (
           <li key={c.label} className="flex items-center gap-3 px-4 py-3">
@@ -186,9 +188,8 @@ export function ReviewStep({
           </li>
         ))}
       </ul>
-      <div className={`${panel} mt-4 flex flex-wrap items-center gap-3 p-4`}>
-        <p className="mr-auto text-sm text-slate-600">{ready ? "Everything is ready." : "You can still publish; unfinished items are skipped and listed."}</p>
-        <PublishBar chapter={chapter} course={course} />
+      <div className="mt-4">
+        <PublishPanel chapter={chapter} course={course} ready={ready} pending={pending} />
       </div>
     </section>
   );

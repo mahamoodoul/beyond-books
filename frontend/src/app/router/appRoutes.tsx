@@ -1,7 +1,8 @@
 import { lazy, Suspense, type ComponentType, type ReactNode } from "react";
-import { Navigate, useParams, type RouteObject } from "react-router";
+import { Navigate, Outlet, ScrollRestoration, useParams, type RouteObject } from "react-router";
 
 import { AppLayout } from "@/app/layouts/AppLayout";
+import { RouteAnnouncer, SkipLink } from "@/app/router/RouteAnnouncer";
 import { RouteError } from "@/app/router/RouteError";
 import { Loading } from "@/components/feedback";
 import { RequireAuth } from "@/features/auth/auth";
@@ -25,18 +26,31 @@ function LegacyViewerRedirect() {
   return <Navigate to={assetId ? `/studio/library/${assetId}` : `/studio/${sceneId ?? ""}`} replace />;
 }
 
+/** Root of every route: skip link, page titles and announcements, and scroll handling (new pages
+ *  open at the top, back/forward restores the old position). */
+function RootLayout() {
+  return (
+    <>
+      <SkipLink />
+      <ScrollRestoration />
+      <RouteAnnouncer />
+      <Outlet />
+    </>
+  );
+}
+
 const teacher = (el: ReactNode) => <RequireAuth role="teacher">{el}</RequireAuth>;
 const student = (el: ReactNode) => <RequireAuth role="student">{el}</RequireAuth>;
 const anyUser = (el: ReactNode) => <RequireAuth>{el}</RequireAuth>;
 
 export const appRoutes: RouteObject[] = [
   {
+    element: <RootLayout />,
     errorElement: <RouteError />,
     children: [
       { path: "/", element: <LandingPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
-      { path: "/teacher/chapters/:chapterId/studio", element: teacher(page(() => import("@/features/three-d/studio/ChapterStudioPage"), "default")) },
       // Full-screen teacher 3D Studio (own dark layout, outside the standard app chrome).
       { path: "/teacher/lessons/:lessonId/studio", element: teacher(page(() => import("@/features/three-d/studio/StudioPage"), "default")) },
       // Full-screen AR scan of a lesson's interactive heart (teachers previewing and students).
@@ -45,6 +59,8 @@ export const appRoutes: RouteObject[] = [
       { path: "/account", element: anyUser(page(() => import("@/features/account/AccountPage"), "AccountPage")) },
       { path: "/teacher", element: teacher(page(() => import("@/features/dashboard/DemoTeacherDashboard"), "DemoTeacherDashboard")) },
       { path: "/teacher/courses/:courseId", element: teacher(page(() => import("@/features/courses/CoursePage"), "CoursePage")) },
+      // Chapter Studio: step-by-step content generation, inside the app layout (navbar on top)
+      { path: "/teacher/chapters/:chapterId/studio", element: teacher(page(() => import("@/features/three-d/studio/ChapterStudioPage"), "default")) },
       { path: "/teacher/chapters/:chapterId/preview", element: teacher(page(() => import("@/features/chapters/ChapterPreviewPage"), "ChapterPreviewPage")) },
       { path: "/teacher/chapters/:chapterId", element: teacher(page(() => import("@/features/chapters/ChapterPage"), "ChapterPage")) },
       { path: "/teacher/lessons/:lessonId", element: teacher(page(() => import("@/features/lessons/LessonEditorPage"), "LessonEditorPage")) },
@@ -56,9 +72,12 @@ export const appRoutes: RouteObject[] = [
       { path: "/student/assessments/:assessmentId", element: student(page(() => import("@/features/assessments/QuizPage"), "QuizPage")) },
       { path: "/student/attempts/:attemptId", element: student(page(() => import("@/features/assessments/AttemptResultPage"), "AttemptResultPage")) },
       { path: "/teacher/courses", element: teacher(page(() => import("@/features/dashboard/TeacherCoursesPage"), "TeacherCoursesPage")) },
-      { path: "/teacher/upload", element: teacher(page(() => import("@/features/courses/TeacherUploadPage"), "TeacherUploadPage")) },
       { path: "/teacher/courses/:courseId/review", element: teacher(page(() => import("@/features/courses/CoursePage"), "CoursePage")) },
       { path: "/teacher/insights", element: teacher(page(() => import("@/features/dashboard/TeacherAnalyticsPage"), "TeacherAnalyticsPage")) },
+      { path: "/teacher/labs", element: teacher(page(() => import("@/features/labs/TeacherLabsPage"), "TeacherLabsPage")) },
+      { path: "/teacher/labs/:labId", element: teacher(page(() => import("@/features/labs/TeacherLabPage"), "TeacherLabPage")) },
+      { path: "/student/labs", element: student(page(() => import("@/features/labs/StudentLabsPage"), "StudentLabsPage")) },
+      { path: "/student/labs/:labId", element: student(page(() => import("@/features/labs/StudentLabPage"), "StudentLabPage")) },
       { path: "/teacher/schools", element: teacher(page(() => import("@/features/dashboard/SchoolsPage"), "SchoolsPage")) },
       { path: "/student/progress", element: student(page(() => import("@/features/dashboard/StudentProgressPage"), "StudentProgressPage")) },
       { path: "/student/courses", element: student(page(() => import("@/features/courses/StudentCoursesPage"), "StudentCoursesPage")) },

@@ -11,17 +11,23 @@ export function AccountPage() {
   const me = useMe();
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  // null until edited: the field shows the current name.
+  const [name, setName] = useState<string | null>(null);
+  const currentName = me.data?.display_name ?? "";
+  const nameValue = name ?? currentName;
   const [password, setPassword] = useState("");
   const rename = useMutation({
-    mutationFn: () => api.patch("/users/me", { display_name: name }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
+    mutationFn: () => api.patch("/users/me", { display_name: nameValue.trim() }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["me"] });
+      setName(null);
+    },
   });
   const exportData = useMutation({
     mutationFn: () => api.get<unknown>("/users/me/export"),
     onSuccess: (data) => {
       const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
-      const a = Object.assign(document.createElement("a"), { href: url, download: "edu3d-my-data.json" });
+      const a = Object.assign(document.createElement("a"), { href: url, download: "beyond-books-my-data.json" });
       a.click();
       URL.revokeObjectURL(url);
     },
@@ -45,15 +51,20 @@ export function AccountPage() {
         <Card>
           <h2 className="mb-3 font-semibold">Profile</h2>
           <p className="mb-3 text-sm text-slate-600">{me.data?.email} · {me.data?.account_type}</p>
-          <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); rename.mutate(); }}>
-            <Input aria-label="Display name" placeholder={me.data?.display_name} value={name} onChange={(e) => setName(e.target.value)} required />
-            <Button type="submit" disabled={rename.isPending}>Save</Button>
+          <form className="flex flex-wrap items-end gap-2" onSubmit={(e) => { e.preventDefault(); rename.mutate(); }}>
+            <div className="min-w-0 flex-1">
+              <Field label="Display name">
+                <Input value={nameValue} maxLength={120} onChange={(e) => { setName(e.target.value); rename.reset(); }} required />
+              </Field>
+            </div>
+            <Button type="submit" disabled={rename.isPending || !nameValue.trim() || nameValue.trim() === currentName}>Save</Button>
           </form>
+          {rename.isSuccess && <p role="status" className="mt-2 text-sm text-slate-600">Name saved.</p>}
           <ErrorAlert error={rename.error} />
         </Card>
         <Card>
           <h2 className="mb-2 font-semibold">Your data</h2>
-          <p className="mb-3 text-sm text-slate-600">Download a copy of the personal data Edu3D holds about you (JSON).</p>
+          <p className="mb-3 text-sm text-slate-600">Download a copy of the personal data Beyond Books holds about you (JSON).</p>
           <Button variant="secondary" disabled={exportData.isPending} onClick={() => exportData.mutate()}>Download my data</Button>
           <ErrorAlert error={exportData.error} />
         </Card>

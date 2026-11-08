@@ -5,6 +5,7 @@ import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Input, Textarea } from "@/components/ui";
 import { JobStatusLine } from "@/features/jobs/JobStatus";
 import { useJob } from "@/features/jobs/useJob";
+import { plural } from "@/lib/plural";
 
 import {
   useAIUsage,
@@ -84,7 +85,7 @@ export function OutlinePanel({ courseId, onApplied }: { courseId: string; onAppl
       <JobStatusLine job={job.data} label="Outline generation:" />
       {usage.data && usage.data.calls > 0 && (
         <p className="mt-2 text-xs text-slate-500">
-          AI usage for this course: {usage.data.calls} call(s), {usage.data.input_tokens.toLocaleString()} input /{" "}
+          AI usage for this course: {plural(usage.data.calls, "call")}, {usage.data.input_tokens.toLocaleString()} input /{" "}
           {usage.data.output_tokens.toLocaleString()} output tokens
           {usage.data.estimated_cost_usd != null && ` · ≈ $${usage.data.estimated_cost_usd.toFixed(3)}`}
         </p>
@@ -115,7 +116,7 @@ export function OutlinePanel({ courseId, onApplied }: { courseId: string; onAppl
           ))}
           <div className="flex gap-2">
             <Button disabled={actions.apply.isPending || !drafts.some((d) => d.include)} onClick={apply}>
-              Apply {drafts.filter((d) => d.include).length} chapter(s)
+              Apply {plural(drafts.filter((d) => d.include).length, "chapter")}
             </Button>
             <Button variant="secondary" onClick={() => actions.discard.mutate(proposal.id)}>Discard</Button>
           </div>

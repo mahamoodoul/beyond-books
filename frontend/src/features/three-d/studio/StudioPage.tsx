@@ -39,15 +39,17 @@ export function Chip({ children, tone = "slate" }: { children: ReactNode; tone?:
   const t = { slate: "bg-slate-100 text-slate-600", teal: "bg-teal-50 text-teal-700 ring-1 ring-teal-200", amber: "bg-amber-50 text-amber-700 ring-1 ring-amber-200", violet: "bg-violet-50 text-violet-700 ring-1 ring-violet-200" };
   return <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${t[tone]}`}>{children}</span>;
 }
-export function Ring({ pct }: { pct: number }) {
+/** Progress ring: teal when complete, amber while in progress; track and label follow the theme. */
+export function Ring({ pct, size = "md" }: { pct: number; size?: "sm" | "md" }) {
   const r = 42;
   const c = 2 * Math.PI * r;
+  const done = pct >= 100;
   return (
-    <svg viewBox="0 0 100 100" className="h-28 w-28" role="img" aria-label={`${pct}% of parts explained`}>
-      <circle cx="50" cy="50" r={r} fill="none" stroke="#e2e8f0" strokeWidth="10" />
-      <circle cx="50" cy="50" r={r} fill="none" stroke="#38b2ac" strokeWidth="10" strokeLinecap="round"
+    <svg viewBox="0 0 100 100" className={size === "sm" ? "h-16 w-16" : "h-24 w-24"} role="img" aria-label={`${pct}% of parts explained`}>
+      <circle cx="50" cy="50" r={r} fill="none" style={{ stroke: "var(--line-strong)" }} strokeWidth="9" />
+      <circle cx="50" cy="50" r={r} fill="none" stroke={done ? "#38b2ac" : "#f59e0b"} strokeWidth="9" strokeLinecap="round"
         strokeDasharray={`${(pct / 100) * c} ${c}`} transform="rotate(-90 50 50)" />
-      <text x="50" y="55" textAnchor="middle" className="fill-white text-[20px] font-semibold">{pct}%</text>
+      <text x="50" y="50" dominantBaseline="central" textAnchor="middle" style={{ fill: "var(--ink)" }} fontSize={size === "sm" ? 24 : 22} fontWeight="600">{pct}%</text>
     </svg>
   );
 }
@@ -183,7 +185,7 @@ export default function StudioPage() {
     <div className="min-h-screen bg-slate-50 text-slate-700">
       {/* top bar */}
       <header className="flex flex-wrap items-center gap-3 border-b border-slate-200 px-5 py-3">
-        <Link to={`/teacher/lessons/${lessonId}`} className="text-lg font-semibold text-slate-900">Edu3D <span className="text-teal-700">Studio</span></Link>
+        <Link to={`/teacher/lessons/${lessonId}`} className="text-lg font-semibold text-slate-900">Beyond Books <span className="text-teal-700">Studio</span></Link>
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
           <Link className="hover:text-slate-900" to="/teacher">Courses</Link><span>›</span>
           {course.data && <><Link className="hover:text-slate-900" to={`/teacher/courses/${course.data.id}`}>{course.data.title}</Link><span>›</span></>}
@@ -261,7 +263,7 @@ export default function StudioPage() {
         </aside>
 
         {/* centre: viewport */}
-        <main className="relative min-h-[70vh] overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
+        <main id="main-content" tabIndex={-1} aria-label="3D viewport" className="relative min-h-[70vh] overflow-hidden rounded-2xl border border-slate-200 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#e8edf3_75%)]">
           {!scene ? (
             <div className="grid h-full min-h-[70vh] place-items-center p-8 text-center">
               <div className="max-w-sm space-y-3">

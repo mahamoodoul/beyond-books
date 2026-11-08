@@ -7,6 +7,7 @@ import { ErrorAlert, Loading } from "@/components/feedback";
 import { Icon } from "@/components/ui/Icon";
 
 import { useChapterAssessments } from "@/features/assessments/api";
+import { useChapterLabs } from "@/features/labs/api";
 
 import { useOutline } from "./api";
 import { MyInsightsCard } from "./MyInsightsCard";
@@ -42,6 +43,28 @@ function ChapterQuizzes({ chapterId }: { chapterId: string }) {
           </Link>
         </li>
       ))}
+    </ul>
+  );
+}
+
+function ChapterLabs({ chapterId }: { chapterId: string }) {
+  const list = useChapterLabs(chapterId);
+  if (!list.data?.length) return null;
+  return (
+    <ul className="path-quizzes">
+      {list.data.map((lab) => {
+        const done = lab.session_status === "completed";
+        const cta = done ? "Open again" : lab.session_status ? "Continue" : "Start";
+        return (
+          <li key={lab.id}>
+            <Link className="path-row path-row-quiz" to={`/student/labs/${lab.id}`}>
+              <span aria-hidden="true" className="path-row-icon"><Icon name="bolt" size={15} /></span>
+              <span className="path-row-title">{lab.title}<small>Lab · {lab.kind === "molecules" ? "build molecules" : lab.kind === "buoyancy" ? "float or sink" : "build the circuit"}{done ? " · goal reached" : ""}</small></span>
+              <span className="path-row-cta">{cta} <Icon name="arrow-right" size={15} /></span>
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -91,6 +114,7 @@ function ChapterStep({ chapter, nextLessonId }: { chapter: OutlineChapter; nextL
           {chapter.lessons.map((l) => <LessonRow isNext={l.id === nextLessonId} key={l.id} lesson={l} />)}
         </ul>
         <ChapterQuizzes chapterId={chapter.id} />
+        <ChapterLabs chapterId={chapter.id} />
       </section>
     </li>
   );

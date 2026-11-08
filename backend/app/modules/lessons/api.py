@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, status
+from pydantic import BaseModel, Field
 
 from app.core.deps import DB, CurrentUser
 from app.modules.lessons import service
@@ -11,6 +12,8 @@ from app.modules.lessons.schemas import (
     LessonUpdate,
     LessonVersionOut,
 )
+from app.modules.operations.api import JobOut
+from app.modules.operations.models import Job
 
 router = APIRouter(tags=["lessons"])
 
@@ -65,3 +68,22 @@ def list_versions(lesson_id: uuid.UUID, user: CurrentUser, db: DB) -> list[Lesso
         )
         for v in service.list_versions(db, user, lesson_id)
     ]
+
+
+class ExplainSelectionRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=80)
+
+
+@router.post(
+    "/lessons/{lesson_id}/ai/explain-selection",
+    response_model=JobOut,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def explain_selection(
+    lesson_id: uuid.UUID, body: ExplainSelectionRequest, user: CurrentUser, db: DB
+) -> Job:
+    """Reader help: explain 1-3 selected words of the lesson in context, with images from
+    Wikimedia Commons. Result in the job's `result` (card + images)."""
+    from app.modules.ai_engine.selection_explain import start_selection_explain
+
+    return start_selection_explain(db, user, lesson_id, body.text)

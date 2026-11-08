@@ -25,6 +25,9 @@ The AI team does not implement rendering; the 3D team does not own educational p
 
 Acceptance criteria pass · authorization tested · loading/empty/error states exist · tests pass ·
 API/schema docs updated · migrations included if needed · no secrets in logs · merged to `main`.
+Frontend changes are also accessible: keyboard-usable, every control named, WCAG AA contrast in
+light and dark mode, no sideways scrolling at 320px, and `__a11yAudit()` reports nothing on the
+pages you touched. See [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
 ## Backend conventions
 

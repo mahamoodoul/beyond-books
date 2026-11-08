@@ -226,3 +226,14 @@ class PartInsightLLM(BaseModel):
     options: list[str]
     correct_index: int
     explanation: str
+
+
+class SelectionExplainLLM(BaseModel):
+    """Lesson reader: an in-depth explanation of 1-3 words a student selected."""
+
+    title: str
+    explanation: str
+    in_this_lesson: str
+    key_points: list[str]
+    analogy: str
+    image_query: str

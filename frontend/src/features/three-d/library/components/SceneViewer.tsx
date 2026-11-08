@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { useReducedMotion } from "@/features/three-d/library/hooks/useReducedMotion";
 import {
@@ -23,6 +23,7 @@ import { createViewerRuntime } from "@/features/three-d/library/runtime/viewerRu
 import { AnimationTimeline } from "./AnimationTimeline";
 import { ExplanationPanel } from "./ExplanationPanel";
 import { SceneCanvas, type CameraCommand } from "./SceneCanvas";
+import { useNarrator, useSpeechEnabled } from "../speech/useNarrator";
 import { SceneToolbar } from "./SceneToolbar";
 
 export interface SceneViewerProps {
@@ -82,6 +83,7 @@ function ViewerBody({
   onTourStart,
 }: Omit<SceneViewerProps, "scene"> & { scene: ResolvedScene }) {
   const spec = scene.spec;
+  const viewerHint = useId();
   const [initialRuntime] = useState(() => createViewerRuntime(scene.paths));
   const runtime = useRef(initialRuntime);
   const reducedMotion = useReducedMotion();
@@ -100,6 +102,19 @@ function ViewerBody({
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [showLabels, setShowLabels] = useState(true);
   const [explode, setExplode] = useState(0);
+  // Voice narration: offered when the server has a voice; the learner's choice is remembered.
+  const speechEnabled = useSpeechEnabled();
+  const [voice, setVoiceState] = useState(() => typeof localStorage === "undefined" || localStorage.getItem("studio.voice") !== "off");
+  const setVoice = (v: boolean) => {
+    setVoiceState(v);
+    try {
+      localStorage.setItem("studio.voice", v ? "on" : "off");
+    } catch {
+      /* private mode: not remembered */
+    }
+  };
+  const narrator = useNarrator();
+  const voiceActive = speechEnabled && voice && !narrator.unavailable;
   const [camera, setCamera] = useState<CameraCommand>({ kind: "fit", key: 0 });
 
   const componentIds = useMemo(
@@ -174,14 +189,22 @@ function ViewerBody({
     (id: string) => selectable && byId.has(id) && !missing.has(id),
     [selectable, byId, missing],
   );
-  const focus = (id: string) => setCamera((c) => ({ kind: "focus", componentId: id, key: c.key + 1 }));
+  /** Explicit focus mode (the panel's "Focus" button or the tour): camera flies to the part and
+   *  the rest of the model is ghosted so it stands alone. */
+  const focus = (id: string) => {
+    setSelected(id);
+    setFocused(id);
+    setCamera((c) => ({ kind: "focus", componentId: id, key: c.key + 1 }));
+  };
   const fit = () => setCamera((c) => ({ kind: "fit", key: c.key + 1 }));
-  /** Clicking a part (in 3D, on its label or by name) focuses it: camera flies to it, the rest
-   *  is ghosted, and the panel shows it in depth. Clicking empty space leaves focus mode. */
+  /** Clicking a part (in 3D, on its label or by name) selects it: it is outlined, the camera
+   *  glides to it and the panel shows it in depth. The other parts keep their full colour, so the
+   *  model never fades just because something was clicked. Clicking empty space clears it. */
   const select = useCallback(
     (id: string | null) => {
       setSelected(id);
-      setFocused(id);
+      // already in focus mode (tour or "Focus"): move the focus along; otherwise stay out of it
+      setFocused((f) => (f && id ? id : null));
       if (id) {
         setCamera((c) => ({ kind: "focus", componentId: id, key: c.key + 1 }));
         onEvent?.({ type: "component_selected", componentId: id });
@@ -224,37 +247,98 @@ function ViewerBody({
       return t && at >= 0 && at !== t.index ? { ...t, index: at } : t;
     });
   }, [order, selected]);
-  // Guided tour: focus each part in turn, long enough to read its explanation.
+  // Guided tour: select each part in turn, long enough to read its explanation. It selects the
+  // way a click does (camera glides, card opens, the rest of the model keeps its colour); the
+  // explicit "Focus" button is the only thing that ghosts other parts. Pausing, Prev/Next and
+  // the index sync above all recreate the tour object, so a step is applied only once.
+  const appliedTourIndex = useRef<number | null>(null);
   useEffect(() => {
-    if (!tour) return;
+    if (!tour) {
+      appliedTourIndex.current = null;
+      return;
+    }
     const id = order[tour.index];
     if (!id) {
       setTour(null);
       return;
     }
-    select(id);
+    if (appliedTourIndex.current !== tour.index) {
+      appliedTourIndex.current = tour.index;
+      if (id !== selected) select(id);
+    }
     if (!tour.playing) return;
+    if (voiceActive) return; // with voice on, the step ends when its narration ends (see below)
     const t = window.setTimeout(
       () => setTour((s) => (s && s.playing ? { ...s, index: s.index + 1 } : s)),
       TOUR_STEP_MS,
     );
     return () => window.clearTimeout(t);
-  }, [tour, order]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tour, order, voiceActive]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Bumped when the tour starts or resumes, so the current part is read again and the tour moves on.
+  const [playKey, setPlayKey] = useState(0);
   const toggleTour = () => {
     if (!tour) onTourStart?.();
+    if (!tour || !tour.playing) setPlayKey((k) => k + 1);
     setTour((t) =>
       t ? { ...t, playing: !t.playing } : { index: Math.max(0, selected ? order.indexOf(selected) : 0), playing: true },
     );
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const fullscreenRef = useRef(false);
   useEffect(() => {
-    const onChange = () => setIsFullscreen(document.fullscreenElement === container.current);
+    const onChange = () => {
+      fullscreenRef.current = document.fullscreenElement === container.current;
+      setIsFullscreen(fullscreenRef.current);
+    };
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
   const selectedComponent = selected ? byId.get(selected) : undefined;
   const labelOf = (c: ResolvedComponent) => labels?.[c.meshName] ?? c.label;
   const noteOf = (c: ResolvedComponent | undefined) => (c ? narration?.notes?.[c.meshName] : undefined);
+  /** What the voice says for a part: its name, its explanation and how it links to the topic. */
+  const speechText = (c: ResolvedComponent) => {
+    const explanation = c.explanationRef ? explanations?.[c.explanationRef] : undefined;
+    const note = noteOf(c);
+    const parts = [labelOf(c), explanation, note ? `How it connects to ${narration?.topic ?? "the topic"}: ${note}` : null];
+    return parts.filter((x): x is string => !!x && x.trim().length > 0).join(". ").replace(/\.\s*\./g, ".");
+  };
+  // Pausing the tour stops the voice; the selection effect below restarts it for the next part.
+  const tourRef = useRef(tour);
+  tourRef.current = tour;
+  useEffect(() => {
+    if (tour && !tour.playing) narrator.stop();
+  }, [tour?.playing]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Read the selected part aloud (a click or a tour step). When the tour is playing, the step
+  // ends with the narration; if the audio can't play, fall back to the fixed step time.
+  useEffect(() => {
+    if (!voiceActive || !selected || !loaded) return;
+    const c = byId.get(selected);
+    if (!c) return;
+    const next = byId.get(order[order.indexOf(selected) + 1] ?? "");
+    if (next && tourRef.current) narrator.prefetch(speechText(next));
+    let fallback: number | undefined;
+    const advance = () =>
+      setTour((s) => (s && s.playing && order[s.index] === selected ? { ...s, index: s.index + 1 } : s));
+    narrator.speak(speechText(c), (ok) => {
+      const t = tourRef.current;
+      if (t?.playing) {
+        if (ok) advance();
+        else fallback = window.setTimeout(advance, TOUR_STEP_MS);
+        return;
+      }
+      // Fullscreen is a listening mode: after a part has been read, continue with the next one
+      // unless the learner paused the tour themselves. Stepping with Prev/Next keeps going.
+      if (ok && !t && fullscreenRef.current) {
+        const nextId = order[order.indexOf(selected) + 1];
+        if (nextId) select(nextId);
+      }
+    });
+    return () => {
+      narrator.stop();
+      if (fallback) window.clearTimeout(fallback);
+    };
+  }, [selected, voiceActive, loaded, playKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const manualSelect = useCallback(
     (id: string | null) => {
       setTour((t) => (t ? { ...t, playing: false } : t)); // a manual click pauses the tour
@@ -318,17 +402,28 @@ function ViewerBody({
         effectiveTier={tier}
         onQuality={setQuality}
         onFullscreen={() => void container.current?.requestFullscreen?.()}
+        voice={speechEnabled ? voice : undefined}
+        onVoice={speechEnabled ? setVoice : undefined}
+        speaking={narrator.speaking}
+        voiceUnavailable={narrator.unavailable}
         xray={xray}
         onXray={setXray}
         touring={!!tour?.playing}
         onTour={order.length > 1 ? toggleTour : undefined}
       />
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           ref={container}
-          className="relative aspect-[4/3] min-h-72 overflow-hidden rounded-lg bg-navy-950 sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
+          role="group"
+          aria-label={`3D model: ${spec.title}`}
+          aria-describedby={viewerHint}
+          className="keep-light relative aspect-[4/3] min-h-72 w-full overflow-hidden rounded-lg border border-slate-200 bg-[#eef2f6] sm:aspect-video lg:aspect-auto lg:h-[clamp(32rem,72vh,60rem)]"
         >
+          <span id={viewerHint} className="visually-hidden">
+            Drag to rotate; hold Ctrl or Command and scroll, or pinch, to zoom. With a keyboard, use
+            the part labels or the parts list to explore each part.
+          </span>
           <SceneCanvas
             scene={scene}
             runtime={runtime}
@@ -351,15 +446,15 @@ function ViewerBody({
             </div>
           )}
           {focusedComponent && (
-            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-white/95 py-1 pl-3 pr-1 text-sm shadow">
+            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-slate-200 bg-white py-1 pl-3 pr-1 text-sm shadow-md">
               <span className="text-slate-500">Focused:</span>
               <span className="font-medium text-navy-950">{labels?.[focusedComponent.meshName] ?? focusedComponent.label}</span>
               <button
                 type="button"
                 onClick={showAll}
-                className="rounded-full bg-navy-900 px-2.5 py-0.5 text-xs font-medium text-white hover:bg-navy-700"
+                className="rounded-full bg-[#38b2ac] px-2.5 py-0.5 text-xs font-semibold hover:bg-[#4fc7c0]"
               >
-                Show all <span className="opacity-60">Esc</span>
+                <span style={{ color: "#0b0d16" }}>Show all <span className="opacity-60">Esc</span></span>
               </button>
             </div>
           )}
@@ -373,9 +468,12 @@ function ViewerBody({
               narration={narration}
               position={selected && order.includes(selected) ? { at: order.indexOf(selected) + 1, of: order.length } : null}
               tour={tour}
-              onPrev={() => { setTour((t) => (t ? { ...t, playing: false } : t)); step(-1); }}
-              onNext={() => { setTour((t) => (t ? { ...t, playing: false } : t)); step(1); }}
+              onPrev={() => step(-1)}
+              onNext={() => step(1)}
               onTour={order.length > 1 ? toggleTour : undefined}
+              voice={speechEnabled ? voice : undefined}
+              onVoice={speechEnabled ? setVoice : undefined}
+              speaking={narrator.speaking}
               onExit={() => void document.exitFullscreen?.()}
             />
           )}
@@ -445,6 +543,9 @@ function FullscreenTourCard({
   onPrev,
   onNext,
   onTour,
+  voice,
+  onVoice,
+  speaking,
   onExit,
 }: {
   part: string | null;
@@ -456,6 +557,9 @@ function FullscreenTourCard({
   onPrev: () => void;
   onNext: () => void;
   onTour?: () => void;
+  voice?: boolean;
+  onVoice?: (v: boolean) => void;
+  speaking?: boolean;
   onExit: () => void;
 }) {
   const btn = "rounded-md px-3 py-1.5 text-sm font-medium";
@@ -487,11 +591,22 @@ function FullscreenTourCard({
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button type="button" onClick={onPrev} className={`${btn} border border-slate-300 text-slate-700 hover:bg-slate-50`}>‹ Prev</button>
         {onTour && (
-          <button type="button" onClick={onTour} className={`${btn} bg-navy-900 text-white hover:bg-navy-700`}>
+          <button type="button" onClick={onTour} className={`${btn} bg-[#38b2ac] font-semibold hover:bg-[#4fc7c0]`} style={{ color: "#0b0d16" }}>
             {tour?.playing ? "❚❚ Pause" : tour ? "▶ Resume" : "▶ Tour"}
           </button>
         )}
         <button type="button" onClick={onNext} className={`${btn} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Next ›</button>
+        {onVoice && (
+          <button
+            type="button"
+            onClick={() => onVoice(!voice)}
+            aria-pressed={!!voice}
+            className={`${btn} border ${voice ? "border-[#38b2ac] bg-teal-50" : "border-slate-300"} text-slate-700 hover:bg-slate-50`}
+            title="Read each part aloud"
+          >
+            {speaking ? "🔊 Reading…" : voice ? "🔊 Voice on" : "🔇 Voice off"}
+          </button>
+        )}
         <button type="button" onClick={onExit} className={`${btn} ml-auto text-slate-600 hover:bg-slate-100`}>Exit fullscreen</button>
       </div>
     </div>

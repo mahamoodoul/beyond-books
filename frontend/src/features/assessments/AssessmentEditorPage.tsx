@@ -8,6 +8,7 @@ import { EmptyState, ErrorAlert, Loading } from "@/components/feedback";
 import { Badge, Button, Card, Field, Input, PageHeader, Textarea } from "@/components/ui";
 
 import { useAssessmentMutations, useAttempts, useReviewQueue, useTeacherAssessment } from "./api";
+import { useRovingTabs } from "@/lib/useRovingTabs";
 
 const TABS = ["Questions", "Submissions", "Review queue"] as const;
 type Tab = (typeof TABS)[number];
@@ -37,9 +38,11 @@ function QuestionEditor({ q, onChange, onRemove }: { q: QuestionIn; onChange: (q
         <label className="ml-auto flex items-center gap-1 text-sm">Points
           <input type="number" min={0.5} step={0.5} className={`${sel} w-20`} value={q.points} onChange={(e) => onChange({ ...q, points: Number(e.target.value) })} />
         </label>
-        <select className={sel} value={q.difficulty} onChange={(e) => onChange({ ...q, difficulty: e.target.value as QuestionIn["difficulty"] })}>
-          <option value="easy">easy</option><option value="medium">medium</option><option value="hard">hard</option>
-        </select>
+        <label className="flex items-center gap-1 text-sm">Difficulty
+          <select className={sel} value={q.difficulty} onChange={(e) => onChange({ ...q, difficulty: e.target.value as QuestionIn["difficulty"] })}>
+            <option value="easy">easy</option><option value="medium">medium</option><option value="hard">hard</option>
+          </select>
+        </label>
         <Button variant="ghost" aria-label="Remove question" onClick={onRemove}>✕</Button>
       </div>
       <Textarea rows={2} aria-label="Question text" value={q.question_text} onChange={(e) => onChange({ ...q, question_text: e.target.value })} />
@@ -118,6 +121,7 @@ function ReviewCard({ item, assessmentId }: { item: ReviewItem; assessmentId: st
 }
 
 export function AssessmentEditorPage() {
+  const rovingTabs = useRovingTabs<HTMLDivElement>();
   const { assessmentId = "" } = useParams();
   const a = useTeacherAssessment(assessmentId);
   const m = useAssessmentMutations(assessmentId);
@@ -156,9 +160,9 @@ export function AssessmentEditorPage() {
         {d.published_version && <Button variant="ghost" onClick={() => m.unpublish.mutate()}>Unpublish</Button>}
       </PageHeader>
       <ErrorAlert error={m.publish.error ?? m.settings.error} />
-      <div role="tablist" className="mb-4 flex gap-1 border-b border-slate-200">
+      <div role="tablist" aria-label="Quiz editor sections" ref={rovingTabs} className="mb-4 flex gap-1 shadow-[inset_0_-1px_0_var(--line)]">
         {TABS.map((t) => (
-          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900" : "border-transparent text-slate-500"}`}>
+          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-navy-900" : "border-transparent text-slate-500"}`}>
             {t}{t === "Review queue" && queue.data?.length ? ` (${queue.data.length})` : ""}
           </button>
         ))}

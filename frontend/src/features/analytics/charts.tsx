@@ -37,9 +37,10 @@ export function RateBars({
   return (
     <ul className="space-y-2">
       {rows.map((r) => (
-        <li key={r.id} className="group relative grid grid-cols-[minmax(0,1fr)_8rem_3rem] items-center gap-3 text-sm" tabIndex={0}
+        <li key={r.id} className="group relative grid grid-cols-[minmax(0,1fr)_4.5rem_2.75rem] items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_8rem_3rem] sm:gap-3" tabIndex={0}
           aria-label={`${typeof r.label === "string" ? r.label : ""} ${pct(r.rate)}${r.detail ? `, ${r.detail}` : ""}`}>
-          <span className="truncate text-slate-800">{r.label}</span>
+          {/* two lines on phones (narrow label column), one line from sm up */}
+          <span className="line-clamp-2 break-words text-slate-800 sm:line-clamp-1" title={typeof r.label === "string" ? r.label : undefined}>{r.label}</span>
           <span className="block h-2 overflow-hidden rounded-r-[4px] bg-[var(--track)]" style={{ ["--track" as string]: SEQ_TRACK }}>
             {r.rate != null && <span className="block h-full rounded-r-[4px]" style={{ width: `${Math.max(0, Math.min(1, r.rate)) * 100}%`, background: SEQ }} />}
           </span>

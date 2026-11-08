@@ -212,6 +212,9 @@ def export(email: str) -> None:
 
 # ------------------------------------------------------------------------- import
 LFS_POINTER = b"version https://git-lfs"
+# Where to fetch Git LFS files that were checked out as placeholders (e.g. a deploy that cloned
+# without LFS). The repository is public, so no credentials are needed; empty disables it.
+LFS_REPO = os.environ.get("SEED_LFS_REPO", "https://github.com/mahamoodoul/beyond-books.git")
 
 
 def _real_file(path: Path) -> bool:
@@ -220,15 +223,66 @@ def _real_file(path: Path) -> bool:
         return not f.read(len(LFS_POINTER)).startswith(LFS_POINTER)
 
 
-def _ensure_teacher(db: Any, email: str, password: str | None) -> uuid.UUID:
+def _download_lfs(pointer: str) -> bytes | None:
+    """The real file for a Git LFS placeholder, from the repository's LFS server (verified)."""
+    import hashlib
+    import urllib.request
+
+    oid = re.search(r"^oid sha256:([0-9a-f]{64})$", pointer, re.M)
+    size = re.search(r"^size (\d+)$", pointer, re.M)
+    if not (LFS_REPO and oid and size):
+        return None
+    batch = json.dumps(
+        {
+            "operation": "download",
+            "transfers": ["basic"],
+            "objects": [{"oid": oid.group(1), "size": int(size.group(1))}],
+        }
+    ).encode()
+    headers = {
+        "Accept": "application/vnd.git-lfs+json",
+        "Content-Type": "application/vnd.git-lfs+json",
+    }
+    try:
+        req = urllib.request.Request(  # noqa: S310  https URL from SEED_LFS_REPO
+            LFS_REPO.rstrip("/") + "/info/lfs/objects/batch", data=batch, headers=headers
+        )
+        with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310  fixed https URL
+            action = json.load(r)["objects"][0]["actions"]["download"]
+        dl = urllib.request.Request(action["href"], headers=action.get("header") or {})  # noqa: S310
+        with urllib.request.urlopen(dl, timeout=180) as r:  # noqa: S310  URL from the LFS server
+            data = r.read()
+    except (OSError, ValueError, KeyError, IndexError) as exc:
+        print(f"  could not download {oid.group(1)[:12]} from Git LFS: {exc}")
+        return None
+    return data if hashlib.sha256(data).hexdigest() == oid.group(1) else None
+
+
+def _file_bytes(path: Path) -> bytes | None:
+    """The file's content; for a Git LFS placeholder, the real file downloaded from LFS."""
+    if _real_file(path):
+        return path.read_bytes()
+    return _download_lfs(path.read_text(errors="replace"))
+
+
+def _ensure_account(db: Any, email: str, password: str | None, kind: str) -> uuid.UUID:
+    """The existing account of this kind, or a new one when a password is given."""
     users = table("users")
-    user_id = db.scalar(select(users.c.id).where(users.c.email == email.lower()))
-    if user_id is not None:
-        return uuid.UUID(str(user_id))
+    row = db.execute(
+        select(users.c.id, users.c.account_type).where(users.c.email == email.lower())
+    ).first()
+    flag = "PASSWORD" if kind == "teacher" else "STUDENT_PASSWORD"
+    if row is not None:
+        if row.account_type != kind:
+            what = "Courses belong to a teacher" if kind == "teacher" else "Only students can enrol"
+            raise SystemExit(
+                f"{email!r} is a {row.account_type} account. {what}: use a {kind}'s email, or a "
+                f"new email with {flag}=... to create a {kind} account."
+            )
+        return uuid.UUID(str(row.id))
     if not password:
         raise SystemExit(
-            f"No account {email!r}. Add a password to create it: "
-            "make seed-courses EMAIL=... PASSWORD=... (12+ characters)"
+            f"No account {email!r}. Add {flag}=... (12+ characters) to create this {kind} account."
         )
     from app.modules.authentication.schemas import RegisterRequest
     from app.modules.authentication.service import register
@@ -239,11 +293,44 @@ def _ensure_teacher(db: Any, email: str, password: str | None) -> uuid.UUID:
             email=email,
             password=password,
             display_name=email.split("@")[0].replace(".", " ").title(),
-            account_type="teacher",
+            account_type=kind,
         ),
     )
-    print(f"created teacher account {user.email}")
+    print(f"created {kind} account {user.email}")
     return user.id
+
+
+def _ensure_teacher(db: Any, email: str, password: str | None) -> uuid.UUID:
+    return _ensure_account(db, email, password, "teacher")
+
+
+def _enrol_student(db: Any, course_ids: list[str], email: str, password: str | None) -> None:
+    """Enrol a student in every seeded course (through the app's own enrolment service)."""
+    from app.modules.courses.models import Course
+    from app.modules.courses.service import enroll
+    from app.modules.users.models import User
+
+    _ensure_account(db, email, password, "student")
+    db.commit()
+    added = 0
+    for cid in course_ids:
+        course = db.get(Course, uuid.UUID(cid))
+        owner = db.get(User, course.created_by) if course else None
+        if course is None or owner is None:
+            continue
+        added += enroll(db, owner, course.id, email, None)[0]
+    db.commit()
+    print(f"student {email.lower()}: enrolled in {added} new course(s), {len(course_ids)} in total")
+    unpublished = db.scalars(
+        select(table("courses").c.title).where(
+            table("courses").c.id.in_([uuid.UUID(c) for c in course_ids]),
+            table("courses").c.status != "published",
+        )
+    ).all()
+    if unpublished:
+        print(
+            "  note: students only see published courses. Still drafts: " + ", ".join(unpublished)
+        )
 
 
 def _where() -> str:
@@ -269,7 +356,12 @@ def _source_file(name: str, raw: dict[str, Any]) -> tuple[Path | None, str] | No
     return None
 
 
-def load(email: str, password: str | None = None) -> None:
+def load(
+    email: str,
+    password: str | None = None,
+    student: str | None = None,
+    student_password: str | None = None,
+) -> None:
     print(_where())
     bundle = json.loads((BUNDLE / "bundle.json").read_text())
     if bundle.get("format") != FORMAT:
@@ -311,14 +403,14 @@ def load(email: str, password: str | None = None) -> None:
             if src is None or (not is_new and storage.head(raw["storage_key"]) is not None):
                 continue
             path, content_type = src
-            if path is None or not _real_file(path):
+            data = _file_bytes(path) if path is not None else None
+            if data is None:
                 missing += 1
                 continue
-            storage.put_bytes(raw["storage_key"], path.read_bytes(), content_type)
+            storage.put_bytes(raw["storage_key"], data, content_type)
             files += 1
             restored += 0 if is_new else 1
     db.commit()
-    db.close()
     if added:
         print("imported: " + ", ".join(f"{k}={v}" for k, v in added.items()))
     elif not restored:
@@ -331,12 +423,24 @@ def load(email: str, password: str | None = None) -> None:
             f"WARNING: {missing} PDF/3D file(s) are missing or Git LFS placeholders. Install Git "
             "LFS (brew install git-lfs), run `git lfs pull`, then run this again."
         )
+    if student:
+        _enrol_student(
+            db, [c["id"] for c in bundle["tables"].get("courses", [])], student, student_password
+        )
+    db.close()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) not in (3, 4) or sys.argv[1] not in {"export", "import"}:
-        raise SystemExit("usage: course_seed.py export EMAIL | import EMAIL [PASSWORD]")
-    if sys.argv[1] == "export":
-        export(sys.argv[2])
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Export or import the shared course seed.")
+    ap.add_argument("command", choices=["export", "import"])
+    ap.add_argument("email", help="teacher account")
+    ap.add_argument("password", nargs="?", default=None, help="creates the teacher if new")
+    ap.add_argument("--student", help="also create/enrol this student account (import)")
+    ap.add_argument("--student-password", help="creates the student if new")
+    args = ap.parse_args()
+    if args.command == "export":
+        export(args.email)
     else:
-        load(sys.argv[2], sys.argv[3] if len(sys.argv) == 4 else None)
+        load(args.email, args.password or None, args.student or None, args.student_password or None)
