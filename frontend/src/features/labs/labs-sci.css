@@ -1,0 +1,165 @@
+/* Science lab boards (breathing, orbits, plate tectonics): control strip, sliders, segments. */
+
+.lab-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+  border: 1px solid rgb(226 232 240);
+  box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.5);
+}
+.lab-slider-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(100 116 139);
+}
+.lab-slider {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.lab-slider input[type="range"] {
+  width: 130px;
+  accent-color: #f59e0b;
+}
+.lab-slider-value {
+  min-width: 56px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: rgb(15 23 42);
+}
+.lab-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.lab-seg-btns {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgb(241 245 249);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+.lab-seg-btns button {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgb(71 85 105);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.lab-seg-btns button:hover:not(:disabled) {
+  color: rgb(15 23 42);
+}
+.lab-seg-btns button[aria-pressed="true"] {
+  background: #fff;
+  color: rgb(15 23 42);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(245, 158, 11, 0.35);
+}
+.lab-action {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #422006;
+  background: linear-gradient(180deg, #fde68a, #fbbf24);
+  box-shadow: 0 6px 14px -8px rgba(217, 119, 6, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s;
+}
+.lab-action:hover {
+  transform: translateY(-1px);
+}
+.lab-action:active {
+  transform: translateY(0);
+}
+
+.rl-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rl-pulse 1.2s ease-out infinite;
+}
+@keyframes rl-pulse {
+  0% { transform: scale(0.7); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rl-pulse { animation: none; }
+}
+
+/* ------------------------------------------------------------ full screen */
+.lab-playground.lab-fs {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  padding: 14px 18px 18px;
+  background:
+    radial-gradient(1200px 500px at 0% -10%, rgba(251, 191, 36, 0.12), transparent 60%),
+    radial-gradient(1000px 500px at 100% 110%, rgba(99, 102, 241, 0.14), transparent 60%),
+    var(--bg, #f7f7fa);
+  color: var(--text, inherit);
+}
+.lab-playground.lab-fs:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+.lab-fs-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(180deg, #243247 0%, #141c2b 100%);
+  box-shadow: 0 12px 28px -18px rgba(2, 6, 23, 0.8);
+}
+.lab-fs-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.2);
+}
+.lab-fs-count {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+}
+/* wide board, guide on the right */
+.lab-fs .lab-fs-grid {
+  flex: 1;
+  min-height: 0;
+}
+@media (min-width: 1024px) {
+  .lab-fs .lab-fs-grid {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+/* the board fills the height that is left (bar, controls, status line, margins); the step guide
+   already lists the tasks, so the chips under the board are hidden */
+.lab-fs .lab-task-chips {
+  display: none;
+}
+.lab-fs svg[role="img"].w-full {
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 240px);
+  margin-inline: auto;
+}
+.lab-fs aside {
+  max-height: calc(100vh - 110px);
+  overflow: auto;
+}

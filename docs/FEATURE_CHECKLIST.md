@@ -81,6 +81,41 @@ Each section names its owner area so the team can split the work. Where a note s
 - [ ] Small evaluation set: 5–10 chapters with expected properties, run before the demo
 - [ ] Show source page references next to AI-generated lesson text (grounding)
 
+## 4b. Labs (Backend: labs; Frontend: features/labs)
+
+Hands-on simulations a teacher publishes into a course; students build, the teacher watches
+every student's state live. One generic Labs module with an engine per kind (goal, palette,
+state validation, evaluation, sub-goals), mirrored in the browser for instant feedback.
+
+- [x] Teacher **Labs** tab: pick a kind, course and chapter, goal and palette; edit, publish,
+  unpublish, delete; "try it yourself" board; live student activity (state summary, problems
+  flagged, sub-goals done, changes, last change); counters on each lab card
+- [x] Student **Labs** tab and lab rows in the course path; step-by-step guide derived from the
+  state, with hints and "Why?"; undo/redo; goal-reached moment; everything saved per change
+- [x] **Electric circuit:** battery, bulbs, switches, wires; nodal-analysis solver (open loop,
+  open switch, short circuit, series dim, parallel bright); realistic bench with animated current
+- [x] **Molecular bonding** (Chemistry, from the interview priorities): atoms as shaded spheres,
+  single/double/triple bonds, valence check with "bonds still wanted" badges, formula in Hill
+  order, molecule names, VSEPR shape for simple molecules, targets such as H₂O, CO₂, CH₄
+- [x] **Pressure and buoyancy** (Physics): materials and liquids with real densities, custom
+  densities, volume, object settles floating or sinking with force arrows, draggable pressure
+  probe on a depth scale, tasks (float, sink, half-submerged, fresh vs salt, 10 kPa)
+- [ ] Verify in a browser with two accounts side by side (teacher watching, student building)
+- [ ] Chemistry: balance a chemical equation; ionic bonding (the current engine covers covalent)
+- [x] **Breathing and gas exchange** (Biology): chest with ribs, lungs and diaphragm that flatten
+  and dome (by hand or "Auto" at the chosen rate), breathing rate and depth, rest/walk/run with
+  oxygen uptake vs need and blood oxygen, alveolus zoom with O₂/CO₂ exchange and a traced
+  molecule; tasks (inhale, exhale, rate, exercise, trace)
+- [x] **Solar system and orbits** (Astronomy): inner planets with real periods (play, time
+  slider, drag Earth), Sun–Earth–Moon view with phases and solar/lunar eclipses (drag the Moon),
+  seasons view with axial tilt, day length and noon Sun height at a chosen latitude; scale
+  approximations labelled; tasks (both eclipses, a full year, summer and winter, zero tilt)
+- [x] **Plate tectonics and earthquakes** (Earth science): subduction, collision, divergent and
+  transform boundaries over millions of years (trench, slab, volcanoes, mountains, magnetic
+  stripes, fault offset), clickable Earth layers, P and S waves with shadow zones and a movable
+  seismometer; time scale stated (1 Myr = 50 km); tasks (subduction, mountains, compare,
+  layers, waves)
+
 ## 5. Chapters and lessons (Backend: chapters, lessons)
 
 - [x] Chapters: list, view, edit, delete, learning objectives
@@ -169,20 +204,52 @@ Each section names its owner area so the team can split the work. Where a note s
 
 ### Evidence per open-round criterion
 
-- [ ] **Functionality:** live run with a fresh chapter PDF → outline → lesson → 3D scene → quiz → student answer → analytics
-- [ ] **A real problem:** 3+ teacher conversations written down (who, subject, how long lesson prep takes today)
-- [ ] **Innovation:** show the LLM designing a 3D model with named parts, and a part-insight answer
-- [ ] **Design:** 3+ people complete the core task without coaching; note where they hesitated and what we changed
-- [ ] **Team efficiency:** list of what we cut and why (see exclusions above), and who built what
+- [x] **Functionality:** live run through real AI, verified 2026-11-08 on the local stack with
+  `make smoke URL=http://localhost:8000 AI=1` (29/29 steps: text source → AI outline → AI lesson →
+  3D scene → quiz → student answer → analytics, Claude Opus 5.5). The four sample courses were
+  built the same way from real chapter PDFs (`sample-courses/`): 93 Claude calls recorded in
+  `ai_usage_records`. Still to do on demo day: run it once more on the demo machine with a PDF
+  the jury has not seen.
+- [x] **A real problem:** three teacher conversations (Ingrid, naturfag, 17 years; Daniel,
+  science and maths, 3 years; Fatima, biology, 9 years) with transcripts and what we learned in
+  [docs/jury/teacher-conversations.md](jury/teacher-conversations.md): 2 to 3 hours per new
+  topic today, review-before-publish as the condition for trust. *Add the date and channel of
+  each conversation to the file.*
+- [x] **Innovation:** the LLM designs the 3D model itself (`llm` provider: named parts with
+  descriptions, `three_d_model_design` prompt) or builds it in Blender (`blender` provider); click
+  a part in the Studio for the part-insight answer (`POST /scenes/{id}/ai/part-insight`, study
+  cards). Demo path: 3D library → Generate with AI → open in Studio → click a part.
+- [ ] **Design:** 3+ people complete the core task without coaching; note where they hesitated and
+  what we changed. *Not started.* Script and observation sheet:
+  [docs/jury/usability-sessions.md](jury/usability-sessions.md).
+- [x] **Team efficiency:** [docs/jury/team-efficiency.md](jury/team-efficiency.md): the
+  submission paragraph, who built what (from `git log`), what we cut and why, and how we worked
+  (branches, PRs, CI, coverage gate, smoke test). Confirmed 2026-11-08.
 
 ### Core-flow definition of done
 
-- [ ] A new user understands where to start
-- [ ] Fresh input produces a result through real AI (not the fake provider)
-- [ ] A different chapter produces a different lesson and scene
-- [ ] Invalid upload (wrong type, too large) gives clear feedback
-- [ ] AI provider down → clear failure message, nothing fake shown
-- [ ] Reset and run again without touching code or the database by hand
+- [x] A new user understands where to start: an empty teacher dashboard shows "Start your first
+  course"; **New course** explains the next step ("upload the textbook PDF… let AI propose the
+  chapters"); a course with no chapters opens on **Sources & outline**; every chapter card has
+  **Open Studio**. *Verify with the Design sessions above.*
+- [x] Fresh input produces a result through real AI: the smoke run above used the `anthropic`
+  provider end to end; fake providers are refused in staging/production (startup check).
+- [x] A different chapter produces a different lesson and scene: lessons are generated per chapter
+  from that chapter's pages, scenes per lesson. In the seeded data every chapter has its own
+  lesson body and scene spec (Biology 2/2, Physics 2 lessons, 3 distinct scene specs).
+- [x] Invalid upload gives clear feedback: declared size over the limit → "Files are limited to
+  50 MB"; wrong MIME type refused; content that is not a PDF refused by sniffing; a scanned PDF
+  without text fails with a message. Tests: `test_documents.py` (reject not-a-PDF, disallowed
+  MIME and oversize, size mismatch, scanned PDF). The Sources panel shows the error text.
+- [x] AI provider down → clear failure message, nothing fake shown: adapters raise
+  transient/permanent errors with no hidden retries (`max_retries=0`, timeout); the job ends
+  `failed` with an error code and message, nothing is saved
+  (`test_provider_failures_fail_job_safely`); the UI shows the job's `error_message` (Sources
+  panel, outline/lesson panels, 3D generation tray).
+- [x] Reset and run again without touching code or the database by hand: `docker compose down -v
+  && make up` for a clean stack; `make seed-courses EMAIL=…` reloads the sample courses;
+  `make seed-students EMAIL=… RESET=1` regenerates demo students and activity;
+  `scripts/backup_db.sh` / `restore_db.sh` for snapshots.
 
 ### Demo day
 
